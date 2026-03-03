@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "community-access",
+  "description": "Accessibility enforcement plugins for Claude Code",
+  "owner": {
+    "name": "Community Access",
+    "url": "https://github.com/Community-Access"
+  },
+  "plugins": [
+    {
+      "name": "accessibility-agents",
+      "source": "./claude-code-plugin",
+      "description": "WCAG AA accessibility enforcement for Claude Code. 55 specialist agents, 17 commands, and enforcement hooks that delegate to accessibility-lead for UI code review.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Taylor Arndt"
+      },
+      "category": "accessibility",
+      "homepage": "https://github.com/Community-Access/accessibility-agents"
+    }
+  ]
+}
