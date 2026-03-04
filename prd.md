@@ -57,7 +57,7 @@
 
 A11y Agent Team is an accessibility enforcement system for AI-powered coding and authoring tools. It deploys 57 specialized agents across five platforms - Claude Code (terminal), GitHub Copilot (VS Code), Gemini (Google AI Studio and IDX), Codex CLI (terminal), and Claude Desktop (app) - to ensure that web code, Office documents, PDF files, EPUB publications, and markdown documentation meet accessibility standards. The system intercepts the developer workflow at code-generation time, applying WCAG 2.2 AA standards for web content, format-specific rules for Office documents (DOCX/XLSX/PPTX), PDF/UA conformance with Matterhorn Protocol alignment for PDF files, cognitive accessibility guidelines, and assistive technology compatibility checks.
 
-The project includes eleven MCP tools (zero external dependencies for document scanning), 54 custom prompts, 17 reusable skills, six workspace instruction files, agent team coordination (AGENTS.md), three CI scripts, a source citation policy with automated currency verification, automated installer/uninstaller scripts for all platforms, auto-update capability, an example project with 20+ intentional violations, and SARIF 2.1.0 output for GitHub Code Scanning integration.
+The project includes eleven MCP tools (zero external dependencies for document scanning), 60 custom prompts, 17 reusable skills, six workspace instruction files, agent team coordination (AGENTS.md), three CI scripts, a source citation policy with automated currency verification, automated installer/uninstaller scripts for all platforms, auto-update capability, an example project with 20+ intentional violations, and SARIF 2.1.0 output for GitHub Code Scanning integration.
 
 Key capabilities added since v2.0:
 
@@ -370,7 +370,7 @@ These agents are not user-invokable. They are used internally by wizards and orc
 
 ## Prompts and Skills
 
-### Custom Prompts (54)
+### Custom Prompts (60)
 
 One-click workflows available from the Copilot prompt picker:
 
@@ -448,6 +448,17 @@ One-click workflows available from the Copilot prompt picker:
 | team-dashboard | Team workload and contribution overview |
 | triage | Triage incoming issues with priority scoring |
 
+#### Developer Tools Prompts (6)
+
+| Prompt | What It Does |
+|--------|-------------|
+| scaffold-nvda-addon | Scaffold a new NVDA screen reader addon project with structure, manifest, and boilerplate |
+| audit-desktop-a11y | Desktop application accessibility audit covering platform APIs, keyboard, and high contrast |
+| test-desktop-a11y | Create a desktop accessibility test plan with screen reader test cases and automated UIA scaffolding |
+| review-text-quality | Scan web files for broken alt text, template variables in aria-labels, placeholder labels, and duplicate names |
+| scaffold-wxpython-app | Scaffold an accessible wxPython desktop application with sizers, keyboard nav, and screen reader support |
+| package-python-app | Package a Python application for distribution using PyInstaller, Nuitka, or cx_Freeze |
+
 ### Reusable Skills (17)
 
 Domain-specific knowledge modules in `.github/skills/` that agents reference automatically:
@@ -487,7 +498,7 @@ Workspace-level instruction files in `.github/instructions/` that apply to match
 
 ### Agent Teams (AGENTS.md)
 
-Team coordination is defined in `.github/agents/AGENTS.md`. Five defined teams:
+Team coordination is defined in `.github/agents/AGENTS.md`. Six defined teams:
 
 | Team | Led By | Members |
 |------|--------|--------|
@@ -496,6 +507,7 @@ Team coordination is defined in `.github/agents/AGENTS.md`. Five defined teams:
 | Markdown Accessibility Audit | markdown-a11y-assistant | markdown-scanner, markdown-fixer, markdown-csv-reporter |
 | Full Audit | accessibility-lead | All agents (combined web + document + markdown workflow) |
 | GitHub Workflow Management | github-hub | daily-briefing, pr-review, issue-tracker, analytics, insiders-a11y-tracker, repo-admin, team-manager, contributions-hub, template-builder, repo-manager |
+| Developer Tools | developer-hub | python-specialist, wxpython-specialist, nvda-addon-specialist, desktop-a11y-specialist, desktop-a11y-testing-coach, a11y-tool-builder, text-quality-reviewer |
 
 ### Cross-Cutting Standards
 
@@ -1214,9 +1226,9 @@ Single configuration file: `.codex/AGENTS.md`
 | `update.sh` | macOS/Linux updater |
 | `update.ps1` | Windows updater |
 
-### Prompts Files (54 prompt files in `.github/prompts/`)
+### Prompts Files (60 prompt files in `.github/prompts/`)
 
-All 54 prompts listed in the Custom Prompts section above, stored as `.github/prompts/{name}.prompt.md`.
+All 60 prompts listed in the Custom Prompts section above, stored as `.github/prompts/{name}.prompt.md`.
 
 ### Skills Files (17 skill folders in `.github/skills/`)
 
@@ -1334,10 +1346,10 @@ Items completed since v2.0:
 | Hidden helper sub-agents | 11 |
 | Infrastructure agents | 2 |
 | Agent file instances | ~230 (57 agents x 4 platforms + docs) |
-| Custom prompts | 54 (11 document + 6 web + 5 markdown + 32 GitHub workflow) |
+| Custom prompts | 60 (11 document + 6 web + 5 markdown + 32 GitHub workflow + 6 developer tools) |
 | Reusable skills | 17 |
 | Instruction files | 6 |
-| Agent teams | 5 (Document, Web, Markdown, Full, GitHub Workflow) |
+| Agent teams | 6 (Document, Web, Markdown, Full, GitHub Workflow, Developer Tools) |
 | MCP tools | 11 (7 web + 4 document) |
 | MCP prompts | 6 |
 | Office document rules | 46 (16 DOCX + 14 XLSX + 16 PPTX) |

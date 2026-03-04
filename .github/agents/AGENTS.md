@@ -276,22 +276,24 @@ At every handoff:
 - `desktop-a11y-testing-coach` - Desktop accessibility testing: NVDA, JAWS, Narrator, VoiceOver, Orca, Accessibility Insights, automated UIA testing, keyboard-only testing
 - `a11y-tool-builder` - Accessibility tool building: rule engines, document parsers, report generators, WCAG mapping, severity scoring, CLI/GUI scanner architecture
 - `nvda-addon-specialist` - NVDA addon development: architecture, globalPlugins, appModules, synthDrivers, brailleDisplayDrivers, manifest format, event/script handling, NVDAObject overlays, addon packaging, Add-on Store submission, testing, i18n
+- `text-quality-reviewer` - Non-visual text quality review: template variables in alt text, code syntax as names, placeholder labels, filename alt text, duplicate labels, label-in-name violations
 
 **Skills:**
 - `python-development` - Python version reference, pyproject.toml patterns, PyInstaller modes, wxPython sizer/event/threading cheat sheets, desktop accessibility API reference, common pitfalls, cross-platform paths, testing, logging
 
 **Workflow:**
-1. `developer-hub` receives the user request and classifies intent (debug, package, scaffold, review, optimize, GUI work, desktop a11y, tool building, NVDA addon development)
+1. `developer-hub` receives the user request and classifies intent (debug, package, scaffold, review, optimize, GUI work, desktop a11y, tool building, NVDA addon development, text quality review)
 2. For pure Python tasks, routes to `python-specialist` with full context
 3. For wxPython/GUI tasks, routes to `wxpython-specialist` with full context
 4. For desktop accessibility API work, routes to `desktop-a11y-specialist`
 5. For screen reader testing, routes to `desktop-a11y-testing-coach`
 6. For NVDA addon development, routes to `nvda-addon-specialist`
 7. For building a11y scanning tools, routes to `a11y-tool-builder`
-8. For web accessibility audits, hands off to `web-accessibility-wizard` (Web Accessibility team)
-9. For document accessibility audits, hands off to `document-accessibility-wizard` (Document Accessibility team)
-10. For mixed tasks, starts with the primary domain specialist and hands off as needed
-11. All agents can hand back to `developer-hub` for broader coordination
+8. For non-visual text quality auditing, routes to `text-quality-reviewer`
+9. For web accessibility audits, hands off to `web-accessibility-wizard` (Web Accessibility team)
+10. For document accessibility audits, hands off to `document-accessibility-wizard` (Document Accessibility team)
+11. For mixed tasks, starts with the primary domain specialist and hands off as needed
+12. All agents can hand back to `developer-hub` for broader coordination
 
 **Handoffs:**
 - `developer-hub` -> `python-specialist` for debugging, packaging, testing, type checking, async, optimization
@@ -300,12 +302,14 @@ At every handoff:
 - `developer-hub` -> `desktop-a11y-testing-coach` for screen reader testing walkthroughs, Accessibility Insights, automated UIA tests
 - `developer-hub` -> `a11y-tool-builder` for rule engine design, document parsers, report generators, severity scoring
 - `developer-hub` -> `nvda-addon-specialist` for NVDA addon scaffolding, debugging, packaging, Add-on Store submission
+- `developer-hub` -> `text-quality-reviewer` for non-visual text quality auditing, broken alt text detection
 - `python-specialist` <-> `wxpython-specialist` (bidirectional: Python-in-GUI and GUI-needing-Python)
 - `wxpython-specialist` <-> `desktop-a11y-specialist` (bidirectional: GUI accessibility patterns)
 - `nvda-addon-specialist` <-> `wxpython-specialist` (bidirectional: addon GUI components, settings panels)
 - `nvda-addon-specialist` <-> `desktop-a11y-testing-coach` (bidirectional: build then test addon with NVDA)
 - `desktop-a11y-specialist` <-> `desktop-a11y-testing-coach` (bidirectional: implement then test)
 - `a11y-tool-builder` <-> `python-specialist` (bidirectional: tool code needs Python expertise)
+- `text-quality-reviewer` -> `accessibility-lead` for full web audit after text quality scan (cross-team)
 - Any developer agent -> `web-accessibility-wizard` for web content auditing (cross-team)
 - Any developer agent -> `document-accessibility-wizard` for document auditing (cross-team)
 - Any agent -> `developer-hub` for task completion or scope changes

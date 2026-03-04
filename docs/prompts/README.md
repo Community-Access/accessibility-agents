@@ -1,6 +1,6 @@
 # Prompt Reference
 
-This directory contains complete documentation for all 52 prompt files in this repository. Prompts are one-click workflows that launch pre-configured agent sessions - select them from the prompt picker in GitHub Copilot Chat or type `/` in Claude Code.
+This directory contains complete documentation for all 60 prompt files in this repository. Prompts are one-click workflows that launch pre-configured agent sessions - select them from the prompt picker in GitHub Copilot Chat or type `/` in Claude Code.
 
 ## Web Accessibility Prompts
 
@@ -100,3 +100,14 @@ This directory contains complete documentation for all 52 prompt files in this r
 | [quick-markdown-check](../../.github/prompts/quick-markdown-check.prompt.md) | Fast triage - errors only, inline pass/fail verdict, no report file |
 | [fix-markdown-issues](../../.github/prompts/fix-markdown-issues.prompt.md) | Interactive fix mode - auto-fix table + human-judgment items from saved report |
 | [compare-markdown-audits](../../.github/prompts/compare-markdown-audits.prompt.md) | Track remediation progress between two audit snapshots with Fixed/New/Persistent/Regressed scoring |
+
+## Developer Tools Prompts
+
+| Prompt | Description |
+|--------|-------------|
+| [scaffold-nvda-addon](developer-tools/scaffold-nvda-addon.md) | Scaffold a new NVDA screen reader addon project with structure, manifest, and boilerplate |
+| [audit-desktop-a11y](developer-tools/audit-desktop-a11y.md) | Desktop application accessibility audit covering platform APIs, keyboard, and high contrast |
+| [test-desktop-a11y](developer-tools/test-desktop-a11y.md) | Create a desktop accessibility test plan with screen reader test cases and automated UIA scaffolding |
+| [review-text-quality](developer-tools/review-text-quality.md) | Scan web files for broken alt text, template variables in aria-labels, placeholder labels, and duplicate names |
+| [scaffold-wxpython-app](developer-tools/scaffold-wxpython-app.md) | Scaffold an accessible wxPython desktop application with sizers, keyboard nav, and screen reader support |
+| [package-python-app](developer-tools/package-python-app.md) | Package a Python application for distribution using PyInstaller, Nuitka, or cx_Freeze |

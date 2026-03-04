@@ -152,6 +152,19 @@ One-click workflows for web accessibility auditing tasks:
 | setup-github-scanner | Set up the GitHub Accessibility Scanner in your repository with agent ecosystem integration |
 | setup-lighthouse-scanner | Set up Lighthouse CI accessibility scanning in your repository with agent ecosystem integration |
 
+### Custom Prompts for Developer Tools
+
+One-click workflows for desktop development, NVDA addon creation, and Python packaging:
+
+| Prompt | What It Does |
+|--------|-------------|
+| scaffold-nvda-addon | Scaffold a new NVDA screen reader addon project with structure, manifest, and boilerplate |
+| audit-desktop-a11y | Desktop application accessibility audit covering platform APIs, keyboard, and high contrast |
+| test-desktop-a11y | Create a desktop accessibility test plan with screen reader test cases and automated UIA scaffolding |
+| review-text-quality | Scan web files for broken alt text, template variables in aria-labels, placeholder labels, and duplicate names |
+| scaffold-wxpython-app | Scaffold an accessible wxPython desktop application with sizers, keyboard nav, and screen reader support |
+| package-python-app | Package a Python application for distribution using PyInstaller, Nuitka, or cx_Freeze |
+
 ### Context Discovery
 
 When starting any accessibility audit, review, or remediation task, proactively check the workspace for existing context before proceeding:

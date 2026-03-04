@@ -1,6 +1,6 @@
 {
-  "name": "a11y-agent-team",
-  "displayName": "A11y Agent Team",
+  "name": "accessibility-agents",
+  "displayName": "Accessibility Agents",
   "description": "WCAG AA accessibility specialists for GitHub Copilot Chat — invoke @a11y with slash commands for ARIA, contrast, keyboard, forms, and more.",
   "version": "0.1.0",
   "publisher": "community-access",
@@ -25,6 +25,18 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "a11y.reloadIndex",
+        "title": "A11y: Reload Agent Index",
+        "category": "A11y Agent Team"
+      },
+      {
+        "command": "a11y.listAgents",
+        "title": "A11y: List Discovered Agents",
+        "category": "A11y Agent Team"
+      }
+    ],
     "chatParticipants": [
       {
         "id": "a11y-agent-team.a11y",
@@ -34,94 +46,227 @@
         "isSticky": true,
         "commands": [
           {
-            "name": "aria",
-            "description": "ARIA patterns — roles, states, properties for custom widgets"
+            "name": "a11y-tool-builder",
+            "description": "Build scanning tools, rule engines, parsers, and audit automation"
           },
           {
-            "name": "contrast",
-            "description": "Color contrast — check ratios, fix failures, theme review"
+            "name": "accessibility-lead",
+            "description": "Team lead and orchestrator — coordinates specialists, final review"
           },
           {
-            "name": "keyboard",
-            "description": "Keyboard navigation — tab order, focus management, shortcuts"
+            "name": "alt-text-headings",
+            "description": "Alt text, heading hierarchy, landmarks, image descriptions"
           },
           {
-            "name": "forms",
-            "description": "Form accessibility — labels, validation, error handling"
+            "name": "analytics",
+            "description": "GitHub analytics — velocity, review turnaround, contribution metrics"
           },
           {
-            "name": "alt-text",
-            "description": "Images and headings — alt text, heading hierarchy, landmarks"
+            "name": "aria-specialist",
+            "description": "ARIA roles, states, properties for custom widgets and live regions"
           },
           {
-            "name": "tables",
-            "description": "Data tables — headers, scope, caption, sortable columns"
+            "name": "cognitive-accessibility",
+            "description": "Plain language, COGA, auth patterns, reading level, timeouts"
           },
           {
-            "name": "links",
-            "description": "Link text — detect ambiguous or missing link purpose"
+            "name": "contrast-master",
+            "description": "Color contrast ratios, themes, dark mode, focus indicators"
           },
           {
-            "name": "modal",
-            "description": "Modals and dialogs — focus trap, return, escape, announcements"
+            "name": "contributions-hub",
+            "description": "GitHub Discussions, community health, contributor management"
           },
           {
-            "name": "live-region",
-            "description": "Live regions — dynamic content announcements, status updates"
+            "name": "daily-briefing",
+            "description": "Daily GitHub briefing — issues, PRs, reviews, releases, discussions"
           },
           {
-            "name": "audit",
-            "description": "Full web accessibility audit — all specialists, prioritized report"
+            "name": "design-system-auditor",
+            "description": "Design tokens, color tokens, focus rings, motion, touch targets"
           },
           {
-            "name": "document",
-            "description": "Document audit — Word, Excel, PowerPoint, PDF accessibility"
+            "name": "desktop-a11y-specialist",
+            "description": "Desktop a11y — UI Automation, MSAA, ATK, NSAccessibility APIs"
           },
           {
-            "name": "markdown",
-            "description": "Markdown audit — links, alt text, headings, tables, emoji"
+            "name": "desktop-a11y-testing-coach",
+            "description": "Desktop testing — NVDA, JAWS, Narrator, VoiceOver, Orca"
           },
           {
-            "name": "test",
-            "description": "Testing guidance — screen reader, keyboard, automated testing"
+            "name": "developer-hub",
+            "description": "Developer command center — Python, wxPython, desktop, routing"
           },
           {
-            "name": "wcag",
-            "description": "WCAG reference — success criteria explanations and conformance"
+            "name": "document-accessibility-wizard",
+            "description": "Document audit wizard — Word, Excel, PowerPoint, PDF, ePub"
           },
           {
-            "name": "cognitive",
-            "description": "Cognitive accessibility — plain language, COGA, auth patterns"
+            "name": "epub-accessibility",
+            "description": "ePub accessibility — EPUB 1.1, reading order, nav, metadata"
           },
           {
-            "name": "mobile",
-            "description": "Mobile accessibility — React Native, touch targets, screen readers"
+            "name": "excel-accessibility",
+            "description": "Excel accessibility — sheet names, table headers, alt text, merged cells"
           },
           {
-            "name": "design-system",
-            "description": "Design tokens — contrast, focus rings, spacing, motion"
+            "name": "forms-specialist",
+            "description": "Form accessibility — labels, validation, error handling, grouping"
+          },
+          {
+            "name": "github-hub",
+            "description": "GitHub command center — plain English routing to all GitHub agents"
+          },
+          {
+            "name": "insiders-a11y-tracker",
+            "description": "Track VS Code Insiders accessibility improvements and changes"
+          },
+          {
+            "name": "issue-tracker",
+            "description": "GitHub issues — find, triage, review, respond with full reports"
+          },
+          {
+            "name": "keyboard-navigator",
+            "description": "Keyboard navigation, tab order, focus traps, skip links, shortcuts"
+          },
+          {
+            "name": "link-checker",
+            "description": "Detect ambiguous link text — click here, read more, learn more"
+          },
+          {
+            "name": "live-region-controller",
+            "description": "Live regions, dynamic content, toasts, AJAX, progress updates"
+          },
+          {
+            "name": "markdown-a11y-assistant",
+            "description": "Markdown audit wizard — links, alt text, headings, emoji, Mermaid"
+          },
+          {
+            "name": "mobile-accessibility",
+            "description": "Mobile a11y — React Native, Expo, iOS, Android, touch targets"
+          },
+          {
+            "name": "modal-specialist",
+            "description": "Modals, dialogs, popovers — focus trap, return, escape, announce"
+          },
+          {
+            "name": "nexus",
+            "description": "Intelligent GitHub orchestrator — plain English to any GitHub action"
+          },
+          {
+            "name": "pdf-accessibility",
+            "description": "PDF accessibility — PDF/UA, Matterhorn Protocol, tagged structure"
+          },
+          {
+            "name": "powerpoint-accessibility",
+            "description": "PowerPoint accessibility — titles, alt text, reading order, tables"
+          },
+          {
+            "name": "pr-review",
+            "description": "Pull request reviews — diffs, snapshots, comments, reactions"
+          },
+          {
+            "name": "python-specialist",
+            "description": "Python expert — debugging, packaging, testing, async, performance"
+          },
+          {
+            "name": "repo-admin",
+            "description": "Repo admin — collaborators, branch protection, webhooks, settings"
+          },
+          {
+            "name": "repo-manager",
+            "description": "Repo setup — issue templates, CI workflows, releases, labels"
+          },
+          {
+            "name": "tables-data-specialist",
+            "description": "Data tables — headers, scope, caption, sortable, ARIA grid roles"
+          },
+          {
+            "name": "team-manager",
+            "description": "GitHub teams — create, manage, onboard/offboard, sync access"
+          },
+          {
+            "name": "template-builder",
+            "description": "Guided wizard for GitHub issue, PR, and discussion templates"
+          },
+          {
+            "name": "testing-coach",
+            "description": "Testing guidance — screen reader, keyboard, axe-core, test plans"
+          },
+          {
+            "name": "wcag-guide",
+            "description": "WCAG 2.2 AA reference — criteria explanations, conformance levels"
+          },
+          {
+            "name": "web-accessibility-wizard",
+            "description": "Interactive web accessibility audit wizard — guided WCAG review"
+          },
+          {
+            "name": "word-accessibility",
+            "description": "Word accessibility — titles, headings, alt text, tables, reading order"
+          },
+          {
+            "name": "wxpython-specialist",
+            "description": "wxPython GUI — sizers, events, AUI, threading, desktop a11y"
           }
         ]
       }
     ],
     "configuration": {
-      "title": "A11y Agent Team",
+      "title": "Accessibility Agents",
       "properties": {
         "a11y.agentsPath": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Custom path to the directory containing `.agent.md` files. Leave empty to auto-discover `.github/agents/` in the workspace."
+          "markdownDescription": "(Legacy) Single path to the directory containing `.agent.md` files. Prefer `a11y.agentsPaths` for multiple directories. Leave empty to auto-discover.",
+          "deprecationMessage": "Use a11y.agentsPaths (array) instead."
+        },
+        "a11y.agentsPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "List of directories containing `.agent.md` files. Leave empty to auto-discover `.github/agents/`, `copilot-agents/`, and `agents/` in workspace folders."
+        },
+        "a11y.watchForChanges": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Watch `.agent.md` files for changes and update the agent index automatically."
         },
         "a11y.defaultAgent": {
           "type": "string",
           "default": "accessibility-lead",
           "markdownDescription": "Agent file stem used when `@a11y` is invoked without a slash command. Must match a `<name>.agent.md` file.",
-          "examples": ["accessibility-lead", "web-accessibility-wizard", "aria-specialist"]
+          "examples": [
+            "accessibility-lead",
+            "web-accessibility-wizard",
+            "aria-specialist"
+          ]
+        },
+        "a11y.registrationMode": {
+          "type": "string",
+          "default": "slash-commands",
+          "enum": [
+            "slash-commands",
+            "individual-participants",
+            "both"
+          ],
+          "enumDescriptions": [
+            "All agents are accessible via @a11y /agent-name slash commands under a single chat participant. This is the default and keeps the participant picker clean.",
+            "Each user-invokable agent is registered as its own @agent-name chat participant (e.g. @aria-specialist, @contrast-master). No slash commands on @a11y — agents are top-level @ participants. Best when you want direct @ access without a hub.",
+            "Both modes at once: agents are available as @a11y /agent-name AND as individual @agent-name participants. Gives maximum flexibility but adds many entries to the participant picker."
+          ],
+          "markdownDescription": "Controls how agents appear in Copilot Chat.\n\n- **slash-commands** (default): Single `@a11y` participant with `/agent-name` slash commands. Clean and organized.\n- **individual-participants**: Each agent gets its own `@agent-name` handle. Direct `@` access without going through `@a11y`.\n- **both**: Agents available both ways.\n\n⚠️ Changing this setting requires a **window reload** to take effect."
         },
         "a11y.conformanceLevel": {
           "type": "string",
           "default": "AA",
-          "enum": ["A", "AA", "AAA"],
+          "enum": [
+            "A",
+            "AA",
+            "AAA"
+          ],
           "markdownDescription": "Target WCAG conformance level. Agents will tailor their advice to this level."
         }
       }
@@ -134,6 +279,7 @@
     "package": "npx @vscode/vsce package"
   },
   "devDependencies": {
+    "@types/node": "^25.3.3",
     "@types/vscode": "^1.99.0",
     "@vscode/vsce": "^3.5.0",
     "typescript": "^5.8.0"

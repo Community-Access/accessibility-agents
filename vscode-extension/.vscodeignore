@@ -1,3 +1,6 @@
-out/
+src/
 node_modules/
 *.vsix
+.vscode/
+tsconfig.json
+.gitignore
