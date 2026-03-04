@@ -486,12 +486,14 @@ if ($Choice -eq "2") {
         Write-Host "    - Scheduled task removed"
     }
 
-    foreach ($File in @(".a11y-agent-team-update.ps1", ".a11y-agent-team-version", ".a11y-agent-team-update.log")) {
+    foreach ($File in @(".a11y-agent-team-update.ps1", ".a11y-agent-team-version", ".a11y-agent-team-update.log", ".accessibility-agents-update.ps1", ".accessibility-agents-version", ".accessibility-agents-update.log")) {
         $FilePath = Join-Path $TargetDir $File
         if (Test-Path $FilePath) { Remove-Item -Path $FilePath -Force }
     }
     $CacheDir = Join-Path $TargetDir ".a11y-agent-team-repo"
     if (Test-Path $CacheDir) { Remove-Item -Path $CacheDir -Recurse -Force }
+    $LegacyCacheDir = Join-Path $TargetDir ".accessibility-agents-repo"
+    if (Test-Path $LegacyCacheDir) { Remove-Item -Path $LegacyCacheDir -Recurse -Force }
     Write-Host "    - Update files cleaned up"
 }
 

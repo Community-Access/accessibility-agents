@@ -1,4 +1,5 @@
 ---
+name: markdown-a11y-assistant
 description: Full guided markdown accessibility audit - links, alt text, headings, tables, emoji (remove or translate), Mermaid/ASCII diagrams replaced with accessible text alternatives, em-dashes, and anchor link validation. Produces a scored MARKDOWN-ACCESSIBILITY-AUDIT.md report with per-file grades.
 mode: agent
 agent: markdown-a11y-assistant
@@ -63,4 +64,5 @@ This workflow orchestrates `markdown-scanner` and `markdown-fixer` sub-agents. A
 - **Fixer dispatch:** "Applying [N] approved fixes to [filename]..."
 - **Fixer complete:** "[filename]: [N] fixed, [N] skipped, [N] need review"
 - **On failure:** "[Agent] failed on [filename]: [reason]. Continuing with remaining files."
+
 

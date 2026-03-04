@@ -94,3 +94,5 @@ Type `/` followed by a command name to invoke the corresponding specialist direc
 - Live regions for all dynamic content updates
 
 For tasks that do not involve any user-facing web content (backend logic, scripts, database work), these requirements do not apply.
+
+

@@ -43,3 +43,5 @@ This workflow delegates to format-specific sub-agents for each document. Announc
 - **Per completion:** "[filename]: [N] findings, score [score]/100"
 - **Cross-analysis:** "Running cross-document analysis on [N] files..."
 - **On failure:** "Scan failed for [filename]: [reason]. Continuing with remaining files."
+
+

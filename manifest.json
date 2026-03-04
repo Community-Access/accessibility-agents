@@ -109,7 +109,7 @@
 ,
 {"path":"docs/agents/wcag-guide.md","title":"wcag-guide - Understanding the Standard"}
 ,
-{"path":"docs/agents/web-accessibility-wizard.md","title":"accessibility-wizard - Guided Accessibility Audit"}
+{"path":"docs/agents/web-accessibility-wizard.md","title":"web-accessibility-wizard - Guided Accessibility Audit"}
 ,
 {"path":"docs/agents/web-csv-reporter.md","title":"web-csv-reporter"}
 ,
@@ -294,3 +294,5 @@
 {"path":"SECURITY.md","title":"Security Policy"}
 ]}
 ]}
+
+

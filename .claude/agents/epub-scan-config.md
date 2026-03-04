@@ -94,3 +94,5 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 3. **Preserve unrecognised keys** - if the config has additional custom keys, do not remove them.
 4. **Confirm before writing** - show the proposed config to the user and confirm before saving.
 5. **Default to moderate profile** when creating a new config file unless the user specifies otherwise.
+
+

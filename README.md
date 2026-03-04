@@ -103,7 +103,7 @@ The following agents make up the accessibility enforcement team, each owning one
 | **alt-text-headings** | Alt text, SVGs, icons, heading hierarchy, landmarks, page titles. |
 | **tables-data-specialist** | Table markup, scope, caption, headers, sortable columns, ARIA grids. |
 | **link-checker** | Ambiguous link text, "click here" detection, missing new-tab warnings. |
-| **accessibility-wizard** | Interactive guided web audit across all eleven accessibility domains. |
+| **web-accessibility-wizard** | Interactive guided web audit across all eleven accessibility domains. |
 | **testing-coach** | Screen reader testing, keyboard testing, automated testing guidance. |
 | **wcag-guide** | WCAG 2.2 criteria in plain language, conformance levels, what changed. |
 | **word-accessibility** | Microsoft Word (DOCX) document accessibility scanning. |
@@ -240,7 +240,7 @@ The `example/` directory contains a deliberately broken web page with 20+ intent
 
 ## Contributing
 
-This project exists because the community shows up. Every feature in v2.5 -- the NVDA Addon Specialist, the Text Quality Reviewer, the source citation policy, the wxPython screen reader documentation -- started as a community conversation. Not a roadmap item. A real person saying "this is what I need."
+This project exists because the community shows up. Every feature in v2.6 -- the NVDA Addon Specialist, the Text Quality Reviewer, the source citation policy, the wxPython screen reader documentation -- started as a community conversation. Not a roadmap item. A real person saying "this is what I need."
 
 Whether you are a developer, accessibility specialist, screen reader user, or just someone who cares about inclusive software - there is a place for you here.
 
@@ -288,3 +288,5 @@ MIT
 **Accessibility Agents** was founded by [Taylor Arndt](https://github.com/taylorarndt) (COO at [Techopolis](https://github.com/techopolis-group)) and [Jeff Bishop](https://github.com/jeffreybishop) because accessibility is how they work, not something bolted on at the end. When AI coding tools consistently failed at accessibility, they built the team they wished existed - and opened it to the world.
 
 This is a community project. The more perspectives, lived experiences, and domain knowledge that go into it, the better it serves the blind and low vision community. If you have ideas, open a discussion. If you have fixes, open a PR. Every contribution matters.
+
+

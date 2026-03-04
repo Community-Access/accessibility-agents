@@ -14,11 +14,11 @@ The MCP server includes a `generate_vpat` tool that produces a [VPAT 2.5](https:
 
 ## How to Use
 
-**With the accessibility-wizard:**
+**With the web-accessibility-wizard:**
 
 ```text
-/accessibility-wizard I need to prepare for a VPAT assessment
-@accessibility-wizard generate a VPAT for this project
+/web-accessibility-wizard I need to prepare for a VPAT assessment
+@web-accessibility-wizard generate a VPAT for this project
 ```
 
 The wizard runs its full audit, then uses `generate_vpat` to produce a VPAT pre-populated with findings.
@@ -39,7 +39,8 @@ generate_vpat with:
 
 ## Integration with Agent Reviews
 
-1. Run `accessibility-wizard` for a comprehensive audit
+1. Run `web-accessibility-wizard` for a comprehensive audit
 2. The wizard produces `ACCESSIBILITY-AUDIT.md` with all findings
 3. Use `generate_vpat` to map findings to WCAG criteria and generate the formal VPAT
 4. Review and adjust conformance levels as needed (agents provide evidence, you make the final call)
+

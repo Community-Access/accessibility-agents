@@ -43,3 +43,5 @@ Announce CI/CD setup progress:
 - **Per step:** Announce which config file or workflow is being generated
 - **Completion:** "CI/CD setup complete: [N] files generated. See setup instructions above."
 - **On failure:** "Setup failed at [step]: [reason]."
+
+

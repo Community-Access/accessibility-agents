@@ -1,5 +1,5 @@
 ---
-name: merge-pr
+name: pr-review
 description: "Merge a pull request -- checks readiness, picks merge strategy, and handles post-merge cleanup"
 agent: pr-review
 tools:
@@ -51,3 +51,4 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 11. Confirm with link to the merged PR.
 
 **Safety:** Always show what will happen and get explicit confirmation. Never auto-merge.
+

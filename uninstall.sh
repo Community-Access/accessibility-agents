@@ -567,12 +567,16 @@ if [ "$choice" = "2" ]; then
   echo "  Removing auto-update..."
 
   # Remove LaunchAgent (macOS)
-  PLIST_FILE="$HOME/Library/LaunchAgents/com.community-access.accessibility-agents-update.plist"
-  if [ -f "$PLIST_FILE" ]; then
-    launchctl bootout "gui/$(id -u)" "$PLIST_FILE" 2>/dev/null || true
-    rm "$PLIST_FILE"
-    echo "    - LaunchAgent removed"
-  fi
+  for PLIST_FILE in \
+    "$HOME/Library/LaunchAgents/com.community-access.accessibility-agents-update.plist" \
+    "$HOME/Library/LaunchAgents/com.community-access.a11y-agent-team-update.plist"
+  do
+    if [ -f "$PLIST_FILE" ]; then
+      launchctl bootout "gui/$(id -u)" "$PLIST_FILE" 2>/dev/null || true
+      rm "$PLIST_FILE"
+      echo "    - LaunchAgent removed ($PLIST_FILE)"
+    fi
+  done
 
   # Remove cron job (Linux)
   if crontab -l 2>/dev/null | grep -q "a11y-agent-team-update"; then
@@ -585,6 +589,10 @@ if [ "$choice" = "2" ]; then
   rm -f "$TARGET_DIR/.a11y-agent-team-version"
   rm -f "$TARGET_DIR/.a11y-agent-team-update.log"
   rm -rf "$TARGET_DIR/.a11y-agent-team-repo"
+  rm -f "$TARGET_DIR/.accessibility-agents-update.sh"
+  rm -f "$TARGET_DIR/.accessibility-agents-version"
+  rm -f "$TARGET_DIR/.accessibility-agents-update.log"
+  rm -rf "$TARGET_DIR/.accessibility-agents-repo"
   echo "    - Update files cleaned up"
 fi
 

@@ -302,12 +302,17 @@ Remove-Item "$env:USERPROFILE\.claude\.a11y-agent-team-repo" -Recurse -Force -Er
 ```bash
 # Remove the LaunchAgent
 launchctl bootout "gui/$(id -u)" ~/Library/LaunchAgents/com.community-access.accessibility-agents-update.plist 2>/dev/null
+launchctl bootout "gui/$(id -u)" ~/Library/LaunchAgents/com.community-access.a11y-agent-team-update.plist 2>/dev/null
 rm -f ~/Library/LaunchAgents/com.community-access.accessibility-agents-update.plist
+rm -f ~/Library/LaunchAgents/com.community-access.a11y-agent-team-update.plist
 
 # Remove update files
 rm -f ~/.claude/.a11y-agent-team-update.sh
 rm -f ~/.claude/.a11y-agent-team-update.log
 rm -rf ~/.claude/.a11y-agent-team-repo
+rm -f ~/.claude/.accessibility-agents-update.sh
+rm -f ~/.claude/.accessibility-agents-update.log
+rm -rf ~/.claude/.accessibility-agents-repo
 ```
 
 ### Linux
@@ -320,6 +325,9 @@ crontab -l 2>/dev/null | grep -v "a11y-agent-team-update" | crontab -
 rm -f ~/.claude/.a11y-agent-team-update.sh
 rm -f ~/.claude/.a11y-agent-team-update.log
 rm -rf ~/.claude/.a11y-agent-team-repo
+rm -f ~/.claude/.accessibility-agents-update.sh
+rm -f ~/.claude/.accessibility-agents-update.log
+rm -rf ~/.claude/.accessibility-agents-repo
 ```
 
 ---

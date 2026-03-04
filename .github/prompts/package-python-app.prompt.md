@@ -1,6 +1,8 @@
 ---
+name: package-python-app
 description: Package a Python desktop application for distribution using PyInstaller, Nuitka, or cx_Freeze. Handles dependency detection, data files, hidden imports, single-file vs directory builds, and platform-specific signing.
 mode: agent
+agent: python-specialist
 tools:
   - askQuestions
   - readFile

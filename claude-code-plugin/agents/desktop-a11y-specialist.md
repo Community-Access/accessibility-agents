@@ -143,3 +143,5 @@ Report must include: Application name, date, platform(s), screen reader(s) teste
 8. System colors over hardcoded colors
 9. Announce before moving focus
 10. Keyboard interaction for every control you touch
+
+

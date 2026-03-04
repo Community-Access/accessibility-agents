@@ -28,13 +28,13 @@ cd example
 
 # Ask Claude to audit it
 # "Review index.html for accessibility issues"
-# "Run the accessibility-wizard on this page"
+# "Run the web-accessibility-wizard on this page"
 ```
 
 ### With GitHub Copilot
 
 ```text
-@workspace /accessibility-wizard Review example/index.html
+@workspace /web-accessibility-wizard Review example/index.html
 @workspace /contrast-master Check the colors in example/index.html
 @workspace /forms-specialist Audit the form in example/index.html
 ```
@@ -65,3 +65,4 @@ node .github/scripts/a11y-lint.mjs example/
 ## Expected Findings
 
 When all issues are fixed, matching the patterns in `index-fixed.html`, the agents should report a clean audit. Use this as a learning tool - see how many issues you can identify before running the agents, then compare.
+

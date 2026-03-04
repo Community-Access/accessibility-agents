@@ -1,5 +1,5 @@
 ---
-name: a11y-update
+name: insiders-a11y-tracker
 description: "Get the latest accessibility improvements across all tracked repos -- with WCAG cross-references and ARIA pattern mapping"
 agent: insiders-a11y-tracker
 tools:
@@ -39,3 +39,4 @@ For each issue, include:
 - Assistive technologies affected
 
 After showing results, offer: _"Want me to generate a full monthly accessibility report with WCAG coverage analysis, dive into a specific change, or add another repo to tracking?"_
+

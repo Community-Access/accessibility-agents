@@ -396,3 +396,5 @@ When you are invoked by `document-accessibility-wizard`:
 When handing off:
 - State what you found and where the results are going
 - Example: "Found [N] issues in [filename]. Handing to cross-document-analyzer for pattern detection."
+
+

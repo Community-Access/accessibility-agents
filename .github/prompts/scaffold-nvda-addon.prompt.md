@@ -1,6 +1,8 @@
 ---
+name: scaffold-nvda-addon
 description: Scaffold a new NVDA screen reader addon project with the correct directory structure, manifest, globalPlugin or appModule boilerplate, and development workflow guidance.
 mode: agent
+agent: nvda-addon-specialist
 tools:
   - askQuestions
   - readFile

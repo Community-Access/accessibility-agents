@@ -1690,3 +1690,5 @@ Findings missing required fields are rejected. The wizard re-requests from the s
 - axe-core unavailable: report that runtime scan could not run, produce code-review-only report with reduced confidence. Never silently skip Phase 9.
 - Partial parallel group results: aggregate what succeeded, clearly mark failed domains in the report.
 - Config file missing: state that defaults are being used. Never silently assume config.
+
+

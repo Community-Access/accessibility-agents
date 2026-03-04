@@ -1,5 +1,5 @@
 ---
-name: notifications
+name: daily-briefing
 description: "Manage GitHub notifications across all repos -- list unread, mark as read/done, unsubscribe, smart filtering by @mentions, review requests, and CI failures"
 agent: daily-briefing
 tools:
@@ -59,3 +59,4 @@ Muted (2 -- hidden by preferences):
 ```
 
 After listing: _"Want to mark some as read, unsubscribe from any threads, or dive into a specific notification?"_
+

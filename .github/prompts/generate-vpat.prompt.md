@@ -42,3 +42,5 @@ Announce VPAT generation progress:
 - **Start:** "Generating VPAT 2.5 compliance report from audit data..."
 - **Completion:** "VPAT report written to [path] - [N] criteria evaluated"
 - **On failure:** "VPAT generation failed: [reason]. Check that the audit report exists and is valid."
+
+

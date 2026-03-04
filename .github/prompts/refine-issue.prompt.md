@@ -1,5 +1,5 @@
 ---
-name: refine-issue
+name: issue-tracker
 description: "Refine an issue with acceptance criteria, technical considerations, edge cases, and community context"
 agent: issue-tracker
 tools:
@@ -57,3 +57,4 @@ ${input:issue:Issue reference -- e.g. owner/repo#123 or a GitHub issue URL}
 9. Confirm with link.
 
 **Goal:** Transform vague issues into specific, actionable work items that any engineer can pick up -- enriched with community context and release awareness.
+

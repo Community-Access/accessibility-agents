@@ -14,7 +14,8 @@ $ErrorActionPreference = "Stop"
 $Downloaded = $false
 $ScriptDir = if ($MyInvocation.MyCommand.Path) {
     Split-Path -Parent $MyInvocation.MyCommand.Path
-} else {
+}
+else {
     $null
 }
 
@@ -95,10 +96,10 @@ switch ($Choice) {
 # ---------------------------------------------------------------------------
 function Merge-ConfigFile {
     param([string]$SrcFile, [string]$DstFile, [string]$Label)
-    $start  = "<!-- a11y-agent-team: start -->"
-    $end    = "<!-- a11y-agent-team: end -->"
-    $body   = ([IO.File]::ReadAllText($SrcFile, [Text.Encoding]::UTF8)).TrimEnd()
-    $block  = "$start`n$body`n$end"
+    $start = "<!-- a11y-agent-team: start -->"
+    $end = "<!-- a11y-agent-team: end -->"
+    $body = ([IO.File]::ReadAllText($SrcFile, [Text.Encoding]::UTF8)).TrimEnd()
+    $block = "$start`n$body`n$end"
     if (-not (Test-Path $DstFile)) {
         [IO.File]::WriteAllText($DstFile, "$block`n", [Text.Encoding]::UTF8)
         Write-Host "    + $Label (created)"
@@ -110,7 +111,8 @@ function Merge-ConfigFile {
         $updated = [regex]::Replace($existing, $pattern, $block)
         [IO.File]::WriteAllText($DstFile, $updated, [Text.Encoding]::UTF8)
         Write-Host "    ~ $Label (updated our existing section)"
-    } else {
+    }
+    else {
         [IO.File]::WriteAllText($DstFile, $existing.TrimEnd() + "`n`n$block`n", [Text.Encoding]::UTF8)
         Write-Host "    + $Label (merged into your existing file)"
     }
@@ -145,7 +147,8 @@ function Install-GlobalHooks {
             $GitBin = Join-Path (Split-Path (Split-Path $GitCmd.Source)) "bin\bash.exe"
             if (Test-Path $GitBin) {
                 $BashCmd = $GitBin.Replace('\', '/')
-            } else {
+            }
+            else {
                 Write-Host "    Warning: bash not found in PATH or Git install. Hooks may not execute."
             }
         }
@@ -200,11 +203,11 @@ function Install-GlobalHooks {
     }
     Set-HookEntry -EventName "PreToolUse" -MatchSubstr "a11y-enforce-edit" -NewEntry @{
         matcher = "Edit|Write"
-        hooks = @(@{ type = "command"; command = "$BashCmd `"$HooksDirFwd/a11y-enforce-edit.sh`"" })
+        hooks   = @(@{ type = "command"; command = "$BashCmd `"$HooksDirFwd/a11y-enforce-edit.sh`"" })
     }
     Set-HookEntry -EventName "PostToolUse" -MatchSubstr "a11y-mark-reviewed" -NewEntry @{
         matcher = "Agent"
-        hooks = @(@{ type = "command"; command = "$BashCmd `"$HooksDirFwd/a11y-mark-reviewed.sh`"" })
+        hooks   = @(@{ type = "command"; command = "$BashCmd `"$HooksDirFwd/a11y-mark-reviewed.sh`"" })
     }
 
     Write-Host "    + Hook 1: a11y-team-eval.sh (UserPromptSubmit - proactive web detection)"
@@ -241,7 +244,8 @@ foreach ($Agent in $Agents) {
     if (Test-Path $Dst) {
         Write-Host "    ~ $Name (skipped - already exists)"
         $SkippedAgents++
-    } else {
+    }
+    else {
         Copy-Item -Path $Src -Destination $Dst
         Add-ManifestEntry "agents/$Agent"
         Write-Host "    + $Name"
@@ -293,7 +297,8 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
                 $DisplayName = $File.BaseName -replace '\.agent$', ''
                 if (Test-Path $DstPath) {
                     Write-Host "    ~ $DisplayName (skipped - already exists)"
-                } else {
+                }
+                else {
                     Copy-Item -Path $File.FullName -Destination $DstPath
                     Add-ManifestEntry "copilot-agents/$($File.Name)"
                     Write-Host "    + $DisplayName"
@@ -311,12 +316,12 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
                 New-Item -ItemType Directory -Force -Path $DstSubDir | Out-Null
                 $Added = 0; $Skipped = 0
                 foreach ($File in Get-ChildItem -Recurse -File $SrcSubDir) {
-                    $Rel  = $File.FullName.Substring($SrcSubDir.Length).TrimStart('\\')
-                    $Dst  = Join-Path $DstSubDir $Rel
+                    $Rel = $File.FullName.Substring($SrcSubDir.Length).TrimStart('\\')
+                    $Dst = Join-Path $DstSubDir $Rel
                     New-Item -ItemType Directory -Force -Path (Split-Path $Dst) | Out-Null
                     if (Test-Path $Dst) { $Skipped++ } else {
                         Copy-Item $File.FullName $Dst
-                        $RelEntry = $Rel.Replace('\\','/')
+                        $RelEntry = $Rel.Replace('\\', '/')
                         Add-ManifestEntry "copilot-$SubDir/$RelEntry"
                         $Added++
                     }
@@ -331,7 +336,8 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
         Add-ManifestEntry "copilot-config/copilot-commit-message-instructions.md"
         Save-Manifest
         $CopilotInstalled = $true
-    } else {
+    }
+    else {
         # Global install: store Copilot agents centrally and configure VS Code
         # to discover them via chat.agentFilesLocations setting.
         $CopilotCentral = Join-Path $env:USERPROFILE ".a11y-agent-team\copilot-agents"
@@ -350,9 +356,9 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
         # Copy config files, prompts, instructions, and skills to central store.
         # VS Code 1.110+ discovers *.agent.md, *.prompt.md, *.instructions.md from User/prompts/.
         $CentralRoot = Join-Path $env:USERPROFILE ".a11y-agent-team"
-        $CopilotCentralPrompts      = Join-Path $CentralRoot "copilot-prompts"
+        $CopilotCentralPrompts = Join-Path $CentralRoot "copilot-prompts"
         $CopilotCentralInstructions = Join-Path $CentralRoot "copilot-instructions-files"
-        $CopilotCentralSkills       = Join-Path $CentralRoot "copilot-skills"
+        $CopilotCentralSkills = Join-Path $CentralRoot "copilot-skills"
 
         foreach ($Config in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
             $Src = Join-Path $CopilotConfigSrc $Config
@@ -361,10 +367,10 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
             }
         }
         foreach ($Pair in @(
-            @{ Src = Join-Path $CopilotConfigSrc "prompts";      Dst = $CopilotCentralPrompts },
-            @{ Src = Join-Path $CopilotConfigSrc "instructions"; Dst = $CopilotCentralInstructions },
-            @{ Src = Join-Path $CopilotConfigSrc "skills";       Dst = $CopilotCentralSkills }
-        )) {
+                @{ Src = Join-Path $CopilotConfigSrc "prompts"; Dst = $CopilotCentralPrompts },
+                @{ Src = Join-Path $CopilotConfigSrc "instructions"; Dst = $CopilotCentralInstructions },
+                @{ Src = Join-Path $CopilotConfigSrc "skills"; Dst = $CopilotCentralSkills }
+            )) {
             if (Test-Path $Pair.Src) {
                 New-Item -ItemType Directory -Force -Path $Pair.Dst | Out-Null
                 Copy-Item -Path "$($Pair.Src)\*" -Destination $Pair.Dst -Recurse -Force
@@ -372,8 +378,10 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
         }
 
         # Copy .agent.md, *.prompt.md, *.instructions.md into VS Code User profile folders.
-        # VS Code 1.110+ discovers from User/prompts/; older versions from User/ root.
-        # Both locations are populated for full compatibility.
+        # VS Code discovers from User/prompts/ only. Previous versions of this
+        # installer also wrote to the User/ root, which caused every agent to
+        # appear twice. We now write only to User/prompts/ and clean up any
+        # stale copies left in User/ by earlier installs.
         function Copy-ToVSCodeProfile {
             param([string]$ProfileDir, [string]$Label)
 
@@ -383,14 +391,23 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
             New-Item -ItemType Directory -Force -Path $PromptsDir | Out-Null
             Write-Host "  [found] $Label"
 
-            $AgentFiles       = Get-ChildItem -Path $CopilotCentral            -Filter "*.agent.md"       -ErrorAction SilentlyContinue
-            $PromptFiles      = Get-ChildItem -Path $CopilotCentralPrompts     -Filter "*.prompt.md"      -ErrorAction SilentlyContinue
+            $AgentFiles = Get-ChildItem -Path $CopilotCentral            -Filter "*.agent.md"       -ErrorAction SilentlyContinue
+            $PromptFiles = Get-ChildItem -Path $CopilotCentralPrompts     -Filter "*.prompt.md"      -ErrorAction SilentlyContinue
             $InstructionFiles = Get-ChildItem -Path $CopilotCentralInstructions -Filter "*.instructions.md" -ErrorAction SilentlyContinue
 
             foreach ($File in @($AgentFiles) + @($PromptFiles) + @($InstructionFiles)) {
                 if ($File) {
-                    Copy-Item -Path $File.FullName -Destination (Join-Path $ProfileDir  $File.Name) -Force
                     Copy-Item -Path $File.FullName -Destination (Join-Path $PromptsDir  $File.Name) -Force
+                }
+            }
+
+            # Clean up duplicates left in User/ root by earlier installer versions
+            foreach ($File in @($AgentFiles) + @($PromptFiles) + @($InstructionFiles)) {
+                if ($File) {
+                    $RootCopy = Join-Path $ProfileDir $File.Name
+                    if (Test-Path $RootCopy) {
+                        Remove-Item $RootCopy -Force
+                    }
                 }
             }
 
@@ -525,7 +542,8 @@ if (Test-Path $GeminiSrc) {
 
         if ($Choice -eq "1") {
             $GeminiDst = Join-Path (Get-Location) ".gemini\extensions\a11y-agents"
-        } else {
+        }
+        else {
             $GeminiDst = Join-Path $env:USERPROFILE ".gemini\extensions\a11y-agents"
         }
 
@@ -558,7 +576,8 @@ if (Test-Path $GeminiSrc) {
         $GeminiInstalled = $true
         if ($Choice -eq "1") {
             Add-ManifestEntry "gemini/project"
-        } else {
+        }
+        else {
             Add-ManifestEntry "gemini/global"
         }
         Add-ManifestEntry "gemini/path:$GeminiDst"
@@ -589,7 +608,8 @@ foreach ($Agent in $Agents) {
     $AgentPath = Join-Path $TargetDir "agents\$Agent"
     if (Test-Path $AgentPath) {
         Write-Host "    [x] $Name"
-    } else {
+    }
+    else {
         Write-Host "    [ ] $Name (missing)"
     }
 }
@@ -643,10 +663,12 @@ if ($Choice -eq "2") {
         if ($?) {
             Write-Host "  Auto-updates enabled (daily at 9:00 AM via Task Scheduler)."
             Write-Host "  Update log: ~\.claude\.a11y-agent-team-update.log"
-        } else {
+        }
+        else {
             Write-Host "  Could not create scheduled task. You can run update.ps1 manually."
         }
-    } else {
+    }
+    else {
         Write-Host "  Auto-updates skipped. You can run update.ps1 manually anytime."
     }
 }

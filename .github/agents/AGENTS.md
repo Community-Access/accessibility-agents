@@ -127,7 +127,7 @@ At every handoff:
 
 **Handoffs:**
 - After audit, user can hand off to any format specialist for targeted remediation
-- `accessibility-wizard` handles web audit handoff when document audit is complete
+- `web-accessibility-wizard` handles web audit handoff when document audit is complete
 
 ## Team: ePub Document Accessibility
 
@@ -362,3 +362,5 @@ For Section 508, EN 301 549, or organizational compliance:
 2. Apply fixes with `fix-web-issues` prompt (auto-fixable + human-judgment items)
 3. Track progress with `compare-web-audits` prompt between audit runs
 4. Use `quick-web-check` for fast axe-core triage between full audits
+
+

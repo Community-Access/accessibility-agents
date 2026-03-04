@@ -1,5 +1,5 @@
 ---
-name: sprint-review
+name: analytics
 description: "End-of-sprint summary across all repos -- completed items, carryover, velocity trends, blockers, team contributions, and retrospective insights"
 agent: analytics
 tools:
@@ -46,3 +46,4 @@ ${input:details:Optional: sprint/milestone name, date range, repo, or 'org:orgna
    - Any recurring blockers to address?
 
 After the review: _"Want to plan the next sprint? Or dive into any specific area?"_
+

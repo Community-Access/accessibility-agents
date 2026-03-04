@@ -1,5 +1,5 @@
 ---
-name: manage-branches
+name: pr-review
 description: "Branch management -- list branches with activity, detect stale branches, compare ahead/behind, delete merged branches, show protection rules"
 agent: pr-review
 tools:
@@ -61,3 +61,4 @@ Protected (2):
 ```
 
 After listing: _"Want to clean up the merged stale branches? Or compare two branches?"_
+

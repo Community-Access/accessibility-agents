@@ -1,6 +1,6 @@
 # Product Requirements Document: A11y Agent Team
 
-**Version:** 2.5
+**Version:** 2.6
 **Author:** Community Access
 **Last Updated:** 2026-03-04
 **Status:** Active Development (main branch)

@@ -47,3 +47,5 @@ Announce scan progress:
 - **Start:** "Running quick accessibility check on [filename]..."
 - **Completion:** "Quick check complete: [PASS/FAIL] - [N] errors found"
 - **On failure:** "Quick check failed: [reason]. Verify the file path and format."
+
+

@@ -99,3 +99,5 @@ The agent returns a structured analysis ready for inclusion in the audit report 
 | [document-inventory](document-inventory.md) | Runs before this agent - provides the file list the wizard scans |
 | [report-generation skill](../../.github/skills/report-generation/SKILL.md) | Scoring formulas and grade table this agent implements |
 | [compare-audits prompt](../prompts/documents/compare-audits.md) | User-facing prompt that triggers remediation tracking analysis |
+
+

@@ -35,3 +35,5 @@ This workflow delegates to a format-specific sub-agent. Announce transitions:
 - **Before delegation:** "Scanning [filename] using [word/excel/powerpoint/pdf]-accessibility agent..."
 - **After completion:** "Scan complete: [N] findings ([N] critical, [N] serious). Score: [score]/100 ([grade])"
 - **On failure:** "Scan failed for [filename]: [reason]. Check the file path and format."
+
+

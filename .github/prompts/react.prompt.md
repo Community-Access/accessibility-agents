@@ -1,5 +1,5 @@
 ---
-name: react
+name: issue-tracker
 description: "Add emoji reactions to issues, PRs, and comments -- thumbs up, heart, rocket, and more"
 agent: issue-tracker
 tools:
@@ -46,3 +46,4 @@ Parse the target to determine:
 4. If the user says "react to #42" without specifying which reaction, show the available reactions and ask.
 
 **Never modify issue/PR state -- reactions only.**
+

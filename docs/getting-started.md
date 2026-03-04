@@ -161,7 +161,7 @@ You can use both. Project-level agents override global agents with the same name
 
 During global installation, the installer asks if you want to enable auto-updates. When enabled, a daily scheduled job checks GitHub for new agent versions and installs them automatically.
 
-- **macOS:** Uses a LaunchAgent (`~/Library/LaunchAgents/com.community-access.accessibility-agents-update.plist`), runs daily at 9:00 AM
+- **macOS:** Uses a LaunchAgent (`~/Library/LaunchAgents/com.community-access.a11y-agent-team-update.plist`), runs daily at 9:00 AM
 - **Linux:** Uses a cron job, runs daily at 9:00 AM
 - **Windows:** Uses Task Scheduler (`A11yAgentTeamUpdate`), runs daily at 9:00 AM
 
@@ -501,3 +501,5 @@ rm -rf .gemini/extensions/a11y-agents/
 # Global install
 rm -rf ~/.gemini/extensions/a11y-agents/
 ```
+
+

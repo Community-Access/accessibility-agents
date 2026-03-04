@@ -430,3 +430,5 @@ When the user asks to **audit**, **scan**, or **review** a desktop application f
 8. **Route document output** to `@document-accessibility-wizard` when apps generate Office/PDF documents.
 9. **System colors over hardcoded colors.** Always use `wx.SystemSettings.GetColour()`.
 10. **Announce before moving focus.** When programmatically changing focus, ensure the user knows why.
+
+

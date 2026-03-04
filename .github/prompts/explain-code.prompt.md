@@ -1,5 +1,5 @@
 ---
-name: explain-code
+name: pr-review
 description: "Understand specific lines, functions, or blocks of code in a PR diff -- plain language explanations with context"
 agent: pr-review
 tools:
@@ -60,3 +60,4 @@ ${input:target:What to explain -- e.g. 'lines 40-60 in auth.ts on PR #15', 'the 
 
 6. After explaining, offer using L-number format:
    _"Want me to comment on L42, suggest a fix for L41-L44, or see the full Change Map?"_
+

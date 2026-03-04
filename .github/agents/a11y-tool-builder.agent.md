@@ -484,3 +484,5 @@ For desktop app scanning tools:
 8. **Always produce multiple output formats.** At minimum: Markdown report + CSV + SARIF.
 9. **Include auto-fix classification.** Every finding should indicate whether it can be auto-fixed.
 10. **Test the tools you build.** Include pytest tests for rule engines and parsers.
+
+

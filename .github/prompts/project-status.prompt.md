@@ -1,5 +1,5 @@
 ---
-name: project-status
+name: issue-tracker
 description: "GitHub Projects overview -- item counts per column, blocked items, stale items, sprint progress, and team assignments"
 agent: issue-tracker
 tools:
@@ -46,3 +46,4 @@ ${input:details:Optional: project number, org/repo name, 'org:orgname', or 'my i
 7. Present in chat with option to generate a saved document.
 
 After the overview: _"Want to see a specific column, update an item's status, or check a team member's workload?"_
+

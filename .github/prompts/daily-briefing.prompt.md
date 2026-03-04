@@ -33,3 +33,4 @@ Follow the full workflow defined in the daily-briefing agent: collect all data s
 If a briefing already exists for today, update it incrementally with NEW markers instead of creating a new one.
 
 Include release awareness, community reactions, and discussion threads alongside the standard issue and PR data.
+
