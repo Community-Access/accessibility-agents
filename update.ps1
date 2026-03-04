@@ -178,6 +178,45 @@ function Sync-GitHubDir {
     }
 }
 
+# ---------------------------------------------------------------------------
+# Migrate-Prompts: rename old prompt filenames to new agent-matching names.
+# This ensures users upgrading from v2.5 to v2.6 don't lose custom prompts.
+# Migration: old naming (task-based) -> new naming (agent-based)
+# ---------------------------------------------------------------------------
+function Migrate-Prompts {
+    param([string]$SrcDir)
+    if (-not (Test-Path $SrcDir)) { return }
+    
+    $migrations = @{
+        "a11y-update.prompt.md" = "insiders-a11y-tracker.prompt.md"
+        "audit-desktop-a11y.prompt.md" = "desktop-a11y-specialist.prompt.md"
+        "audit-markdown.prompt.md" = "markdown-a11y-assistant.prompt.md"
+        "audit-web-page.prompt.md" = "web-accessibility-wizard.prompt.md"
+        "export-document-csv.prompt.md" = "document-csv-reporter.prompt.md"
+        "export-markdown-csv.prompt.md" = "markdown-csv-reporter.prompt.md"
+        "export-web-csv.prompt.md" = "web-csv-reporter.prompt.md"
+        "package-python-app.prompt.md" = "python-specialist.prompt.md"
+        "review-text-quality.prompt.md" = "text-quality-reviewer.prompt.md"
+        "scaffold-nvda-addon.prompt.md" = "nvda-addon-specialist.prompt.md"
+        "scaffold-wxpython-app.prompt.md" = "wxpython-specialist.prompt.md"
+        "test-desktop-a11y.prompt.md" = "desktop-a11y-testing-coach.prompt.md"
+    }
+    
+    foreach ($oldName in $migrations.Keys) {
+        $newName = $migrations[$oldName]
+        $oldFile = Join-Path $SrcDir $oldName
+        $newFile = Join-Path $SrcDir $newName
+        
+        if ((Test-Path $oldFile) -and -not (Test-Path $newFile)) {
+            Rename-Item -Path $oldFile -NewName $newName -ErrorAction SilentlyContinue
+        }
+        elseif ((Test-Path $oldFile) -and (Test-Path $newFile)) {
+            # Both exist; remove old version and keep new
+            Remove-Item -Path $oldFile -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 $GitHubSrc = Join-Path $CacheDir ".github"
 
 # Update Copilot assets for project install
@@ -197,6 +236,9 @@ if ($Project) {
         }
         # Asset subdirs: skills, instructions, prompts
         foreach ($SubDir in @("skills", "instructions", "prompts")) {
+            if ($SubDir -eq "prompts") {
+                Migrate-Prompts -SrcDir (Join-Path $GitHubSrc "prompts")
+            }
             Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc $SubDir) -DstDir (Join-Path $ProjectGitHub $SubDir) -Label $SubDir
         }
     }
@@ -223,7 +265,10 @@ if (-not $Project) {
             }
         }
     }
-    if (Test-Path $CentralPrompts) { Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "prompts")      -DstDir $CentralPrompts      -Label "central-prompts" }
+    if (Test-Path $CentralPrompts) { 
+        Migrate-Prompts -SrcDir (Join-Path $GitHubSrc "prompts")
+        Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "prompts") -DstDir $CentralPrompts -Label "central-prompts" 
+    }
     if (Test-Path $CentralInstructions) { Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "instructions") -DstDir $CentralInstructions -Label "central-instructions" }
     if (Test-Path $CentralSkills) { Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "skills")       -DstDir $CentralSkills       -Label "central-skills" }
     # Update config files in central store — merged to preserve user content

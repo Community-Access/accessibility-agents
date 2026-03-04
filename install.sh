@@ -103,6 +103,45 @@ if [ ${#AGENTS[@]} -eq 0 ]; then
   exit 1
 fi
 
+# ---------------------------------------------------------------------------
+# migrate_prompts src_dir
+# Rename old prompt filenames to new agent-matching names.
+# This ensures users upgrading from v2.5 to v2.6 don't lose custom prompts.
+# Migration: old naming (task-based) → new naming (agent-based)
+# ---------------------------------------------------------------------------
+migrate_prompts() {
+  local src_dir="$1"
+  [ -d "$src_dir" ] || return
+  
+  local -a migrations=(
+    "a11y-update.prompt.md:insiders-a11y-tracker.prompt.md"
+    "audit-desktop-a11y.prompt.md:desktop-a11y-specialist.prompt.md"
+    "audit-markdown.prompt.md:markdown-a11y-assistant.prompt.md"
+    "audit-web-page.prompt.md:web-accessibility-wizard.prompt.md"
+    "export-document-csv.prompt.md:document-csv-reporter.prompt.md"
+    "export-markdown-csv.prompt.md:markdown-csv-reporter.prompt.md"
+    "export-web-csv.prompt.md:web-csv-reporter.prompt.md"
+    "package-python-app.prompt.md:python-specialist.prompt.md"
+    "review-text-quality.prompt.md:text-quality-reviewer.prompt.md"
+    "scaffold-nvda-addon.prompt.md:nvda-addon-specialist.prompt.md"
+    "scaffold-wxpython-app.prompt.md:wxpython-specialist.prompt.md"
+    "test-desktop-a11y.prompt.md:desktop-a11y-testing-coach.prompt.md"
+  )
+  
+  for mapping in "${migrations[@]}"; do
+    IFS=: read -r old_name new_name <<< "$mapping"
+    local old_file="$src_dir/$old_name"
+    local new_file="$src_dir/$new_name"
+    
+    if [ -f "$old_file" ] && [ ! -f "$new_file" ]; then
+      mv "$old_file" "$new_file" 2>/dev/null || true
+    elif [ -f "$old_file" ] && [ -f "$new_file" ]; then
+      # Both exist; remove old version and keep new
+      rm -f "$old_file" 2>/dev/null || true
+    fi
+  done
+}
+
 # Parse flags for non-interactive install
 choice=""
 COPILOT_FLAG=false
@@ -823,6 +862,9 @@ if [ "$install_copilot" = true ]; then
         SRC_DIR="$COPILOT_CONFIG_SRC/$subdir"
         DST_DIR="$PROJECT_DIR/.github/$subdir"
         if [ -d "$SRC_DIR" ]; then
+          # Migrate old prompt names to new agent-matching names (v2.5 → v2.6)
+          [ "$subdir" = "prompts" ] && migrate_prompts "$SRC_DIR"
+          
           mkdir -p "$DST_DIR"
           added=0; skipped=0
           while IFS= read -r -d '' src_file; do
@@ -872,6 +914,9 @@ if [ "$install_copilot" = true ]; then
       fi
 
       # Store prompts, instructions, and skills centrally
+      # Migrate old prompt names to new agent-matching names (v2.5 → v2.6)
+      [ -d "$COPILOT_CONFIG_SRC/prompts" ] && migrate_prompts "$COPILOT_CONFIG_SRC/prompts"
+      
       [ -d "$COPILOT_CONFIG_SRC/prompts" ]      && cp -r "$COPILOT_CONFIG_SRC/prompts/."      "$COPILOT_CENTRAL_PROMPTS/"
       [ -d "$COPILOT_CONFIG_SRC/instructions" ] && cp -r "$COPILOT_CONFIG_SRC/instructions/." "$COPILOT_CENTRAL_INSTRUCTIONS/"
       [ -d "$COPILOT_CONFIG_SRC/skills" ]       && cp -r "$COPILOT_CONFIG_SRC/skills/."       "$COPILOT_CENTRAL_SKILLS/"
