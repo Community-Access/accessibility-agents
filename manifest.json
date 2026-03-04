@@ -65,6 +65,8 @@
 ,
 {"path":"docs/agents/link-checker.md","title":"link-checker - Ambiguous Link Text Detection"}
 ,
+{"path":"docs/agents/text-quality-reviewer.md","title":"text-quality-reviewer - Non-Visual Text Quality Review"}
+,
 {"path":"docs/agents/live-region-controller.md","title":"live-region-controller - Dynamic Content Announcements"}
 ,
 {"path":"docs/agents/markdown-a11y-assistant.md","title":"markdown-a11y-assistant - Guided Markdown Accessibility Audit"}

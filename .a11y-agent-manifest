@@ -47,6 +47,7 @@ agents/tables-data-specialist.md
 agents/team-manager.md
 agents/template-builder.md
 agents/testing-coach.md
+agents/text-quality-reviewer.md
 agents/wcag-guide.md
 agents/web-accessibility-wizard.md
 agents/web-csv-reporter.md
@@ -103,6 +104,7 @@ copilot-agents/tables-data-specialist.agent.md
 copilot-agents/team-manager.agent.md
 copilot-agents/template-builder.agent.md
 copilot-agents/testing-coach.agent.md
+copilot-agents/text-quality-reviewer.agent.md
 copilot-agents/wcag-guide.agent.md
 copilot-agents/web-accessibility-wizard.agent.md
 copilot-agents/web-csv-reporter.agent.md
@@ -247,6 +249,7 @@ gemini/skills/tables-data-specialist/SKILL.md
 gemini/skills/team-manager/SKILL.md
 gemini/skills/template-builder/SKILL.md
 gemini/skills/testing-coach/SKILL.md
+gemini/skills/text-quality-reviewer/SKILL.md
 gemini/skills/wcag-guide/SKILL.md
 gemini/skills/web-accessibility-wizard/SKILL.md
 gemini/skills/web-csv-reporter/SKILL.md
