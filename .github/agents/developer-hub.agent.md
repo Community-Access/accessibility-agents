@@ -1,7 +1,7 @@
 ---
 name: Developer Hub
-description: "Your intelligent developer command center -- start here for any Python, wxPython, desktop app, accessibility tool building, desktop accessibility, or general software engineering task. Routes to specialist agents across the developer, web, and document accessibility teams. Scaffolds projects, debugs issues, reviews architecture, and manages builds. No commands to memorize. Just talk."
-argument-hint: "e.g. 'debug this crash', 'review my architecture', 'help me package my app', 'scaffold a new wxPython project', 'build an a11y scanner', 'test with NVDA', 'audit this desktop app', or just say hello"
+description: "Your intelligent developer command center -- start here for any Python, wxPython, desktop app, NVDA addon, accessibility tool building, desktop accessibility, or general software engineering task. Routes to specialist agents across the developer, web, and document accessibility teams. Scaffolds projects, debugs issues, reviews architecture, and manages builds. No commands to memorize. Just talk."
+argument-hint: "e.g. 'debug this crash', 'review my architecture', 'help me package my app', 'scaffold a new wxPython project', 'build an a11y scanner', 'test with NVDA', 'audit this desktop app', 'create an NVDA addon', or just say hello"
 model:
   - Claude Sonnet 4.5 (copilot)
   - GPT-5 (copilot)
@@ -20,6 +20,7 @@ agents:
   - desktop-a11y-specialist
   - desktop-a11y-testing-coach
   - a11y-tool-builder
+  - nvda-addon-specialist
   - web-accessibility-wizard
   - document-accessibility-wizard
 handoffs:
@@ -46,6 +47,11 @@ handoffs:
   - label: Build A11y Tools
     agent: a11y-tool-builder
     prompt: The user wants to design or build accessibility scanning tools, rule engines, document parsers, report generators, or audit automation.
+    send: true
+    model: Claude Sonnet 4 (copilot)
+  - label: NVDA Addon Development
+    agent: nvda-addon-specialist
+    prompt: The user needs NVDA addon development expertise -- globalPlugins, appModules, synthDrivers, brailleDisplayDrivers, manifest format, event/script handling, NVDAObject overlays, addon packaging, Add-on Store submission, or NVDA addon testing.
     send: true
     model: Claude Sonnet 4 (copilot)
   - label: Web Accessibility Audit
@@ -135,6 +141,8 @@ If the developer's message already contains an intent (e.g., "fix this crash"), 
 | "async", "threading", "concurrent", "multiprocessing" | Concurrency | Route to `@python-specialist` |
 | "screen reader", "UIA", "MSAA", "ATK", "NSAccessibility" | Desktop a11y | Route to `@desktop-a11y-specialist` |
 | "NVDA", "JAWS", "Narrator", "VoiceOver", "Accessibility Insights" | A11y testing | Route to `@desktop-a11y-testing-coach` |
+| "NVDA addon", "globalPlugin", "appModule", "synthDriver", "brailleDisplayDriver" | NVDA addon dev | Route to `@nvda-addon-specialist` |
+| "NVDA manifest", "addon packaging", "Add-on Store", "NVDAObject overlay" | NVDA addon dev | Route to `@nvda-addon-specialist` |
 | "scanner", "rule engine", "report generator", "audit tool" | Tool building | Route to `@a11y-tool-builder` |
 | "accessible", "keyboard", "focus", "a11y" | Desktop a11y | Route to `@desktop-a11y-specialist` or `@wxpython-specialist` |
 | "web audit", "HTML", "ARIA", "axe-core", "WCAG" | Web a11y | Route to `@web-accessibility-wizard` |
@@ -281,6 +289,13 @@ DESKTOP ACCESSIBILITY
   "keyboard navigation"            -> tab order, focus management, accelerators
   "high contrast mode"             -> system theme + DPI awareness
 
+NVDA ADDON DEVELOPMENT
+  "create an NVDA addon"           -> globalPlugin / appModule scaffold
+  "scaffold a synthDriver"         -> speech synthesizer driver template
+  "fix my addon manifest"          -> manifest.ini validation + fixes
+  "submit to Add-on Store"         -> metadata, review checklist, submission
+  "debug NVDA addon"               -> logging, scratchpad, event tracing
+
 BUILD A11Y TOOLS
   "build a scanner"                -> rule engine + parser architecture
   "report generator"               -> Markdown/CSV/SARIF output
@@ -348,6 +363,7 @@ The Developer Hub connects the Developer Tools team with the Web Accessibility a
 | Build scanner / rule engine / report tool | `@a11y-tool-builder` | Developer Tools |
 | Python language / packaging / testing | `@python-specialist` | Developer Tools |
 | wxPython GUI / sizers / events | `@wxpython-specialist` | Developer Tools |
+| NVDA addon development / packaging / Store | `@nvda-addon-specialist` | Developer Tools |
 | Web WCAG audit (HTML, JSX, ARIA) | `@web-accessibility-wizard` | Web Accessibility |
 | Document audit (DOCX, XLSX, PPTX, PDF) | `@document-accessibility-wizard` | Document Accessibility |
 
