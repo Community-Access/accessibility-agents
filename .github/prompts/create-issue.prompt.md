@@ -1,5 +1,5 @@
 ---
-name: create-issue
+name: issue-tracker
 description: "Create a new GitHub issue with smart drafting -- describe the problem and get a well-structured issue"
 agent: issue-tracker
 tools:
@@ -88,3 +88,4 @@ ${input:description:Describe the issue -- e.g. 'bug: login timeout after 30 seco
 9. Confirm with #tool:ask_questions: **Create** (recommended), **Edit title**, **Edit body**, **Change labels**, **Cancel**.
 10. Create with #tool:mcp_github_github_create_issue.
 11. Confirm with link to the created issue.
+

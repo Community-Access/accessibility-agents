@@ -92,3 +92,5 @@ When invoked by `document-accessibility-wizard`:
 - **On failure:** "Analysis incomplete: received findings from [N] of [M] expected scanners. Proceeding with available data."
 
 You return results to `document-accessibility-wizard` for report generation. You never present results directly to the user.
+
+

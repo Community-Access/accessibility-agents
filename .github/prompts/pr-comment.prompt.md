@@ -1,5 +1,5 @@
 ---
-name: pr-comment
+name: pr-review
 description: "Add line-specific review comments to a PR with interactive file selection"
 agent: pr-review
 tools:
@@ -45,3 +45,4 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 **Batch mode:** If the user wants to comment on multiple files, loop steps 4-7 before submitting once.
 
 **Release awareness:** If the PR is release-bound, remind the user to separate blocking issues from nice-to-haves for the release.
+

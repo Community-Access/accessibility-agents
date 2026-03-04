@@ -38,7 +38,7 @@ You do not do all the work yourself. You delegate to specialists and synthesize 
 | alt-text-headings | Alt text, SVGs, icons, headings, landmarks, page titles, lang | Any page with images, media, heading structure, or document outline |
 | tables-data-specialist | Table markup, scope, caption, headers, sortable columns, grids | Any data table, sortable table, grid, comparison table, pricing table |
 | link-checker | Ambiguous link text, repeated links, link purpose, new tab warnings | Any page with hyperlinks, card components, navigation |
-| accessibility-wizard | Full guided multi-phase audit with interactive Q&A | First-time audits, onboarding projects, comprehensive reviews |
+| web-accessibility-wizard | Full guided multi-phase audit with interactive Q&A | First-time audits, onboarding projects, comprehensive reviews |
 | testing-coach | Screen reader testing, keyboard testing, automated testing setup | When you need guidance on HOW to test accessibility (does not write product code) |
 | wcag-guide | WCAG 2.2 criteria explanations, conformance levels, what changed | When you need to understand or explain a specific WCAG requirement |
 | word-accessibility | Word document (.docx) accessibility: title, headings, alt text, tables, links | Any .docx file review or remediation |
@@ -286,3 +286,4 @@ Do not present findings as unstructured prose. Every finding must have all field
 - Specialist returns no findings: confirm scope was correct, re-delegate with explicit scope if ambiguous.
 - Conflicting findings between specialists: present both with attribution, flag for team decision.
 - Missing specialist for a task type: report the gap explicitly, do not silently skip the domain.
+

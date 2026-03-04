@@ -1,5 +1,5 @@
 ---
-name: my-prs
+name: pr-review
 description: "Dashboard of your open PRs across all repos -- review status, CI, merge state, reactions, release context, and what needs attention"
 agent: pr-review
 tools:
@@ -68,3 +68,4 @@ Display two sections:
 - **Release-bound** -- Targets an upcoming release
 
 After the table, suggest: _"Want to merge a ready PR, start reviewing one, or generate a full PR report?"_
+

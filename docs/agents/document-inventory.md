@@ -128,3 +128,5 @@ Metadata flags in brackets tell the wizard which documents have property issues 
 | [audit-document-folder prompt](../prompts/documents/audit-document-folder.md) | User-facing prompt that triggers recursive file discovery |
 | [audit-changed-documents prompt](../prompts/documents/audit-changed-documents.md) | User-facing prompt that triggers delta detection |
 | [document-scanning skill](../../.github/skills/document-scanning/SKILL.md) | Full file discovery command reference and configuration details |
+
+

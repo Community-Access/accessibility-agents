@@ -1,6 +1,8 @@
 ---
+name: review-text-quality
 description: Run a non-visual text quality review to find broken alt text, template variables in aria-labels, placeholder text used as labels, filename alt text, and other low-quality accessible names across your web files.
 mode: agent
+agent: text-quality-reviewer
 tools:
   - readFile
   - editFiles

@@ -95,3 +95,5 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 3. **Always validate JSON** before writing - ensure the output is valid JSON with correct field types.
 4. **Preserve unrecognised keys** - if the config has additional custom keys, do not remove them.
 5. **Confirm before writing** - show the proposed config to the user and use `askQuestions` to confirm.
+
+

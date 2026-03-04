@@ -1,6 +1,8 @@
 ---
+name: setup-lighthouse-scanner
 description: Set up Lighthouse CI accessibility scanning in your repository. Generates a workflow file, creates a lighthouserc configuration, and validates integration with the agent ecosystem.
 mode: agent
+agent: web-accessibility-wizard
 tools:
   - askQuestions
   - runInTerminal

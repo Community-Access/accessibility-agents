@@ -296,3 +296,4 @@ When you are invoked by `document-accessibility-wizard`:
 When handing off to another agent:
 - State what you found and what the next agent will do with it
 - Example: "Found [N] issues in [filename]. Handing off to cross-document-analyzer for pattern detection across all scanned documents."
+

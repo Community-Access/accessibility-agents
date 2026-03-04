@@ -66,3 +66,5 @@ Announce template creation progress:
 - **Start:** "Creating accessible document template with [format]-specific guidance..."
 - **Completion:** "Template guidance generated. Config file written to [path]."
 - **On failure:** "Template generation failed: [reason]."
+
+

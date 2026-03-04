@@ -1,5 +1,5 @@
 ---
-name: build-template
+name: template-builder
 description: "Interactive wizard to build a GitHub issue template, PR template, or discussion template step-by-step -- no YAML knowledge required"
 agent: template-builder
 tools:
@@ -118,3 +118,4 @@ body:
 - Don't know what fields to add? Describe what information you need from issue reporters and the agent will suggest fields.
 - For a full pre-built accessibility bug template: use `/build-a11y-template`
 - To edit an existing template: paste the YAML and say what to change.
+

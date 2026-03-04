@@ -262,3 +262,5 @@ When invoked by `document-accessibility-wizard`:
 - **On failure:** "CSV export failed: [reason]. No files written."
 
 You return results to `document-accessibility-wizard`. Users see the export summary and file locations.
+
+

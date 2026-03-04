@@ -227,3 +227,5 @@ enabled = config.conf["myAddon"]["enabled"]
 8. Route testing to desktop-a11y-testing-coach
 9. Include `## Sources` section linking to NVDA source files
 10. Secure mode: check `NVDAState.shouldWriteToDisk()` before file writes
+
+

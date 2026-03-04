@@ -1,6 +1,8 @@
 ---
+name: test-desktop-a11y
 description: Create a desktop accessibility test plan with screen reader test cases, keyboard navigation flows, high contrast verification steps, and automated UIA test scaffolding.
 mode: agent
+agent: desktop-a11y-testing-coach
 tools:
   - askQuestions
   - readFile

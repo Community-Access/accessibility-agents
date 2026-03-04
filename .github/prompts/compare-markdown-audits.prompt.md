@@ -1,4 +1,5 @@
 ---
+name: markdown-a11y-assistant
 description: Compare a current markdown accessibility audit against a previous one to track remediation progress. Shows fixed, new, persistent, and regressed issues with score changes.
 mode: agent
 agent: markdown-a11y-assistant
@@ -74,3 +75,4 @@ Announce comparison progress:
 - **Start:** "Comparing markdown audit reports - analyzing [N] findings..."
 - **Completion:** "Comparison complete: [N] fixed, [N] new, [N] persistent, [N] regressed"
 - **On failure:** "Could not parse [report]: [reason]. Comparison aborted."
+

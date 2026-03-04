@@ -1,4 +1,4 @@
-# accessibility-wizard - Guided Accessibility Audit
+# web-accessibility-wizard - Guided Accessibility Audit
 
 > Runs a full, interactive accessibility audit of your project by coordinating all specialist agents in sequence. Instead of dumping a wall of issues at you, it walks you through eleven phases, one accessibility domain at a time, and asks you questions at each step to focus the review on what matters for your specific project.
 
@@ -42,19 +42,19 @@ At the end, it generates a prioritized report with issues grouped by severity (C
 ### Claude Code
 
 ```text
-/accessibility-wizard run a full audit on this project
-/accessibility-wizard audit the checkout flow
-/accessibility-wizard I need to prepare for a VPAT assessment
-/accessibility-wizard walk me through accessibility for the dashboard
+/web-accessibility-wizard run a full audit on this project
+/web-accessibility-wizard audit the checkout flow
+/web-accessibility-wizard I need to prepare for a VPAT assessment
+/web-accessibility-wizard walk me through accessibility for the dashboard
 ```
 
 ### GitHub Copilot
 
 ```text
-@accessibility-wizard audit this project for accessibility
-@accessibility-wizard guide me through a review of the signup flow
-@accessibility-wizard run a full accessibility audit
-@accessibility-wizard I am new to accessibility, walk me through everything
+@web-accessibility-wizard audit this project for accessibility
+@web-accessibility-wizard guide me through a review of the signup flow
+@web-accessibility-wizard run a full accessibility audit
+@web-accessibility-wizard I am new to accessibility, walk me through everything
 ```
 
 </details>
@@ -71,3 +71,4 @@ At the end, it generates a prioritized report with issues grouped by severity (C
 - Groups issues by WCAG conformance level and severity, not by file or line number
 
 </details>
+

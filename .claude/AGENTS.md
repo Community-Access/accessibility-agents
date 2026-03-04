@@ -341,3 +341,5 @@ At every handoff:
 - Each agent operates on its defined scope. Parallel groups work on distinct concerns.
 - Same inputs produce same structured outputs (idempotent).
 - Output format changes must be backward-compatible.
+
+

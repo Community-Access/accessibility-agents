@@ -367,3 +367,5 @@ You may NOT:
 - Scanner fails on a file: log the failure, continue with remaining files. Offer targeted retry.
 - Partial scan results: aggregate what succeeded, clearly mark failed files.
 - Fix fails on a file: report which fix failed and why, do not retry automatically. Present the failure for user decision.
+
+

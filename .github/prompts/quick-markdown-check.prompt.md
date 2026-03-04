@@ -1,4 +1,5 @@
 ---
+name: markdown-a11y-assistant
 description: Quick accessibility triage of markdown files. Errors only - no report file saved. Fast pass/fail verdict with score.
 mode: agent
 agent: markdown-a11y-assistant
@@ -58,3 +59,4 @@ This workflow dispatches `markdown-scanner` sub-agents. Announce transitions:
 - **Per file:** "Scanning [filename]..."
 - **Completion:** "Quick check complete: [PASS/FAIL] - [N] critical/serious issues found"
 - **On failure:** "Scan failed for [filename]: [reason]. Continuing with remaining files."
+

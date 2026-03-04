@@ -1,5 +1,5 @@
 ---
-name: address-comments
+name: pr-review
 description: "Systematically address PR review comments -- track, resolve, and respond to all feedback with release awareness"
 agent: pr-review
 tools:
@@ -76,3 +76,4 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 **Release awareness:** If the PR is release-bound, surface blocking comments first and suggest deferring SUGGESTION/NIT items to a follow-up PR after the release.
 
 **Goal:** Turn the review-response cycle from a chaotic back-and-forth into a systematic, trackable workflow -- with release deadlines front and center.
+

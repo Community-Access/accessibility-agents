@@ -98,7 +98,7 @@ Team coordination is defined in `.github/agents/AGENTS.md`. Four defined teams:
 
 - **New component or page:** Always apply aria-specialist + keyboard-navigator + alt-text-headings guidance. Add forms-specialist for any inputs, contrast-master for styling, modal-specialist for overlays, live-region-controller for dynamic updates, tables-data-specialist for any data tables.
 - **Modifying existing UI:** At minimum apply keyboard-navigator (tab order breaks easily). Add others based on what changed.
-- **Code review/audit:** Apply all specialist checklists. Use accessibility-wizard for guided web audits. Use `audit-web-page` prompt for one-click full audits.
+- **Code review/audit:** Apply all specialist checklists. Use web-accessibility-wizard for guided web audits. Use `audit-web-page` prompt for one-click full audits.
 - **Document audit:** Use document-accessibility-wizard for Office and PDF accessibility audits. Supports single files, folders, recursive scanning, delta scanning (changed files only), severity scoring, template analysis, remediation tracking across re-scans, compliance format export (VPAT/ACR), CSV export with help links, batch remediation scripts, and CI/CD integration guides.
 - **Web remediation:** Use `fix-web-issues` prompt to interactively apply fixes from an audit report. Use `compare-web-audits` to track progress between audits.
 - **Mobile app (React Native / Expo / iOS / Android):** Apply cognitive-accessibility guidance. Use mobile-accessibility for touch target checks, accessibilityLabel/Role/State audits, and platform-specific screen reader testing.
@@ -230,3 +230,5 @@ Additional guides in `docs/`:
 - **platform-references.md** - All external documentation sources used to build this project, with feature-to-source mapping
 
 For tasks that do not involve any user-facing web content (backend logic, scripts, database work), these requirements do not apply.
+
+

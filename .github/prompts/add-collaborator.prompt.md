@@ -1,5 +1,5 @@
 ---
-name: add-collaborator
+name: repo-admin
 description: "Add a user to a repository as a collaborator with a specified role (read, triage, write, maintain, or admin)"
 agent: repo-admin
 tools:
@@ -45,3 +45,4 @@ ${input:target:Who and where -- e.g. '@alice to owner/my-repo as write', 'add bo
 | Write | Yes | Yes | No |
 | Maintain | Yes | Yes | Partial |
 | Admin | Yes | Yes | Full  |
+

@@ -1,6 +1,8 @@
 ---
+name: audit-desktop-a11y
 description: Run a desktop application accessibility audit covering platform APIs (UI Automation, MSAA, ATK, NSAccessibility), screen reader compatibility, keyboard navigation, focus management, and high contrast support.
 mode: agent
+agent: desktop-a11y-specialist
 tools:
   - askQuestions
   - readFile

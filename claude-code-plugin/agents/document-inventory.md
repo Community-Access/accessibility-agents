@@ -90,3 +90,5 @@ Return results as a structured summary that the orchestrating wizard can use dir
 - Metadata flags (missing title, missing language, etc.)
 - Delta results (if applicable): new files, modified files, deleted files
 - Template groupings (if templates detected)
+
+
