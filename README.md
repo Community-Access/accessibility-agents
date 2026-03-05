@@ -38,6 +38,134 @@ All agents run on:
 - **Claude Desktop** - An MCP extension (.mcpb) with tools and prompts for accessibility review
 - **Codex CLI** - Condensed WCAG AA rules loaded via `.codex/AGENTS.md` -- accessibility enforced automatically on every UI task
 
+## System Requirements
+
+> ⚠️ **CRITICAL:** To remain current with Accessibility Agents and ensure proper functionality, you **must** keep all tools updated to their latest versions. New platform capabilities, API changes, accessibility features, and bug fixes directly impact agent behavior.
+
+### Required Tools (Latest Versions)
+
+**For GitHub Copilot (VS Code):**
+- **VS Code:** Latest stable release ([Download](https://code.visualstudio.com/))
+- **GitHub Copilot Extension:** Latest version from VS Code Marketplace
+- **GitHub Copilot Chat Extension:** Latest version from VS Code Marketplace
+- **Node.js:** v18.0.0 or higher (for CLI tools like axe-core)
+
+**For Claude Code:**
+- **Claude Code CLI:** Latest version ([Installation](https://docs.anthropic.com/en/docs/claude-code))
+- **Claude Subscription:** Pro, Max, or Team plan
+
+**For Gemini CLI:**
+- **Gemini CLI:** Latest version ([Installation](https://github.com/google/generative-ai-cli))
+- **Google AI Studio API Key:** Active key ([Get Started](https://ai.google.dev/))
+
+**For Claude Desktop:**
+- **Claude Desktop App:** Latest version ([Download](https://claude.ai/download))
+- **Claude Subscription:** Pro plan or higher
+
+**Operating Systems:**
+- **macOS:** 10.15 (Catalina) or later
+- **Linux:** Ubuntu 20.04+, Fedora 35+, or equivalent with bash 4.0+
+- **Windows:** Windows 10/11 with PowerShell 5.1+ (pre-installed)
+
+### Why Version Currency Matters
+
+1. **Platform API Changes** - VS Code Copilot, Claude Code, and other platforms add new capabilities (tool use, context windows, model selection) that agents rely on
+2. **Accessibility Features** - New platform features directly improve agent effectiveness (browser tools, screenshot analysis, DOM inspection)
+3. **Bug Fixes** - Critical fixes for tool invocation, context handling, and agent orchestration
+4. **Security Updates** - Important security patches for API access, authentication, and data handling
+5. **WCAG Evolution** - As standards evolve (WCAG 2.2, 3.0), agents update to reflect current best practices
+
+### Keeping Tools Updated
+
+**Automatic Updates (Recommended):**
+
+```bash
+# Set up daily auto-updates during installation (recommended)
+curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
+# Choose "Yes" when prompted for auto-updates
+
+# Or manually enable auto-updates later
+bash update.sh --auto
+```
+
+**Manual Updates:**
+
+```bash
+# Update Accessibility Agents
+cd accessibility-agents
+git pull origin main
+bash update.sh
+
+# Update VS Code
+# Help → Check for Updates (or auto-updates if enabled in settings)
+
+# Update GitHub Copilot Extensions
+# Extensions → @installed → Click update icon next to GitHub Copilot extensions
+
+# Update Claude Code CLI
+claude code update
+
+# Update Node.js tools
+npm update -g @axe-core/cli
+npm update -g pa11y
+```
+
+**Version Checks:**
+
+```bash
+# Check current versions
+code --version                    # VS Code
+claude code --version            # Claude Code CLI
+node --version                   # Node.js
+npm list -g --depth=0            # Global npm packages
+```
+
+### Compatibility Note
+
+Accessibility Agents are tested against the **latest stable releases** of all supported platforms. While older versions may work, we cannot guarantee compatibility or support issues arising from outdated tooling. If you encounter unexpected behavior, update all tools before reporting issues.
+
+## Optional Customization
+
+### Custom Thinking Phrases (VS Code 1.110+)
+
+**VS Code users:** Personalize the loading text that appears while agents think with accessibility-themed phrases.
+
+**Add to VS Code Settings (settings.json):**
+
+```jsonc
+{
+  "chat.agent.thinking.phrases": {
+    "mode": "append",  // Adds to default phrases
+    "phrases": [
+      "Checking contrast ratios...",
+      "Testing with screen readers...",
+      "Verifying keyboard navigation...",
+      "Reviewing ARIA patterns...",
+      "Scanning for accessibility barriers...",
+      "Consulting WCAG 2.2..."
+    ]
+  }
+}
+```
+
+**Options:**
+- `"mode": "append"` - Adds your phrases to VS Code's default list (recommended)
+- `"mode": "replace"` - Only shows your custom phrases
+
+**Why This Matters:**
+- Reinforces accessibility focus during agent work
+- Reminds team members that accessibility is actively considered
+- Optional fun enhancement to make wait time more engaging
+
+**How to Add:**
+1. Open VS Code Settings (Ctrl/Cmd + ,)
+2. Click "Open Settings (JSON)" icon in top-right
+3. Add the `chat.agent.thinking.phrases` setting
+4. Reload window (Command Palette → "Developer: Reload Window")
+
+**Community Contributions:**
+Have a great accessibility-themed thinking phrase? Submit a PR to add it to our recommended list in [CONTRIBUTING.md](CONTRIBUTING.md)!
+
 ## Quick Start
 
 ### One-liner install
@@ -62,6 +190,58 @@ See the full [Getting Started Guide](docs/getting-started.md) for all installati
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.sh | bash
+```
+
+## Troubleshooting
+
+### Agents Not Loading or Triggering
+
+**Verify agents are loaded:**  
+VS Code 1.110+: Open **Agent Debug Panel** (Command Palette → "Developer: Open Agent Debug Panel"). Check that all 57 agents appear in the loaded agents list.
+
+If agents are missing:
+- Verify `.github/agents/*.agent.md` files exist in your workspace
+- Check `.github/copilot-instructions.md` or `CLAUDE.md` is present
+- Reload VS Code window (Command Palette → "Developer: Reload Window")
+- Update GitHub Copilot extensions to latest versions
+
+**Three-hook enforcement not working:**  
+Check the Agent Debug Panel for:
+- **UserPromptSubmit hook events** - Should fire on every prompt in web projects
+- **PreToolUse hook events** - Look for `permissionDecision: "deny"` on blocked UI file edits
+- **PostToolUse hook events** - Should create session marker after accessibility-lead completes
+
+If hooks are not firing:
+- Verify hooks are enabled in settings (`github.copilot.chat.hooks.enabled: true`)
+- Check workspace is trusted (hooks disabled in untrusted workspaces)
+- Update VS Code and Copilot extensions to 1.110 or later
+
+See the complete [Agent Debug Panel Guide](docs/guides/agent-debug-panel.md) and [Hooks Guide](docs/hooks-guide.md) for detailed troubleshooting.
+
+### False Edit Gate Blocks
+
+If the edit gate blocks a non-UI file (e.g., `src/utils/api.ts`), this is a false positive. The hook uses file extensions and path patterns to detect UI files - occasionally non-UI files match these patterns.
+
+**Workaround:** Create the session marker manually to unlock editing:
+```bash
+touch /tmp/a11y-reviewed-$(cat /tmp/claude-session-id)
+```
+
+**Report:** [Open an issue](https://github.com/Community-Access/accessibility-agents/issues) with the falsely blocked file path so we can refine the detection patterns.
+
+### Skills Not Loading
+
+Verify skill files have valid YAML frontmatter:
+```bash
+grep -l "^---" .github/skills/**/SKILL.md
+```
+
+Each skill needs:
+- Valid YAML frontmatter with `name` and `description` fields
+- No syntax errors in frontmatter
+- File named exactly `SKILL.md` (case-sensitive)
+
+Check the Agent Debug Panel for skill loading errors.
 ```
 
 **Windows (PowerShell):**
@@ -282,7 +462,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution workflow.
 
 ### Reporting Issues & Gaps
 
-This project exists because the community shows up. Every feature in v2.6 -- the NVDA Addon Specialist, the Text Quality Reviewer, the source citation policy, the wxPython screen reader documentation -- started as a community conversation. Not a roadmap item. A real person saying "this is what I need."
+This project exists because the community shows up. Every feature in v3.0 -- the NVDA Addon Specialist, the Text Quality Reviewer, the source citation policy, the wxPython screen reader documentation, the agentic browser tools, the lifecycle hooks strategy -- started as a community conversation. Not a roadmap item. A real person saying "this is what I need."
 
 Whether you are a developer, accessibility specialist, screen reader user, or just someone who cares about inclusive software - there is a place for you here.
 

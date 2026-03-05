@@ -92,6 +92,22 @@ This is not a reminder or suggestion. The Edit/Write tool call is rejected at th
 
 Non-UI files (`.ts` in `lib/`, `.json`, `.md`, backend code) are always allowed without review.
 
+### Debugging the Edit Gate
+
+**VS Code 1.110+:** Use the **Agent Debug Panel** to troubleshoot edit gate denials in real time.
+
+Open the panel:
+- Command Palette: "Developer: Open Agent Debug Panel"
+- Chat view gear icon → "View Agent Logs"
+
+Check for:
+- **PreToolUse hook events** showing `permissionDecision: "deny"` with the reason
+- **Session marker status** - does `/tmp/a11y-reviewed-{session_id}` exist?
+- **Hook execution order** - did UserPromptSubmit fire before PreToolUse?
+- **False positives** - is a non-UI file being blocked incorrectly?
+
+See the complete [Agent Debug Panel Guide](guides/agent-debug-panel.md) for detailed troubleshooting workflows.
+
 ## Hook 3: Review Marker
 
 **File:** `~/.claude/hooks/a11y-mark-reviewed.sh`

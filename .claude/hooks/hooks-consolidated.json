@@ -1,0 +1,70 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python .github/hooks/scripts/session-start.py",
+        "timeout": 10
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "python .github/hooks/scripts/detect-web-project.py",
+        "timeout": 5,
+        "matchers": [
+          {
+            "userPromptContains": "component"
+          },
+          {
+            "userPromptContains": "web"
+          },
+          {
+            "userPromptContains": "ui"
+          },
+          {
+            "userPromptContains": "html"
+          },
+          {
+            "userPromptContains": "react"
+          },
+          {
+            "userPromptContains": "vue"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "python .github/hooks/scripts/enforce-edit-gate.py",
+        "timeout": 5,
+        "matchers": [
+          {
+            "toolName": "replace_string_in_file"
+          },
+          {
+            "toolName": "multi_replace_string_in_file"
+          },
+          {
+            "toolName": "create_file"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "python .github/hooks/scripts/mark-reviewed.py",
+        "timeout": 5
+      }
+    ],
+    "SessionEnd": [
+      {
+        "type": "command",
+        "command": "python .github/hooks/scripts/session-end.py",
+        "timeout": 5
+      }
+    ]
+  }
+}

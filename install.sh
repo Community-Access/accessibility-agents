@@ -106,7 +106,7 @@ fi
 # ---------------------------------------------------------------------------
 # migrate_prompts src_dir
 # Rename old prompt filenames to new agent-matching names.
-# This ensures users upgrading from v2.5 to v2.6 don't lose custom prompts.
+# This ensures users upgrading from v2.x to v3.0 don't lose custom prompts.
 # Migration: old naming (task-based) → new naming (agent-based)
 # ---------------------------------------------------------------------------
 migrate_prompts() {
@@ -862,7 +862,7 @@ if [ "$install_copilot" = true ]; then
         SRC_DIR="$COPILOT_CONFIG_SRC/$subdir"
         DST_DIR="$PROJECT_DIR/.github/$subdir"
         if [ -d "$SRC_DIR" ]; then
-          # Migrate old prompt names to new agent-matching names (v2.5 → v2.6)
+          # Migrate old prompt names to new agent-matching names (v2.x → v3.0)
           [ "$subdir" = "prompts" ] && migrate_prompts "$SRC_DIR"
           
           mkdir -p "$DST_DIR"

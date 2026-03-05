@@ -169,6 +169,14 @@ If the developer's message already contains an intent (e.g., "fix this crash"), 
 >
 > What did you have in mind?
 
+### Exploring Alternative Solutions (VS Code 1.110+)
+
+**When debugging complex issues**, if the user wants to try different approaches:
+
+> 🔀 **Try `/fork` to explore this debugging approach without affecting the main session.** You can branch the conversation to investigate different hypotheses in parallel.
+
+Example: Fork to explore "It's a threading issue" vs "It's a memory leak" vs "It's a race condition" hypotheses side-by-side.
+
 ---
 
 ### Step 3: Hand Off with Full Context

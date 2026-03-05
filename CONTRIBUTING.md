@@ -39,6 +39,36 @@ Clearer docs, better examples, typo fixes - all welcome.
 4. Test on your system (run the installer, verify agents load)
 5. Open a PR with a clear description of what changed and why
 
+## Testing Requirements
+
+> ⚠️ **CRITICAL:** Always test contributions with the **latest versions** of all relevant tools. Agent behavior depends on current platform APIs, model capabilities, and bug fixes.
+
+**Before submitting a PR, verify you are using:**
+
+- **VS Code:** Latest stable release
+- **GitHub Copilot Extensions:** Latest versions (both Copilot and Copilot Chat)
+- **Claude Code CLI:** Latest version (`claude code update`)
+- **Claude Desktop:** Latest version (auto-updates enabled)
+- **Gemini CLI:** Latest version
+- **Codex CLI:** Latest version
+- **Node.js:** v18.0.0 or higher (for CLI tools like axe-core, pa11y)
+
+**Version checks before testing:**
+```bash
+code --version          # VS Code
+claude code --version   # Claude Code CLI
+node --version         # Node.js
+npm list -g --depth=0  # Global npm packages
+```
+
+**Why this matters:**
+- Platform API changes affect agent tool use and capabilities
+- New VS Code/Copilot features (browser tools, screenshot analysis) directly impact agent effectiveness
+- Model updates change response quality and context handling
+- Bug fixes in platform tooling resolve edge cases
+
+If you encounter unexpected behavior, update all tools first. Include your tool versions in PR descriptions when reporting issues.
+
 ## Guidelines
 
 - **Keep agent instructions focused.** Each agent owns one domain. Do not add ARIA rules to the contrast agent or focus management to the forms agent.

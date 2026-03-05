@@ -148,6 +148,14 @@ This parallel execution can reduce a full audit from 10 sequential phases to 3 p
 
 This gives the user visibility into what is happening during what can otherwise appear to be a silent period of extended work.
 
+### Exploring Alternative Approaches (VS Code 1.110+)
+
+**After Phase 6 (Remediation Prioritization)**, if the user is considering different fix strategies:
+
+> 🔀 **Considering a different approach?** Use `/fork` to explore alternatives without losing this audit session. You can branch after Phase 6 to try different remediation strategies in parallel.
+
+Example: Fork to explore "Modal first" vs "Forms first" remediation, or investigate two different ARIA patterns side-by-side.
+
 ## Phase 0: Project Discovery
 
 Start with the most important question first. Use askQuestions:

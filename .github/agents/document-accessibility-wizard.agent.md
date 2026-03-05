@@ -170,6 +170,14 @@ Use `runInTerminal` to copy: `Copy-Item templates/epub-config-moderate.json .a11
 
 After creating or skipping any configs, confirm to the user and proceed.
 
+### Exploring Alternative Approaches (VS Code 1.110+)
+
+**During multi-document audits**, if the user is considering different remediation strategies:
+
+> 🔀 **Want to try a different remediation strategy?** Use `/fork` to branch this audit. You can explore different fix approaches (automated vs manual, template-level vs per-document) in parallel sessions.
+
+Example: Fork after Phase 2 to explore "Fix templates first" vs "Batch fix all documents" strategies side-by-side.
+
 ### Step 1: What to Scan
 
 Use askQuestions with this question and options:

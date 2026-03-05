@@ -67,6 +67,79 @@ BLOCKERS:
 3. If needed, reference specific findings: "Remember the 2 Critical ARIA issues from the summary?"
 4. Agent can continue analyzing, fixing, generating reports, or comparing audits
 
+## Forking Sessions (VS Code 1.110+)
+
+**When to fork:** Explore alternative approaches without losing your current work.
+
+### Use the `/fork` Command
+
+Type `/fork` in the chat to create an independent branch of the conversation that inherits all context but diverges from that point forward.
+
+**Accessibility Audit Use Cases:**
+
+- **Try different remediation strategies:** Fork after Phase 6 to explore different fix approaches
+- **Side questions during audit:** Fork to investigate a specific pattern without derailing the main audit
+- **A/B testing fixes:** Fork to test two different ARIA patterns, compare results
+- **Parallel work:** Fork to have one session fixing Critical issues while another addresses High issues
+
+### Per-Checkpoint Forking
+
+Hover over any message in the chat history → click "Fork Conversation" to branch from that specific point.
+
+**Example:** Audit completed in main session. Fork from the "Findings Summary" message to explore Modal fixes in one fork and Form fixes in another.
+
+### Forking Best Practices
+
+- **Name your forks** - Rename sessions to track which is which ("Web Audit - Modal Fixes", "Web Audit - Form Fixes")
+- **Consolidate later** - After exploring, return to main session with insights from forks
+- **Use for risk reduction** - Try a complex ARIA pattern in a fork before applying to production code
+- **Document branches** - Note what you tried in each fork for future reference
+
+## Inline Chat Session Continuity (VS Code 1.110+)
+
+**What Changed:** Inline chat now always queues into the existing session instead of making isolated changes.
+
+**What This Means for Accessibility:**
+- Inline fixes maintain full audit context from the main chat session
+- Agent remembers findings from comprehensive accessibility review
+- Follow-up fixes reference previous WCAG violations and remediation priorities
+- No need to re-explain context when making iterative fixes
+
+**Example Workflow:**
+
+1. Run full accessibility audit in main chat → agent identifies 15 accessibility issues
+2. Agent prioritizes fixes: Critical → High → Medium → Low
+3. Use inline chat (Ctrl/Cmd + I) in a component file → agent remembers this is a "High" priority fix from the audit
+4. Agent applies fix with full context: "Fixing alt text issue #7 from audit (High severity - WCAG 1.1.1)"
+5. Continue using inline chat for all fixes → each one references the audit report
+
+**Best Practice:**
+- Complete accessibility audit first (web-accessibility-wizard, document-accessibility-wizard, or markdown-a11y-assistant)
+- Use inline chat for all subsequent fixes within the same session
+- Agent will correlate inline edits with audit findings automatically
+
+**Terminal Tool Calls are Collapsible (VS Code 1.110+)**
+
+When agents run terminal commands (document scanning, axe-core scans, GitHub CLI calls), the output now appears in collapsible sections to reduce visual noise.
+
+**What to Expect:**
+- Commands appear collapsed by default
+- Click to expand and see full output if needed
+- Useful for commands with long output (file lists, scan results, API responses)
+
+**When to Expand:**
+- Troubleshooting failed commands
+- Verifying which files were scanned
+- Checking exact CLI output for unexpected behavior
+- Copying output for external tools or reports
+
+**Agents That Use Terminal Commands:**
+- `document-accessibility-wizard` - PowerShell/Bash file discovery
+- `web-accessibility-wizard` - `npx @axe-core/cli` scans
+- `github-hub`, `daily-briefing`, `pr-review`, `issue-tracker` - `gh` CLI commands
+- `repo-manager` - Repository setup commands
+- `developer-hub` - Python packaging, wxPython builds, desktop testing
+
 ## Examples by Audit Type
 
 ### Web Audit Compaction

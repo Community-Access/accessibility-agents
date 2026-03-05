@@ -180,7 +180,7 @@ function Sync-GitHubDir {
 
 # ---------------------------------------------------------------------------
 # Migrate-Prompts: rename old prompt filenames to new agent-matching names.
-# This ensures users upgrading from v2.5 to v2.6 don't lose custom prompts.
+# This ensures users upgrading from v2.x to v3.0 don't lose custom prompts.
 # Migration: old naming (task-based) -> new naming (agent-based)
 # ---------------------------------------------------------------------------
 function Migrate-Prompts {
