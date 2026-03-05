@@ -1,7 +1,7 @@
 {
   "name": "accessibility-agents",
   "description": "WCAG AA accessibility enforcement for Claude Code. 55 specialist agents, 17 commands, and enforcement hooks that delegate to accessibility-lead for UI code review.",
-  "version": "1.0.0",
+  "version": "3.0.1",
   "author": {
     "name": "Taylor Arndt"
   }
