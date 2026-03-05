@@ -1,6 +1,6 @@
 # Accessibility Agents - Claude Code Plugin
 
-WCAG AA accessibility enforcement for Claude Code. 50 specialist agents + 17 skills that activate automatically when you work on web UI code.
+WCAG AA accessibility enforcement for Claude Code. 59 specialist agents + 17 commands that activate automatically when you work on web UI code.
 
 ## How It Works
 
@@ -12,7 +12,28 @@ Five enforcement layers ensure accessibility-lead always activates for UI tasks:
 4. **Agent tools** — accessibility-lead has `Task, Read, Glob, Grep` only. It MUST delegate to specialists via the Task tool. It cannot write code itself.
 5. **CLAUDE.md + Skills** — Decision matrix and non-negotiable standards load every session. Skills (`/aria`, `/audit`, etc.) provide direct specialist access.
 
-See the [Hooks Guide](../docs/hooks-guide.md) for the full technical breakdown of why hooks were chosen over instructions, MCP, or plugin hooks alone.
+See the [Hooks Guide](docs/hooks-guide.md) for the full technical breakdown of why hooks were chosen over instructions, MCP, or plugin hooks alone.
+
+## Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [Getting Started](docs/getting-started.md) | Installation and setup for Claude Code, Copilot, Gemini CLI, Claude Desktop, Codex CLI |
+| [Hooks Guide](docs/hooks-guide.md) | How the three-hook enforcement gate works and why |
+| [Configuration](docs/configuration.md) | Character budget, troubleshooting, environment variables |
+| [Architecture](docs/architecture.md) | How agents coordinate, decision matrix, knowledge domains |
+| [Agent Reference](docs/agents/) | Per-agent documentation (60 agents) |
+| [Advanced Guides](docs/advanced/) | Scanning patterns, cross-platform handoff, platform references |
+
+### Scan Configuration Templates
+
+Pre-built scan profiles are available in [`templates/`](templates/):
+
+- **strict** -- All rules enabled, all severities reported
+- **moderate** -- All rules enabled, errors and warnings only
+- **minimal** -- Errors only, for quick triage
+
+Copy the appropriate template to your project root as `.a11y-office-config.json`, `.a11y-pdf-config.json`, or `.a11y-epub-config.json`.
 
 ## Installation
 
@@ -103,7 +124,7 @@ Optionally merges a CLAUDE.md snippet into your project root for rules enforceme
 | `/mobile` | mobile-accessibility | Mobile - React Native, touch targets |
 | `/design-system` | design-system-auditor | Tokens - contrast, focus rings, spacing |
 
-## Agents (50 total)
+## Agents (59 total)
 
 ### User-Facing Specialists
 
@@ -206,7 +227,7 @@ Run `/agents` in Claude Code. The `accessibility-lead` agent should show tools: 
 - **Wrong agent invoked:** All agents use kebab-case names (e.g., `accessibility-lead`, not `Accessibility Lead`). Internal helpers are prefixed with "Internal helper agent." in their descriptions to prevent accidental routing.
 - **accessibility-lead writes code directly:** Verify its tools are `Task, Read, Glob, Grep`. If it has `Write` or `Edit`, the plugin cache may be stale. Reinstall with `bash install.sh --global`.
 
-See the [Hooks Guide](../docs/hooks-guide.md) for detailed testing commands and manual debugging steps.
+See the [Hooks Guide](docs/hooks-guide.md) for detailed testing commands and manual debugging steps.
 
 ## Updating
 

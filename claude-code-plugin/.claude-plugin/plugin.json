@@ -1,8 +1,10 @@
 {
   "name": "accessibility-agents",
-  "description": "WCAG AA accessibility enforcement for Claude Code. 56 specialist agents, 17 commands, and enforcement hooks that delegate to accessibility-lead for UI code review. v3.0 adds authoritative source citations to all agents.",
-  "version": "3.0.0",
+  "description": "WCAG AA accessibility enforcement for Claude Code. 57 specialist agents, 17 commands, and enforcement hooks that delegate to accessibility-lead for UI code review. Includes end-user documentation, scan config templates, example project, and three-hook enforcement gate.",
+  "version": "3.1.0",
   "author": {
     "name": "Taylor Arndt"
-  }
+  },
+  "homepage": "https://github.com/Community-Access/accessibility-agents/tree/main/docs",
+  "repository": "https://github.com/Community-Access/accessibility-agents"
 }
