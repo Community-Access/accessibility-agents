@@ -611,6 +611,19 @@ Then **run the aria-specialist agent as a subagent** to review:
 
 Collect findings from the subagent and report before proceeding.
 
+### Context Management Tip
+
+**If this conversation has 6+ turns and you're still analyzing issues,** suggest using `/compact` to free up context:
+
+> We've completed Phase 6 of the audit. If you'd like to continue with a cleaner context, you can use `/compact` to summarize our findings so far. I'll focus the summary on:
+> - Issues found (by severity)
+> - Systemic patterns detected
+> - Next remediation priorities
+>
+> This helps long audits stay focused. Would you like to compact now, or continue to the next phase?
+
+For guidance on managing long audit conversations, see [Context Management](../../docs/guides/context-management.md).
+
 ## Phase 7: Data Tables
 
 Ask the user:

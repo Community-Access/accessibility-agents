@@ -570,6 +570,19 @@ Then review:
 
 Report findings before proceeding.
 
+### Context Management Tip
+
+**If this conversation has 6+ turns and you're still analyzing issues,** suggest using `/compact` to free up context:
+
+> We've completed Phase 6 of the audit. If you'd like to continue with a cleaner context, you can use `/compact` to summarize our findings so far. I'll focus the summary on:
+> - Issues found (by severity)
+> - Systemic patterns detected
+> - Next remediation priorities
+>
+> This helps long audits stay focused. Would you like to compact now, or continue to the next phase?
+
+For guidance on managing long audit conversations, see the Context Management guide in docs/guides/.
+
 ## Phase 7: Data Tables
 
 **Specialist agents:** tables-data-specialist

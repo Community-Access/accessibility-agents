@@ -193,6 +193,19 @@ Wait for all scan results to return, then aggregate:
 - Identify systemic patterns (same issue in 3+ files)
 - Files with zero issues (PASS)
 
+### Context Management Tip
+
+**If this conversation has 6+ turns and you're still reviewing files,** suggest using `/compact` to free up context:
+
+> Scanning complete! If you'd like to continue with a cleaner context, you can use `/compact` to summarize our findings so far. I'll focus the summary on:
+> - Files scanned and issue counts
+> - Systemic patterns (same issue across multiple files)
+> - Next review and fix priorities
+>
+> This helps long audits stay focused. Would you like to compact now, or proceed to the review gate?
+
+For guidance on managing long audit conversations, see [Context Management](../../docs/guides/context-management.md).
+
 ## Phase 3: Review Gate
 
 Before applying any changes, present an aggregated summary:

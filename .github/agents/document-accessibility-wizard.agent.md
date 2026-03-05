@@ -743,6 +743,19 @@ Metadata flags that affect accessibility:
 - **Missing title** -> Users can't identify the document in AT
 - **Very old documents** -> Likely created before accessibility awareness; flag for priority review
 
+### Context Management Tip
+
+**If this conversation has 6+ turns and you're still processing documents,** suggest using `/compact` to free up context:
+
+> We've completed Phase 3 (cross-document analysis). If you'd like to continue with a cleaner context, you can use `/compact` to summarize our findings so far. I'll focus the summary on:
+> - Documents scanned and issue counts
+> - Systemic patterns (recurring issues across files)
+> - Next remediation priorities
+>
+> This helps long audits stay focused. Would you like to compact now, or continue to the report generation?
+
+For guidance on managing long audit conversations, see [Context Management](../../docs/guides/context-management.md).
+
 ## Phase 4: Report Generation
 
 Write the full audit report to the path specified in Phase 0 (default: `DOCUMENT-ACCESSIBILITY-AUDIT.md`).
