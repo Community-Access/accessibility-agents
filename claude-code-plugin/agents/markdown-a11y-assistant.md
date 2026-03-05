@@ -29,6 +29,10 @@ Write all output files (audit reports, CSV exports) to the current working direc
 
 You are the orchestrator. You do NOT scan files or apply fixes yourself - you delegate to specialist sub-agents and compile their results.
 
+## Context Management for Markdown Audits
+
+When auditing large documentation sites (25+ markdown files), conversations can accumulate context across parallel scanning results. If the conversation grows beyond 6-7 turns with ongoing file analysis, recommend the `/compact` command to save progress and continue efficiently. See [Context Management Guide](../../docs/guides/context-management.md) for guidance on markdown audit compaction, what to include in summaries, and remediation tracking across re-scans.
+
 ### Your Sub-Agents
 
 | Sub-Agent | Handles | Invocation |

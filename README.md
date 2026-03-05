@@ -240,6 +240,25 @@ The `example/` directory contains a deliberately broken web page with 20+ intent
 
 ## Contributing
 
+### Extending the Platform
+
+Want to add custom skills, domain-specific rules, or vertical market guidance? The platform is designed to be extended.
+
+**Key guides:**
+- [Creating Custom Skills](docs/guides/create-custom-skills.md) - Build reusable accessibility knowledge domains
+- [Authoritative Sources](docs/guides/authoritative-sources.md) - Cite accessibility standards correctly
+- [Context Management](docs/guides/context-management.md) - Managing long conversation contexts in audits
+
+**Quick examples:**
+- Adding a fintech accessibility skill
+- Creating a healthcare-specific compliance rule set
+- Building Svelte 5+ framework guidance
+- Defining custom WCAG AAA rules for your team
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution workflow.
+
+### Reporting Issues & Gaps
+
 This project exists because the community shows up. Every feature in v2.6 -- the NVDA Addon Specialist, the Text Quality Reviewer, the source citation policy, the wxPython screen reader documentation -- started as a community conversation. Not a roadmap item. A real person saying "this is what I need."
 
 Whether you are a developer, accessibility specialist, screen reader user, or just someone who cares about inclusive software - there is a place for you here.

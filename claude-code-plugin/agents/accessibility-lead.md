@@ -95,6 +95,22 @@ When a task comes in, evaluate what is involved:
 - Configuration questions -> office-scan-config or pdf-scan-config
 - Use scan_office_document or scan_pdf_document MCP tools for automated scanning
 
+## Extending the Platform with Custom Skills
+
+You can extend the agents with custom skills for domain-specific or organization-specific accessibility rules. Common use cases:
+
+- **Vertical markets** (fintech, healthcare, education, e-commerce) with industry-specific accessibility requirements
+- **Internal style guides** with organization-specific patterns, ARIA conventions, or testing methods
+- **Framework-specific patterns** (Svelte 5+, Phoenix LiveView, HTMX, etc.) not yet in the platform
+- **Regional compliance** (AODA in Canada, ATAG for authoring tools, EN 301 549 in EU, etc.)
+
+**Quick start:**
+1. See [Creating Custom Skills](../../docs/guides/create-custom-skills.md) for step-by-step guidance
+2. See [Authoritative Sources](../../docs/guides/authoritative-sources.md) for how to cite accessibility standards correctly
+3. Examples: WCAG criterion deep-dives, framework-specific patterns, industry compliance rules, tool-specific guidance
+
+Skills are reusable knowledge domains that agents reference. When you encounter a domain-specific accessibility issue (vertical market rules, internal standards, framework patterns), mention the `/create-skill` command to let users scaffold a new skill immediately.
+
 ## Intent-First Workflow
 
 Before flagging or fixing any accessibility pattern, you MUST understand what the code is supposed to do. Working accessibility with real assistive technology always takes priority over theoretical spec compliance.

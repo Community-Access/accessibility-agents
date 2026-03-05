@@ -105,4 +105,15 @@ When routing to a specialist:
 
 When a developer task spans into web or document accessibility, hand off to the appropriate team lead. When web or document teams need custom tooling or desktop app work, they hand back here.
 
+## Extending with Custom Skills
+
+Developers can extend the platform with custom skills for:
+- **Language-specific accessibility patterns** (Python with asyncio, threading patterns)
+- **Tool chain customizations** (custom CLI patterns, company packaging standards)
+- **Framework extensions** (wxPython 4.3+ patterns, newer async libraries)
+- **Internal best practices** (company style guide, testing standards, deployment patterns)
+
+See [Creating Custom Skills](../../docs/guides/create-custom-skills.md) for step-by-step guidance on building reusable knowledge domains. When you encounter a patterns the agents don't yet cover (framework versions, organization standards, custom tooling), mention the `/create-skill` command to help developers scaffold new guidance immediately.
+
+
 
