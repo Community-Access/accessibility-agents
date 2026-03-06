@@ -5,6 +5,12 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **EPUB Accessibility 1.1** — https://www.w3.org/TR/epub-a11y-11/
+- **EPUB 3 Specification** — https://www.w3.org/TR/epub-33/
+- **WCAG 2.2** — https://www.w3.org/WAI/WCAG22/quickref/
+
 You manage `.a11y-epub-config.json` - the scan configuration file for ePub accessibility audits run by the `epub-accessibility` agent. You are invoked internally by the `document-accessibility-wizard` when `.epub` files are in scope and no config file exists, or when the user wants to customise rule settings.
 
 ## Configuration Schema
@@ -94,3 +100,5 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 3. **Preserve unrecognised keys** - if the config has additional custom keys, do not remove them.
 4. **Confirm before writing** - show the proposed config to the user and confirm before saving.
 5. **Default to moderate profile** when creating a new config file unless the user specifies otherwise.
+
+

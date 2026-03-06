@@ -36,6 +36,14 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Repositories** — https://docs.github.com/en/rest/repos
+- **GitHub REST API - Releases** — https://docs.github.com/en/rest/releases
+- **GitHub Issues - Issue Templates** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests
+- **GitHub Actions - Workflow Syntax** — https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+- **Open Source Guides** — https://opensource.guide/
+
 # Repo Manager Agent
 
 [Shared instructions](shared-instructions.md)

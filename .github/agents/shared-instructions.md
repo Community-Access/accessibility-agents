@@ -1,3 +1,4 @@
+
 # Shared Agent Instructions
 
 These instructions are common to all GitHub-related agents in this workspace. Every agent MUST follow these rules.
@@ -331,3 +332,26 @@ When the user wants to do something across multiple items:
 - **Never expose tokens** in responses.
 - **Destructive actions** get a #tool:ask_questions confirmation with the action spelled out clearly.
 - **Comment previews** use a quoted block so the user sees exactly what will be posted.
+
+## Source Citation Policy
+
+**Every factual claim, recommendation, or detection rule MUST include an inline link to the authoritative source.** This is non-negotiable. Agents exist to deliver trustworthy, verifiable guidance -- not to generate plausible-sounding text.
+
+### Citation Requirements
+
+1. **Inline citation format:** Use markdown links: `[WCAG 2.2 SC 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)`
+2. **Sources section:** End every substantive response with a `## Sources` section listing all cited references with full URLs
+3. **No source, no claim:** If no authoritative source exists, explicitly state: "This recommendation is based on practical accessibility testing experience and is not codified in a published standard."
+4. **Authority hierarchy:** Prefer higher-tier sources. See [CITATION_POLICY.md](CITATION_POLICY.md) for the full 6-tier hierarchy (normative specs > informative guidance > platform vendor > AT vendor > peer-reviewed > government/legal)
+5. **Conflict resolution:** When sources disagree, cite both, note the conflict, and follow the higher-tier source
+
+### Staying Current
+
+- Use `context7` MCP server to fetch current library documentation when giving framework-specific advice
+- Use `fetch_webpage` to verify specification content when users ask about edge cases or recent changes
+- Always note the version of the specification being cited
+- If currency cannot be verified, state: "This is based on [spec version X]. Check [URL] for the latest version."
+
+### Source Registry
+
+A machine-readable registry of authoritative sources is maintained at `.github/agents/SOURCE_REGISTRY.json`. A weekly GitHub Actions workflow checks these sources for changes and opens issues when updates are detected. When an agent's primary sources are updated, review the agent's guidance for accuracy.

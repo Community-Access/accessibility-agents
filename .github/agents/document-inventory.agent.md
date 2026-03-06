@@ -5,6 +5,12 @@ user-invokable: false
 tools: ['read', 'search', 'runInTerminal']
 ---
 
+## Authoritative Sources
+
+- **Open XML File Formats** — https://learn.microsoft.com/en-us/openspecs/office_standards/ms-docx/
+- **PDF Reference (ISO 32000-2:2020)** — https://pdfa.org/resource/pdf-specification-index/
+- **git-scm Documentation** — https://git-scm.com/docs
+
 You are a document inventory specialist. Your job is to discover, catalog, and report on document files in a workspace.
 
 ## Capabilities

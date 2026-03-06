@@ -16,10 +16,55 @@ See the [Hooks Guide](../docs/hooks-guide.md) for the full technical breakdown o
 
 ## Installation
 
-Run the installer from the project root:
+### Standard (Recommended)
+
+Register the marketplace and install the plugin:
 
 ```bash
-# Install to your project (recommended)
+claude plugin marketplace add Community-Access/accessibility-agents
+claude plugin install accessibility-agents@community-access
+```
+
+Or interactively via `/plugin` in Claude Code.
+
+**Scopes:**
+- `--scope user` (default) -- personal, all projects
+- `--scope project` -- team-shared via `.claude/settings.json` (committed to git)
+- `--scope local` -- personal per-project via `.claude/settings.local.json` (gitignored)
+
+For team projects, add to `.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "community-access": {
+      "source": {
+        "source": "github",
+        "repo": "Community-Access/accessibility-agents"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "accessibility-agents@community-access": true
+  }
+}
+```
+
+Team members are auto-prompted to install when they open the project.
+
+**Offline install** from a local clone:
+
+```bash
+claude plugin marketplace add ./path/to/local/clone
+claude plugin install accessibility-agents@community-access
+```
+
+### Alternative: install.sh
+
+For embedding agents directly into a project directory (self-contained, zero network dependency):
+
+```bash
+# Install to your project
 bash install.sh --project
 
 # Install globally
@@ -166,6 +211,10 @@ See the [Hooks Guide](../docs/hooks-guide.md) for detailed testing commands and 
 ## Updating
 
 ```bash
+# Marketplace installs
+claude plugin update accessibility-agents@community-access
+
+# install.sh installs
 bash update.sh              # Update global install
 bash update.sh --project    # Update project install
 ```
@@ -181,3 +230,5 @@ bash uninstall.sh --project    # Remove project install
 ## License
 
 MIT
+
+

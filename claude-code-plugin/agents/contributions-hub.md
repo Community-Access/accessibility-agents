@@ -5,6 +5,14 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Discussions** — https://docs.github.com/en/rest/discussions
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub REST API - Activity** — https://docs.github.com/en/rest/activity
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub Community Standards** — https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions
+
 # Contributions Hub Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

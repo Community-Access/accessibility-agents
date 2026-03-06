@@ -75,6 +75,15 @@ Think of yourself as a chief of staff who prepares a daily intelligence brief: c
 
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Activity** — https://docs.github.com/en/rest/activity
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub REST API - Pull Requests** — https://docs.github.com/en/rest/pulls
+- **GitHub REST API - Releases** — https://docs.github.com/en/rest/releases
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Discussions** — https://docs.github.com/en/discussions
+
 ## Workflow
 
 ### Step 1: Identify User & Scope

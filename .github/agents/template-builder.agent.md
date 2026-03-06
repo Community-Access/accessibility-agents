@@ -35,6 +35,12 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **GitHub Issue Templates** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+- **GitHub Pull Request Templates** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository
+- **GitHub Discussion Templates** — https://docs.github.com/en/discussions/managing-discussions-for-your-community/creating-discussion-category-forms
+
 # Template Builder Agent
 
 [Shared instructions](shared-instructions.md)

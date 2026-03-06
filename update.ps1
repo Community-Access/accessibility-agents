@@ -35,14 +35,16 @@ function Write-Log {
 
 if ($Project) {
     $InstallDir = Join-Path (Get-Location) ".claude"
-} else {
+}
+else {
     $InstallDir = Join-Path $env:USERPROFILE ".claude"
 }
 
 # Check for git
 try {
     git --version | Out-Null
-} catch {
+}
+catch {
     Write-Log "Error: git is not installed. Cannot check for updates."
     exit 1
 }
@@ -62,7 +64,8 @@ if (Test-Path $GitDir) {
 
     git reset --hard origin/main --quiet 2>$null
     Write-Log "Pulled latest changes."
-} else {
+}
+else {
     Write-Log "Downloading a11y-agent-team..."
     $ParentDir = Split-Path $CacheDir -Parent
     New-Item -ItemType Directory -Force -Path $ParentDir | Out-Null
@@ -78,10 +81,10 @@ $NewHash = git rev-parse --short HEAD 2>$null
 # ---------------------------------------------------------------------------
 function Merge-ConfigFile {
     param([string]$SrcFile, [string]$DstFile, [string]$Label)
-    $start  = "<!-- a11y-agent-team: start -->"
-    $end    = "<!-- a11y-agent-team: end -->"
-    $body   = ([IO.File]::ReadAllText($SrcFile, [Text.Encoding]::UTF8)).TrimEnd()
-    $block  = "$start`n$body`n$end"
+    $start = "<!-- a11y-agent-team: start -->"
+    $end = "<!-- a11y-agent-team: end -->"
+    $body = ([IO.File]::ReadAllText($SrcFile, [Text.Encoding]::UTF8)).TrimEnd()
+    $block = "$start`n$body`n$end"
     if (-not (Test-Path $DstFile)) {
         [IO.File]::WriteAllText($DstFile, "$block`n", [Text.Encoding]::UTF8)
         Write-Log "Created: $Label"
@@ -97,7 +100,8 @@ function Merge-ConfigFile {
             Write-Log "Updated section: $Label"
             $script:Updated++
         }
-    } else {
+    }
+    else {
         [IO.File]::WriteAllText($DstFile, $existing.TrimEnd() + "`n`n$block`n", [Text.Encoding]::UTF8)
         Write-Log "Merged section: $Label"
         $script:Updated++
@@ -137,7 +141,8 @@ if (Test-Path $AgentsSrcDir) {
             $Manifest[$manifestKey] = $true   # track for future updates
             Write-Log "Added (new): $($File.BaseName)"
             $Updated++
-        } elseif ($Manifest.ContainsKey($manifestKey)) {
+        }
+        elseif ($Manifest.ContainsKey($manifestKey)) {
             $SrcContent = Get-Content $File.FullName -Raw -ErrorAction SilentlyContinue
             $DstContent = Get-Content $Dst -Raw -ErrorAction SilentlyContinue
             if ($SrcContent -ne $DstContent) {
@@ -173,6 +178,45 @@ function Sync-GitHubDir {
     }
 }
 
+# ---------------------------------------------------------------------------
+# Migrate-Prompts: rename old prompt filenames to new agent-matching names.
+# This ensures users upgrading from v2.x to v3.0 don't lose custom prompts.
+# Migration: old naming (task-based) -> new naming (agent-based)
+# ---------------------------------------------------------------------------
+function Migrate-Prompts {
+    param([string]$SrcDir)
+    if (-not (Test-Path $SrcDir)) { return }
+    
+    $migrations = @{
+        "a11y-update.prompt.md" = "insiders-a11y-tracker.prompt.md"
+        "audit-desktop-a11y.prompt.md" = "desktop-a11y-specialist.prompt.md"
+        "audit-markdown.prompt.md" = "markdown-a11y-assistant.prompt.md"
+        "audit-web-page.prompt.md" = "web-accessibility-wizard.prompt.md"
+        "export-document-csv.prompt.md" = "document-csv-reporter.prompt.md"
+        "export-markdown-csv.prompt.md" = "markdown-csv-reporter.prompt.md"
+        "export-web-csv.prompt.md" = "web-csv-reporter.prompt.md"
+        "package-python-app.prompt.md" = "python-specialist.prompt.md"
+        "review-text-quality.prompt.md" = "text-quality-reviewer.prompt.md"
+        "scaffold-nvda-addon.prompt.md" = "nvda-addon-specialist.prompt.md"
+        "scaffold-wxpython-app.prompt.md" = "wxpython-specialist.prompt.md"
+        "test-desktop-a11y.prompt.md" = "desktop-a11y-testing-coach.prompt.md"
+    }
+    
+    foreach ($oldName in $migrations.Keys) {
+        $newName = $migrations[$oldName]
+        $oldFile = Join-Path $SrcDir $oldName
+        $newFile = Join-Path $SrcDir $newName
+        
+        if ((Test-Path $oldFile) -and -not (Test-Path $newFile)) {
+            Rename-Item -Path $oldFile -NewName $newName -ErrorAction SilentlyContinue
+        }
+        elseif ((Test-Path $oldFile) -and (Test-Path $newFile)) {
+            # Both exist; remove old version and keep new
+            Remove-Item -Path $oldFile -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 $GitHubSrc = Join-Path $CacheDir ".github"
 
 # Update Copilot assets for project install
@@ -192,6 +236,9 @@ if ($Project) {
         }
         # Asset subdirs: skills, instructions, prompts
         foreach ($SubDir in @("skills", "instructions", "prompts")) {
+            if ($SubDir -eq "prompts") {
+                Migrate-Prompts -SrcDir (Join-Path $GitHubSrc "prompts")
+            }
             Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc $SubDir) -DstDir (Join-Path $ProjectGitHub $SubDir) -Label $SubDir
         }
     }
@@ -199,11 +246,11 @@ if ($Project) {
 
 # Update Copilot assets for global install
 if (-not $Project) {
-    $CentralRoot   = Join-Path $env:USERPROFILE ".a11y-agent-team"
-    $Central       = Join-Path $CentralRoot "copilot-agents"
-    $CentralPrompts      = Join-Path $CentralRoot "copilot-prompts"
+    $CentralRoot = Join-Path $env:USERPROFILE ".a11y-agent-team"
+    $Central = Join-Path $CentralRoot "copilot-agents"
+    $CentralPrompts = Join-Path $CentralRoot "copilot-prompts"
     $CentralInstructions = Join-Path $CentralRoot "copilot-instructions-files"
-    $CentralSkills       = Join-Path $CentralRoot "copilot-skills"
+    $CentralSkills = Join-Path $CentralRoot "copilot-skills"
 
     # Update central stores (agents, prompts, instructions, skills)
     if (Test-Path $Central) {
@@ -218,9 +265,12 @@ if (-not $Project) {
             }
         }
     }
-    if (Test-Path $CentralPrompts)      { Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "prompts")      -DstDir $CentralPrompts      -Label "central-prompts" }
+    if (Test-Path $CentralPrompts) { 
+        Migrate-Prompts -SrcDir (Join-Path $GitHubSrc "prompts")
+        Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "prompts") -DstDir $CentralPrompts -Label "central-prompts" 
+    }
     if (Test-Path $CentralInstructions) { Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "instructions") -DstDir $CentralInstructions -Label "central-instructions" }
-    if (Test-Path $CentralSkills)       { Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "skills")       -DstDir $CentralSkills       -Label "central-skills" }
+    if (Test-Path $CentralSkills) { Sync-GitHubDir -SrcDir (Join-Path $GitHubSrc "skills")       -DstDir $CentralSkills       -Label "central-skills" }
     # Update config files in central store — merged to preserve user content
     foreach ($Config in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
         $Src = Join-Path $GitHubSrc $Config
@@ -230,8 +280,9 @@ if (-not $Project) {
         }
     }
 
-    # Push agents, prompts, and instructions to VS Code User profile folders.
-    # VS Code 1.110+ discovers from User/prompts/; older from User/ root. Both are updated.
+    # Push agents, prompts, and instructions to VS Code User/prompts/ only.
+    # Previous versions also wrote to User/ root, causing duplicates in the
+    # agent list. This update cleans up those stale root copies automatically.
     $VSCodeProfiles = @(
         (Join-Path $env:APPDATA "Code\User"),
         (Join-Path $env:APPDATA "Code - Insiders\User")
@@ -243,18 +294,35 @@ if (-not $Project) {
         $HasPrompts = (Test-Path $PromptsDir) -and ((Get-ChildItem -Path $PromptsDir -Filter "*.agent.md" -ErrorAction SilentlyContinue).Count -gt 0)
         if (-not ($HasAgents -or $HasPrompts)) { continue }
         New-Item -ItemType Directory -Force -Path $PromptsDir | Out-Null
-        foreach ($File in Get-ChildItem -Path $Central -Filter "*.agent.md" -ErrorAction SilentlyContinue) {
-            Copy-Item -Path $File.FullName -Destination (Join-Path $ProfileDir $File.Name) -Force
-            Copy-Item -Path $File.FullName -Destination (Join-Path $PromptsDir $File.Name) -Force
+
+        # Collect all files we manage
+        $AllFiles = @()
+        $AllFiles += @(Get-ChildItem -Path $Central -Filter "*.agent.md" -ErrorAction SilentlyContinue)
+        $AllFiles += @(Get-ChildItem -Path $CentralPrompts -Filter "*.prompt.md" -ErrorAction SilentlyContinue)
+        $AllFiles += @(Get-ChildItem -Path $CentralInstructions -Filter "*.instructions.md" -ErrorAction SilentlyContinue)
+
+        # Copy to User/prompts/ only (the correct location)
+        foreach ($File in $AllFiles) {
+            if ($File) {
+                Copy-Item -Path $File.FullName -Destination (Join-Path $PromptsDir $File.Name) -Force
+            }
         }
-        foreach ($File in Get-ChildItem -Path $CentralPrompts -Filter "*.prompt.md" -ErrorAction SilentlyContinue) {
-            Copy-Item -Path $File.FullName -Destination (Join-Path $ProfileDir $File.Name) -Force
-            Copy-Item -Path $File.FullName -Destination (Join-Path $PromptsDir $File.Name) -Force
+
+        # Migration: remove duplicates from User/ root left by earlier versions
+        $Cleaned = 0
+        foreach ($File in $AllFiles) {
+            if ($File) {
+                $RootCopy = Join-Path $ProfileDir $File.Name
+                if (Test-Path $RootCopy) {
+                    Remove-Item $RootCopy -Force
+                    $Cleaned++
+                }
+            }
         }
-        foreach ($File in Get-ChildItem -Path $CentralInstructions -Filter "*.instructions.md" -ErrorAction SilentlyContinue) {
-            Copy-Item -Path $File.FullName -Destination (Join-Path $ProfileDir $File.Name) -Force
-            Copy-Item -Path $File.FullName -Destination (Join-Path $PromptsDir $File.Name) -Force
+        if ($Cleaned -gt 0) {
+            Write-Log "Cleaned $Cleaned duplicate(s) from $ProfileDir (migration from earlier install)"
         }
+
         Write-Log "Updated VS Code profile: $ProfileDir"
     }
 }
@@ -272,7 +340,8 @@ if (-not $Project) {
                     Copy-Item -Path $Src -Destination $Dst -Force
                     Write-Log "Added hook (new): $Hook"
                     $Updated++
-                } else {
+                }
+                else {
                     $SrcContent = Get-Content $Src -Raw -ErrorAction SilentlyContinue
                     $DstContent = Get-Content $Dst -Raw -ErrorAction SilentlyContinue
                     if ($SrcContent -ne $DstContent) {
@@ -291,6 +360,7 @@ $NewHash | Out-File -FilePath $VersionFile -Encoding utf8 -NoNewline
 
 if ($Updated -gt 0) {
     Write-Log "Update complete ($Updated files updated, version $NewHash)."
-} else {
+}
+else {
     Write-Log "Files already match latest version ($NewHash)."
 }

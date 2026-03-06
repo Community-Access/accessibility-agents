@@ -5,6 +5,14 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Repositories** — https://docs.github.com/en/rest/repos
+- **GitHub REST API - Collaborators** — https://docs.github.com/en/rest/collaborators
+- **GitHub REST API - Branches** — https://docs.github.com/en/rest/branches
+- **GitHub REST API - Webhooks** — https://docs.github.com/en/rest/webhooks
+- **GitHub Branch Protection** — https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches
+
 # Repo Admin Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

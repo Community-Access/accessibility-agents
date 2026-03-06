@@ -1,5 +1,5 @@
 ---
-name: build-a11y-template
+name: template-builder
 description: "Generate a production-ready GitHub accessibility bug report issue template with screen reader, browser, OS, WCAG, and reproduction fields -- ready to save and use immediately"
 agent: template-builder
 tools:
@@ -215,3 +215,4 @@ body:
 - "Want to add this template to your `config.yml` chooser?"
 - "Want to also add a `good first issue` label for newcomers to help with accessibility fixes?"
 - "Use `@contributions-hub` to check your overall community health, including template coverage."
+

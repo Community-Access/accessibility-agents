@@ -64,7 +64,7 @@ Files are saved alongside the audit report:
 
 ## Related Prompts
 
-- [audit-markdown](../web/audit-markdown.md) - run a full markdown audit first
-- [fix-markdown-issues](../web/fix-markdown-issues.md) - interactive fix mode from audit report
-- [compare-markdown-audits](../web/compare-markdown-audits.md) - track remediation progress
+- [markdown-a11y-assistant](../../../.github/prompts/markdown-a11y-assistant.prompt.md) - run a full markdown audit first
+- [fix-markdown-issues](../../../.github/prompts/fix-markdown-issues.prompt.md) - interactive fix mode from audit report
+- [compare-markdown-audits](../../../.github/prompts/compare-markdown-audits.prompt.md) - track remediation progress
 - [export-web-csv](export-web-csv.md) - equivalent CSV export for web audits

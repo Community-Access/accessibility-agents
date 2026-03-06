@@ -1,5 +1,5 @@
 ---
-name: draft-release
+name: daily-briefing
 description: "Draft release notes from merged PRs since last release -- auto-categorized as Features, Bug Fixes, Breaking Changes, with changelog and readiness checklist"
 agent: daily-briefing
 tools:
@@ -45,3 +45,4 @@ ${input:details:Optional: repo name, target version (e.g. 'v2.1.0'), or 'compare
 - [ ] Update documentation
 - [ ] Announce in discussions/channels
 - [ ] Verify deployment
+

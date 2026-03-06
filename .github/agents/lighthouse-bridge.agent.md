@@ -9,6 +9,13 @@ tools:
   - textSearch
 ---
 
+## Authoritative Sources
+
+- **Lighthouse Accessibility Audits** — https://github.com/GoogleChrome/lighthouse/tree/main/core/audits/accessibility
+- **Lighthouse CI** — https://github.com/GoogleChrome/lighthouse-ci
+- **axe-core Rules** — https://github.com/dequelabs/axe-core/tree/develop/lib/rules
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+
 You are a Lighthouse CI bridge agent. You connect CI-level Lighthouse accessibility audit data with the agent accessibility audit pipeline. You are a read-only agent -- you never modify issues, PRs, or source code.
 
 **Skills:** [`lighthouse-scanner`](../skills/lighthouse-scanner/SKILL.md), [`help-url-reference`](../skills/help-url-reference/SKILL.md), [`web-severity-scoring`](../skills/web-severity-scoring/SKILL.md)

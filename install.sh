@@ -103,6 +103,45 @@ if [ ${#AGENTS[@]} -eq 0 ]; then
   exit 1
 fi
 
+# ---------------------------------------------------------------------------
+# migrate_prompts src_dir
+# Rename old prompt filenames to new agent-matching names.
+# This ensures users upgrading from v2.x to v3.0 don't lose custom prompts.
+# Migration: old naming (task-based) → new naming (agent-based)
+# ---------------------------------------------------------------------------
+migrate_prompts() {
+  local src_dir="$1"
+  [ -d "$src_dir" ] || return
+  
+  local -a migrations=(
+    "a11y-update.prompt.md:insiders-a11y-tracker.prompt.md"
+    "audit-desktop-a11y.prompt.md:desktop-a11y-specialist.prompt.md"
+    "audit-markdown.prompt.md:markdown-a11y-assistant.prompt.md"
+    "audit-web-page.prompt.md:web-accessibility-wizard.prompt.md"
+    "export-document-csv.prompt.md:document-csv-reporter.prompt.md"
+    "export-markdown-csv.prompt.md:markdown-csv-reporter.prompt.md"
+    "export-web-csv.prompt.md:web-csv-reporter.prompt.md"
+    "package-python-app.prompt.md:python-specialist.prompt.md"
+    "review-text-quality.prompt.md:text-quality-reviewer.prompt.md"
+    "scaffold-nvda-addon.prompt.md:nvda-addon-specialist.prompt.md"
+    "scaffold-wxpython-app.prompt.md:wxpython-specialist.prompt.md"
+    "test-desktop-a11y.prompt.md:desktop-a11y-testing-coach.prompt.md"
+  )
+  
+  for mapping in "${migrations[@]}"; do
+    IFS=: read -r old_name new_name <<< "$mapping"
+    local old_file="$src_dir/$old_name"
+    local new_file="$src_dir/$new_name"
+    
+    if [ -f "$old_file" ] && [ ! -f "$new_file" ]; then
+      mv "$old_file" "$new_file" 2>/dev/null || true
+    elif [ -f "$old_file" ] && [ -f "$new_file" ]; then
+      # Both exist; remove old version and keep new
+      rm -f "$old_file" 2>/dev/null || true
+    fi
+  done
+}
+
 # Parse flags for non-interactive install
 choice=""
 COPILOT_FLAG=false
@@ -161,8 +200,8 @@ esac
 # ---------------------------------------------------------------------------
 merge_config_file() {
   local src="$1" dst="$2" label="$3"
-  local start="<!-- accessibility-agents: start -->"
-  local end="<!-- accessibility-agents: end -->"
+  local start="<!-- a11y-agent-team: start -->"
+  local end="<!-- a11y-agent-team: end -->"
   if [ ! -f "$dst" ]; then
     { printf '%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; } > "$dst"
     echo "    + $label (created)"
@@ -175,8 +214,8 @@ import re, sys
 src_text = open(sys.argv[1]).read().rstrip()
 dst_path = sys.argv[2]
 dst_text = open(dst_path).read()
-start = "<!-- accessibility-agents: start -->"
-end   = "<!-- accessibility-agents: end -->"
+start = "<!-- a11y-agent-team: start -->"
+end   = "<!-- a11y-agent-team: end -->"
 block = start + "\n" + src_text + "\n" + end
 updated = re.sub(re.escape(start) + r".*?" + re.escape(end), block, dst_text, flags=re.DOTALL)
 open(dst_path, "w").write(updated)
@@ -823,6 +862,9 @@ if [ "$install_copilot" = true ]; then
         SRC_DIR="$COPILOT_CONFIG_SRC/$subdir"
         DST_DIR="$PROJECT_DIR/.github/$subdir"
         if [ -d "$SRC_DIR" ]; then
+          # Migrate old prompt names to new agent-matching names (v2.x → v3.0)
+          [ "$subdir" = "prompts" ] && migrate_prompts "$SRC_DIR"
+          
           mkdir -p "$DST_DIR"
           added=0; skipped=0
           while IFS= read -r -d '' src_file; do
@@ -846,10 +888,16 @@ if [ "$install_copilot" = true ]; then
     else
       # Global install: copy .agent.md files directly into VS Code user profile folders.
       # This is the documented way to make agents available across all workspaces.
-      COPILOT_CENTRAL="$HOME/.accessibility-agents/copilot-agents"
-      COPILOT_CENTRAL_PROMPTS="$HOME/.accessibility-agents/copilot-prompts"
-      COPILOT_CENTRAL_INSTRUCTIONS="$HOME/.accessibility-agents/copilot-instructions-files"
-      COPILOT_CENTRAL_SKILLS="$HOME/.accessibility-agents/copilot-skills"
+      COPILOT_CENTRAL="$HOME/.a11y-agent-team/copilot-agents"
+      COPILOT_CENTRAL_PROMPTS="$HOME/.a11y-agent-team/copilot-prompts"
+      COPILOT_CENTRAL_INSTRUCTIONS="$HOME/.a11y-agent-team/copilot-instructions-files"
+      COPILOT_CENTRAL_SKILLS="$HOME/.a11y-agent-team/copilot-skills"
+      LEGACY_COPILOT_ROOT="$HOME/.accessibility-agents"
+      if [ ! -d "$HOME/.a11y-agent-team" ] && [ -d "$LEGACY_COPILOT_ROOT" ]; then
+        mkdir -p "$HOME/.a11y-agent-team"
+        cp -R "$LEGACY_COPILOT_ROOT/." "$HOME/.a11y-agent-team/" 2>/dev/null || true
+        echo "  Migrated legacy Copilot store from $LEGACY_COPILOT_ROOT to $HOME/.a11y-agent-team"
+      fi
       mkdir -p "$COPILOT_CENTRAL" "$COPILOT_CENTRAL_PROMPTS" "$COPILOT_CENTRAL_INSTRUCTIONS" "$COPILOT_CENTRAL_SKILLS"
 
       # Store a central copy for updates and a11y-copilot-init
@@ -866,6 +914,9 @@ if [ "$install_copilot" = true ]; then
       fi
 
       # Store prompts, instructions, and skills centrally
+      # Migrate old prompt names to new agent-matching names (v2.5 → v2.6)
+      [ -d "$COPILOT_CONFIG_SRC/prompts" ] && migrate_prompts "$COPILOT_CONFIG_SRC/prompts"
+      
       [ -d "$COPILOT_CONFIG_SRC/prompts" ]      && cp -r "$COPILOT_CONFIG_SRC/prompts/."      "$COPILOT_CENTRAL_PROMPTS/"
       [ -d "$COPILOT_CONFIG_SRC/instructions" ] && cp -r "$COPILOT_CONFIG_SRC/instructions/." "$COPILOT_CENTRAL_INSTRUCTIONS/"
       [ -d "$COPILOT_CONFIG_SRC/skills" ]       && cp -r "$COPILOT_CONFIG_SRC/skills/."       "$COPILOT_CENTRAL_SKILLS/"
@@ -874,7 +925,7 @@ if [ "$install_copilot" = true ]; then
       for config in copilot-instructions.md copilot-review-instructions.md copilot-commit-message-instructions.md; do
         SRC="$COPILOT_CONFIG_SRC/$config"
         if [ -f "$SRC" ]; then
-          cp "$SRC" "$HOME/.accessibility-agents/$config"
+          cp "$SRC" "$HOME/.a11y-agent-team/$config"
         fi
       done
 
@@ -901,6 +952,22 @@ if [ "$install_copilot" = true ]; then
         # Copy prompts and instructions to prompts/
         [ -d "$COPILOT_CENTRAL_PROMPTS" ]      && cp -r "$COPILOT_CENTRAL_PROMPTS/."      "$prompts_dir/"
         [ -d "$COPILOT_CENTRAL_INSTRUCTIONS" ] && cp -r "$COPILOT_CENTRAL_INSTRUCTIONS/." "$prompts_dir/"
+
+        # Clean up duplicates left by previous installer versions that wrote to User/ root
+        for f in "$COPILOT_CENTRAL"/*.agent.md; do
+          [ -f "$f" ] || continue
+          rm -f "$profile_dir/$(basename "$f")"
+        done
+        if [ -d "$COPILOT_CENTRAL_PROMPTS" ]; then
+          while IFS= read -r legacy_prompt; do
+            rm -f "$profile_dir/$(basename "$legacy_prompt")"
+          done < <(find "$COPILOT_CENTRAL_PROMPTS" -type f -name "*.prompt.md" 2>/dev/null)
+        fi
+        if [ -d "$COPILOT_CENTRAL_INSTRUCTIONS" ]; then
+          while IFS= read -r legacy_instruction; do
+            rm -f "$profile_dir/$(basename "$legacy_instruction")"
+          done < <(find "$COPILOT_CENTRAL_INSTRUCTIONS" -type f -name "*.instructions.md" 2>/dev/null)
+        fi
 
         echo "    Copied $(ls "$COPILOT_CENTRAL"/*.agent.md 2>/dev/null | wc -l | tr -d ' ') agents"
 
@@ -980,8 +1047,8 @@ PYEOF
       fi
 
       # Also create a11y-copilot-init for per-project use (repos to check into git)
-      mkdir -p "$HOME/.accessibility-agents"
-      INIT_SCRIPT="$HOME/.accessibility-agents/a11y-copilot-init"
+      mkdir -p "$HOME/.a11y-agent-team"
+      INIT_SCRIPT="$HOME/.a11y-agent-team/a11y-copilot-init"
       cat > "$INIT_SCRIPT" << 'INITSCRIPT'
 #!/bin/bash
 # Accessibility Agents - Copy Copilot agents into the current project
@@ -991,7 +1058,7 @@ PYEOF
 # Merges copilot-instructions.md rather than overwriting it.
 # Skips any file that already exists to preserve your customisations.
 
-CENTRAL="$HOME/.accessibility-agents/copilot-agents"
+CENTRAL="$HOME/.a11y-agent-team/copilot-agents"
 TARGET=".github/agents"
 
 if [ ! -d "$CENTRAL" ] || [ -z "$(ls "$CENTRAL"/*.agent.md 2>/dev/null)" ]; then
@@ -1013,8 +1080,8 @@ echo "  Agents: $ADDED added, $SKIPPED skipped (already exist)"
 # Merge config files using accessibility-agents section markers — never overwrites user content
 merge_config() {
   local src="$1" dst="$2" label="$3"
-  local start="<!-- accessibility-agents: start -->"
-  local end="<!-- accessibility-agents: end -->"
+  local start="<!-- a11y-agent-team: start -->"
+  local end="<!-- a11y-agent-team: end -->"
   [ -f "$src" ] || return
   if [ ! -f "$dst" ]; then
     { printf '%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; } > "$dst"
@@ -1028,8 +1095,8 @@ import re, sys
 src_text = open(sys.argv[1]).read().rstrip()
 dst_path = sys.argv[2]
 dst_text = open(dst_path).read()
-start = "<!-- accessibility-agents: start -->"
-end   = "<!-- accessibility-agents: end -->"
+start = "<!-- a11y-agent-team: start -->"
+end   = "<!-- a11y-agent-team: end -->"
 block = start + "\n" + src_text + "\n" + end
 updated = re.sub(re.escape(start) + r".*?" + re.escape(end), block, dst_text, flags=re.DOTALL)
 open(dst_path, "w").write(updated)
@@ -1045,12 +1112,12 @@ PYEOF
 }
 
 for config in copilot-instructions.md copilot-review-instructions.md copilot-commit-message-instructions.md; do
-  merge_config "$HOME/.accessibility-agents/$config" ".github/$config" "$config"
+  merge_config "$HOME/.a11y-agent-team/$config" ".github/$config" "$config"
 done
 
 # Copy prompts, instructions, and skills — skip existing files
 for pair in "copilot-prompts:prompts" "copilot-instructions-files:instructions" "copilot-skills:skills"; do
-  SRC="$HOME/.accessibility-agents/${pair%%:*}"
+  SRC="$HOME/.a11y-agent-team/${pair%%:*}"
   DST=".github/${pair##*:}"
   if [ -d "$SRC" ] && [ -n "$(ls "$SRC" 2>/dev/null)" ]; then
     mkdir -p "$DST"
@@ -1084,7 +1151,7 @@ INITSCRIPT
         if ! grep -q "a11y-copilot-init" "$SHELL_RC" 2>/dev/null; then
           echo "" >> "$SHELL_RC"
           echo "# Accessibility Agents - Copilot init command" >> "$SHELL_RC"
-          echo "export PATH=\"\$HOME/.accessibility-agents:\$PATH\"" >> "$SHELL_RC"
+          echo "export PATH=\"\$HOME/.a11y-agent-team:\$PATH\"" >> "$SHELL_RC"
           echo "  Added 'a11y-copilot-init' command to your PATH via $SHELL_RC"
         else
           echo "  'a11y-copilot-init' already in PATH."
@@ -1325,9 +1392,9 @@ fi
 if command -v git &>/dev/null && [ -d "$SCRIPT_DIR/.git" ]; then
   if [ "$PLUGIN_INSTALL" = true ]; then
     mkdir -p "$HOME/.claude"
-    git -C "$SCRIPT_DIR" rev-parse --short HEAD 2>/dev/null > "$HOME/.claude/.accessibility-agents-version"
+    git -C "$SCRIPT_DIR" rev-parse --short HEAD 2>/dev/null > "$HOME/.claude/.a11y-agent-team-version"
   else
-    git -C "$SCRIPT_DIR" rev-parse --short HEAD 2>/dev/null > "$TARGET_DIR/.accessibility-agents-version"
+    git -C "$SCRIPT_DIR" rev-parse --short HEAD 2>/dev/null > "$TARGET_DIR/.a11y-agent-team-version"
   fi
 fi
 
@@ -1341,16 +1408,16 @@ if [ "$choice" = "2" ] && { true < /dev/tty; } 2>/dev/null; then
   read -r auto_update < /dev/tty
 
   if [ "$auto_update" = "y" ] || [ "$auto_update" = "Y" ]; then
-    UPDATE_SCRIPT="$TARGET_DIR/.accessibility-agents-update.sh"
+    UPDATE_SCRIPT="$TARGET_DIR/.a11y-agent-team-update.sh"
 
     # Write a self-contained update script
     cat > "$UPDATE_SCRIPT" << 'UPDATESCRIPT'
 #!/bin/bash
 set -e
 REPO_URL="https://github.com/Community-Access/accessibility-agents.git"
-CACHE_DIR="$HOME/.claude/.accessibility-agents-repo"
+CACHE_DIR="$HOME/.claude/.a11y-agent-team-repo"
 INSTALL_DIR="$HOME/.claude"
-LOG_FILE="$HOME/.claude/.accessibility-agents-update.log"
+LOG_FILE="$HOME/.claude/.a11y-agent-team-update.log"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
 
@@ -1457,7 +1524,7 @@ else
 fi
 
 # Update Copilot agents in central store and VS Code profile folders
-CENTRAL="$HOME/.accessibility-agents/copilot-agents"
+CENTRAL="$HOME/.a11y-agent-team/copilot-agents"
 if [ -d "$CENTRAL" ]; then
   for SRC in "$CACHE_DIR"/.github/agents/*.agent.md; do
     [ -f "$SRC" ] || continue
@@ -1490,11 +1557,12 @@ for PROFILE in "${PROFILES[@]}"; do
   for SRC in "$CENTRAL"/*.agent.md; do
     [ -f "$SRC" ] || continue
     cp "$SRC" "$PROMPTS_DIR/"
+    rm -f "$PROFILE/$(basename "$SRC")"
   done
   log "Updated VS Code profile: $PROFILE"
 done
 
-echo "$HASH" > "$INSTALL_DIR/.accessibility-agents-version"
+echo "$HASH" > "$INSTALL_DIR/.a11y-agent-team-version"
 log "Check complete: $UPDATED files updated (version $HASH)."
 UPDATESCRIPT
     chmod +x "$UPDATE_SCRIPT"
@@ -1503,7 +1571,7 @@ UPDATESCRIPT
     if [ "$(uname)" = "Darwin" ]; then
       # macOS: LaunchAgent
       PLIST_DIR="$HOME/Library/LaunchAgents"
-      PLIST_FILE="$PLIST_DIR/com.community-access.accessibility-agents-update.plist"
+      PLIST_FILE="$PLIST_DIR/com.community-access.a11y-agent-team-update.plist"
       mkdir -p "$PLIST_DIR"
       cat > "$PLIST_FILE" << PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1511,7 +1579,7 @@ UPDATESCRIPT
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.community-access.accessibility-agents-update</string>
+  <string>com.community-access.a11y-agent-team-update</string>
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
@@ -1525,9 +1593,9 @@ UPDATESCRIPT
     <integer>0</integer>
   </dict>
   <key>StandardOutPath</key>
-  <string>${HOME}/.claude/.accessibility-agents-update.log</string>
+  <string>${HOME}/.claude/.a11y-agent-team-update.log</string>
   <key>StandardErrorPath</key>
-  <string>${HOME}/.claude/.accessibility-agents-update.log</string>
+  <string>${HOME}/.claude/.a11y-agent-team-update.log</string>
   <key>RunAtLoad</key>
   <false/>
 </dict>
@@ -1539,10 +1607,10 @@ PLIST
     else
       # Linux: cron job
       CRON_CMD="0 9 * * * /bin/bash $UPDATE_SCRIPT"
-      (crontab -l 2>/dev/null | grep -v "accessibility-agents-update"; echo "$CRON_CMD") | crontab -
+      (crontab -l 2>/dev/null | grep -v "a11y-agent-team-update"; echo "$CRON_CMD") | crontab -
       echo "  Auto-updates enabled (daily at 9:00 AM via cron)."
     fi
-    echo "  Update log: ~/.claude/.accessibility-agents-update.log"
+    echo "  Update log: ~/.claude/.a11y-agent-team-update.log"
   else
     echo "  Auto-updates skipped. You can run update.sh manually anytime."
   fi
@@ -1581,3 +1649,5 @@ echo ""
 echo "  Start Claude Code and try: \"Build a login form\""
 echo "  The accessibility-lead should activate automatically."
 echo ""
+
+

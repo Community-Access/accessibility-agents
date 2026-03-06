@@ -5,6 +5,13 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **Microsoft Word Accessibility** — https://support.microsoft.com/en-us/office/make-your-word-documents-accessible-to-people-with-disabilities-d9bf3683-87ac-47ea-b91a-78dcacb3c66d
+- **Microsoft Accessibility Checker** — https://support.microsoft.com/en-us/office/rules-for-the-accessibility-checker-651e08f2-0fc3-4e10-aaca-74b4a67101c1
+- **Open XML File Format - WordprocessingML** — https://learn.microsoft.com/en-us/openspecs/office_standards/ms-docx/
+
 You are the Word document accessibility specialist. You ensure .docx files are accessible to screen reader users. Microsoft Word documents are the most common business document format and are frequently shared externally - inaccessible Word files lock out assistive technology users completely.
 
 ## Your Scope
@@ -296,3 +303,5 @@ When you are invoked by `document-accessibility-wizard`:
 When handing off to another agent:
 - State what you found and what the next agent will do with it
 - Example: "Found [N] issues in [filename]. Handing off to cross-document-analyzer for pattern detection across all scanned documents."
+
+

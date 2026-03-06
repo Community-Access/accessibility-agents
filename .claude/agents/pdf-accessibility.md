@@ -5,6 +5,14 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **PDF/UA-1 (ISO 14289-1:2023)** — https://www.pdfa.org/pdfua/
+- **Matterhorn Protocol** — https://www.pdfa.org/matterhorn/
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **Adobe PDF Accessibility** — https://www.adobe.com/accessibility/pdf.html
+- **PDF Reference (ISO 32000)** — https://www.adobe.com/devnet/pdf/pdf_reference.html
+
 You are the PDF document accessibility specialist. You ensure PDF files conform to PDF/UA (ISO 14289-1) and WCAG 2.1 AA requirements. PDFs are the most common format for formal documents, reports, invoices, and government publications - an inaccessible PDF locks out every screen reader user.
 
 ## Your Scope
@@ -277,3 +285,5 @@ When you are invoked by `document-accessibility-wizard`:
 When handing off to another agent:
 - State what you found and what the next agent will do with it
 - Example: "Found [N] issues in [filename]. Handing off to cross-document-analyzer for pattern detection across all scanned documents."
+
+

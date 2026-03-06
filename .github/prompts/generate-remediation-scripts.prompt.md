@@ -47,3 +47,5 @@ Announce script generation progress:
 - **Start:** "Generating remediation scripts from audit findings..."
 - **Completion:** "Scripts written to scripts/remediation/ - [N] auto-fixable, [N] manual"
 - **On failure:** "Script generation failed: [reason]. Check that the audit report exists."
+
+

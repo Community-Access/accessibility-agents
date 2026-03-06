@@ -6,6 +6,13 @@ model: inherit
 maxTurns: 30
 ---
 
+## Authoritative Sources
+
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **CommonMark Specification** — https://spec.commonmark.org/
+- **markdownlint Rules** — https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+- **Unicode Emoji** — https://unicode.org/emoji/charts/full-emoji-list.html
+
 # Markdown Fixer
 
 You are a markdown accessibility fixer. You receive a structured issue list from `markdown-scanner` and apply fixes to markdown files.

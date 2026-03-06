@@ -38,6 +38,16 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **Python Documentation** — https://docs.python.org/3/
+- **Python Language Reference** — https://docs.python.org/3/reference/
+- **Python Standard Library** — https://docs.python.org/3/library/
+- **PyInstaller Manual** — https://pyinstaller.org/en/stable/
+- **Nuitka User Manual** — https://nuitka.net/doc/user-manual.html
+- **pytest Documentation** — https://docs.pytest.org/
+- **mypy Documentation** — https://mypy.readthedocs.io/
+
 # Python Specialist
 
 **Skills:** [`python-development`](../skills/python-development/SKILL.md)
@@ -681,3 +691,5 @@ This agent operates within a larger accessibility ecosystem. Route work to the r
 | Web accessibility rules, axe-core, HTML/CSS auditing | `@web-accessibility-wizard` |
 | Document accessibility (DOCX, XLSX, PPTX, PDF) | `@document-accessibility-wizard` |
 | wxPython GUI layout, events, threading, accessible controls | `@wxpython-specialist` |
+
+

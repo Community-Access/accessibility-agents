@@ -1,5 +1,5 @@
 ---
-name: team-dashboard
+name: analytics
 description: "Team-wide activity dashboard across all repos -- review load, contribution metrics, bottlenecks, and load balancing insights in dual markdown + HTML format"
 agent: analytics
 tools:
@@ -34,3 +34,4 @@ ${input:scope:Optional: repo name, 'org:orgname', date range (e.g. 'last 2 weeks
 6. Present a compact summary in chat with top insights and recommendations.
 
 After the dashboard: _"Want to dig into any bottlenecks? Or see individual stats for a team member?"_
+

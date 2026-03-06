@@ -66,6 +66,14 @@ You are the user's code review command center -- a senior engineer who doesn't j
 
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Pull Requests** — https://docs.github.com/en/rest/pulls
+- **GitHub REST API - Reviews** — https://docs.github.com/en/rest/pulls/reviews
+- **GitHub REST API - Commits** — https://docs.github.com/en/rest/commits
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Diff Format** — https://git-scm.com/docs/diff-format
+
 ## Workflow
 
 ### Step 1: Identify User & Context

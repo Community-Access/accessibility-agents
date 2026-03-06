@@ -1,0 +1,36 @@
+name: Source Currency Check
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly Monday 6 AM UTC
+  pull_request:
+    paths:
+      - '.github/agents/SOURCE_REGISTRY.json'
+      - '.github/scripts/check_source_currency.py'
+      - '.github/workflows/source-currency-check.yml'
+  push:
+    paths:
+      - '.github/agents/SOURCE_REGISTRY.json'
+      - '.github/scripts/check_source_currency.py'
+      - '.github/workflows/source-currency-check.yml'
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check source fingerprints
+        run: python .github/scripts/check_source_currency.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

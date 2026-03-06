@@ -90,7 +90,7 @@ Four pre-built prompts in `.github/prompts/` provide one-click workflows:
 
 | Prompt | What It Does |
 |--------|-------------|
-| [audit-markdown](../../.github/prompts/audit-markdown.prompt.md) | Full guided audit with Phase 0 config, parallel scan, saved report |
+| [markdown-a11y-assistant](../../.github/prompts/markdown-a11y-assistant.prompt.md) | Full guided audit with Phase 0 config, parallel scan, saved report |
 | [quick-markdown-check](../../.github/prompts/quick-markdown-check.prompt.md) | Fast triage - errors only, no report file |
 | [fix-markdown-issues](../../.github/prompts/fix-markdown-issues.prompt.md) | Interactive fix mode from saved report or fresh scan |
 | [compare-markdown-audits](../../.github/prompts/compare-markdown-audits.prompt.md) | Track remediation progress between two audit snapshots |

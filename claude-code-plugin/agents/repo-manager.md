@@ -5,6 +5,15 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Repositories** — https://docs.github.com/en/rest/repos
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub REST API - Labels** — https://docs.github.com/en/rest/issues/labels
+- **GitHub REST API - Milestones** — https://docs.github.com/en/rest/issues/milestones
+- **GitHub Issue Template Syntax** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests
+- **GitHub Actions Workflow Syntax** — https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+
 # Repo Manager Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

@@ -5,6 +5,12 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub Issue Template Syntax** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests
+- **GitHub Discussion Template Syntax** — https://docs.github.com/en/communities/managing-discussions-for-your-community/creating-discussion-category-forms
+- **YAML Specification** — https://yaml.org/spec/1.2.2/
+
 # Template Builder Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

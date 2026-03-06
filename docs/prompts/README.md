@@ -1,102 +1,120 @@
 # Prompt Reference
 
-This directory contains complete documentation for all 52 prompt files in this repository. Prompts are one-click workflows that launch pre-configured agent sessions - select them from the prompt picker in GitHub Copilot Chat or type `/` in Claude Code.
+This directory tracks the canonical prompt inventory from `.github/prompts/`.
 
-## Web Accessibility Prompts
+**Current total:** 104 prompts
 
-| Prompt | Description |
-|--------|-------------|
-| [audit-web-page](web/audit-web-page.md) | Full single-page audit - axe-core + code review, scored report saved to file |
-| [quick-web-check](web/quick-web-check.md) | Fast triage - axe-core only, inline pass/fail verdict |
-| [audit-web-multi-page](web/audit-web-multi-page.md) | Multi-page comparison audit with systemic vs page-specific classification |
-| [compare-web-audits](web/compare-web-audits.md) | Track remediation progress between two audit snapshots |
-| [fix-web-issues](web/fix-web-issues.md) | Interactive fix mode with auto-fix + human-judgment workflow |
-| [export-web-csv](web/export-web-csv.md) | Export web audit findings to CSV with Deque University help links |
-| [export-markdown-csv](web/export-markdown-csv.md) | Export markdown audit findings to CSV with WCAG help links and markdownlint rule references |
+## Canonical Prompt Files
 
-## Document Accessibility Prompts
+- [a11y-tool-builder](../../.github/prompts/a11y-tool-builder.prompt.md)
+- [accessibility-lead](../../.github/prompts/accessibility-lead.prompt.md)
+- [add-collaborator](../../.github/prompts/add-collaborator.prompt.md)
+- [address-comments](../../.github/prompts/address-comments.prompt.md)
+- [alt-text-headings](../../.github/prompts/alt-text-headings.prompt.md)
+- [analytics](../../.github/prompts/analytics.prompt.md)
+- [aria-specialist](../../.github/prompts/aria-specialist.prompt.md)
+- [audit-changed-documents](../../.github/prompts/audit-changed-documents.prompt.md)
+- [audit-document-folder](../../.github/prompts/audit-document-folder.prompt.md)
+- [audit-single-document](../../.github/prompts/audit-single-document.prompt.md)
+- [audit-web-multi-page](../../.github/prompts/audit-web-multi-page.prompt.md)
+- [build-a11y-template](../../.github/prompts/build-a11y-template.prompt.md)
+- [build-template](../../.github/prompts/build-template.prompt.md)
+- [ci-status](../../.github/prompts/ci-status.prompt.md)
+- [cognitive-accessibility](../../.github/prompts/cognitive-accessibility.prompt.md)
+- [compare-audits](../../.github/prompts/compare-audits.prompt.md)
+- [compare-markdown-audits](../../.github/prompts/compare-markdown-audits.prompt.md)
+- [compare-web-audits](../../.github/prompts/compare-web-audits.prompt.md)
+- [contrast-master](../../.github/prompts/contrast-master.prompt.md)
+- [contributions-hub](../../.github/prompts/contributions-hub.prompt.md)
+- [create-accessible-template](../../.github/prompts/create-accessible-template.prompt.md)
+- [create-issue](../../.github/prompts/create-issue.prompt.md)
+- [cross-document-analyzer](../../.github/prompts/cross-document-analyzer.prompt.md)
+- [cross-page-analyzer](../../.github/prompts/cross-page-analyzer.prompt.md)
+- [daily-briefing](../../.github/prompts/daily-briefing.prompt.md)
+- [design-system-auditor](../../.github/prompts/design-system-auditor.prompt.md)
+- [desktop-a11y-specialist](../../.github/prompts/desktop-a11y-specialist.prompt.md)
+- [desktop-a11y-testing-coach](../../.github/prompts/desktop-a11y-testing-coach.prompt.md)
+- [developer-hub](../../.github/prompts/developer-hub.prompt.md)
+- [document-accessibility-wizard](../../.github/prompts/document-accessibility-wizard.prompt.md)
+- [document-csv-reporter](../../.github/prompts/document-csv-reporter.prompt.md)
+- [document-inventory](../../.github/prompts/document-inventory.prompt.md)
+- [draft-release](../../.github/prompts/draft-release.prompt.md)
+- [epub-accessibility](../../.github/prompts/epub-accessibility.prompt.md)
+- [epub-scan-config](../../.github/prompts/epub-scan-config.prompt.md)
+- [excel-accessibility](../../.github/prompts/excel-accessibility.prompt.md)
+- [explain-code](../../.github/prompts/explain-code.prompt.md)
+- [fix-markdown-issues](../../.github/prompts/fix-markdown-issues.prompt.md)
+- [fix-web-issues](../../.github/prompts/fix-web-issues.prompt.md)
+- [forms-specialist](../../.github/prompts/forms-specialist.prompt.md)
+- [generate-remediation-scripts](../../.github/prompts/generate-remediation-scripts.prompt.md)
+- [generate-vpat](../../.github/prompts/generate-vpat.prompt.md)
+- [github-hub](../../.github/prompts/github-hub.prompt.md)
+- [insiders-a11y-tracker](../../.github/prompts/insiders-a11y-tracker.prompt.md)
+- [issue-reply](../../.github/prompts/issue-reply.prompt.md)
+- [issue-tracker](../../.github/prompts/issue-tracker.prompt.md)
+- [keyboard-navigator](../../.github/prompts/keyboard-navigator.prompt.md)
+- [lighthouse-bridge](../../.github/prompts/lighthouse-bridge.prompt.md)
+- [link-checker](../../.github/prompts/link-checker.prompt.md)
+- [live-region-controller](../../.github/prompts/live-region-controller.prompt.md)
+- [manage-branches](../../.github/prompts/manage-branches.prompt.md)
+- [manage-issue](../../.github/prompts/manage-issue.prompt.md)
+- [markdown-a11y-assistant](../../.github/prompts/markdown-a11y-assistant.prompt.md)
+- [markdown-csv-reporter](../../.github/prompts/markdown-csv-reporter.prompt.md)
+- [markdown-fixer](../../.github/prompts/markdown-fixer.prompt.md)
+- [markdown-scanner](../../.github/prompts/markdown-scanner.prompt.md)
+- [merge-pr](../../.github/prompts/merge-pr.prompt.md)
+- [mobile-accessibility](../../.github/prompts/mobile-accessibility.prompt.md)
+- [modal-specialist](../../.github/prompts/modal-specialist.prompt.md)
+- [my-issues](../../.github/prompts/my-issues.prompt.md)
+- [my-prs](../../.github/prompts/my-prs.prompt.md)
+- [my-stats](../../.github/prompts/my-stats.prompt.md)
+- [nexus](../../.github/prompts/nexus.prompt.md)
+- [notifications](../../.github/prompts/notifications.prompt.md)
+- [nvda-addon-specialist](../../.github/prompts/nvda-addon-specialist.prompt.md)
+- [office-scan-config](../../.github/prompts/office-scan-config.prompt.md)
+- [onboard-repo](../../.github/prompts/onboard-repo.prompt.md)
+- [pdf-accessibility](../../.github/prompts/pdf-accessibility.prompt.md)
+- [pdf-scan-config](../../.github/prompts/pdf-scan-config.prompt.md)
+- [powerpoint-accessibility](../../.github/prompts/powerpoint-accessibility.prompt.md)
+- [pr-author-checklist](../../.github/prompts/pr-author-checklist.prompt.md)
+- [pr-comment](../../.github/prompts/pr-comment.prompt.md)
+- [pr-report](../../.github/prompts/pr-report.prompt.md)
+- [pr-review](../../.github/prompts/pr-review.prompt.md)
+- [project-status](../../.github/prompts/project-status.prompt.md)
+- [python-specialist](../../.github/prompts/python-specialist.prompt.md)
+- [quick-document-check](../../.github/prompts/quick-document-check.prompt.md)
+- [quick-markdown-check](../../.github/prompts/quick-markdown-check.prompt.md)
+- [quick-web-check](../../.github/prompts/quick-web-check.prompt.md)
+- [react](../../.github/prompts/react.prompt.md)
+- [refine-issue](../../.github/prompts/refine-issue.prompt.md)
+- [release-prep](../../.github/prompts/release-prep.prompt.md)
+- [repo-admin](../../.github/prompts/repo-admin.prompt.md)
+- [repo-manager](../../.github/prompts/repo-manager.prompt.md)
+- [review-pr](../../.github/prompts/review-pr.prompt.md)
+- [scanner-bridge](../../.github/prompts/scanner-bridge.prompt.md)
+- [security-dashboard](../../.github/prompts/security-dashboard.prompt.md)
+- [setup-document-cicd](../../.github/prompts/setup-document-cicd.prompt.md)
+- [setup-github-scanner](../../.github/prompts/setup-github-scanner.prompt.md)
+- [setup-lighthouse-scanner](../../.github/prompts/setup-lighthouse-scanner.prompt.md)
+- [sprint-review](../../.github/prompts/sprint-review.prompt.md)
+- [tables-data-specialist](../../.github/prompts/tables-data-specialist.prompt.md)
+- [team-dashboard](../../.github/prompts/team-dashboard.prompt.md)
+- [team-manager](../../.github/prompts/team-manager.prompt.md)
+- [template-builder](../../.github/prompts/template-builder.prompt.md)
+- [testing-coach](../../.github/prompts/testing-coach.prompt.md)
+- [text-quality-reviewer](../../.github/prompts/text-quality-reviewer.prompt.md)
+- [triage](../../.github/prompts/triage.prompt.md)
+- [wcag-guide](../../.github/prompts/wcag-guide.prompt.md)
+- [web-accessibility-wizard](../../.github/prompts/web-accessibility-wizard.prompt.md)
+- [web-csv-reporter](../../.github/prompts/web-csv-reporter.prompt.md)
+- [web-issue-fixer](../../.github/prompts/web-issue-fixer.prompt.md)
+- [word-accessibility](../../.github/prompts/word-accessibility.prompt.md)
+- [wxpython-specialist](../../.github/prompts/wxpython-specialist.prompt.md)
 
-| Prompt | Description |
-|--------|-------------|
-| [audit-single-document](documents/audit-single-document.md) | Audit one .docx, .xlsx, .pptx, or .pdf with strict profile |
-| [audit-document-folder](documents/audit-document-folder.md) | Recursive folder scan with cross-document pattern analysis |
-| [audit-changed-documents](documents/audit-changed-documents.md) | Delta scan - only documents changed since last git commit |
-| [quick-document-check](documents/quick-document-check.md) | Fast triage - errors only, pass/fail verdict, no report file |
-| [generate-vpat](documents/generate-vpat.md) | Generate a VPAT 2.5 / Section 508 / EN 301 549 conformance report |
-| [generate-remediation-scripts](documents/generate-remediation-scripts.md) | Create PowerShell and Bash scripts for automatable fixes |
-| [compare-audits](documents/compare-audits.md) | Compare two document audit reports and track progress |
-| [setup-document-cicd](documents/setup-document-cicd.md) | Set up CI/CD pipeline for automated document scanning |
-| [create-accessible-template](documents/create-accessible-template.md) | Create an accessible Office document template from scratch |
-| [export-document-csv](documents/export-document-csv.md) | Export document audit findings to CSV with Microsoft Office and Adobe PDF help links |
+## Verification
 
-## GitHub Workflow Prompts
+Run this command to verify counts:
 
-### Pull Request Workflows
-
-| Prompt | Description |
-|--------|-------------|
-| [review-pr](github/review-pr.md) | Full PR review with annotated diff, saved as markdown + HTML |
-| [pr-report](github/pr-report.md) | Save a PR review as workspace documents for offline review |
-| [my-prs](github/my-prs.md) | Dashboard of your open PRs with review status and CI state |
-| [pr-author-checklist](github/pr-author-checklist.md) | Pre-submit self-review checklist before requesting review |
-| [pr-comment](github/pr-comment.md) | Add line-specific review comments to a PR |
-| [address-comments](github/address-comments.md) | Systematically respond to all PR review feedback |
-| [manage-branches](github/manage-branches.md) | List, compare, and clean up stale branches |
-| [merge-pr](github/merge-pr.md) | Merge a PR after readiness check with strategy selection |
-| [explain-code](github/explain-code.md) | Explain specific lines or functions in a PR diff |
-
-### Issue Workflows
-
-| Prompt | Description |
-|--------|-------------|
-| [my-issues](github/my-issues.md) | Smart issue dashboard across all repos with priority signals |
-| [create-issue](github/create-issue.md) | Create a new issue with smart formatting and metadata |
-| [triage](github/triage.md) | Prioritized triage dashboard saved as markdown + HTML |
-| [issue-reply](github/issue-reply.md) | Draft and post a context-aware reply to an issue |
-| [manage-issue](github/manage-issue.md) | Edit, label, assign, close, or transfer an issue |
-| [refine-issue](github/refine-issue.md) | Add acceptance criteria, edge cases, and technical context |
-| [project-status](github/project-status.md) | GitHub Projects board overview with per-column metrics |
-| [react](github/react.md) | Add emoji reactions to issues, PRs, or comments |
-
-### Briefing and CI Workflows
-
-| Prompt | Description |
-|--------|-------------|
-| [daily-briefing](github/daily-briefing.md) | Daily GitHub briefing across all repos, saved as markdown + HTML |
-| [ci-status](github/ci-status.md) | CI/CD health dashboard with failures, flaky tests, and long runs |
-| [notifications](github/notifications.md) | Manage GitHub notifications with filtering and actions |
-| [security-dashboard](github/security-dashboard.md) | Dependabot alerts and dependency vulnerability overview |
-| [onboard-repo](github/onboard-repo.md) | First-time repo scan - health check, quick wins, saved report |
-
-### Release Workflows
-
-| Prompt | Description |
-|--------|-------------|
-| [draft-release](github/draft-release.md) | Draft release notes from merged PRs since last release |
-| [release-prep](github/release-prep.md) | Complete release preparation - milestone, CI, checklist, notes |
-
-### Analytics Workflows
-
-| Prompt | Description |
-|--------|-------------|
-| [my-stats](github/my-stats.md) | Personal contribution metrics with team comparison |
-| [team-dashboard](github/team-dashboard.md) | Team activity and review load with bottleneck detection |
-| [sprint-review](github/sprint-review.md) | End-of-sprint summary with velocity and retrospective prompts |
-
-### Community and Tooling
-
-| Prompt | Description |
-|--------|-------------|
-| [a11y-update](github/a11y-update.md) | Latest accessibility improvements across tracked repos with WCAG mapping |
-| [add-collaborator](github/add-collaborator.md) | Add a user to a repo with role selection |
-| [build-template](github/build-template.md) | Interactive wizard to build a GitHub issue, PR, or discussion template |
-| [build-a11y-template](github/build-a11y-template.md) | Generate a production-ready accessibility bug report template |
-
-## Markdown Accessibility Prompts
-
-| Prompt | Description |
-|--------|-------------|
-| [audit-markdown](../../.github/prompts/audit-markdown.prompt.md) | Full guided audit with Phase 0 config, parallel scanning, saved scored report |
-| [quick-markdown-check](../../.github/prompts/quick-markdown-check.prompt.md) | Fast triage - errors only, inline pass/fail verdict, no report file |
-| [fix-markdown-issues](../../.github/prompts/fix-markdown-issues.prompt.md) | Interactive fix mode - auto-fix table + human-judgment items from saved report |
-| [compare-markdown-audits](../../.github/prompts/compare-markdown-audits.prompt.md) | Track remediation progress between two audit snapshots with Fixed/New/Persistent/Regressed scoring |
+```powershell
+(Get-ChildItem .github\prompts\*.prompt.md -File).Count
+```

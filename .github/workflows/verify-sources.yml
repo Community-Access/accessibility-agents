@@ -1,0 +1,77 @@
+name: Verify Authoritative Sources
+
+on:
+  pull_request:
+    paths:
+      - '.claude/agents/**/*.md'
+      - 'claude-code-plugin/agents/**/*.md'
+      - '.github/agents/**/*.md'
+      - 'docs/**/*.md'
+      - 'scripts/verify-sources.py'
+      - '.github/agents/SOURCE_REGISTRY.json'
+  schedule:
+    # Run weekly on Monday at 08:00 UTC
+    - cron: '0 8 * * MON'
+  workflow_dispatch:
+
+jobs:
+  verify-sources:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+      
+      - name: Extract and validate URLs
+        id: validate
+        run: |
+          python scripts/verify-sources.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Report results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('source-validation-results.json', 'utf8'));
+            
+            let summary = '## Source Validation Results\n\n';
+            summary += `✅ Valid: ${results.valid}\n`;
+            summary += `⚠️ Redirects: ${results.redirects}\n`;
+            summary += `❌ Broken: ${results.broken}\n`;
+            summary += `⏭️ Skipped: ${results.skipped}\n\n`;
+            
+            if (results.broken > 0) {
+              summary += '### Broken Links\n';
+              results.broken_links.forEach(link => {
+                summary += `- ${link.file}:${link.line} - ${link.url} (HTTP ${link.status})\n`;
+              });
+              summary += '\nPlease fix these broken links before merging.\n';
+            }
+            
+            if (results.redirects > 0) {
+              summary += '### Redirected Links (Review)\n';
+              results.redirect_links.forEach(link => {
+                summary += `- ${link.file}:${link.line} - ${link.url} → ${link.final_url} (HTTP ${link.status})\n`;
+              });
+              summary += '\nConsider updating these to the final URL.\n';
+            }
+            
+            core.summary.addRaw(summary);
+      
+      - name: Fail if broken links
+        if: failure() && steps.validate.outcome == 'failure'
+        run: |
+          echo "Source validation failed. Check the job logs for details."
+          exit 1

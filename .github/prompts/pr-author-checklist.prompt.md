@@ -1,5 +1,5 @@
 ---
-name: pr-author-checklist
+name: pr-review
 description: "PR self-review checklist for authors -- CI status, reviewer suggestions, description quality check, and pre-submit verification"
 agent: pr-review
 tools:
@@ -51,3 +51,4 @@ ${input:pr:Required: PR number or owner/repo#number}
    - Who reviewed similar PRs recently
    - Team member expertise areas from preferences
 6. Summarize: _"Your PR scores {N}/15 on the self-review checklist. {action items}. Ready to request review?"_
+

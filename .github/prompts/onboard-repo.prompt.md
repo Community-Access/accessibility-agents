@@ -1,5 +1,5 @@
 ---
-name: onboard-repo
+name: daily-briefing
 description: "First-time repo onboarding -- scan issues, PRs, releases, CI health, CODEOWNERS, and suggest initial triage and setup actions"
 agent: daily-briefing
 tools:
@@ -44,3 +44,4 @@ ${input:repo:Required: repository in owner/repo format}
    - HTML: `.github/reviews/onboarding/onboard-{repo-slug}-{date}.html`
    With sections: Repo Overview, Health Check, Issues Summary, PR Summary, CI/CD Status, Security Status, Quick Wins, Recommended Actions
 7. Present a compact summary and offer: _"Want to start triaging issues? Or review the oldest PRs?"_
+

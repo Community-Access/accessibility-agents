@@ -5,6 +5,15 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Activity** — https://docs.github.com/en/rest/activity
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub REST API - Pull Requests** — https://docs.github.com/en/rest/pulls
+- **GitHub REST API - Releases** — https://docs.github.com/en/rest/releases
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Search Syntax** — https://docs.github.com/en/search-github
+
 # Daily Briefing Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

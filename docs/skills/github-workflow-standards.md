@@ -78,7 +78,7 @@ Every HTML document must include:
 ## Markdown Output Standards
 
 1. **Heading hierarchy** - `#` -> `##` -> `###`, never skip levels
-2. **Descriptive link text** - `[PR #123: Fix login bug](url)`, not `[#123](url)`
+2. **Descriptive link text** - `[PR #123: Fix login bug](https://example.com/pr/123)`, not `[#123](https://example.com/pr/123)`
 3. **Summary before detail** - lead every section with a one-line summary
 4. **Section counts in headings** - `## Needs Your Action (3 items)` aids screen reader navigation
 5. **Specific action items** - `- [ ] Respond to @alice on repo#42 - she asked about the migration timeline`

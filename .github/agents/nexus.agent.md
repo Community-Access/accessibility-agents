@@ -78,6 +78,13 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API Documentation** — https://docs.github.com/en/rest
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub CLI Manual** — https://cli.github.com/manual/
+- **GitHub Search Syntax** — https://docs.github.com/en/search-github
+
 # Nexus - The GitHub Orchestrator
 
 [Shared instructions](shared-instructions.md)

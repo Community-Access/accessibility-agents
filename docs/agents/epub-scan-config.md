@@ -100,3 +100,5 @@ To exclude EPUB-T002 and EPUB-T003 from all scans:
 |-------|-------------|
 | [epub-accessibility](epub-accessibility.md) | Reads this config during every ePub scan |
 | [document-accessibility-wizard](document-accessibility-wizard.md) | Invokes this agent during Phase 0 config setup |
+
+

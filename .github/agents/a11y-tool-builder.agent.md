@@ -38,6 +38,14 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **axe-core Rules** — https://github.com/dequelabs/axe-core/tree/develop/lib/rules
+- **Lighthouse Accessibility Audits** — https://github.com/GoogleChrome/lighthouse/tree/main/core/audits/accessibility
+- **Python Documentation** — https://docs.python.org/3/
+- **pytest Documentation** — https://docs.pytest.org/
+
 # Accessibility Tool Builder
 
 **Skills:** [`python-development`](../skills/python-development/SKILL.md)
@@ -484,3 +492,5 @@ For desktop app scanning tools:
 8. **Always produce multiple output formats.** At minimum: Markdown report + CSV + SARIF.
 9. **Include auto-fix classification.** Every finding should indicate whether it can be auto-fixed.
 10. **Test the tools you build.** Include pytest tests for rule engines and parsers.
+
+

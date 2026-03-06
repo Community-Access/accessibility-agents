@@ -2,6 +2,77 @@
 
 This file defines coordinated multi-agent workflows for enterprise accessibility scanning.
 
+## Cross-Cutting Standards
+
+### Source Citation Policy
+
+All agents in this workspace MUST follow the [Source Citation Policy](CITATION_POLICY.md). Key requirements:
+
+- **Every factual claim** includes an inline link to the authoritative source
+- **Every substantive response** ends with a `## Sources` section
+- **No source, no claim** — if no authoritative source exists, the agent states this explicitly
+- **6-tier authority hierarchy** — normative specs outrank informative guidance outrank vendor docs
+- **Source currency** — a weekly GitHub Actions workflow monitors authoritative URLs for changes and opens issues when updates are detected
+
+The citation behavioral rule is enforced via [shared-instructions.md](shared-instructions.md), which all agents inherit. The machine-readable source registry at [SOURCE_REGISTRY.json](SOURCE_REGISTRY.json) tracks 20 authoritative URLs with content fingerprints.
+
+### Multi-Agent Workflow Reliability Standards
+
+All teams in this workspace follow the engineering patterns from [Multi-agent workflows often fail. Here's how to engineer ones that don't.](https://github.blog/ai-and-ml/generative-ai/multi-agent-workflows-often-fail-heres-how-to-engineer-ones-that-dont/) Treat agents as distributed system components, not chat interfaces.
+
+#### Structured Outputs at Every Boundary
+
+Agents MUST return structured data at handoff points. Never pass unstructured prose between agents.
+
+**Accessibility finding:**
+- Rule ID, severity (`critical`|`serious`|`moderate`|`minor`), location, description, remediation, confidence (`high`|`medium`|`low`)
+
+**Scored output:**
+- Score (0-100), grade (A-F), issue counts by severity, pass/fail verdict
+
+**Action result:**
+- Action taken, target, result (`success`|`failure`|`skipped`), reason (if not success)
+
+#### Constrained Action Sets
+
+Each agent operates within explicitly defined boundaries:
+
+- **Read-only agents** (scanners, analyzers, reporters): read files, fetch data, produce findings. May NOT edit files or make state changes.
+- **State-changing agents** (fixers, admin agents): perform their defined mutations ONLY after explicit user confirmation.
+- **Orchestrators** (github-hub, nexus, accessibility-lead, wizards): route, aggregate, and present. State changes require user approval before delegation.
+
+If an agent encounters a task outside its action set, it MUST refuse, name the correct agent, and offer to hand off.
+
+#### Boundary Validation
+
+At every handoff:
+
+1. **Before delegating:** Confirm all required inputs (file paths, URLs, config, scope) are available. Resolve missing inputs before delegating. Never delegate with partial context.
+2. **After receiving results:** Verify structured fields are present (findings, scores, verdicts). Retry once if incomplete. Report partial results with clear gap notes if retry fails.
+3. **Orchestrator checklist:** Intent classified, scope resolved, config loaded, sub-agent inputs complete, user confirmation obtained (for state changes).
+
+#### Failure Handling
+
+- Tool call fails: report, explain, offer alternatives. Max 2 retries.
+- Partial scan results: report what succeeded, list failures with reasons, offer targeted retry.
+- Missing context: state defaults being used. Never assume unverified context.
+- Graceful degradation: full workflow, then simpler alternative, then partial results with gaps noted. Never return empty output without explanation.
+
+#### Progress and Intermediate State
+
+- Phase start: announce what is starting, scope size, expected complexity.
+- Phase end: state what was found/accomplished, counts, what comes next.
+- Workflow end: recap phases, aggregate counts, present final deliverable.
+
+#### Agent Isolation and Ordering
+
+- Dependent agents run sequentially. Independent agents run in parallel.
+- Each agent operates on its defined scope. Parallel groups work on distinct concerns.
+- Same inputs produce same structured outputs (idempotent).
+- Output format changes must be backward-compatible.
+
+---
+
 ## Team: Markdown Accessibility Audit
 
 **Lead:** `markdown-a11y-assistant`
@@ -56,7 +127,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 
 **Handoffs:**
 - After audit, user can hand off to any format specialist for targeted remediation
-- `accessibility-wizard` handles web audit handoff when document audit is complete
+- `web-accessibility-wizard` handles web audit handoff when document audit is complete
 
 ## Team: ePub Document Accessibility
 
@@ -90,6 +161,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `alt-text-headings` - Images, alt text, headings, landmarks
 - `tables-data-specialist` - Data tables, grids
 - `link-checker` - Link text quality
+- `text-quality-reviewer` - Non-visual text quality: template variables, code syntax, placeholders, typos in alt/aria-label
 - `testing-coach` - Testing guidance
 - `cognitive-accessibility` - WCAG 2.2 cognitive SC, COGA guidance, plain language analysis
 
@@ -105,7 +177,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 2. Phase 0 Step 0: Auto-detects CI scanners (GitHub Scanner, Lighthouse) and dispatches `scanner-bridge` and `lighthouse-bridge` to fetch findings
 3. Parallel specialist scanning groups execute based on content:
    - **Group 1:** `aria-specialist` + `keyboard-navigator` + `forms-specialist`
-   - **Group 2:** `contrast-master` + `alt-text-headings` + `link-checker`
+   - **Group 2:** `contrast-master` + `alt-text-headings` + `link-checker` + `text-quality-reviewer`
    - **Group 3:** `modal-specialist` + `live-region-controller` + `tables-data-specialist`
 3. `cross-page-analyzer` detects cross-page patterns, computes severity scores, and tracks remediation
 4. `web-issue-fixer` applies auto-fixable corrections and presents human-judgment items
@@ -203,21 +275,25 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `desktop-a11y-specialist` - Desktop application accessibility: platform APIs (UIA, MSAA, ATK, NSAccessibility), screen reader interaction, focus management, custom widget accessibility
 - `desktop-a11y-testing-coach` - Desktop accessibility testing: NVDA, JAWS, Narrator, VoiceOver, Orca, Accessibility Insights, automated UIA testing, keyboard-only testing
 - `a11y-tool-builder` - Accessibility tool building: rule engines, document parsers, report generators, WCAG mapping, severity scoring, CLI/GUI scanner architecture
+- `nvda-addon-specialist` - NVDA addon development: architecture, globalPlugins, appModules, synthDrivers, brailleDisplayDrivers, manifest format, event/script handling, NVDAObject overlays, addon packaging, Add-on Store submission, testing, i18n
+- `text-quality-reviewer` - Non-visual text quality review: template variables in alt text, code syntax as names, placeholder labels, filename alt text, duplicate labels, label-in-name violations
 
 **Skills:**
 - `python-development` - Python version reference, pyproject.toml patterns, PyInstaller modes, wxPython sizer/event/threading cheat sheets, desktop accessibility API reference, common pitfalls, cross-platform paths, testing, logging
 
 **Workflow:**
-1. `developer-hub` receives the user request and classifies intent (debug, package, scaffold, review, optimize, GUI work, desktop a11y, tool building)
+1. `developer-hub` receives the user request and classifies intent (debug, package, scaffold, review, optimize, GUI work, desktop a11y, tool building, NVDA addon development, text quality review)
 2. For pure Python tasks, routes to `python-specialist` with full context
 3. For wxPython/GUI tasks, routes to `wxpython-specialist` with full context
 4. For desktop accessibility API work, routes to `desktop-a11y-specialist`
 5. For screen reader testing, routes to `desktop-a11y-testing-coach`
-6. For building a11y scanning tools, routes to `a11y-tool-builder`
-7. For web accessibility audits, hands off to `web-accessibility-wizard` (Web Accessibility team)
-8. For document accessibility audits, hands off to `document-accessibility-wizard` (Document Accessibility team)
-9. For mixed tasks, starts with the primary domain specialist and hands off as needed
-10. All agents can hand back to `developer-hub` for broader coordination
+6. For NVDA addon development, routes to `nvda-addon-specialist`
+7. For building a11y scanning tools, routes to `a11y-tool-builder`
+8. For non-visual text quality auditing, routes to `text-quality-reviewer`
+9. For web accessibility audits, hands off to `web-accessibility-wizard` (Web Accessibility team)
+10. For document accessibility audits, hands off to `document-accessibility-wizard` (Document Accessibility team)
+11. For mixed tasks, starts with the primary domain specialist and hands off as needed
+12. All agents can hand back to `developer-hub` for broader coordination
 
 **Handoffs:**
 - `developer-hub` -> `python-specialist` for debugging, packaging, testing, type checking, async, optimization
@@ -225,10 +301,15 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `developer-hub` -> `desktop-a11y-specialist` for platform API implementation, screen reader interaction model, custom widget patterns
 - `developer-hub` -> `desktop-a11y-testing-coach` for screen reader testing walkthroughs, Accessibility Insights, automated UIA tests
 - `developer-hub` -> `a11y-tool-builder` for rule engine design, document parsers, report generators, severity scoring
+- `developer-hub` -> `nvda-addon-specialist` for NVDA addon scaffolding, debugging, packaging, Add-on Store submission
+- `developer-hub` -> `text-quality-reviewer` for non-visual text quality auditing, broken alt text detection
 - `python-specialist` <-> `wxpython-specialist` (bidirectional: Python-in-GUI and GUI-needing-Python)
 - `wxpython-specialist` <-> `desktop-a11y-specialist` (bidirectional: GUI accessibility patterns)
+- `nvda-addon-specialist` <-> `wxpython-specialist` (bidirectional: addon GUI components, settings panels)
+- `nvda-addon-specialist` <-> `desktop-a11y-testing-coach` (bidirectional: build then test addon with NVDA)
 - `desktop-a11y-specialist` <-> `desktop-a11y-testing-coach` (bidirectional: implement then test)
 - `a11y-tool-builder` <-> `python-specialist` (bidirectional: tool code needs Python expertise)
+- `text-quality-reviewer` -> `accessibility-lead` for full web audit after text quality scan (cross-team)
 - Any developer agent -> `web-accessibility-wizard` for web content auditing (cross-team)
 - Any developer agent -> `document-accessibility-wizard` for document auditing (cross-team)
 - Any agent -> `developer-hub` for task completion or scope changes
@@ -282,59 +363,4 @@ For Section 508, EN 301 549, or organizational compliance:
 3. Track progress with `compare-web-audits` prompt between audit runs
 4. Use `quick-web-check` for fast axe-core triage between full audits
 
----
 
-## Multi-Agent Workflow Reliability Standards
-
-All teams in this workspace follow the engineering patterns from [Multi-agent workflows often fail. Here's how to engineer ones that don't.](https://github.blog/ai-and-ml/generative-ai/multi-agent-workflows-often-fail-heres-how-to-engineer-ones-that-dont/) Treat agents as distributed system components, not chat interfaces.
-
-### Structured Outputs at Every Boundary
-
-Agents MUST return structured data at handoff points. Never pass unstructured prose between agents.
-
-**Accessibility finding:**
-- Rule ID, severity (`critical`|`serious`|`moderate`|`minor`), location, description, remediation, confidence (`high`|`medium`|`low`)
-
-**Scored output:**
-- Score (0-100), grade (A-F), issue counts by severity, pass/fail verdict
-
-**Action result:**
-- Action taken, target, result (`success`|`failure`|`skipped`), reason (if not success)
-
-### Constrained Action Sets
-
-Each agent operates within explicitly defined boundaries:
-
-- **Read-only agents** (scanners, analyzers, reporters): read files, fetch data, produce findings. May NOT edit files or make state changes.
-- **State-changing agents** (fixers, admin agents): perform their defined mutations ONLY after explicit user confirmation.
-- **Orchestrators** (github-hub, nexus, accessibility-lead, wizards): route, aggregate, and present. State changes require user approval before delegation.
-
-If an agent encounters a task outside its action set, it MUST refuse, name the correct agent, and offer to hand off.
-
-### Boundary Validation
-
-At every handoff:
-
-1. **Before delegating:** Confirm all required inputs (file paths, URLs, config, scope) are available. Resolve missing inputs before delegating. Never delegate with partial context.
-2. **After receiving results:** Verify structured fields are present (findings, scores, verdicts). Retry once if incomplete. Report partial results with clear gap notes if retry fails.
-3. **Orchestrator checklist:** Intent classified, scope resolved, config loaded, sub-agent inputs complete, user confirmation obtained (for state changes).
-
-### Failure Handling
-
-- Tool call fails: report, explain, offer alternatives. Max 2 retries.
-- Partial scan results: report what succeeded, list failures with reasons, offer targeted retry.
-- Missing context: state defaults being used. Never assume unverified context.
-- Graceful degradation: full workflow, then simpler alternative, then partial results with gaps noted. Never return empty output without explanation.
-
-### Progress and Intermediate State
-
-- Phase start: announce what is starting, scope size, expected complexity.
-- Phase end: state what was found/accomplished, counts, what comes next.
-- Workflow end: recap phases, aggregate counts, present final deliverable.
-
-### Agent Isolation and Ordering
-
-- Dependent agents run sequentially. Independent agents run in parallel.
-- Each agent operates on its defined scope. Parallel groups work on distinct concerns.
-- Same inputs produce same structured outputs (idempotent).
-- Output format changes must be backward-compatible.

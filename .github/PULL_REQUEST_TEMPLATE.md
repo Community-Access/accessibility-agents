@@ -50,3 +50,9 @@ Before submitting, verify all applicable items. If an item doesn't apply, mark i
 - [ ] Tested with keyboard-only navigation (Tab, Enter, Escape, Arrow keys)
 - [ ] Tested with screen reader (VoiceOver, NVDA, or JAWS) if available
 - [ ] No new accessibility linting warnings
+
+### Source Citations (Agent Changes Only)
+- [ ] All factual claims include inline links to authoritative sources
+- [ ] Sources section included at end of any new agent file or substantive guidance
+- [ ] Source URLs verified as reachable and current
+- [ ] New sources added to `SOURCE_REGISTRY.json` if they are primary references for an agent domain

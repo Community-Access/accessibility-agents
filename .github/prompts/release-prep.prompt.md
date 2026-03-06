@@ -1,5 +1,5 @@
 ---
-name: release-prep
+name: daily-briefing
 description: "Complete release preparation workflow -- milestone check, open PRs review, release notes, changelog, and readiness checklist"
 agent: daily-briefing
 tools:
@@ -59,3 +59,4 @@ Generate a comprehensive checklist:
 
 ### Step 8: Next Actions
 Offer to: create the GitHub release draft, close the milestone, or notify the team.
+

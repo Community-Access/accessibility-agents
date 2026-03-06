@@ -1,4 +1,4 @@
-{ "generated": "2026-02-28T23:27:23Z", "sections": [
+{ "generated": "2026-03-04T16:47:30Z", "sections": [
 {"name":"Getting Started","id":"getting-started","items":[
 {"path":"docs/getting-started.md","title":"Getting Started"}
 ,
@@ -79,6 +79,8 @@
 ,
 {"path":"docs/agents/modal-specialist.md","title":"modal-specialist - Dialogs, Drawers, and Overlays"}
 ,
+{"path":"docs/agents/nvda-addon-specialist.md","title":"nvda-addon-specialist - NVDA Addon Development"}
+,
 {"path":"docs/agents/office-scan-config.md","title":"office-scan-config - Office Scan Configuration"}
 ,
 {"path":"docs/agents/pdf-accessibility.md","title":"pdf-accessibility - PDF Document Accessibility"}
@@ -105,9 +107,11 @@
 ,
 {"path":"docs/agents/testing-coach.md","title":"testing-coach - How to Test Accessibility"}
 ,
+{"path":"docs/agents/text-quality-reviewer.md","title":"text-quality-reviewer - Non-Visual Text Quality Review"}
+,
 {"path":"docs/agents/wcag-guide.md","title":"wcag-guide - Understanding the Standard"}
 ,
-{"path":"docs/agents/web-accessibility-wizard.md","title":"accessibility-wizard - Guided Accessibility Audit"}
+{"path":"docs/agents/web-accessibility-wizard.md","title":"web-accessibility-wizard - Guided Accessibility Audit"}
 ,
 {"path":"docs/agents/web-csv-reporter.md","title":"web-csv-reporter"}
 ,
@@ -292,3 +296,5 @@
 {"path":"SECURITY.md","title":"Security Policy"}
 ]}
 ]}
+
+

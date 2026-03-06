@@ -35,6 +35,14 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub REST API - Issue Comments** — https://docs.github.com/en/rest/issues/comments
+- **GitHub REST API - Reactions** — https://docs.github.com/en/rest/reactions
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Search Syntax** — https://docs.github.com/en/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax
+
 # Issue Tracker Agent
 
 [Shared instructions](shared-instructions.md)

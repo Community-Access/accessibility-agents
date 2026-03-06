@@ -25,6 +25,14 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **WAI-ARIA 1.2 Specification** — https://www.w3.org/TR/wai-aria-1.2/
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **VS Code Accessibility** — https://code.visualstudio.com/docs/editor/accessibility
+
 # Accessibility Tracker
 
 [Shared instructions](shared-instructions.md)

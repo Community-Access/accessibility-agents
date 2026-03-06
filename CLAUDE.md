@@ -97,14 +97,14 @@ The following knowledge domains are available across agent files. On Copilot the
 
 ## Agent Teams
 
-Team coordination is defined in `.claude/agents/AGENTS.md`. Five defined teams:
+Team coordination is defined in `.claude/agents/AGENTS.md`. Six defined teams:
 
 - **Document Accessibility Audit** - led by document-accessibility-wizard with format-specific sub-agents
 - **Web Accessibility Audit** - led by accessibility-lead with all web specialist agents
 - **Full Audit** - combined web + document audit workflow
 - **Mobile Accessibility** - led by mobile-accessibility; invoked standalone or as handoff from accessibility-lead
 - **Design System Accessibility** - led by design-system-auditor; validates tokens before UI propagation
-- **Developer Tools** - led by developer-hub; routes to python-specialist, wxpython-specialist, desktop-a11y-specialist, desktop-a11y-testing-coach, a11y-tool-builder for Python, wxPython, desktop accessibility, and tool building. Cross-team handoffs to web-accessibility-wizard and document-accessibility-wizard.
+- **Developer Tools** - led by developer-hub; routes to python-specialist, wxpython-specialist, nvda-addon-specialist, desktop-a11y-specialist, desktop-a11y-testing-coach, a11y-tool-builder, text-quality-reviewer for Python, wxPython, NVDA addons, desktop accessibility, and tool building. Cross-team handoffs to web-accessibility-wizard and document-accessibility-wizard.
 
 ## Decision Matrix
 

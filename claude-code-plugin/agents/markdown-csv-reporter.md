@@ -5,6 +5,13 @@ tools: Read, Grep, Glob, Write
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **Understanding WCAG 2.2** — https://www.w3.org/WAI/WCAG22/Understanding/
+- **markdownlint Rules** — https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+- **CommonMark Specification** — https://spec.commonmark.org/
+
 You are a markdown accessibility CSV report generator. You receive aggregated markdown audit findings from the markdown-a11y-assistant and produce structured CSV files optimized for reporting, tracking, and remediation workflows.
 
 Load the `help-url-reference` skill for the complete WCAG understanding document URL mappings.

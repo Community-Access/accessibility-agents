@@ -43,6 +43,14 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **wxPython Documentation** — https://docs.wxpython.org/
+- **wxPython API Reference** — https://docs.wxpython.org/wx.1moduleindex.html
+- **wxWidgets Documentation** — https://docs.wxwidgets.org/
+- **wxPython Sizers** — https://docs.wxpython.org/sizers_overview.html
+- **wxPython Events** — https://docs.wxpython.org/events_overview.html
+
 # wxPython Specialist
 
 **Skills:** [`python-development`](../skills/python-development/SKILL.md)
@@ -469,6 +477,61 @@ accel = wx.AcceleratorTable([
 self.SetAcceleratorTable(accel)
 ```
 
+### Screen Reader Key Event Pitfalls
+
+Screen readers like NVDA and JAWS install a low-level keyboard hook (`WH_KEYBOARD_LL`) that intercepts every keystroke system-wide **before** any window message reaches the application. When the screen reader consumes a key (for example, Enter on a focused `wx.ListBox` may trigger NVDA's "activate" gesture), the `WM_KEYDOWN` message never arrives at the wxPython window -- so `EVT_KEY_DOWN` and `EVT_CHAR` handlers silently fail.
+
+**Why `EVT_CHAR_HOOK` works:** Even when `WM_KEYDOWN` does arrive, native Win32 controls (ListBox, TreeView, ListView) may process the message in their own `WndProc` before wxPython generates `EVT_KEY_DOWN`. `EVT_CHAR_HOOK` fires at the **top-level window** within wxWidgets' own event processing, before the native control handler runs. This makes it the reliable interception point.
+
+**Event priority order in wxPython:**
+
+1. `EVT_CHAR_HOOK` -- fires first, at the top-level window, before native control processing
+2. `EVT_KEY_DOWN` -- fires after the native control receives the message (may never fire if the control consumes it)
+3. `EVT_CHAR` -- fires after translation (may never fire)
+4. `EVT_KEY_UP` -- fires on key release
+
+**Use `EVT_CHAR_HOOK` for keyboard actions on standard controls:**
+
+```python
+class MyFrame(wx.Frame):
+    def __init__(self, parent):
+        super().__init__(parent, title="Example")
+        self.list_box = wx.ListBox(self, choices=["Item 1", "Item 2", "Item 3"])
+
+        # WRONG -- silently fails when NVDA/JAWS is active on ListBox
+        # self.list_box.Bind(wx.EVT_KEY_DOWN, self.on_key)
+
+        # CORRECT -- fires before the native control handler
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
+
+    def on_char_hook(self, event: wx.KeyEvent) -> None:
+        key = event.GetKeyCode()
+        focused = wx.Window.FindFocus()
+
+        if focused == self.list_box and key == wx.WXK_RETURN:
+            self.activate_selected_item()
+            return  # Do NOT call event.Skip() -- consume the key
+
+        if key == wx.WXK_ESCAPE:
+            self.Close()
+            return
+
+        event.Skip()  # Let other keys propagate normally
+```
+
+**Prefer semantic events when available:**
+
+| Widget | Semantic Event | Use Instead Of |
+|---|---|---|
+| `wx.ListCtrl` | `EVT_LIST_ITEM_ACTIVATED` | `EVT_KEY_DOWN` for Enter/double-click |
+| `wx.TreeCtrl` | `EVT_TREE_ITEM_ACTIVATED` | `EVT_KEY_DOWN` for Enter/double-click |
+| `wx.Button` | `EVT_BUTTON` | `EVT_KEY_DOWN` for Enter/Space |
+| `wx.CheckBox` | `EVT_CHECKBOX` | `EVT_KEY_DOWN` for Space |
+
+Semantic events fire regardless of how the user activated the control (keyboard, mouse, or assistive technology), making them inherently screen-reader-safe.
+
+> **Note:** `wx.ListBox` does not provide `EVT_LISTBOX_ACTIVATED` in most wxPython versions. For ListBox, use `EVT_CHAR_HOOK` to catch Enter, or migrate to `wx.ListCtrl` which provides `EVT_LIST_ITEM_ACTIVATED`.
+
 ### Accessibility Checklist
 
 - [ ] Every control has a meaningful name (via label or `SetName()`)
@@ -479,6 +542,7 @@ self.SetAcceleratorTable(accel)
 - [ ] Color is never the only indicator of state (add text/icons)
 - [ ] Focus is visible on all interactive controls
 - [ ] Escape closes dialogs and returns focus to the trigger
+- [ ] Key handlers on list/tree controls use `EVT_CHAR_HOOK` (not `EVT_KEY_DOWN`/`EVT_CHAR`)
 
 ### Accessibility Audit Mode
 
@@ -500,6 +564,8 @@ When the user asks you to **audit**, **scan**, or **review accessibility** of a 
 | WX-A11Y-010 | Minor | Tab order not explicitly set (`MoveAfterInTabOrder` / `MoveBeforeInTabOrder`) and sizer order doesn't match visual reading order | Tab order may confuse keyboard users |
 | WX-A11Y-011 | Serious | `wx.ListCtrl` or `wx.TreeCtrl` in virtual mode without `GetItemText` override providing meaningful labels | Screen readers read blank or generic items |
 | WX-A11Y-012 | Moderate | Menu item without accelerator key (`\tCtrl+X` suffix) | Power users and keyboard-only users cannot invoke the action quickly |
+| WX-A11Y-013 | Critical | `EVT_KEY_DOWN` or `EVT_CHAR` bound on `wx.ListBox`, `wx.ListCtrl`, `wx.TreeCtrl`, or `wx.DataViewCtrl` for Enter/Space/Escape handling | These events silently fail when NVDA or JAWS is active -- use `EVT_CHAR_HOOK` at the window level or semantic activation events instead |
+| WX-A11Y-014 | Serious | `wx.ListCtrl` with `EVT_KEY_DOWN` for Enter instead of `EVT_LIST_ITEM_ACTIVATED` | Missing semantic event binding -- `EVT_LIST_ITEM_ACTIVATED` fires for keyboard, mouse, and assistive technology activation |
 
 #### Report Format
 
@@ -683,3 +749,4 @@ This agent operates within a larger accessibility ecosystem. Route work to the r
 | Web accessibility (HTML, CSS, React, ARIA, axe-core) | `@web-accessibility-wizard` |
 | Document accessibility (DOCX, XLSX, PPTX, PDF auditing) | `@document-accessibility-wizard` |
 | Python debugging, packaging, testing, type checking | `@python-specialist` |
+

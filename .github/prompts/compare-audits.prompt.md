@@ -44,3 +44,5 @@ Announce comparison progress:
 - **Start:** "Comparing [report1] with [report2] - analyzing [N] findings..."
 - **Completion:** "Comparison complete: [N] fixed, [N] new, [N] persistent, [N] regressed"
 - **On failure:** "Could not parse [report]: [reason]. Comparison aborted."
+
+

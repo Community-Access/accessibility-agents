@@ -30,6 +30,14 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Repositories** — https://docs.github.com/en/rest/repos
+- **GitHub REST API - Collaborators** — https://docs.github.com/en/rest/collaborators
+- **GitHub REST API - Branch Protection** — https://docs.github.com/en/rest/branches/branch-protection
+- **GitHub REST API - Webhooks** — https://docs.github.com/en/rest/webhooks
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+
 # Repo Admin Agent
 
 [Shared instructions](shared-instructions.md)

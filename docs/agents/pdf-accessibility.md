@@ -143,3 +143,5 @@ PDF remediation is more involved than Office document remediation because PDFs a
 | [pdf-scan-config](pdf-scan-config.md) | To configure rule layers - e.g., run PDFUA only (skip PDFBP best practices) for a procurement baseline |
 | [word-accessibility](word-accessibility.md) | When the PDF was generated from Word - fix issues at the source before re-exporting |
 | [powerpoint-accessibility](powerpoint-accessibility.md) | When the PDF was generated from PowerPoint - same source-first remediation approach |
+
+

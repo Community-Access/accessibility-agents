@@ -1,4 +1,5 @@
 ---
+name: markdown-a11y-assistant
 description: Interactive fix mode for markdown accessibility issues. Applies auto-fixable items and walks through human-judgment items one at a time. Uses the most recent MARKDOWN-ACCESSIBILITY-AUDIT.md or runs a fresh scan first.
 mode: agent
 agent: markdown-a11y-assistant
@@ -55,3 +56,4 @@ This workflow delegates to the `markdown-fixer` sub-agent. Announce transitions:
 - **Per fix:** Show before/after with accessibility impact
 - **After completion:** "Fix pass complete: [N] applied, [N] skipped, [N] need review. Score: [before] -> [after]"
 - **On failure:** "Fix failed for [target]: [reason]. File left unchanged."
+

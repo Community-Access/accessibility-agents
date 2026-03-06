@@ -5,6 +5,16 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Commits** — https://docs.github.com/en/rest/commits
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub REST API - Pull Requests** — https://docs.github.com/en/rest/pulls
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Search Syntax** — https://docs.github.com/en/search-github
+- **VS Code Accessibility Issues** — https://github.com/microsoft/vscode/issues?q=label%3Aaccessibility
+- **WCAG 2.2** — https://www.w3.org/WAI/WCAG22/quickref/
+
 # Accessibility Tracker
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

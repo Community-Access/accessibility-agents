@@ -35,7 +35,7 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf
 # Recursive scan
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurse |
   Where-Object { $_.Name -notlike '~$*' -and $_.Name -notlike '*.tmp' -and $_.Name -notlike '*.bak' } |
-  Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]' }
+  Where-Object { $_.FullName -notmatch '(?:[\\/])(?:\.git|node_modules|__pycache__|\.vscode)(?:[\\/])' }
 ```
 
 ### macOS/Linux (Bash)
@@ -128,3 +128,5 @@ Metadata flags in brackets tell the wizard which documents have property issues 
 | [audit-document-folder prompt](../prompts/documents/audit-document-folder.md) | User-facing prompt that triggers recursive file discovery |
 | [audit-changed-documents prompt](../prompts/documents/audit-changed-documents.md) | User-facing prompt that triggers delta detection |
 | [document-scanning skill](../../.github/skills/document-scanning/SKILL.md) | Full file discovery command reference and configuration details |
+
+

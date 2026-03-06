@@ -1,5 +1,5 @@
 ---
-name: ci-status
+name: daily-briefing
 description: "CI/CD health dashboard -- workflow runs, failures, flaky tests, and long-running jobs across your repos"
 agent: daily-briefing
 tools:
@@ -32,3 +32,4 @@ ${input:scope:Optional: specific repo, 'org:orgname', workflow name, or 'just fa
 
 5. For each failure, show: workflow name, branch, error summary, link to the run, and how long it's been failing.
 6. Offer: _"Want to see details on a specific failure? Or check CI for a specific PR?"_
+

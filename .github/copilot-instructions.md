@@ -98,7 +98,7 @@ Team coordination is defined in `.github/agents/AGENTS.md`. Four defined teams:
 
 - **New component or page:** Always apply aria-specialist + keyboard-navigator + alt-text-headings guidance. Add forms-specialist for any inputs, contrast-master for styling, modal-specialist for overlays, live-region-controller for dynamic updates, tables-data-specialist for any data tables.
 - **Modifying existing UI:** At minimum apply keyboard-navigator (tab order breaks easily). Add others based on what changed.
-- **Code review/audit:** Apply all specialist checklists. Use accessibility-wizard for guided web audits. Use `audit-web-page` prompt for one-click full audits.
+- **Code review/audit:** Apply all specialist checklists. Use web-accessibility-wizard for guided web audits. Use `audit-web-page` prompt for one-click full audits.
 - **Document audit:** Use document-accessibility-wizard for Office and PDF accessibility audits. Supports single files, folders, recursive scanning, delta scanning (changed files only), severity scoring, template analysis, remediation tracking across re-scans, compliance format export (VPAT/ACR), CSV export with help links, batch remediation scripts, and CI/CD integration guides.
 - **Web remediation:** Use `fix-web-issues` prompt to interactively apply fixes from an audit report. Use `compare-web-audits` to track progress between audits.
 - **Mobile app (React Native / Expo / iOS / Android):** Apply cognitive-accessibility guidance. Use mobile-accessibility for touch target checks, accessibilityLabel/Role/State audits, and platform-specific screen reader testing.
@@ -151,6 +151,19 @@ One-click workflows for web accessibility auditing tasks:
 | export-markdown-csv | Export markdown audit findings to CSV with WCAG help links and markdownlint rule references |
 | setup-github-scanner | Set up the GitHub Accessibility Scanner in your repository with agent ecosystem integration |
 | setup-lighthouse-scanner | Set up Lighthouse CI accessibility scanning in your repository with agent ecosystem integration |
+
+### Custom Prompts for Developer Tools
+
+One-click workflows for desktop development, NVDA addon creation, and Python packaging:
+
+| Prompt | What It Does |
+|--------|-------------|
+| scaffold-nvda-addon | Scaffold a new NVDA screen reader addon project with structure, manifest, and boilerplate |
+| audit-desktop-a11y | Desktop application accessibility audit covering platform APIs, keyboard, and high contrast |
+| test-desktop-a11y | Create a desktop accessibility test plan with screen reader test cases and automated UIA scaffolding |
+| review-text-quality | Scan web files for broken alt text, template variables in aria-labels, placeholder labels, and duplicate names |
+| scaffold-wxpython-app | Scaffold an accessible wxPython desktop application with sizers, keyboard nav, and screen reader support |
+| package-python-app | Package a Python application for distribution using PyInstaller, Nuitka, or cx_Freeze |
 
 ### Context Discovery
 
@@ -217,3 +230,5 @@ Additional guides in `docs/`:
 - **platform-references.md** - All external documentation sources used to build this project, with feature-to-source mapping
 
 For tasks that do not involve any user-facing web content (backend logic, scripts, database work), these requirements do not apply.
+
+

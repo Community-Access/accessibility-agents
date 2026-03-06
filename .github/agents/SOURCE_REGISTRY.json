@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Source fingerprint registry for accessibility-agents citation policy",
+  "lastFullReview": "2026-03-03",
+  "sources": [
+    {
+      "id": "wcag-2.2",
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "type": "normative-spec",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "2.2",
+      "supersedes": "wcag-2.1",
+      "agents": ["web-accessibility-wizard", "contrast-master", "aria-specialist", "wcag-guide", "link-checker", "forms-specialist", "alt-text-headings", "keyboard-navigator", "live-region-controller", "modal-specialist", "tables-data-specialist"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "wai-aria-1.2",
+      "url": "https://www.w3.org/TR/wai-aria-1.2/",
+      "type": "normative-spec",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "1.2",
+      "supersedes": "wai-aria-1.1",
+      "agents": ["aria-specialist", "web-accessibility-wizard", "live-region-controller", "modal-specialist"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "aria-apg",
+      "url": "https://www.w3.org/WAI/ARIA/apg/",
+      "type": "informative-guidance",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["aria-specialist", "forms-specialist", "modal-specialist", "keyboard-navigator", "tables-data-specialist", "live-region-controller"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "understanding-wcag-2.2",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/",
+      "type": "informative-guidance",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "2.2",
+      "agents": ["wcag-guide", "web-accessibility-wizard", "testing-coach"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "html-living-standard",
+      "url": "https://html.spec.whatwg.org/multipage/",
+      "type": "normative-spec",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "living",
+      "agents": ["aria-specialist", "forms-specialist", "alt-text-headings", "tables-data-specialist"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "mdn-web-docs-aria",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA",
+      "type": "platform-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["aria-specialist", "web-accessibility-wizard", "forms-specialist"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "nvda-user-guide",
+      "url": "https://www.nvaccess.org/files/nvda/documentation/userGuide.html",
+      "type": "at-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "2025.1",
+      "agents": ["desktop-a11y-specialist", "nvda-addon-specialist", "testing-coach", "desktop-a11y-testing-coach"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "nvda-developer-guide",
+      "url": "https://www.nvaccess.org/files/nvda/documentation/developerGuide.html",
+      "type": "at-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "2025.1",
+      "agents": ["nvda-addon-specialist"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "nvda-addon-datastore",
+      "url": "https://github.com/nvaccess/addon-datastore",
+      "type": "at-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["nvda-addon-specialist"],
+      "checkFrequency": "weekly"
+    },
+    {
+      "id": "jaws-support",
+      "url": "https://support.freedomscientific.com/Products/Blindness/JawsDocumentation",
+      "type": "at-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["desktop-a11y-specialist", "testing-coach"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "voiceover-guide",
+      "url": "https://support.apple.com/guide/voiceover/welcome/mac",
+      "type": "at-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["desktop-a11y-specialist", "testing-coach", "mobile-accessibility"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "section-508",
+      "url": "https://www.section508.gov/",
+      "type": "government-legal",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["wcag-guide", "accessibility-lead"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "en-301-549",
+      "url": "https://www.etsi.org/deliver/etsi_en/301500_301599/301549/",
+      "type": "government-legal",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "3.2.1",
+      "agents": ["wcag-guide", "accessibility-lead"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "wxpython-docs",
+      "url": "https://docs.wxpython.org/",
+      "type": "platform-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "4.2.x",
+      "agents": ["wxpython-specialist"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "wxwidgets-docs",
+      "url": "https://docs.wxwidgets.org/stable/",
+      "type": "platform-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "3.2.x",
+      "agents": ["wxpython-specialist", "desktop-a11y-specialist"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "msaa-uia-docs",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/winauto/entry-uiauto-win32",
+      "type": "platform-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["desktop-a11y-specialist", "wxpython-specialist", "nvda-addon-specialist"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "apple-accessibility",
+      "url": "https://developer.apple.com/accessibility/",
+      "type": "platform-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["mobile-accessibility", "desktop-a11y-specialist"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "android-accessibility",
+      "url": "https://developer.android.com/guide/topics/ui/accessibility",
+      "type": "platform-vendor",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["mobile-accessibility"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "deque-university",
+      "url": "https://dequeuniversity.com/",
+      "type": "peer-reviewed",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["web-accessibility-wizard", "testing-coach", "wcag-guide"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "pdf-ua-1",
+      "url": "https://pdfa.org/resource/pdfua-in-a-nutshell/",
+      "type": "peer-reviewed",
+      "lastVerified": "2026-03-03",
+      "sha256": "",
+      "version": "ISO 14289-1",
+      "agents": ["pdf-accessibility", "document-accessibility-wizard"],
+      "checkFrequency": "quarterly"
+    }
+  ]
+}
+
+

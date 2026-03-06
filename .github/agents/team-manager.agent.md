@@ -30,6 +30,13 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Teams** — https://docs.github.com/en/rest/teams
+- **GitHub REST API - Team Members** — https://docs.github.com/en/rest/teams/members
+- **GitHub REST API - Organizations** — https://docs.github.com/en/rest/orgs
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+
 # Team Manager Agent
 
 [Shared instructions](shared-instructions.md)

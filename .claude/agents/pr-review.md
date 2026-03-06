@@ -5,6 +5,15 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Pull Requests** — https://docs.github.com/en/rest/pulls
+- **GitHub REST API - Reviews** — https://docs.github.com/en/rest/pulls/reviews
+- **GitHub REST API - Commits** — https://docs.github.com/en/rest/commits
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Diff Format** — https://git-scm.com/docs/diff-format
+
+
 # PR Review Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

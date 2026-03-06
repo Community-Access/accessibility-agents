@@ -1,6 +1,8 @@
 ---
+name: setup-github-scanner
 description: Set up the GitHub Accessibility Scanner in your repository. Generates a workflow file, configures scan URLs, and validates the integration with the agent ecosystem.
 mode: agent
+agent: web-accessibility-wizard
 tools:
   - askQuestions
   - runInTerminal

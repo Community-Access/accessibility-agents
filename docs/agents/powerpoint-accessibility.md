@@ -130,3 +130,5 @@ Reading order (PPTX-E003) is the most common PowerPoint accessibility issue and 
 | [office-scan-config](office-scan-config.md) | To adjust rule thresholds, e.g., raising the minimum font size threshold or disabling PPTX-W004 speaker notes for internal-only decks |
 | [word-accessibility](word-accessibility.md) | When auditing mixed Office document sets that include both documents and presentations |
 | [pdf-accessibility](pdf-accessibility.md) | Presentations exported as PDF need a separate PDF/UA audit |
+
+

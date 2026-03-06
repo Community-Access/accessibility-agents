@@ -151,3 +151,5 @@ To disable an entire layer, set `"enabled": false` on the layer. To disable a sp
 | [pdf-accessibility](pdf-accessibility.md) | The config controls which rules pdf-accessibility enforces |
 | [document-accessibility-wizard](document-accessibility-wizard.md) | The wizard reads the PDF config when running batch PDF scans |
 | [office-scan-config](office-scan-config.md) | Use alongside pdf-scan-config when auditing mixed Office + PDF collections |
+
+

@@ -69,5 +69,6 @@ The tools accept inputs as described in each tool's parameters. Agents call thes
 #   check_link_text, check_form_labels as needed
 
 # Copilot - same behavior
-@accessibility-wizard audit the signup page
+@web-accessibility-wizard audit the signup page
 ```
+

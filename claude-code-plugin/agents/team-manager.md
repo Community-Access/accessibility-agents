@@ -5,6 +5,13 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Teams** — https://docs.github.com/en/rest/teams
+- **GitHub REST API - Organization Members** — https://docs.github.com/en/rest/orgs/members
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Permissions** — https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories
+
 # Team Manager Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

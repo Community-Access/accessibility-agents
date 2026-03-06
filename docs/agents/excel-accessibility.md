@@ -128,3 +128,5 @@ Merged cells (XLSX-E003) are the hardest Excel accessibility issue to fix becaus
 | [office-scan-config](office-scan-config.md) | To suppress XLSX-W003 (hidden sheets) or other rules that do not apply to your workbooks |
 | [word-accessibility](word-accessibility.md) | When auditing mixed Office document collections |
 | [pdf-accessibility](pdf-accessibility.md) | Spreadsheets exported to PDF need a separate PDF/UA audit - the Excel scan does not cover exported PDFs |
+
+

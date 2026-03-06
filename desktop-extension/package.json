@@ -1,7 +1,7 @@
 {
   "name": "a11y-agent-team-mcpb",
-  "version": "1.0.0",
-  "description": "Accessibility review tools and prompts for Claude Desktop",
+  "version": "3.0.0",
+  "description": "Accessibility review tools and prompts for Claude Desktop. v3.0 adds authoritative source citations to all agents.",
   "private": true,
   "type": "module",
   "dependencies": {

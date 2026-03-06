@@ -10,6 +10,7 @@
 - Creating dialogs, menus, toolbars, or accelerator tables
 - Threading in wxPython (wx.CallAfter, wx.PostEvent, wx.Timer)
 - Making wxPython controls accessible to screen readers
+- Fixing keyboard event handling that fails with screen readers (NVDA, JAWS)
 - Auditing wxPython code for accessibility issues
 
 ## What It Does NOT Do
@@ -18,9 +19,13 @@
 - Does not implement platform accessibility APIs directly (routes to desktop-a11y-specialist)
 - Does not perform screen reader testing (routes to desktop-a11y-testing-coach)
 
+## Screen Reader Key Event Pitfalls
+
+The agent includes dedicated guidance on why `EVT_KEY_DOWN` and `EVT_CHAR` silently fail when screen readers like NVDA or JAWS are active on list, tree, and data view controls. It recommends `EVT_CHAR_HOOK` (which fires at the top-level window before the native control handler) and semantic activation events (`EVT_LIST_ITEM_ACTIVATED`, `EVT_TREE_ITEM_ACTIVATED`) as reliable alternatives.
+
 ## Accessibility Audit Mode
 
-When asked to audit a wxPython project for accessibility, the agent uses 12 structured detection rules (WX-A11Y-001 through WX-A11Y-012) covering:
+When asked to audit a wxPython project for accessibility, the agent uses 14 structured detection rules (WX-A11Y-001 through WX-A11Y-014) covering:
 
 | Rule Range | What It Covers |
 |---|---|
@@ -28,6 +33,7 @@ When asked to audit a wxPython project for accessibility, the agent uses 12 stru
 | WX-A11Y-004..006 | Serious: Dialog UX, focus on ShowModal, bitmap labels |
 | WX-A11Y-007..009 | Moderate: Color-only state, silent status changes, custom-drawn panels |
 | WX-A11Y-010..012 | Minor/Moderate: Tab order, virtual lists, menu accelerators |
+| WX-A11Y-013..014 | Critical/Serious: EVT_KEY_DOWN/EVT_CHAR on list/tree controls (fails with screen readers), missing semantic event bindings |
 
 Returns a structured report with file, line number, and concrete code fix for each finding.
 
@@ -36,6 +42,7 @@ Returns a structured report with file, line number, and concrete code fix for ea
 - "Fix my sizer layout -- controls aren't expanding"
 - "Add keyboard shortcuts to my app"
 - "Make this dialog accessible to screen readers"
+- "Enter key doesn't work on my ListBox when NVDA is running"
 - "Audit this wxPython project for accessibility"
 - "Help me with AUI pane management"
 - "My app crashes when I update the GUI from a thread"

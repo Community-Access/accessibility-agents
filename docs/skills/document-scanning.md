@@ -30,7 +30,7 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub
 # Recursive - excluding temp and lock files
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
   Where-Object { $_.Name -notlike '~$*' -and $_.Name -notlike '*.tmp' -and $_.Name -notlike '*.bak' } |
-  Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]' }
+  Where-Object { $_.FullName -notmatch '(?:[\\/])(?:\.git|node_modules|__pycache__|\.vscode)(?:[\\/])' }
 ```
 
 ### Bash (macOS / Linux)
@@ -101,3 +101,5 @@ When delegating to a format-specific sub-agent, always provide:
 ## Skill Location
 
 `.github/skills/document-scanning/SKILL.md`
+
+

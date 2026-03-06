@@ -67,3 +67,5 @@ Files are saved alongside the audit report.
 - [audit-document-folder](audit-document-folder.md) - recursive folder scan
 - [generate-vpat](generate-vpat.md) - generate a VPAT/ACR compliance report instead
 - [compare-audits](compare-audits.md) - track remediation progress between audits
+
+

@@ -39,3 +39,5 @@ This workflow delegates to format-specific sub-agents for each changed document.
 - **Per file:** "Scanning [filename] using [agent-name]..."
 - **After completion:** "Delta scan complete: [N] files scanned, [N] regressions, [N] improvements"
 - **On failure:** "Scan failed for [filename]: [reason]. Continuing with remaining files."
+
+

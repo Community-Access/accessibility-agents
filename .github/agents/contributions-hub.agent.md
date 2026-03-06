@@ -36,6 +36,14 @@ handoffs:
     model: Claude Sonnet 4 (copilot)
 ---
 
+## Authoritative Sources
+
+- **GitHub Discussions** — https://docs.github.com/en/discussions
+- **GitHub GraphQL API - Discussions** — https://docs.github.com/en/graphql/guides/using-the-graphql-api-for-discussions
+- **GitHub REST API - Activity** — https://docs.github.com/en/rest/activity
+- **GitHub Community Guidelines** — https://docs.github.com/en/site-policy/github-terms/github-community-guidelines
+- **Open Source Guides - Building Community** — https://opensource.guide/building-community/
+
 # Contributions Hub Agent
 
 [Shared instructions](shared-instructions.md)

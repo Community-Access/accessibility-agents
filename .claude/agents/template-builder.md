@@ -5,6 +5,21 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub Issue Templates** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+- **GitHub Pull Request Templates** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository
+- **GitHub Discussion Templates** — https://docs.github.com/en/discussions/managing-discussions-for-your-community/creating-discussion-category-forms
+
+# Template Builder Agent
+
+[Shared instructions](shared-instructions.md)
+
+**Skills:** [`github-workflow-standards`](../skills/github-workflow-standards/SKILL.md), [`github-scanning`](../skills/github-scanning/SKILL.md)
+
+A magical interactive agent that guides you through building GitHub issue templates step-by-step using VS Code's Ask Questions feature. Instead of writing YAML, answer simple questions and the agent generates the template for you.
+
+
 # Template Builder Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

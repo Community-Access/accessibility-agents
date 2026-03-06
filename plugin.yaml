@@ -1,0 +1,179 @@
+---
+# Accessibility Agents for GitHub Copilot
+# Plugin manifest for VS Code Marketplace
+# 
+# Format: Follows GitHub Copilot Plugin specification for agent bundling
+# Author: Community-Access Organization
+# License: MIT
+# Repository: https://github.com/Community-Access/accessibility-agents
+
+name: "accessibility-agents"
+title: "Accessibility Agents for GitHub Copilot"
+description: "57 specialized AI agents for web, document, desktop, and developer accessibility auditing. WCAG 2.2 AA compliance, automated remediation, and multi-platform support."
+version: "3.0.0"
+author: "Community-Access"
+license: "MIT"
+homepage: "https://github.com/Community-Access/accessibility-agents"
+repository: "https://github.com/Community-Access/accessibility-agents"
+bugs: "https://github.com/Community-Access/accessibility-agents/issues"
+keywords:
+  - accessibility
+  - a11y
+  - wcag
+  - aria
+  - auditing
+  - remediation
+  - agents
+  - copilot
+  - web
+  - documents
+categories:
+  - Accessibility
+  - Auditing
+  - AI Agents
+  - Developer Tools
+
+# VS Code version support
+engines:
+  vscode: ">=1.110.0"
+
+# Plugin contents bundled for discovery and installation
+contents:
+  # Primary agent directory (57 agents for VS Code/Copilot)
+  agents:
+    path: ".github/agents"
+    description: "Orchestrator agents (accessibility-lead, web-accessibility-wizard, etc.) and specialist agents for WCAG A11y auditing across web, document, desktop, and developer accessibility domains"
+    count: 57
+    format: "agent.md"
+    
+  # Reusable multi-platform skills (17 skills)
+  skills:
+    path: ".github/skills"
+    description: "Domain expertise skills for WCAG rules, severity scoring, scanning patterns, framework-specific guidance, and accessibility standards"
+    count: 17
+    format: "SKILL.md"
+    portable: true
+
+  # Custom prompts and slash commands (104)
+  prompts:
+    path: ".github/prompts"
+    description: "Task-oriented prompts for web audits, document audits, markdown audits, GitHub workflow automation, and remediation"
+    count: 104
+    format: "markdown"
+
+  # Workspace instructions and rules
+  instructions:
+    path: ".github/instructions"
+    description: "Global accessibility baseline rules, semantic HTML requirements, ARIA patterns, and markdown accessibility guidelines"
+    count: 5
+    
+  # Documentation
+  documentation:
+    - path: "README.md"
+      title: "Getting Started Guide"
+    - path: "docs/agents"
+      title: "Per-Agent Guides & Decision Matrix"
+    - path: "docs/skills"
+      title: "Skill Reference Library"
+    - path: "docs/prompts"
+      title: "Prompt Gallery"
+    - path: "docs/guides"
+      title: "Advanced User Guides"
+    - path: "CONTRIBUTING.md"
+      title: "Contributing & Custom Skills"
+    - path: "prd.md"
+      title: "Product Requirements & Roadmap"
+
+# Installation & activation
+activation:
+  onStartup: preload
+  agents: 
+    - accessibility-lead
+    - web-accessibility-wizard
+    - document-accessibility-wizard
+    - developer-hub
+  requiresWorkspace: false
+
+# Feature flags
+features:
+  agentHandoffs: true
+  customSkills: true
+  agentDebugPanel: true
+  agenticBrowserTools: true
+  lifecycleHooks: true
+
+# Platform support matrix
+platforms:
+  - name: "GitHub Copilot (VS Code)"
+    agents: 57
+    skills: 17
+    prompts: 104
+    status: "fully-supported"
+    
+  - name: "Copilot CLI"
+    agents: 57
+    skills: 17
+    status: "fully-supported"
+
+  - name: "Claude Code (VS Code)"
+    agents: 44
+    skills: 17
+    status: "community-maintained"
+    note: "Simplified agent format; full compatibility"
+
+  - name: "Google Gemini"
+    agents: 57
+    skills: 17
+    status: "community-maintained"
+    note: "Custom .SKILL.md format for Gemini"
+
+# Metadata for marketplace
+marketplace:
+  category: "AI Agents"
+  tags:
+    - "accessibility"
+    - "wcag"
+    - "auditing"
+    - "a11y"
+  featured: false
+  downloads: 0
+  rating: 5
+  ratingCount: 0
+
+# Version history
+changelog:
+  "3.0.0":
+    date: "2026-03-04"
+    features:
+      - "Agent Plugins packaging for VS Code Marketplace"
+      - "Full citation coverage: all agents cite authoritative sources"
+      - "Source currency automation: weekly verification of source URLs"
+      - "Agentic Browser Tools Phases 1-2: autonomous web verification preview"
+      - "Agent Debug Panel guidance: troubleshooting workflows"
+    breaking: []
+    deprecations: []
+
+# Requirements for operation
+requirements:
+  - "VS Code v1.110 or higher"
+  - "GitHub Copilot extension (for Copilot agents)"
+  - "Internet connection (for skill verification and documentation access)"
+
+# Contributing & support
+support:
+  issues: "https://github.com/Community-Access/accessibility-agents/issues"
+  discussions: "https://github.com/Community-Access/accessibility-agents/discussions"
+  email: "contact@community-access.org"
+  
+# Quality & compliance
+quality:
+  testCoverage: "Verified across 3 platforms"
+  securityAudit: "Clean (no external dependencies)"
+  accessibilityRating: "WCAG 2.2 Level AA (self-audited)"
+  
+# Acknowledgments
+acknowledgments:
+  - "W3C WCAG Working Group"
+  - "WAI-ARIA Authors"
+  - "GitHub Copilot Team"
+  - "Community-Access Contributors"

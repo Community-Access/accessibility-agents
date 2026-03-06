@@ -158,21 +158,25 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `desktop-a11y-specialist` - Desktop application accessibility: platform APIs (UIA, MSAA, ATK, NSAccessibility), screen reader interaction, focus management, custom widget accessibility
 - `desktop-a11y-testing-coach` - Desktop accessibility testing: NVDA, JAWS, Narrator, VoiceOver, Orca, Accessibility Insights, automated UIA testing, keyboard-only testing
 - `a11y-tool-builder` - Accessibility tool building: rule engines, document parsers, report generators, WCAG mapping, severity scoring, CLI/GUI scanner architecture
+- `nvda-addon-specialist` - NVDA addon development: architecture, globalPlugins, appModules, synthDrivers, brailleDisplayDrivers, manifest format, event/script handling, NVDAObject overlays, addon packaging, Add-on Store submission, testing, i18n
+- `text-quality-reviewer` - Non-visual text quality review: template variables in alt text, code syntax as names, placeholder labels, filename alt text, duplicate labels, label-in-name violations
 
 **Skills:**
 - `python-development` - Python version reference, pyproject.toml patterns, PyInstaller modes, wxPython sizer/event/threading cheat sheets, desktop accessibility API reference, common pitfalls, cross-platform paths, testing, logging
 
 **Workflow:**
-1. `developer-hub` receives the user request and classifies intent (debug, package, scaffold, review, optimize, GUI work, desktop a11y, tool building)
+1. `developer-hub` receives the user request and classifies intent (debug, package, scaffold, review, optimize, GUI work, desktop a11y, tool building, NVDA addon development, text quality review)
 2. For pure Python tasks, routes to `python-specialist` with full context
 3. For wxPython/GUI tasks, routes to `wxpython-specialist` with full context
 4. For desktop accessibility API work, routes to `desktop-a11y-specialist`
 5. For screen reader testing, routes to `desktop-a11y-testing-coach`
-6. For building a11y scanning tools, routes to `a11y-tool-builder`
-7. For web accessibility audits, hands off to `web-accessibility-wizard` (Web Accessibility team)
-8. For document accessibility audits, hands off to `document-accessibility-wizard` (Document Accessibility team)
-9. For mixed tasks, starts with the primary domain specialist and hands off as needed
-10. All agents can hand back to `developer-hub` for broader coordination
+6. For NVDA addon development, routes to `nvda-addon-specialist`
+7. For building a11y scanning tools, routes to `a11y-tool-builder`
+8. For non-visual text quality auditing, routes to `text-quality-reviewer`
+9. For web accessibility audits, hands off to `web-accessibility-wizard` (Web Accessibility team)
+10. For document accessibility audits, hands off to `document-accessibility-wizard` (Document Accessibility team)
+11. For mixed tasks, starts with the primary domain specialist and hands off as needed
+12. All agents can hand back to `developer-hub` for broader coordination
 
 **Handoffs:**
 - `developer-hub` -> `python-specialist` for debugging, packaging, testing, type checking, async, optimization
@@ -337,3 +341,5 @@ At every handoff:
 - Each agent operates on its defined scope. Parallel groups work on distinct concerns.
 - Same inputs produce same structured outputs (idempotent).
 - Output format changes must be backward-compatible.
+
+

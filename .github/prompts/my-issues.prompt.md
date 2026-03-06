@@ -1,5 +1,5 @@
 ---
-name: my-issues
+name: issue-tracker
 description: "Smart issue dashboard -- lists your open issues across all repos, sorted by priority with activity signals, reactions, release context, and discussion links"
 agent: issue-tracker
 tools:
@@ -54,3 +54,4 @@ Display results sorted by priority (issues with recent comments, @mentions, reac
 - **Stale** -- No activity for 30+ days
 
 After the table, suggest: _"Want me to generate a triage document for these, or dive into a specific issue?"_
+

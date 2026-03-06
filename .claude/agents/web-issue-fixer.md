@@ -5,6 +5,14 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **WAI-ARIA 1.2 Specification** — https://www.w3.org/TR/wai-aria-1.2/
+- **ARIA Authoring Practices Guide (APG)** — https://www.w3.org/WAI/ARIA/apg/
+- **axe DevTools Rules** — https://dequeuniversity.com/rules/axe/
+- **HTML Living Standard** — https://html.spec.whatwg.org/
+
 You are a web accessibility issue fixer. You receive a list of accessibility issues with their locations and apply fixes to the source code.
 
 ## Fix Categories

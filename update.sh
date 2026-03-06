@@ -38,6 +38,45 @@ log() {
 }
 
 # ---------------------------------------------------------------------------
+# migrate_prompts src_dir
+# Rename old prompt filenames to new agent-matching names.
+# This ensures users upgrading from v2.x to v3.0 don't lose custom prompts.
+# Migration: old naming (task-based) → new naming (agent-based)
+# ---------------------------------------------------------------------------
+migrate_prompts() {
+  local src_dir="$1"
+  [ -d "$src_dir" ] || return
+  
+  local -a migrations=(
+    "a11y-update.prompt.md:insiders-a11y-tracker.prompt.md"
+    "audit-desktop-a11y.prompt.md:desktop-a11y-specialist.prompt.md"
+    "audit-markdown.prompt.md:markdown-a11y-assistant.prompt.md"
+    "audit-web-page.prompt.md:web-accessibility-wizard.prompt.md"
+    "export-document-csv.prompt.md:document-csv-reporter.prompt.md"
+    "export-markdown-csv.prompt.md:markdown-csv-reporter.prompt.md"
+    "export-web-csv.prompt.md:web-csv-reporter.prompt.md"
+    "package-python-app.prompt.md:python-specialist.prompt.md"
+    "review-text-quality.prompt.md:text-quality-reviewer.prompt.md"
+    "scaffold-nvda-addon.prompt.md:nvda-addon-specialist.prompt.md"
+    "scaffold-wxpython-app.prompt.md:wxpython-specialist.prompt.md"
+    "test-desktop-a11y.prompt.md:desktop-a11y-testing-coach.prompt.md"
+  )
+  
+  for mapping in "${migrations[@]}"; do
+    IFS=: read -r old_name new_name <<< "$mapping"
+    local old_file="$src_dir/$old_name"
+    local new_file="$src_dir/$new_name"
+    
+    if [ -f "$old_file" ] && [ ! -f "$new_file" ]; then
+      mv "$old_file" "$new_file" 2>/dev/null || true
+    elif [ -f "$old_file" ] && [ -f "$new_file" ]; then
+      # Both exist; remove old version and keep new
+      rm -f "$old_file" 2>/dev/null || true
+    fi
+  done
+}
+
+# ---------------------------------------------------------------------------
 # merge_config_file src dst label
 # Appends/updates our section in a config markdown file using section markers.
 # Never overwrites user content above or below our section.
@@ -46,12 +85,14 @@ merge_config_file() {
   local src="$1" dst="$2" label="$3"
   local start="<!-- a11y-agent-team: start -->"
   local end="<!-- a11y-agent-team: end -->"
+  local legacy_start="<!-- accessibility-agents: start -->"
+  local legacy_end="<!-- accessibility-agents: end -->"
   if [ ! -f "$dst" ]; then
     { printf '%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; } > "$dst"
     log "+ $label (created)"
     return
   fi
-  if grep -qF "$start" "$dst" 2>/dev/null; then
+  if grep -qF "$start" "$dst" 2>/dev/null || grep -qF "$legacy_start" "$dst" 2>/dev/null; then
     if command -v python3 &>/dev/null; then
       python3 - "$src" "$dst" << 'PYEOF'
 import re, sys
@@ -60,8 +101,11 @@ dst_path = sys.argv[2]
 dst_text = open(dst_path).read()
 start = "<!-- a11y-agent-team: start -->"
 end   = "<!-- a11y-agent-team: end -->"
+legacy_start = "<!-- accessibility-agents: start -->"
+legacy_end   = "<!-- accessibility-agents: end -->"
 block = start + "\n" + src_text + "\n" + end
-updated = re.sub(re.escape(start) + r".*?" + re.escape(end), block, dst_text, flags=re.DOTALL)
+pattern = r"(?:" + re.escape(start) + r".*?" + re.escape(end) + r")|(?:" + re.escape(legacy_start) + r".*?" + re.escape(legacy_end) + r")"
+updated = re.sub(pattern, block, dst_text, flags=re.DOTALL)
 open(dst_path, "w").write(updated)
 PYEOF
       log "~ $label (updated our existing section)"
@@ -112,7 +156,7 @@ NEW_HASH=$(git rev-parse --short HEAD 2>/dev/null)
 
 # Detect install type: plugin vs legacy
 PLUGIN_CACHE=""
-for ns_dir in "$HOME/.claude/plugins/cache"/*/a11y-agent-team; do
+for ns_dir in "$HOME/.claude/plugins/cache"/*/accessibility-agents "$HOME/.claude/plugins/cache"/*/a11y-agent-team; do
   [ -d "$ns_dir" ] || continue
   for ver_dir in "$ns_dir"/*/; do
     [ -d "$ver_dir" ] && PLUGIN_CACHE="$ver_dir" && break
@@ -271,6 +315,9 @@ if [ "$TARGET" = "project" ]; then
       [ -f "$SRC" ] && merge_config_file "$SRC" "$DST" "$config"
     done
     # Asset subdirs: skills, instructions, prompts — auto-discovered
+    # Migrate old prompt names to new agent-matching names (v2.x → v3.0)
+    [ -d "$GITHUB_SRC/prompts" ] && migrate_prompts "$GITHUB_SRC/prompts"
+    
     for subdir in skills instructions prompts; do
       sync_github_dir "$GITHUB_SRC/$subdir" "$PROJECT_GITHUB/$subdir" "$subdir"
     done
@@ -280,6 +327,12 @@ fi
 # Update Copilot assets for global install
 if [ "$TARGET" = "global" ]; then
   CENTRAL_ROOT="$HOME/.a11y-agent-team"
+  LEGACY_CENTRAL_ROOT="$HOME/.accessibility-agents"
+  if [ ! -d "$CENTRAL_ROOT" ] && [ -d "$LEGACY_CENTRAL_ROOT" ]; then
+    mkdir -p "$CENTRAL_ROOT"
+    cp -R "$LEGACY_CENTRAL_ROOT/." "$CENTRAL_ROOT/" 2>/dev/null || true
+    log "Migrated legacy central store from $LEGACY_CENTRAL_ROOT to $CENTRAL_ROOT"
+  fi
   CENTRAL="$CENTRAL_ROOT/copilot-agents"
   CENTRAL_PROMPTS="$CENTRAL_ROOT/copilot-prompts"
   CENTRAL_INSTRUCTIONS="$CENTRAL_ROOT/copilot-instructions-files"
@@ -316,7 +369,7 @@ if [ "$TARGET" = "global" ]; then
   done
 
   # Push updated agents, prompts, and instructions to VS Code User profile folders.
-  # VS Code 1.110+ discovers from User/prompts/; older from User/ root.
+  # VS Code 1.110+ discovers from User/prompts/. Clean any stale root copies.
   VSCODE_PROFILES=()
   case "$(uname -s)" in
     Darwin)
@@ -337,15 +390,31 @@ if [ "$TARGET" = "global" ]; then
     [ -d "$PROMPTS_DIR" ] && [ -n "$(ls "$PROMPTS_DIR"/*.agent.md 2>/dev/null)" ] && HAS_AGENTS=true
     [ "$HAS_AGENTS" = true ] || continue
     mkdir -p "$PROMPTS_DIR"
-    # Update agents in both locations
+
+    # Collect managed files from central stores
+    FILES=()
     [ -d "$CENTRAL" ] && for f in "$CENTRAL"/*.agent.md; do
-      [ -f "$f" ] || continue
-      cp "$f" "$PROFILE/$(basename "$f")"
-      cp "$f" "$PROMPTS_DIR/$(basename "$f")"
+      [ -f "$f" ] && FILES+=("$f")
     done
-    # Update prompts and instructions
-    find "$CENTRAL_PROMPTS"      -name "*.prompt.md"      2>/dev/null -exec cp {} "$PROMPTS_DIR/" \; -exec cp {} "$PROFILE/" \;
-    find "$CENTRAL_INSTRUCTIONS" -name "*.instructions.md" 2>/dev/null -exec cp {} "$PROMPTS_DIR/" \; -exec cp {} "$PROFILE/" \;
+    if [ -d "$CENTRAL_PROMPTS" ]; then
+      while IFS= read -r f; do FILES+=("$f"); done < <(find "$CENTRAL_PROMPTS" -name "*.prompt.md" -type f 2>/dev/null)
+    fi
+    if [ -d "$CENTRAL_INSTRUCTIONS" ]; then
+      while IFS= read -r f; do FILES+=("$f"); done < <(find "$CENTRAL_INSTRUCTIONS" -name "*.instructions.md" -type f 2>/dev/null)
+    fi
+
+    CLEANED=0
+    for f in "${FILES[@]}"; do
+      [ -f "$f" ] || continue
+      bn="$(basename "$f")"
+      cp "$f" "$PROMPTS_DIR/$bn"
+      root_copy="$PROFILE/$bn"
+      if [ -f "$root_copy" ]; then
+        rm -f "$root_copy"
+        CLEANED=$((CLEANED + 1))
+      fi
+    done
+    [ "$CLEANED" -gt 0 ] && log "Cleaned $CLEANED duplicate(s) from $PROFILE"
     log "Updated VS Code profile: $PROFILE"
   done
 fi

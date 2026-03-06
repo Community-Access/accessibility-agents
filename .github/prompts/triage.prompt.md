@@ -1,5 +1,5 @@
 ---
-name: triage
+name: issue-tracker
 description: "Generate a prioritized triage dashboard document (markdown + HTML) for your open issues across all repos with reactions, release context, and discussion links"
 agent: issue-tracker
 tools:
@@ -46,3 +46,4 @@ ${input:scope:Optional: repo name, 'org:orgname', label filter, or date range}
    - Quick-action links to each issue on GitHub
    - Community reactions summary for each issue
 7. Confirm: _"Triage dashboard saved to `{md-path}` and `{html-path}` with {N} issues. {X} need immediate action, {Y} are popular with the community."_
+

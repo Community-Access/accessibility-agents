@@ -5,6 +5,14 @@ tools: Read, Write, Edit, Bash, WebFetch
 model: inherit
 ---
 
+## Authoritative Sources
+
+- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
+- **GitHub REST API - Issue Comments** — https://docs.github.com/en/rest/issues/comments
+- **GitHub REST API - Labels** — https://docs.github.com/en/rest/issues/labels
+- **GitHub GraphQL API** — https://docs.github.com/en/graphql
+- **GitHub Search Syntax** — https://docs.github.com/en/search-github
+
 # Issue Tracker Agent
 
 [Shared instructions](../../.github/agents/shared-instructions.md)

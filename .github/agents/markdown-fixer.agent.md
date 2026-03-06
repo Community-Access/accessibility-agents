@@ -5,6 +5,13 @@ user-invokable: false
 tools: ['readFile', 'editFiles', 'runInTerminal', 'getTerminalOutput']
 ---
 
+## Authoritative Sources
+
+- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **CommonMark Specification** — https://spec.commonmark.org/
+- **markdownlint Rules** — https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+- **Unicode Emoji Standard** — https://unicode.org/emoji/
+
 # Markdown Fixer
 
 You are a markdown accessibility fixer. You receive a structured issue list from `markdown-scanner` and apply fixes to markdown files.
