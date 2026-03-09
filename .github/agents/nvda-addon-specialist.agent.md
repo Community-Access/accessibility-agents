@@ -103,7 +103,7 @@ NVDA 2026.1 is a **major architecture transition** and an **add-on API compatibi
 
 | Scenario | `minimumNVDAVersion` | `lastTestedNVDAVersion` |
 |----------|---------------------|------------------------|
-| New addon (2026.1+) | `2026.1.0` | `2026.1.0` |
+| New addon | `2025.1.0` | `2026.1.0` |
 | Broad compatibility (Python 3 required) | `2019.3.0` | `2026.1.0` |
 | Widest safe range | `2024.1.0` | `2026.1.0` |
 
