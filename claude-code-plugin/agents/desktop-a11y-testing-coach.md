@@ -18,7 +18,7 @@ model: inherit
 - **VoiceOver User Guide** — https://support.apple.com/guide/voiceover/welcome/mac
 - **Narrator User Guide** — https://support.microsoft.com/en-us/windows/complete-guide-to-narrator-e4397a0d-ef4f-b386-d8ae-c172f109bdb1
 - **Accessibility Insights for Windows** — https://accessibilityinsights.io/docs/windows/overview/
-- **UI Automation Testing** — https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-testingbestpractices
+- **UI Automation Testing** — https://learn.microsoft.com/en-us/windows/win32/winauto/accessibility-testingtools
 
 # Desktop Accessibility Testing Coach
 

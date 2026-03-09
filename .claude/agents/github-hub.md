@@ -10,7 +10,7 @@ model: inherit
 - **GitHub REST API Documentation** — https://docs.github.com/en/rest
 - **GitHub GraphQL API** — https://docs.github.com/en/graphql
 - **GitHub Actions Documentation** — https://docs.github.com/en/actions
-- **GitHub Accessibility Features** — https://github.com/features/accessibility
+- **GitHub Accessibility Features** — https://github.blog/tag/accessibility/
 
 # GitHub Hub - The GitHub Workflow Orchestrator
 

@@ -8,7 +8,7 @@ model: inherit
 ## Authoritative Sources
 
 - **WAI-ARIA 1.2 - Live Regions** — https://www.w3.org/TR/wai-aria-1.2/#live_region_roles
-- **ARIA Authoring Practices - Live Regions** — https://www.w3.org/WAI/ARIA/apg/practices/accessible-notifications/
+- **ARIA Authoring Practices - Live Regions** — https://www.w3.org/WAI/ARIA/apg/practices/
 - **WCAG 4.1.3 Status Messages** — https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html
 - **aria-live, aria-atomic, aria-relevant** — https://www.w3.org/TR/wai-aria-1.2/#aria-live
 

@@ -74,7 +74,7 @@ Codex CLI does not have named agents or sub-agents. All accessibility rules are 
 | [Tables Specialist](tables-data-specialist.md) | Data tables, grids, sortable columns | [Full docs](tables-data-specialist.md) |
 | [Link Checker](link-checker.md) | Ambiguous link text detection | [Full docs](link-checker.md) |
 | [Web Accessibility Wizard](web-accessibility-wizard.md) | Guided web accessibility audit | [Full docs](web-accessibility-wizard.md) |
-| web-csv-reporter | CSV export with Deque University help links (hidden - invoked by orchestrator) | [Full docs](web-csv-reporter.md) |
+| web-csv-reporter | CSV export with Accessibility Insights help links (hidden - invoked by orchestrator) | [Full docs](web-csv-reporter.md) |
 | scanner-bridge | Bridges GitHub Accessibility Scanner CI data into agent ecosystem (hidden - invoked by orchestrator) | [Full docs](scanner-bridge.md) |
 | lighthouse-bridge | Bridges Lighthouse CI accessibility audit data into agent ecosystem (hidden - invoked by orchestrator) | [Full docs](lighthouse-bridge.md) |
 | [Cognitive Accessibility](cognitive-accessibility.md) | Cognitive accessibility, plain language, COGA, WCAG 2.2 new criteria | [Full docs](cognitive-accessibility.md) |
@@ -278,7 +278,7 @@ Skills are reusable knowledge modules loaded by agents at runtime. Each skill de
 | [`github-scanning`](../skills/github-scanning.md) | Search query construction, date ranges, cross-repo parallel streams, auto-recovery | github-hub, daily-briefing, issue-tracker, pr-review, analytics, insiders-a11y-tracker |
 | [`github-analytics-scoring`](../skills/github-analytics-scoring.md) | Repo health 0-100/A-F, priority scoring, bottleneck detection, velocity metrics | daily-briefing, issue-tracker, pr-review, analytics, repo-admin, insiders-a11y-tracker |
 | [`markdown-accessibility`](../skills/markdown-accessibility.md) | Ambiguous link/anchor patterns, emoji handling (remove/translate), Mermaid/ASCII diagram replacement, heading rules, severity scoring | markdown-a11y-assistant, markdown-scanner, markdown-fixer |
-| [`help-url-reference`](../skills/help-url-reference.md) | Deque University, Microsoft Office, Adobe PDF, and WCAG Understanding document URL mappings | web-csv-reporter, document-csv-reporter |
+| [`help-url-reference`](../skills/help-url-reference.md) | Accessibility Insights, Microsoft Office, Adobe PDF, and WCAG Understanding document URL mappings | web-csv-reporter, document-csv-reporter |
 | [`github-a11y-scanner`](../skills/github-a11y-scanner.md) | GitHub Accessibility Scanner detection, issue parsing, severity mapping, axe-core correlation, Copilot fix tracking | scanner-bridge, web-accessibility-wizard, insiders-a11y-tracker, daily-briefing, issue-tracker |
 | [`lighthouse-scanner`](../skills/lighthouse-scanner.md) | Lighthouse CI accessibility audit detection, score interpretation, weight-to-severity mapping, score regression tracking | lighthouse-bridge, web-accessibility-wizard, insiders-a11y-tracker, daily-briefing, issue-tracker |
 

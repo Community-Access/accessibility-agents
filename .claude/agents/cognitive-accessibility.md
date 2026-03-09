@@ -16,7 +16,7 @@ model: inherit
 - **WCAG 3.3.7 Redundant Entry** — https://www.w3.org/WAI/WCAG22/Understanding/redundant-entry.html
 - **WCAG 3.3.8 Accessible Authentication (Minimum)** — https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-minimum.html
 - **WCAG 3.3.9 Accessible Authentication (Enhanced)** — https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-enhanced.html
-- **COGA (Cognitive Accessibility)** — https://www.w3.org/WAI/WCAG2/supplemental/objectives/
+- **COGA (Cognitive Accessibility)** — https://www.w3.org/WAI/WCAG2/supplemental/
 - **Plain Language Guidelines** — https://www.plainlanguage.gov/guidelines/
 
 # Cognitive Accessibility Specialist

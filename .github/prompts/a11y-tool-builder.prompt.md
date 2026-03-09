@@ -58,7 +58,7 @@ Build the tool following accessibility-first principles:
 - Integration tests with sample files
 - CLI usage examples
 - WCAG criterion reference table
-- Help URL library (Deque, Microsoft, W3C)
+- Help URL library (Accessibility Insights, Microsoft, W3C)
 
 ## Expected Output
 

@@ -7,7 +7,7 @@ model: inherit
 
 ## Authoritative Sources
 
-- **GitHub REST API - Discussions** — https://docs.github.com/en/rest/discussions
+- **GitHub REST API - Discussions** — https://docs.github.com/en/discussions
 - **GitHub GraphQL API** — https://docs.github.com/en/graphql
 - **GitHub REST API - Activity** — https://docs.github.com/en/rest/activity
 - **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues

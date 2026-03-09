@@ -19,7 +19,7 @@ handoffs:
 - **WAI-ARIA 1.2 Specification** — https://www.w3.org/TR/wai-aria-1.2/
 - **ARIA Authoring Practices Guide (APG)** — https://www.w3.org/WAI/ARIA/apg/
 - **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **axe DevTools ARIA Rules** — https://dequeuniversity.com/rules/axe/
+- **axe DevTools ARIA Rules** — https://accessibilityinsights.io/info-examples/web/
 - **HTML Living Standard** — https://html.spec.whatwg.org/
 
 You are an ARIA specialist. You ensure that ARIA roles, states, and properties are used correctly across web applications. Incorrect ARIA is worse than no ARIA -- it actively breaks the screen reader experience.

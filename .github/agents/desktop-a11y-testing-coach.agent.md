@@ -35,7 +35,7 @@ handoffs:
 - **Accessibility Insights for Windows** — https://accessibilityinsights.io/docs/windows/overview/
 - **VoiceOver User Guide (macOS)** — https://support.apple.com/guide/voiceover/welcome/mac
 - **Orca Screen Reader (Linux)** — https://help.gnome.org/users/orca/stable/
-- **UI Automation Testing** — https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-testingwithautomation
+- **UI Automation Testing** — https://learn.microsoft.com/en-us/windows/win32/winauto/accessibility-testingtools
 
 # Desktop Accessibility Testing Coach
 

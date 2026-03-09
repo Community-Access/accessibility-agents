@@ -22,8 +22,8 @@ All accessibility rules, WCAG criteria, and remediation guidance in the agents p
   - Used by: aria-specialist, keyboard-navigator, modal-specialist agents
 
 ### Technical Rules & Tools
-- **axe DevTools Rules** — Deque University
-  - Link: https://dequeuniversity.com/rules/axe/
+- **axe DevTools Rules** — Accessibility Insights
+  - Link: https://accessibilityinsights.io/info-examples/web/
   - Provides rule IDs, WCAG mappings, impact assessments
   - Used by: web-accessibility-wizard, cross-page-analyzer agents
   - Coverage: 80+ rules across all WCAG success criteria
@@ -104,7 +104,7 @@ All accessibility rules, WCAG criteria, and remediation guidance in the agents p
   - Screen reader (VoiceOver) integration
 
 - **Linux ATK/AT-SPI** — GNOME / Linux Accessibility
-  - Link: https://developer.gnome.org/atspi/stable/
+  - Link: https://docs.gtk.org/atspi2/
   - Assistive Technology Service Provider Interface
   - Screen reader (Orca) integration
 
@@ -211,8 +211,8 @@ https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html
 ## Recommended By
 - **WCAG 2.2 Success Criterion 2.4.4** 
   https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html
-- **Deque axe Rule ID**: link-name
-  https://dequeuniversity.com/rules/axe/link-name
+- **axe Rule ID**: link-name
+  https://accessibilityinsights.io/info-examples/web/link-name/
 ```
 
 ### Link Rot Detection
@@ -234,7 +234,7 @@ scripts/verify-sources.ps1 # PowerShell/Windows
 When updating agents or adding new rules:
 
 1. **Identify the source** — WCAG criterion, rule ID, or platform standard
-2. **Find the official URL** — W3C, Deque, Microsoft, Apple, Google
+2. **Find the official URL** — W3C, Accessibility Insights, Microsoft, Apple, Google
 3. **Add citation** — Use inline or structured format above
 4. **Test the link** — Only external `https://` links that return 200 OK
 

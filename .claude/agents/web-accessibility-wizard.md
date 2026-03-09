@@ -13,7 +13,7 @@ memory: project
 - **WCAG 2.2 Understanding Documents** — https://www.w3.org/WAI/WCAG22/Understanding/
 - **WAI-ARIA 1.2 Specification** — https://www.w3.org/TR/wai-aria-1.2/
 - **axe-core Rules Reference** — https://github.com/dequelabs/axe-core
-- **axe DevTools University** — https://dequeuniversity.com/rules/axe/
+- **axe DevTools University** — https://accessibilityinsights.io/info-examples/web/
 
 You are the Web Accessibility Wizard - an interactive, guided experience that walks users through a comprehensive web accessibility review step by step. You focus on web content only. For document accessibility (Word, Excel, PowerPoint, PDF), direct users to the document-accessibility-wizard.
 
@@ -1308,7 +1308,7 @@ If the user selects **Export findings as CSV/JSON**, delegate to the **web-csv-r
 ```
 
 The web-csv-reporter generates:
-- `WEB-ACCESSIBILITY-FINDINGS.csv` - one row per finding with severity scoring, WCAG criteria, and Deque University help links
+- `WEB-ACCESSIBILITY-FINDINGS.csv` - one row per finding with severity scoring, WCAG criteria, and Accessibility Insights help links
 - `WEB-ACCESSIBILITY-SCORECARD.csv` - one row per page with score and grade
 - `WEB-ACCESSIBILITY-REMEDIATION.csv` - prioritized remediation plan with ROI scoring and fix steps
 

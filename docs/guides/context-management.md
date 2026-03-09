@@ -6,7 +6,7 @@ This guide reflects VS Code/Copilot chat session behavior documented in official
 
 References:
 - VS Code updates and release notes: `https://code.visualstudio.com/updates`
-- Copilot customization and chat docs: `https://code.visualstudio.com/docs/copilot/customization`
+- Copilot customization and chat docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
 
 When running comprehensive accessibility audits, conversations can accumulate context quickly. VS Code's `/compact` command helps manage this.
 

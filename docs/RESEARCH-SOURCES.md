@@ -200,7 +200,7 @@ WebAIM is one of the most respected accessibility organizations, providing pract
   - `<time>` element with `datetime` attribute for machine-readable dates
   - Popover API: `popover` attribute, light-dismiss behavior, top layer promotion
 
-## Deque University / axe-core
+## Accessibility Insights / axe-core
 
 - **Implicit reference across all agents**
 - **Key influence:**

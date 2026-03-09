@@ -55,7 +55,7 @@ These agents are not user-invokable. They are used internally by the document-ac
 | markdown-scanner | Per-file markdown scanning across all 9 accessibility domains - invoked in parallel by markdown-a11y-assistant |
 | markdown-fixer | Applies approved markdown fixes and presents human-judgment items - invoked by markdown-a11y-assistant |
 | markdown-csv-reporter | Exports markdown audit findings to CSV with WCAG help links and markdownlint rule references - invoked by markdown-a11y-assistant |
-| web-csv-reporter | Exports web audit findings to CSV with Deque University help links - invoked by web-accessibility-wizard |
+| web-csv-reporter | Exports web audit findings to CSV with Accessibility Insights help links - invoked by web-accessibility-wizard |
 | document-csv-reporter | Exports document audit findings to CSV with Microsoft Office and Adobe PDF help links - invoked by document-accessibility-wizard |
 | scanner-bridge | Bridges GitHub Accessibility Scanner CI data into the agent ecosystem - invoked by web-accessibility-wizard Phase 0 |
 | lighthouse-bridge | Bridges Lighthouse CI accessibility audit data into the agent ecosystem - invoked by web-accessibility-wizard Phase 0 |
@@ -79,7 +79,7 @@ Reusable knowledge modules in `.github/skills/` that agents reference automatica
 | github-workflow-standards | Core standards for all GitHub workflow agents: auth, discovery, dual MD+HTML output, HTML accessibility, safety rules, progress announcements, parallel execution |
 | github-scanning | GitHub search patterns by intent, date range handling, parallel stream collection, cross-repo intelligence, auto-recovery |
 | github-analytics-scoring | Repo health scoring (0-100/A-F), issue/PR priority scoring, confidence levels, delta tracking, velocity metrics, bottleneck detection |
-| help-url-reference | Deque University help topic URLs, Microsoft Office help URLs, Adobe PDF help URLs, WCAG understanding document URLs, application-specific fix steps |
+| help-url-reference | Accessibility Insights help URLs, Microsoft Office help URLs, Adobe PDF help URLs, WCAG understanding document URLs, application-specific fix steps |
 | github-a11y-scanner | GitHub Accessibility Scanner detection, issue parsing, severity mapping, axe-core correlation, Copilot fix tracking |
 | lighthouse-scanner | Lighthouse CI accessibility audit detection, score interpretation, weight-to-severity mapping, score regression tracking |
 | python-development | Python and wxPython development patterns, packaging, testing, wxPython sizers/events/threading, cross-platform paths |
@@ -147,7 +147,7 @@ One-click workflows for web accessibility auditing tasks:
 | quick-markdown-check | Fast markdown triage - errors only, inline pass/fail verdict, no report file |
 | fix-markdown-issues | Interactive fix mode - auto-fix table and human-judgment items from saved report |
 | compare-markdown-audits | Track markdown remediation progress between two audit snapshots |
-| export-web-csv | Export web audit findings to CSV with Deque University help links |
+| export-web-csv | Export web audit findings to CSV with Accessibility Insights help links |
 | export-markdown-csv | Export markdown audit findings to CSV with WCAG help links and markdownlint rule references |
 | setup-github-scanner | Set up the GitHub Accessibility Scanner in your repository with agent ecosystem integration |
 | setup-lighthouse-scanner | Set up Lighthouse CI accessibility scanning in your repository with agent ecosystem integration |

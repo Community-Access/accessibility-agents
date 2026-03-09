@@ -771,5 +771,5 @@ After release, continuous tests to run:
 - [Web Accessibility Wizard Agent](../.github/agents/web-accessibility-wizard.agent.md)
 - [Web Issue Fixer Agent](../.github/agents/web-issue-fixer.agent.md)
 - [VS Code 1.110 Release Notes](https://code.visualstudio.com/updates/)
-- [Browser Tool API Documentation](https://code.visualstudio.com/docs/copilot/customization/browser-tools)
+- [Browser Tool API Documentation](https://code.visualstudio.com/docs/copilot/customization/overview)
 

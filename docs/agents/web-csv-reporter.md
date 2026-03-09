@@ -4,9 +4,9 @@
 
 ## What It Does
 
-`web-csv-reporter` converts web accessibility audit findings into structured CSV files with Deque University help documentation links for every issue. It reads a completed `ACCESSIBILITY-AUDIT.md` report and produces up to three CSV files that can be opened in Excel, Google Sheets, or imported into issue trackers.
+`web-csv-reporter` converts web accessibility audit findings into structured CSV files with Accessibility Insights help documentation links for every issue. It reads a completed `ACCESSIBILITY-AUDIT.md` report and produces up to three CSV files that can be opened in Excel, Google Sheets, or imported into issue trackers.
 
-Each row includes a direct link to the Deque University help page for the specific axe-core rule, giving teams immediate access to remediation guidance without leaving their spreadsheet.
+Each row includes a direct link to the Accessibility Insights help page for the specific axe-core rule, giving teams immediate access to remediation guidance without leaving their spreadsheet.
 
 ## When It Runs
 
@@ -33,7 +33,7 @@ One row per issue found in the audit:
 | WCAG SC | WCAG success criterion (e.g., `1.4.3`) |
 | Impact | Critical, Serious, Moderate, or Minor |
 | Confidence | High, Medium, or Low |
-| Help URL | Deque University documentation link for the rule |
+| Help URL | Accessibility Insights documentation link for the rule |
 | Remediation | Suggested fix description |
 | Element HTML | The HTML of the failing element |
 
@@ -64,18 +64,18 @@ Prioritized action items:
 | Impact | Severity level |
 | Effort | Estimated effort (Low, Medium, High) |
 | ROI Score | Impact-to-effort ratio |
-| Help URL | Deque University documentation link |
+| Help URL | Accessibility Insights documentation link |
 | Fix Description | What to do |
 
 ## Help URL Pattern
 
-All Deque University links follow the pattern:
+All Accessibility Insights help links follow the pattern:
 
 ```
-https://dequeuniversity.com/rules/axe/4.10/{rule-id}
+https://accessibilityinsights.io/info-examples/web/{rule-id}
 ```
 
-For example, `color-contrast` maps to `https://dequeuniversity.com/rules/axe/4.10/color-contrast`.
+For example, `color-contrast` maps to `https://accessibilityinsights.io/info-examples/web/color-contrast/`.
 
 ## CSV Conventions
 
@@ -91,5 +91,5 @@ For example, `color-contrast` maps to `https://dequeuniversity.com/rules/axe/4.1
 |-----------|------|
 | [web-accessibility-wizard](web-accessibility-wizard.md) | Parent orchestrator that triggers CSV export |
 | [cross-page-analyzer](cross-page-analyzer.md) | Provides multi-page data for export |
-| [help-url-reference](../skills/help-url-reference.md) | Skill providing Deque University URL mappings |
+| [help-url-reference](../skills/help-url-reference.md) | Skill providing Accessibility Insights URL mappings |
 | [export-web-csv](../prompts/web/export-web-csv.md) | User-facing prompt that invokes this agent |

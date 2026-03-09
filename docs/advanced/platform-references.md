@@ -14,7 +14,7 @@
   - [Compliance Frameworks](#compliance-frameworks)
   - [Microsoft Office Accessibility](#microsoft-office-accessibility)
   - [Adobe PDF Accessibility](#adobe-pdf-accessibility)
-  - [Deque University and axe-core](#deque-university-and-axe-core-web-accessibility)
+  - [Accessibility Insights and axe-core](#accessibility-insights-and-axe-core-web-accessibility)
 - [Feature-to-Source Mapping](#feature-to-source-mapping)
 
 ---
@@ -66,7 +66,7 @@ Base URL: `https://code.claude.com/docs/en/`
 |-------|-----|-----------------|
 | **Custom instructions** | <https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions> | Three types: repository-wide (`copilot-instructions.md`), path-specific (`*.instructions.md` with `applyTo` frontmatter), agent instructions (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`). `excludeAgent` frontmatter for targeting specific agents. Priority: personal > repository > organization. |
 | **MCP in Copilot** | <https://docs.github.com/en/copilot/concepts/context/mcp> | MCP protocol overview for Copilot. GitHub MCP server. GitHub MCP Registry. Remote and local MCP server support. Toolset customization. |
-| **Copilot extensions** | <https://docs.github.com/en/copilot/building-copilot-extensions> | Building Copilot extensions with agents and skills. |
+| **Copilot extensions** | <https://docs.github.com/en/copilot/concepts/context/mcp> | Building Copilot extensions with agents, MCP, and skills. |
 | **Agent mode** | <https://docs.github.com/en/copilot/using-github-copilot/coding-agent> | Copilot coding agent for autonomous task execution. |
 
 ---
@@ -126,13 +126,13 @@ These pages define the official Accessibility Checker rules and per-format remed
 | **Creating Accessible PDFs** | <https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html> | Acrobat Pro guide to PDF accessibility. Anchor-based sections map to our PDFUA.\* and PDFBP.\* rule IDs: `#tag_pdf` (TaggedPDF), `#add_title` (Title), `#set_language` (Language), `#bookmarks` (BookmarksPresent), `#alt_text` (AltText), `#tables` (TableHeaders), `#reading_order` (ReadingOrder), `#headings` (Headings), `#lists` (ListTags), `#contrast` (Contrast), `#scanned` (Scanned), `#ocr` (Searchable). |
 | **PDF Accessibility Checker (PAC)** | <https://pdfua.foundation/en/pdf-accessibility-checker-pac> | Free tool for checking PDF/UA conformance. Implements Matterhorn Protocol checks. Used as reference for PDFUA rule definitions. |
 
-### Deque University and axe-core (Web Accessibility)
+### Accessibility Insights and axe-core (Web Accessibility)
 
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
-| **axe-core Rules Reference** | <https://dequeuniversity.com/rules/axe/4.10/> | Complete reference for axe-core automated accessibility rules. URL pattern: `{base}{rule-id}`. Each rule maps to one or more WCAG success criteria. Used as the `help_url` source for all web CSV findings. Covers 90+ rules including `image-alt`, `color-contrast`, `label`, `button-name`, `link-name`, `html-has-lang`, `document-title`, `heading-order`, `aria-roles`, `aria-required-attr`, `bypass`, `region`, `tabindex`, `meta-viewport`, `autocomplete-valid`, and more. |
+| **Accessibility Insights Info Examples** | <https://accessibilityinsights.io/info-examples/web/> | Free, public help pages for axe-core accessibility rules. URL pattern: `{base}{rule-id}/`. Each rule maps to one or more WCAG success criteria. Used as the `help_url` source for all web CSV findings. Covers rules including `image-alt`, `color-contrast`, `label`, `button-name`, `link-name`, `html-has-lang`, `document-title`, `heading-order`, `aria-roles`, `aria-required-attr`, `bypass`, `region`, `tabindex`, `meta-viewport`, `autocomplete-valid`, and more. |
 | **axe-core GitHub Repository** | <https://github.com/dequelabs/axe-core> | Open-source accessibility testing engine. Rule definitions, checks, and metadata. Version 4.10 is the current reference version in our URL patterns. |
-| **Deque University Topic Pages** | <https://dequeuniversity.com/> | Training resources for accessibility topics not covered by axe-core rules. Used for agent-detected issues: focus management (`/class/focus-management2/focus/overview`), live regions (`/library/aria/liveregion-playground`), modal dialogs (`/library/aria/modal-dialog/sf-modal-dialog`), data tables (`/class/tables2/simple/overview`). |
+| **W3C Topic Pages** | <https://www.w3.org/WAI/> | Authoritative W3C/WAI resources for accessibility topics not covered by axe-core rules. Used for agent-detected issues: focus management (WCAG Understanding focus-order), live regions (WCAG Understanding status-messages), modal dialogs (APG dialog-modal pattern), data tables (WAI tutorials/tables). |
 | **axe-core CLI** | <https://www.npmjs.com/package/@axe-core/cli> | CLI tool for running axe-core scans from the terminal. Used by the `A11y: Run axe-core Scan` VS Code task and the web-accessibility-wizard Phase 1 runtime scan. |
 
 ---
@@ -162,7 +162,7 @@ This table maps each project feature to the documentation sources that informed 
 | **Document rule IDs (DOCX-\*, XLSX-\*, PPTX-\*)** | Accessibility Checker Rules, Word/Excel/PowerPoint accessibility pages | Rule severity (Error/Warning/Tip) derived from Checker classification. Rule descriptions and WCAG mappings maintained in `accessibility-rules` skill. |
 | **Document help URLs** | Word/Excel/PowerPoint accessibility pages, Alt Text guidance | Bookmark-anchored URLs for per-rule fix guidance. Mapped in `help-url-reference` skill. |
 | **PDF rule IDs (PDFUA.\*, PDFBP.\*, PDFQ.\*)** | PDF/UA, Matterhorn Protocol, Creating Accessible PDFs | Rule definitions from ISO 14289-1 and Matterhorn failure conditions. Help URLs from Adobe Acrobat guide. |
-| **Web axe-core rule mapping** | axe-core Rules Reference, axe-core GitHub | Rule IDs to Deque University help URLs. WCAG criterion mapping from axe-core metadata. |
+| **Web axe-core rule mapping** | axe-core Rules Reference, axe-core GitHub | Rule IDs to Accessibility Insights help URLs. WCAG criterion mapping from axe-core metadata. |
 | **WCAG criterion-to-slug mapping** | WCAG 2.2 Understanding Docs | URL pattern for linking findings to W3C Understanding documents. Used in CSV `wcag_url` column. |
 | **Fix step templates** | Word/Excel/PowerPoint/PDF accessibility pages | Application-specific step-by-step remediation instructions derived from official Microsoft and Adobe documentation. |
 
@@ -179,6 +179,6 @@ These documentation sources are actively maintained by their respective platform
 
 ---
 
-*Last updated: 2026-02-24. Expanded Accessibility Standards with Microsoft Office Checker rules, WCAG 2.2 Understanding docs, Adobe PDF sources, and Deque/axe-core references.*
+*Last updated: 2026-02-24. Expanded Accessibility Standards with Microsoft Office Checker rules, WCAG 2.2 Understanding docs, Adobe PDF sources, and Accessibility Insights/axe-core references.*
 
 

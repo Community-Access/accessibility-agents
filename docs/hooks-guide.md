@@ -5,7 +5,7 @@
 This guide is maintained against official platform documentation and release notes.
 
 - VS Code updates and release notes: `https://code.visualstudio.com/updates`
-- VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization`
+- VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
 - GitHub Copilot docs: `https://docs.github.com/copilot`
 
 ## Overview

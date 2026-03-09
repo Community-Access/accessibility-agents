@@ -1,5 +1,5 @@
 ---
-description: Export web accessibility audit findings to a CSV file with Deque University help links for each issue.
+description: Export web accessibility audit findings to a CSV file with Accessibility Insights help links for each issue.
 mode: agent
 tools:
   - askQuestions
@@ -9,7 +9,7 @@ tools:
 
 # Export Web Audit to CSV
 
-Export findings from a web accessibility audit report to CSV format with Deque University help documentation links for every issue.
+Export findings from a web accessibility audit report to CSV format with Accessibility Insights help documentation links for every issue.
 
 ## Instructions
 
@@ -37,7 +37,7 @@ Use the **web-csv-reporter** sub-agent workflow:
    - WCAG success criterion
    - Severity (Critical / Serious / Moderate / Minor)
    - Confidence level (High / Medium / Low)
-   - Deque University help URL for the rule
+   - Accessibility Insights help URL for the rule
    - Suggested remediation
 
 5. Save CSV files alongside the audit report:

@@ -1,59 +1,59 @@
 ---
 name: help-url-reference
-description: Centralized help URL reference for accessibility remediation. Maps axe-core rule IDs to Deque University topics, document rule IDs to Microsoft Office and Adobe PDF help pages, and WCAG criteria to W3C Understanding documents. Use when generating CSV exports, markdown reports, or any output that links findings to external remediation documentation.
+description: Centralized help URL reference for accessibility remediation. Maps axe-core rule IDs to Accessibility Insights info-examples pages, document rule IDs to Microsoft Office and Adobe PDF help pages, and WCAG criteria to W3C Understanding documents. Use when generating CSV exports, markdown reports, or any output that links findings to external remediation documentation.
 ---
 
 # Help URL Reference
 
 Centralized mapping of accessibility rule IDs and WCAG criteria to external help documentation. Used by CSV reporters, audit report generators, and any agent that links findings to remediation guidance.
 
-## Deque University (Web Accessibility)
+## Accessibility Insights (Web Accessibility)
 
 ### axe-core Rule URL Pattern
 
 ```text
-Base URL: https://dequeuniversity.com/rules/axe/4.10/
+Base URL: https://accessibilityinsights.io/info-examples/web/
 Pattern:  {base_url}{rule-id}
-Example:  https://dequeuniversity.com/rules/axe/4.10/image-alt
+Example:  https://accessibilityinsights.io/info-examples/web/image-alt/
 ```
 
 For any axe-core rule, construct the URL by appending the rule ID to the base URL. This pattern covers all axe-core rules.
 
 ### Common axe-core Rules
 
-| Rule ID | Issue | WCAG | Deque Help URL |
+| Rule ID | Issue | WCAG | Help URL |
 |---------|-------|------|---------------|
-| `image-alt` | Image missing alternative text | 1.1.1 | `https://dequeuniversity.com/rules/axe/4.10/image-alt` |
-| `button-name` | Button has no accessible name | 4.1.2 | `https://dequeuniversity.com/rules/axe/4.10/button-name` |
-| `color-contrast` | Text has insufficient contrast | 1.4.3 | `https://dequeuniversity.com/rules/axe/4.10/color-contrast` |
-| `label` | Form element has no label | 1.3.1 | `https://dequeuniversity.com/rules/axe/4.10/label` |
-| `link-name` | Link has no discernible text | 4.1.2 | `https://dequeuniversity.com/rules/axe/4.10/link-name` |
-| `html-has-lang` | Page missing lang attribute | 3.1.1 | `https://dequeuniversity.com/rules/axe/4.10/html-has-lang` |
-| `document-title` | Page missing title | 2.4.2 | `https://dequeuniversity.com/rules/axe/4.10/document-title` |
-| `heading-order` | Heading levels skipped | 1.3.1 | `https://dequeuniversity.com/rules/axe/4.10/heading-order` |
-| `aria-roles` | Invalid ARIA role | 4.1.2 | `https://dequeuniversity.com/rules/axe/4.10/aria-roles` |
-| `aria-required-attr` | Missing required ARIA attribute | 4.1.2 | `https://dequeuniversity.com/rules/axe/4.10/aria-required-attr` |
-| `aria-valid-attr` | Invalid ARIA attribute | 4.1.2 | `https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr` |
-| `bypass` | No skip navigation link | 2.4.1 | `https://dequeuniversity.com/rules/axe/4.10/bypass` |
-| `region` | Content not in landmark | 1.3.1 | `https://dequeuniversity.com/rules/axe/4.10/region` |
-| `tabindex` | Positive tabindex used | 2.4.3 | `https://dequeuniversity.com/rules/axe/4.10/tabindex` |
-| `duplicate-id` | Duplicate element ID | 4.1.1 | `https://dequeuniversity.com/rules/axe/4.10/duplicate-id` |
-| `focus-order-semantics` | Focus order issue | 2.4.3 | `https://dequeuniversity.com/rules/axe/4.10/focus-order-semantics` |
-| `input-image-alt` | Input image missing alt | 1.1.1 | `https://dequeuniversity.com/rules/axe/4.10/input-image-alt` |
-| `meta-viewport` | Viewport disables zoom | 1.4.4 | `https://dequeuniversity.com/rules/axe/4.10/meta-viewport` |
-| `select-name` | Select element has no label | 4.1.2 | `https://dequeuniversity.com/rules/axe/4.10/select-name` |
-| `autocomplete-valid` | Invalid autocomplete value | 1.3.5 | `https://dequeuniversity.com/rules/axe/4.10/autocomplete-valid` |
+| `image-alt` | Image missing alternative text | 1.1.1 | `https://accessibilityinsights.io/info-examples/web/image-alt/` |
+| `button-name` | Button has no accessible name | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/button-name/` |
+| `color-contrast` | Text has insufficient contrast | 1.4.3 | `https://accessibilityinsights.io/info-examples/web/color-contrast/` |
+| `label` | Form element has no label | 1.3.1 | `https://accessibilityinsights.io/info-examples/web/label/` |
+| `link-name` | Link has no discernible text | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/link-name/` |
+| `html-has-lang` | Page missing lang attribute | 3.1.1 | `https://accessibilityinsights.io/info-examples/web/html-has-lang/` |
+| `document-title` | Page missing title | 2.4.2 | `https://accessibilityinsights.io/info-examples/web/document-title/` |
+| `heading-order` | Heading levels skipped | 1.3.1 | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` |
+| `aria-roles` | Invalid ARIA role | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/aria-roles/` |
+| `aria-required-attr` | Missing required ARIA attribute | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/aria-required-attr/` |
+| `aria-valid-attr` | Invalid ARIA attribute | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/aria-valid-attr/` |
+| `bypass` | No skip navigation link | 2.4.1 | `https://accessibilityinsights.io/info-examples/web/bypass/` |
+| `region` | Content not in landmark | 1.3.1 | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` |
+| `tabindex` | Positive tabindex used | 2.4.3 | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` |
+| `duplicate-id` | Duplicate element ID | 4.1.1 | `https://accessibilityinsights.io/info-examples/web/duplicate-id/` |
+| `focus-order-semantics` | Focus order issue | 2.4.3 | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` |
+| `input-image-alt` | Input image missing alt | 1.1.1 | `https://accessibilityinsights.io/info-examples/web/input-image-alt/` |
+| `meta-viewport` | Viewport disables zoom | 1.4.4 | `https://accessibilityinsights.io/info-examples/web/meta-viewport/` |
+| `select-name` | Select element has no label | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/select-name/` |
+| `autocomplete-valid` | Invalid autocomplete value | 1.3.5 | `https://accessibilityinsights.io/info-examples/web/autocomplete-valid/` |
 
-### Deque University Topic Pages (Non-axe Issues)
+### W3C/WAI Topic Pages (Non-axe Issues)
 
-For agent-detected issues without axe-core rule IDs, use these topic pages:
+For agent-detected issues without axe-core rule IDs, use these W3C/WAI pages:
 
 | Topic | URL |
 |-------|-----|
-| Focus management | `https://dequeuniversity.com/class/focus-management2/focus/overview` |
-| Live regions | `https://dequeuniversity.com/library/aria/liveregion-playground` |
-| Modal dialogs | `https://dequeuniversity.com/library/aria/modal-dialog/sf-modal-dialog` |
-| Data tables | `https://dequeuniversity.com/class/tables2/simple/overview` |
+| Focus management | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` |
+| Live regions | `https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html` |
+| Modal dialogs | `https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/` |
+| Data tables | `https://www.w3.org/WAI/tutorials/tables/` |
 
 ## Microsoft Office (Document Accessibility)
 

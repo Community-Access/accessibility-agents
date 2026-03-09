@@ -9,7 +9,7 @@ model: inherit
 
 - **WCAG 2.2** — https://www.w3.org/WAI/WCAG22/quickref/
 - **PDF/UA-1 (ISO 14289-1:2023)** — https://www.iso.org/standard/84289.html
-- **Microsoft Office Accessibility** — https://support.microsoft.com/en-us/office/make-your-content-accessible
+- **Microsoft Office Accessibility** — https://support.microsoft.com/en-us/office/make-your-content-accessible-to-everyone-ecab0fcf-d143-4fe8-a2ff-6cd596bddc6d
 - **Open XML File Formats** — https://www.ecma-international.org/publications-and-standards/standards/ecma-376/
 - **EPUB Accessibility 1.1** — https://www.w3.org/TR/epub-a11y-11/
 

@@ -82,7 +82,7 @@ Convert to agent standard format:
   "wcagCriteria": ["4.1.2"],
   "description": "Buttons must have discernible text",
   "affectedElements": 5,
-  "helpUrl": "https://dequeuniversity.com/rules/axe/4.8/button-name"
+  "helpUrl": "https://accessibilityinsights.io/info-examples/web/button-name/"
 }
 ```
 

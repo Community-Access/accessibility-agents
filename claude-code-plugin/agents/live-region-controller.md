@@ -7,7 +7,7 @@ model: inherit
 
 ## Authoritative Sources
 
-- **ARIA Live Regions** — https://www.w3.org/WAI/ARIA/apg/practices/live-regions/
+- **ARIA Live Regions** — https://www.w3.org/WAI/ARIA/apg/practices/
 - **ARIA Notifications** — https://www.w3.org/WAI/ARIA/apg/patterns/alert/
 - **WCAG 4.1.3 Status Messages** — https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html
 - **aria-live attribute** — https://www.w3.org/TR/wai-aria-1.2/#aria-live

@@ -7,7 +7,7 @@ model: inherit
 
 ## Authoritative Sources
 
-- **Microsoft Office Accessibility** — https://support.microsoft.com/en-us/office/make-your-content-accessible
+- **Microsoft Office Accessibility** — https://support.microsoft.com/en-us/office/make-your-content-accessible-to-everyone-ecab0fcf-d143-4fe8-a2ff-6cd596bddc6d
 - **WCAG 2.2** — https://www.w3.org/WAI/WCAG22/quickref/
 - **Open XML File Formats** — https://www.ecma-international.org/publications-and-standards/standards/ecma-376/
 

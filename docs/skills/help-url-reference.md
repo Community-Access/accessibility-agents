@@ -1,26 +1,26 @@
 # help-url-reference Skill
 
-> Centralized mapping of accessibility rule IDs to their official help documentation URLs. Covers Deque University (axe-core web rules), Microsoft Office support (Word, Excel, PowerPoint accessibility), Adobe PDF accessibility, and WCAG 2.2 Understanding documents. Used by CSV reporter agents to generate actionable links alongside findings.
+> Centralized mapping of accessibility rule IDs to their official help documentation URLs. Covers Accessibility Insights (axe-core web rules), Microsoft Office support (Word, Excel, PowerPoint accessibility), Adobe PDF accessibility, and WCAG 2.2 Understanding documents. Used by CSV reporter agents to generate actionable links alongside findings.
 
 ## Agents That Use This Skill
 
 | Agent | Why |
 |-------|-----|
-| [web-csv-reporter](../agents/web-csv-reporter.md) | Maps axe-core rule IDs to Deque University help URLs in CSV exports |
+| [web-csv-reporter](../agents/web-csv-reporter.md) | Maps axe-core rule IDs to Accessibility Insights help URLs in CSV exports |
 | [document-csv-reporter](../agents/document-csv-reporter.md) | Maps Office/PDF rule IDs to Microsoft and Adobe help URLs in CSV exports |
 | [markdown-csv-reporter](../agents/markdown-csv-reporter.md) | Maps WCAG criteria and markdownlint rules to help URLs in CSV exports |
 
 ## Coverage
 
-### Deque University (Web)
+### Accessibility Insights (Web)
 
-Maps axe-core rule IDs to `https://dequeuniversity.com/rules/axe/4.10/{rule-id}` URLs. Covers 20+ common rules including `color-contrast`, `image-alt`, `label`, `button-name`, `link-name`, `html-has-lang`, `document-title`, `heading-order`, and more.
+Maps axe-core rule IDs to `https://accessibilityinsights.io/info-examples/web/{rule-id}/` URLs. Covers 20+ common rules including `color-contrast`, `image-alt`, `label`, `button-name`, `link-name`, `html-has-lang`, `document-title`, `heading-order`, and more.
 
-Also includes Deque topic page URLs for agent-detected issues without axe-core rule IDs:
-- Focus management: `https://dequeuniversity.com/class/focus-management2/focus/overview`
-- Live regions: `https://dequeuniversity.com/library/aria/liveregion-playground`
-- Modal dialogs: `https://dequeuniversity.com/library/aria/modal-dialog/sf-modal-dialog`
-- Data tables: `https://dequeuniversity.com/class/tables2/simple/overview`
+Also includes W3C/WAI topic page URLs for agent-detected issues without axe-core rule IDs:
+- Focus management: `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html`
+- Live regions: `https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html`
+- Modal dialogs: `https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/`
+- Data tables: `https://www.w3.org/WAI/tutorials/tables/`
 
 ### Microsoft Office (Documents)
 

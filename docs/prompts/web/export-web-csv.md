@@ -1,13 +1,13 @@
 # export-web-csv
 
-Export web accessibility audit findings to CSV files with Deque University help documentation links. Opens in Excel, Google Sheets, or any spreadsheet tool. Import into issue trackers for team-based remediation workflows.
+Export web accessibility audit findings to CSV files with Accessibility Insights help documentation links. Opens in Excel, Google Sheets, or any spreadsheet tool. Import into issue trackers for team-based remediation workflows.
 
 ## When to Use It
 
 - You have a completed web audit report and need to share findings with stakeholders who prefer spreadsheets
 - You want to import accessibility issues into Jira, GitHub Issues, or Azure DevOps as work items
 - You need a prioritized remediation tracker with effort estimates and ROI scores
-- You want every issue linked to its Deque University help page for quick reference
+- You want every issue linked to its Accessibility Insights help page for quick reference
 
 ## How to Launch It
 
@@ -37,7 +37,7 @@ The agent asks two questions:
 The agent reads the audit report, extracts all findings, and generates CSV files with:
 
 - UTF-8 encoding with BOM for Excel compatibility
-- Deque University help URL for every axe-core rule ID
+- Accessibility Insights help URL for every axe-core rule ID
 - WCAG success criterion mapping
 - Severity and confidence levels
 - Suggested remediation text

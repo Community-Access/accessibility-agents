@@ -546,8 +546,8 @@ window.location.href = '...'     // Navigate (only via browser.navigate())
 ## 13. References
 
 - **VS Code 1.110 Release Notes** — https://code.visualstudio.com/updates/
-- **VS Code Browser Tools API** — https://code.visualstudio.com/docs/copilot/customization/browser-tools
-- **Integrated Browser Documentation** — https://code.visualstudio.com/docs/editor/integrated-browser
+- **VS Code Browser Tools API** — https://code.visualstudio.com/docs/copilot/customization/overview
+- **Integrated Browser Documentation** — https://code.visualstudio.com/docs/editor/debugging
 - **WCAG 2.2: Visual Accessibility** — https://www.w3.org/TR/WCAG22/
 
 ---

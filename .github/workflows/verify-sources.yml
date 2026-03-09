@@ -49,6 +49,7 @@ jobs:
             let summary = '## Source Validation Results\n\n';
             summary += `✅ Valid: ${results.valid}\n`;
             summary += `⚠️ Redirects: ${results.redirects}\n`;
+            summary += `🚫 Blocked: ${results.blocked || 0}\n`;
             summary += `❌ Broken: ${results.broken}\n`;
             summary += `⏭️ Skipped: ${results.skipped}\n\n`;
             

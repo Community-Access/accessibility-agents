@@ -27,12 +27,22 @@ import sys
 TIMEOUT = int(os.environ.get('TIMEOUT', 10))
 VALID_STATUSES = {200, 201, 202, 203, 204, 205, 206}  # Success codes
 REDIRECT_STATUSES = {301, 302, 303, 304, 307, 308}  # Redirects
+# 403/timeout are common for legitimate sites that block automated requests
+BLOCKED_STATUSES = {403, 408, 429, 520, 521, 522, 523, 524}
 SKIP_PATTERNS = {
     'example.com',  # Example domains
     'yourdomain.com',
+    'your-repo',
+    'your-site',
+    'yourname',
+    'staging.myapp',
+    '/acme',
+    'owner/repo',
+    'OWNER/REPO',
     'localhost',
     'file://',  # File protocols
     '#',  # Anchor links within page
+    'raw.githubusercontent.com/community-access/accessibility-agents/main/schemas/',  # Schemas not yet published
 }
 
 # Session with retries
@@ -54,11 +64,15 @@ def extract_urls(file_path: Path) -> List[Tuple[str, int]]:
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             for line_num, line in enumerate(f, 1):
-                # Extract URLs using regex
-                matches = re.findall(r'https://[^\s\)"`\]\}]+', line)
+                # Extract URLs using regex (exclude >, <, {, and common delimiters)
+                matches = re.findall(r'https://[^\s\)"`\]\}\><]+', line)
                 for match in matches:
-                    # Clean trailing punctuation
+                    # Clean trailing punctuation and HTML fragments
                     url = match.rstrip('.,;:!?)')
+                    url = re.sub(r'</[a-zA-Z]+$', '', url)  # Strip trailing </tag
+                    # Skip URLs containing template variables like {owner}
+                    if '{' in url or '[' in url:
+                        continue
                     urls.append((url, line_num))
     except (UnicodeDecodeError, IOError) as e:
         print(f"⚠️ Error reading {file_path}: {e}", file=sys.stderr)
@@ -80,7 +94,7 @@ def validate_url(url: str) -> Tuple[int, str | None]:
         response = session.head(url, timeout=TIMEOUT, allow_redirects=False)
         
         # Try GET if HEAD fails (some servers don't support HEAD)
-        if response.status_code == 405:
+        if response.status_code in (405, 403):
             response = session.get(url, timeout=TIMEOUT, allow_redirects=False, stream=True)
         
         if response.status_code in REDIRECT_STATUSES:
@@ -104,10 +118,12 @@ def main():
     results = {
         'valid': 0,
         'redirects': 0,
+        'blocked': 0,
         'broken': 0,
         'skipped': 0,
         'valid_links': [],
         'redirect_links': [],
+        'blocked_links': [],
         'broken_links': [],
     }
     
@@ -162,6 +178,15 @@ def main():
                     'final_url': final_url,
                     'status': status,
                 })
+            elif status in BLOCKED_STATUSES:
+                # Blocked by server (not truly broken)
+                results['blocked'] += 1
+                results['blocked_links'].append({
+                    'file': str(file_path),
+                    'line': line_num,
+                    'url': url,
+                    'status': status,
+                })
             else:
                 # Broken or error
                 results['broken'] += 1
@@ -179,6 +204,7 @@ def main():
     # Print summary
     print(f"\n✅ Valid:      {results['valid']}")
     print(f"⚠️  Redirects: {results['redirects']}")
+    print(f"🚫 Blocked:    {results['blocked']}")
     print(f"❌ Broken:     {results['broken']}")
     print(f"⏭️  Skipped:    {results['skipped']}")
     

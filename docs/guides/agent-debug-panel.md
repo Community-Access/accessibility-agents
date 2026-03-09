@@ -8,7 +8,7 @@ This guide tracks behavior documented in official VS Code/Copilot sources.
 
 References:
 - VS Code release notes: `https://code.visualstudio.com/updates`
-- VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization`
+- VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
 - GitHub Copilot docs: `https://docs.github.com/copilot`
 
 ## What is the Agent Debug Panel?
@@ -281,4 +281,4 @@ Future releases may add these capabilities.
 - [Lifecycle Hooks Guide](hooks-guide.md) - Deep dive on the three-hook enforcement system
 - [Context Management Guide](context-management.md) - Using `/compact` effectively
 - [Agent Customization](../agents/README.md) - Creating custom agents and skills
-- [VS Code Agent Documentation](https://code.visualstudio.com/docs/copilot/customization)
+- [VS Code Agent Documentation](https://code.visualstudio.com/docs/copilot/customization/overview)
