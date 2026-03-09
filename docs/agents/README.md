@@ -39,9 +39,10 @@ Think of the A11y Agent Team as a consulting team of accessibility specialists. 
 
 | Method | Syntax | When to Use |
 |--------|--------|-------------|
-| Automatic | Rules apply to every UI task | No invocation needed — Codex reads `.codex/AGENTS.md` automatically |
+| Automatic baseline | Rules apply to every UI task | No invocation needed — Codex reads `.codex/AGENTS.md` automatically |
+| Experimental roles | Config/TOML-based role selection in newer Codex builds | Use when experimenting with focused Codex role workflows |
 
-Codex CLI does not have named agents or sub-agents. All accessibility rules are condensed into a single `AGENTS.md` file that Codex loads on every run. There is nothing to invoke — the rules are always active.
+Codex still uses `.codex/AGENTS.md` as the stable always-on baseline. Accessibility Agents also includes an **experimental** TOML-based role layer for newer Codex builds with multi-agent support enabled. That role layer is optional, does not replace the baseline, and is documented in [Experimental Codex Multi-Agent Roles](../guides/codex-experimental-multi-agent.md).
 
 ### GitHub Copilot (VS Code / Editor)
 
@@ -474,15 +475,15 @@ Orchestrator agents delegate work to specialist sub-agents. This map shows which
 
 ## Environment Parity
 
-Agents exist in three environments. Claude Code and Copilot have full multi-agent support. Codex CLI uses a single condensed ruleset.
+Agents exist in three environments. Claude Code and Copilot have mature multi-agent support. Codex CLI keeps a stable condensed ruleset baseline and now also has an experimental role layer for newer builds.
 
 | Property | GitHub Copilot | Claude Code | Codex CLI |
 |----------|---------------|-------------|-----------|
 | Agent directory | `.github/agents/*.agent.md` | `.claude/agents/*.md` | `.codex/AGENTS.md` (single file) |
 | Team config | `.github/agents/AGENTS.md` | `.claude/agents/AGENTS.md` | N/A |
 | Frontmatter model | `model: [Claude Sonnet 4 (copilot)]` | `model: inherit` | N/A |
-| Handoffs declaration | `handoffs:` block in frontmatter | Described in agent body text | N/A (no sub-agents) |
-| Agent cross-calling | `agents:` frontmatter list | Agent body text describes delegation | N/A (no sub-agents) |
+| Handoffs declaration | `handoffs:` block in frontmatter | Described in agent body text | Experimental role layer exists, but not full frontmatter-style handoffs |
+| Agent cross-calling | `agents:` frontmatter list | Agent body text describes delegation | Experimental role layer exists, but not full cross-calling parity |
 | Skills path | `../skills/[skill]/SKILL.md` | `../../.github/skills/[skill]/SKILL.md` | N/A |
 | Shared instructions | `shared-instructions.md` (relative) | `../../.github/agents/shared-instructions.md` | N/A |
 

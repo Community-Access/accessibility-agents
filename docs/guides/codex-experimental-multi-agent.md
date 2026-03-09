@@ -2,6 +2,12 @@
 
 Accessibility Agents now includes an **experimental** Codex multi-agent layer on top of the stable `.codex/AGENTS.md` baseline.
 
+## Upstream Codex References
+
+- [OpenAI Codex: Multi-agents](https://developers.openai.com/codex/multi-agent/) — experimental multi-agent workflows, feature flag, and orchestration behavior
+- [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md/) — how Codex discovers and applies `AGENTS.md`
+- [OpenAI Codex: Customization](https://developers.openai.com/codex/concepts/customization/) — where AGENTS.md, skills, MCP, and multi-agents fit together
+
 ## What Is Stable vs Experimental
 
 **Stable baseline:** `.codex/AGENTS.md`
@@ -13,6 +19,7 @@ Accessibility Agents now includes an **experimental** Codex multi-agent layer on
 - Adds named Codex roles with concise developer instructions
 - Lets you switch into a narrower role when you want a focused pass
 - Keeps the baseline rules in place rather than replacing them
+- Depends on newer Codex builds where multi-agent support is enabled explicitly (for example via `/experimental` or `[features].multi_agent = true`)
 
 This is **Phase 1** support. It intentionally ports a small, high-value set of roles instead of every Claude Code agent in the repository.
 
