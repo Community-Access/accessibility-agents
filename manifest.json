@@ -1,4 +1,4 @@
-{ "generated": "2026-03-04T16:47:30Z", "sections": [
+{ "generated": "2026-03-09T17:36:23Z", "sections": [
 {"name":"Getting Started","id":"getting-started","items":[
 {"path":"docs/getting-started.md","title":"Getting Started"}
 ,
@@ -296,5 +296,3 @@
 {"path":"SECURITY.md","title":"Security Policy"}
 ]}
 ]}
-
-
