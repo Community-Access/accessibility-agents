@@ -522,7 +522,7 @@ This is for **OpenAI Codex CLI** (the terminal coding agent).
 
 Codex CLI reads `AGENTS.md` files from the project directory tree automatically. The accessibility rules are loaded into every session — no extra flags or configuration needed. When Codex works on any UI task, it applies the WCAG 2.2 AA rules from the AGENTS.md file before considering the work done.
 
-Unlike Claude Code, Codex does not have a sub-agent concept. All accessibility rules are condensed into a single document that covers all nine domains: ARIA, keyboard navigation, modals, forms, color contrast, live regions, headings and landmarks, images, and tables.
+Accessibility Agents keeps that stable AGENTS.md baseline, and now also includes an experimental TOML-based role layer for newer Codex builds that support multi-agent workflows. The experimental roles are optional and do not replace the baseline rules.
 
 ### Prerequisites
 
@@ -558,7 +558,7 @@ bash install.sh --project --codex
 bash install.sh --global --codex
 ```
 
-The interactive installer also prompts for Codex support if you do not pass the flag.
+The interactive installer also prompts for Codex support if you do not pass the flag. Codex installs include the stable `.codex/AGENTS.md` baseline and, when available, the experimental `.codex/config.toml` plus `.codex/roles/*.toml` files.
 
 #### One-Liner
 
@@ -571,15 +571,19 @@ curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agen
 
 ```bash
 # For project install
-mkdir -p .codex
+mkdir -p .codex/roles
 cp path/to/accessibility-agents/.codex/AGENTS.md .codex/AGENTS.md
+cp path/to/accessibility-agents/.codex/config.toml .codex/config.toml
+cp path/to/accessibility-agents/.codex/roles/*.toml .codex/roles/
 
 # For global install
-mkdir -p ~/.codex
+mkdir -p ~/.codex/roles
 cp path/to/accessibility-agents/.codex/AGENTS.md ~/.codex/AGENTS.md
+cp path/to/accessibility-agents/.codex/config.toml ~/.codex/config.toml
+cp path/to/accessibility-agents/.codex/roles/*.toml ~/.codex/roles/
 ```
 
-For project installs, commit `.codex/AGENTS.md` to your repo so the rules travel with the project.
+For project installs, commit `.codex/AGENTS.md`, `.codex/config.toml`, and `.codex/roles/` to your repo so the baseline rules and experimental role definitions travel with the project together.
 
 ### Using Codex with Accessibility Rules
 
@@ -591,7 +595,9 @@ codex "Add a modal dialog to the settings page"
 codex "Create a data table for the analytics dashboard"
 ```
 
-Codex will apply the accessibility rules from AGENTS.md to all UI code it generates. A pre-commit checklist at the end of the rules file ensures nothing gets missed.
+Codex will apply the accessibility rules from AGENTS.md to all UI code it generates. The experimental role files add narrower specialist passes when you want them, but the baseline still does the always-on guardrail work.
+
+For the current role list, install details, and limitations, see [Experimental Codex Multi-Agent Roles](guides/codex-experimental-multi-agent.md).
 
 ### Removing
 

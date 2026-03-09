@@ -36,7 +36,7 @@ All agents run on:
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
 - **Claude Desktop** - An MCP extension (.mcpb) with tools and prompts for accessibility review
-- **Codex CLI** - Condensed WCAG AA rules loaded via `.codex/AGENTS.md` -- accessibility enforced automatically on every UI task
+- **Codex CLI** - Stable `.codex/AGENTS.md` baseline plus optional experimental TOML-based roles for focused accessibility passes
 
 ## System Requirements
 
@@ -406,6 +406,7 @@ The following guides cover advanced configuration, cross-platform handoff, and d
 | [Browser Tool Usage](docs/guides/browser-tool-usage.md) | Agentic browser verification: agents autonomously verify fixes in integrated browser |
 | [Plugin Packaging](docs/advanced/plugin-packaging.md) | Packaging and distributing agents for different environments |
 | [Platform References](docs/advanced/platform-references.md) | External documentation sources with feature-to-source mapping |
+| [Experimental Codex Multi-Agent Roles](docs/guides/codex-experimental-multi-agent.md) | Optional TOML-based Codex roles layered on top of the stable AGENTS.md baseline |
 | [Research Sources](docs/RESEARCH-SOURCES.md) | Authoritative sources (W3C APG, WebAIM, WCAG 2.2, Deque) that informed every agent rule |
 
 ## What This Covers
