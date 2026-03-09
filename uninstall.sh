@@ -107,7 +107,17 @@ else
     done
 
     # Codex
-    [ -f "$REPO/.codex/AGENTS.md" ] && MANIFEST_ENTRIES+=("codex/project") && MANIFEST_ENTRIES+=("codex/global")
+    if [ -f "$REPO/.codex/AGENTS.md" ]; then
+      MANIFEST_ENTRIES+=("codex/project")
+      MANIFEST_ENTRIES+=("codex/global")
+    fi
+    [ -f "$REPO/.codex/config.toml" ] && MANIFEST_ENTRIES+=("codex/config.toml")
+    if [ -d "$REPO/.codex/roles" ]; then
+      while IFS= read -r -d '' src_file; do
+        rel="${src_file#$REPO/.codex/roles/}"
+        MANIFEST_ENTRIES+=("codex/roles/$rel")
+      done < <(find "$REPO/.codex/roles" -type f -name "*.toml" -print0)
+    fi
 
     # Gemini
     [ -d "$REPO/.gemini/extensions/a11y-agents" ] && MANIFEST_ENTRIES+=("gemini/project") && MANIFEST_ENTRIES+=("gemini/global")
@@ -128,27 +138,50 @@ fi
 remove_our_section() {
   local filepath="$1"
   [ -f "$filepath" ] || { echo "absent"; return; }
-  if grep -qF '<!-- a11y-agent-team: start -->' "$filepath" 2>/dev/null; then
+
+  local start end legacy_start legacy_end
+  case "$filepath" in
+    *.toml)
+      start="# a11y-agent-team: start"
+      end="# a11y-agent-team: end"
+      legacy_start="# accessibility-agents: start"
+      legacy_end="# accessibility-agents: end"
+      ;;
+    *)
+      start="<!-- a11y-agent-team: start -->"
+      end="<!-- a11y-agent-team: end -->"
+      legacy_start="<!-- accessibility-agents: start -->"
+      legacy_end="<!-- accessibility-agents: end -->"
+      ;;
+  esac
+
+  if grep -qF "$start" "$filepath" 2>/dev/null || grep -qF "$legacy_start" "$filepath" 2>/dev/null; then
     if command -v python3 &>/dev/null; then
       local result
-      result=$(A11Y_PATH="$filepath" python3 - << 'PYEOF'
-import re, os
+      result=$(A11Y_PATH="$filepath" A11Y_START="$start" A11Y_END="$end" A11Y_LEGACY_START="$legacy_start" A11Y_LEGACY_END="$legacy_end" python3 - << 'PYEOF'
+import os, re
 path = os.environ['A11Y_PATH']
+start = os.environ['A11Y_START']
+end = os.environ['A11Y_END']
+legacy_start = os.environ.get('A11Y_LEGACY_START', '')
+legacy_end = os.environ.get('A11Y_LEGACY_END', '')
 content = open(path).read()
-cleaned = re.sub(r'(?s)<!-- a11y-agent-team: start -->.*?<!-- a11y-agent-team: end -->', '', content).strip()
+patterns = [re.escape(start) + r'.*?' + re.escape(end)]
+if legacy_start and legacy_end:
+    patterns.append(re.escape(legacy_start) + r'.*?' + re.escape(legacy_end))
+cleaned = re.sub(r'(?s)(?:' + '|'.join(patterns) + r')', '', content).strip()
 if not cleaned:
     os.remove(path)
     print("deleted")
 else:
-    open(path, 'w').write(cleaned)
+    open(path, 'w').write(cleaned + "\n")
     print("cleaned")
 PYEOF
       )
       echo "$result"
     else
-      # No python3: delete only if file is entirely our content
-      local start_count end_count
-      start_count=$(grep -c '<!-- a11y-agent-team: start -->' "$filepath" 2>/dev/null || echo 0)
+      local start_count
+      start_count=$(grep -cF "$start" "$filepath" 2>/dev/null || echo 0)
       if [ "$start_count" -gt 0 ]; then
         rm "$filepath"
         echo "deleted"
@@ -395,6 +428,7 @@ else
   CODEX_DIR="$HOME/.codex"
 fi
 CODEX_FILE="$CODEX_DIR/AGENTS.md"
+CODEX_CONFIG_FILE="$CODEX_DIR/config.toml"
 if [ -f "$CODEX_FILE" ]; then
   result=$(remove_our_section "$CODEX_FILE")
   case "$result" in
@@ -411,6 +445,41 @@ if [ -f "$CODEX_FILE" ]; then
       ;;
   esac
 fi
+if [ -f "$CODEX_CONFIG_FILE" ]; then
+  result=$(remove_our_section "$CODEX_CONFIG_FILE")
+  case "$result" in
+    deleted)
+      echo ""
+      echo "  Removing Codex experimental role config..."
+      echo "    - config.toml (Codex role config removed)"
+      ;;
+    cleaned)
+      echo ""
+      echo "  Codex CLI:"
+      echo "    ~ config.toml (removed our section, kept your content)"
+      ;;
+  esac
+fi
+CODEX_ROLE_PATHS=()
+for entry in "${MANIFEST_ENTRIES[@]}"; do
+  case "$entry" in
+    codex-role/path:*)
+      CODEX_ROLE_PATHS+=("${entry#codex-role/path:}")
+      ;;
+    codex/roles/*)
+      CODEX_ROLE_PATHS+=("$CODEX_DIR/${entry#codex/}")
+      ;;
+  esac
+done
+for role_path in "${CODEX_ROLE_PATHS[@]}"; do
+  [ -f "$role_path" ] || continue
+  rm "$role_path"
+  echo "    - $(basename "$role_path")"
+done
+if [ -d "$CODEX_DIR/roles" ]; then
+  find "$CODEX_DIR/roles" -type d -empty -delete 2>/dev/null || true
+fi
+rmdir "$CODEX_DIR" 2>/dev/null || true
 
 # =============================================
 # 5. Remove Gemini CLI extension

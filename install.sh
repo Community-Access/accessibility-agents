@@ -200,24 +200,42 @@ esac
 # ---------------------------------------------------------------------------
 merge_config_file() {
   local src="$1" dst="$2" label="$3"
-  local start="<!-- a11y-agent-team: start -->"
-  local end="<!-- a11y-agent-team: end -->"
+  local start end legacy_start legacy_end
+  case "$dst" in
+    *.toml)
+      start="# a11y-agent-team: start"
+      end="# a11y-agent-team: end"
+      legacy_start="# accessibility-agents: start"
+      legacy_end="# accessibility-agents: end"
+      ;;
+    *)
+      start="<!-- a11y-agent-team: start -->"
+      end="<!-- a11y-agent-team: end -->"
+      legacy_start="<!-- accessibility-agents: start -->"
+      legacy_end="<!-- accessibility-agents: end -->"
+      ;;
+  esac
   if [ ! -f "$dst" ]; then
     { printf '%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; } > "$dst"
     echo "    + $label (created)"
     return
   fi
-  if grep -qF "$start" "$dst" 2>/dev/null; then
+  if grep -qF "$start" "$dst" 2>/dev/null || grep -qF "$legacy_start" "$dst" 2>/dev/null; then
     if command -v python3 &>/dev/null; then
-      python3 - "$src" "$dst" << 'PYEOF'
+      python3 - "$src" "$dst" "$start" "$end" "$legacy_start" "$legacy_end" << 'PYEOF'
 import re, sys
 src_text = open(sys.argv[1]).read().rstrip()
 dst_path = sys.argv[2]
 dst_text = open(dst_path).read()
-start = "<!-- a11y-agent-team: start -->"
-end   = "<!-- a11y-agent-team: end -->"
+start = sys.argv[3]
+end = sys.argv[4]
+legacy_start = sys.argv[5]
+legacy_end = sys.argv[6]
 block = start + "\n" + src_text + "\n" + end
-updated = re.sub(re.escape(start) + r".*?" + re.escape(end), block, dst_text, flags=re.DOTALL)
+patterns = [re.escape(start) + r".*?" + re.escape(end)]
+if legacy_start and legacy_end:
+    patterns.append(re.escape(legacy_start) + r".*?" + re.escape(legacy_end))
+updated = re.sub(r"(?:" + "|".join(patterns) + r")", block, dst_text, flags=re.DOTALL)
 open(dst_path, "w").write(updated)
 PYEOF
       echo "    ~ $label (updated our existing section)"
@@ -1168,16 +1186,18 @@ fi
 # Codex CLI support
 # ---------------------------------------------------------------------------
 CODEX_SRC="$SCRIPT_DIR/.codex/AGENTS.md"
+CODEX_CONFIG_SRC="$SCRIPT_DIR/.codex/config.toml"
+CODEX_ROLES_SRC="$SCRIPT_DIR/.codex/roles"
 CODEX_INSTALLED=false
 
 install_codex=false
 if [ "$CODEX_FLAG" = true ]; then
   install_codex=true
-elif [ -f "$CODEX_SRC" ] && { true < /dev/tty; } 2>/dev/null; then
+elif { [ -f "$CODEX_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; } && { true < /dev/tty; } 2>/dev/null; then
   echo ""
   echo "  Would you also like to install Codex CLI support?"
-  echo "  This merges accessibility rules into your project's AGENTS.md"
-  echo "  so Codex automatically applies them to all UI code."
+  echo "  This installs the stable AGENTS.md baseline plus experimental"
+  echo "  TOML-based Codex roles under .codex/config.toml and .codex/roles/."
   echo ""
   printf "  Install Codex CLI support? [y/N]: "
   read -r codex_choice < /dev/tty
@@ -1186,7 +1206,7 @@ elif [ -f "$CODEX_SRC" ] && { true < /dev/tty; } 2>/dev/null; then
   fi
 fi
 
-if [ "$install_codex" = true ] && [ -f "$CODEX_SRC" ]; then
+if [ "$install_codex" = true ] && { [ -f "$CODEX_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; }; then
   echo ""
   echo "  Installing Codex CLI support..."
 
@@ -1202,7 +1222,25 @@ if [ "$install_codex" = true ] && [ -f "$CODEX_SRC" ]; then
     CODEX_DST="$CODEX_TARGET_DIR/AGENTS.md"
   fi
 
-  merge_config_file "$CODEX_SRC" "$CODEX_DST" "AGENTS.md (Codex)"
+  if [ -f "$CODEX_SRC" ]; then
+    merge_config_file "$CODEX_SRC" "$CODEX_DST" "AGENTS.md (Codex)"
+  fi
+  if [ -f "$CODEX_CONFIG_SRC" ]; then
+    CODEX_CONFIG_DST="$CODEX_TARGET_DIR/config.toml"
+    merge_config_file "$CODEX_CONFIG_SRC" "$CODEX_CONFIG_DST" "config.toml (Codex experimental roles)"
+    add_manifest_entry "codex-config/path:$CODEX_CONFIG_DST"
+  fi
+  if [ -d "$CODEX_ROLES_SRC" ]; then
+    CODEX_ROLES_DST="$CODEX_TARGET_DIR/roles"
+    mkdir -p "$CODEX_ROLES_DST"
+    while IFS= read -r src_file; do
+      rel="${src_file#$CODEX_ROLES_SRC/}"
+      dst_file="$CODEX_ROLES_DST/$rel"
+      mkdir -p "$(dirname "$dst_file")"
+      cp "$src_file" "$dst_file"
+      add_manifest_entry "codex-role/path:$dst_file"
+    done < <(find "$CODEX_ROLES_SRC" -type f -name "*.toml" | sort)
+  fi
   CODEX_INSTALLED=true
   if [ "$choice" = "1" ]; then
     add_manifest_entry "codex/project"
@@ -1213,6 +1251,7 @@ if [ "$install_codex" = true ] && [ -f "$CODEX_SRC" ]; then
 
   echo ""
   echo "  Codex will now enforce WCAG AA rules on all UI code in this project."
+  echo "  Experimental named roles are available through .codex/config.toml."
   echo "  Run: codex \"Build a login form\" — accessibility rules apply automatically."
 fi
 
@@ -1387,6 +1426,8 @@ if [ "$CODEX_INSTALLED" = true ]; then
   echo ""
   echo "  Codex CLI support installed to:"
   echo "    -> $CODEX_DST"
+  [ -n "$CODEX_CONFIG_DST" ] && echo "    -> $CODEX_CONFIG_DST"
+  [ -n "$CODEX_ROLES_DST" ] && echo "    -> $CODEX_ROLES_DST/"
 fi
 # Save current version hash
 if command -v git &>/dev/null && [ -d "$SCRIPT_DIR/.git" ]; then
@@ -1649,5 +1690,4 @@ echo ""
 echo "  Start Claude Code and try: \"Build a login form\""
 echo "  The accessibility-lead should activate automatically."
 echo ""
-
 

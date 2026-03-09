@@ -54,9 +54,20 @@ if (Test-Path $PromptsDir) {
         }
 }
 
-# Codex CLI (.codex\AGENTS.md)
+# Codex CLI (.codex\AGENTS.md, .codex\config.toml, .codex\roles\*.toml)
 if (Test-Path (Join-Path $RepoRoot ".codex\AGENTS.md")) {
     $Lines.Add("codex/AGENTS.md")
+}
+if (Test-Path (Join-Path $RepoRoot ".codex\config.toml")) {
+    $Lines.Add("codex/config.toml")
+}
+$CodexRolesDir = Join-Path $RepoRoot ".codex\roles"
+if (Test-Path $CodexRolesDir) {
+    Get-ChildItem -Path $CodexRolesDir -Filter "*.toml" -Recurse |
+        Sort-Object FullName | ForEach-Object {
+            $rel = $_.FullName.Substring($CodexRolesDir.Length).TrimStart('\').Replace('\','/')
+            $Lines.Add("codex/roles/$rel")
+        }
 }
 
 # Gemini CLI extension (.gemini\extensions\a11y-agents\**)
