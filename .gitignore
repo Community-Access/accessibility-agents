@@ -4,3 +4,4 @@ BLOG.md
 blog.html
 .github/audit/
 .claude/settings.local.json
+source-validation-results.json

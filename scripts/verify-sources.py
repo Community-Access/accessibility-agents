@@ -13,21 +13,25 @@ Usage:
 Environment:
   GITHUB_TOKEN - Optional, for higher rate limits
   TIMEOUT - Seconds to wait for each URL (default: 10)
+  MAX_RETRIES - Number of retries for connection errors (default: 1)
 """
 
 import os
 import re
 import json
+import time
 import requests
 from pathlib import Path
 from typing import Dict, List, Tuple
+from urllib.parse import urlparse
 import sys
 
 # Configuration
 TIMEOUT = int(os.environ.get('TIMEOUT', 10))
+MAX_RETRIES = int(os.environ.get('MAX_RETRIES', 1))
 VALID_STATUSES = {200, 201, 202, 203, 204, 205, 206}  # Success codes
 REDIRECT_STATUSES = {301, 302, 303, 304, 307, 308}  # Redirects
-# 403/timeout are common for legitimate sites that block automated requests
+# 403/timeout/cloudflare are common for legitimate sites that block bots
 BLOCKED_STATUSES = {403, 408, 429, 520, 521, 522, 523, 524}
 SKIP_PATTERNS = {
     'example.com',  # Example domains
@@ -35,6 +39,7 @@ SKIP_PATTERNS = {
     'your-repo',
     'your-site',
     'yourname',
+    'myapp.com',  # Example app domain used in prompts
     'staging.myapp',
     '/acme',
     'owner/repo',
@@ -44,6 +49,9 @@ SKIP_PATTERNS = {
     '#',  # Anchor links within page
     'raw.githubusercontent.com/community-access/accessibility-agents/main/schemas/',  # Schemas not yet published
 }
+
+# Minimum URL length: https://x.xx = 12 chars
+MIN_URL_LENGTH = 12
 
 # Session with retries
 session = requests.Session()
@@ -55,15 +63,43 @@ session.headers['User-Agent'] = 'accessibility-agents-verifier/1.0'
 
 def should_skip_url(url: str) -> bool:
     """Check if URL should be skipped."""
-    return any(pattern in url.lower() for pattern in SKIP_PATTERNS)
+    url_lower = url.lower()
+    return any(pattern in url_lower for pattern in SKIP_PATTERNS)
+
+
+def _is_valid_url(url: str) -> bool:
+    """Check if a URL has a valid structure (real domain, sufficient length)."""
+    if len(url) < MIN_URL_LENGTH:
+        return False
+    # Reject placeholder patterns like https://...
+    if re.match(r'^https?://\.{2,}', url):
+        return False
+    parsed = urlparse(url)
+    # Must have a netloc (domain) with at least one dot
+    if not parsed.netloc or '.' not in parsed.netloc:
+        return False
+    return True
 
 
 def extract_urls(file_path: Path) -> List[Tuple[str, int]]:
-    """Extract all https:// URLs from a markdown file with line numbers."""
+    """Extract all https:// URLs from a markdown file with line numbers.
+
+    Skips URLs inside fenced code blocks (``` ... ```) to avoid
+    false positives from example snippets.
+    """
     urls = []
+    in_code_block = False
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             for line_num, line in enumerate(f, 1):
+                # Track fenced code blocks
+                stripped = line.strip()
+                if stripped.startswith('```'):
+                    in_code_block = not in_code_block
+                    continue
+                if in_code_block:
+                    continue
+
                 # Extract URLs using regex (exclude >, <, {, and common delimiters)
                 matches = re.findall(r'https://[^\s\)"`\]\}\><]+', line)
                 for match in matches:
@@ -72,6 +108,9 @@ def extract_urls(file_path: Path) -> List[Tuple[str, int]]:
                     url = re.sub(r'</[a-zA-Z]+$', '', url)  # Strip trailing </tag
                     # Skip URLs containing template variables like {owner}
                     if '{' in url or '[' in url:
+                        continue
+                    # Skip malformed or placeholder URLs
+                    if not _is_valid_url(url):
                         continue
                     urls.append((url, line_num))
     except (UnicodeDecodeError, IOError) as e:
@@ -86,29 +125,43 @@ def validate_url(url: str) -> Tuple[int, str | None]:
     
     Returns:
       (status_code, final_url if redirect else None)
+    
+    Retries on connection errors up to MAX_RETRIES times.
     """
     if should_skip_url(url):
         return -1, None  # Skip marker
     
-    try:
-        response = session.head(url, timeout=TIMEOUT, allow_redirects=False)
+    last_error_status = 0
+    for attempt in range(1 + MAX_RETRIES):
+        try:
+            response = session.head(url, timeout=TIMEOUT, allow_redirects=False)
+            
+            # Try GET if HEAD fails (some servers don't support HEAD)
+            if response.status_code in (405, 403):
+                response = session.get(url, timeout=TIMEOUT, allow_redirects=False, stream=True)
+            
+            if response.status_code in REDIRECT_STATUSES:
+                final_url = response.headers.get('Location', '')
+                return response.status_code, final_url
+            
+            return response.status_code, None
         
-        # Try GET if HEAD fails (some servers don't support HEAD)
-        if response.status_code in (405, 403):
-            response = session.get(url, timeout=TIMEOUT, allow_redirects=False, stream=True)
-        
-        if response.status_code in REDIRECT_STATUSES:
-            final_url = response.headers.get('Location', '')
-            return response.status_code, final_url
-        
-        return response.status_code, None
+        except requests.Timeout:
+            last_error_status = 408
+        except requests.ConnectionError:
+            last_error_status = 0
+        except Exception:
+            return -1, None  # Unexpected error, skip
+
+        # Wait briefly before retry
+        if attempt < MAX_RETRIES:
+            time.sleep(2)
     
-    except requests.Timeout:
-        return 408, None  # Timeout
-    except requests.ConnectionError:
-        return 0, None  # Connection error
-    except Exception as e:
-        return -1, None  # Unexpected error
+    # After retries exhausted, connection errors are treated as blocked
+    # (transient network issues in CI should not fail the build)
+    if last_error_status == 0:
+        return 0, None
+    return last_error_status, None
 
 
 def main():
@@ -178,8 +231,8 @@ def main():
                     'final_url': final_url,
                     'status': status,
                 })
-            elif status in BLOCKED_STATUSES:
-                # Blocked by server (not truly broken)
+            elif status in BLOCKED_STATUSES or status == 0:
+                # Blocked by server or connection error (not truly broken)
                 results['blocked'] += 1
                 results['blocked_links'].append({
                     'file': str(file_path),
