@@ -1,5 +1,5 @@
 ---
-name: markdown-a11y-assistant
+name: audit-markdown
 description: Full guided markdown accessibility audit - links, alt text, headings, tables, emoji (remove or translate), Mermaid/ASCII diagrams replaced with accessible text alternatives, em-dashes, and anchor link validation. Produces a scored MARKDOWN-ACCESSIBILITY-AUDIT.md report with per-file grades.
 mode: agent
 agent: markdown-a11y-assistant

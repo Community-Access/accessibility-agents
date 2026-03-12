@@ -1,6 +1,6 @@
 ## Accessibility Code Review Instructions
 
-When reviewing pull requests, enforce the following WCAG 2.1 AA accessibility standards on all web UI code (HTML, JSX, CSS, React components, Tailwind classes, web pages, forms, modals, or any user-facing web content). Flag violations as required changes, not suggestions.
+When reviewing pull requests, enforce the following WCAG 2.2 AA accessibility standards on all web UI code (HTML, JSX, CSS, React components, Tailwind classes, web pages, forms, modals, or any user-facing web content). Flag violations as required changes, not suggestions.
 
 ### Structure
 - Verify exactly one `<h1>` per page with no skipped heading levels

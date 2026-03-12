@@ -1,4 +1,5 @@
 ---
+name: export-markdown-csv
 description: Export markdown accessibility audit findings to a CSV file with WCAG understanding document links for each issue.
 mode: agent
 tools:

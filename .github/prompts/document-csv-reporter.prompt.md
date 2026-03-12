@@ -1,4 +1,5 @@
 ---
+name: export-document-csv
 description: Export document accessibility audit findings to a CSV file with Microsoft Office and Adobe PDF help links for each issue.
 mode: agent
 tools:

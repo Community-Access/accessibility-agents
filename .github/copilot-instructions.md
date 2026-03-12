@@ -28,6 +28,9 @@ Select these agents from the agents dropdown in Copilot Chat, or type `/agents` 
 | Alt Text & Headings | Images, alt text, SVGs, heading structure, page titles, landmarks |
 | Tables Specialist | Data tables, sortable tables, grids, comparison tables, pricing tables |
 | Link Checker | Ambiguous link text, "click here"/"read more" detection, link purpose |
+| Cognitive Accessibility | WCAG 2.2 cognitive SC, COGA guidance, plain language, authentication UX |
+| Mobile Accessibility | React Native, Expo, iOS, Android - touch targets, screen reader compatibility |
+| Design System Auditor | Color token contrast, focus ring tokens, spacing tokens, Tailwind/MUI/Chakra/shadcn |
 | Markdown Accessibility | Markdown document accessibility - links, alt text, headings, tables, emoji, mermaid diagrams, dashes, anchors |
 | Web Accessibility Wizard | Full guided web accessibility audit with step-by-step walkthrough |
 | Document Accessibility Wizard | Document accessibility audit for .docx, .xlsx, .pptx, .pdf - single files, folders, recursive scanning, delta scanning, severity scoring, remediation tracking, compliance export (VPAT/ACR), CSV export with help links, CI/CD integration |
@@ -86,13 +89,15 @@ Reusable knowledge modules in `.github/skills/` that agents reference automatica
 
 ### Agent Teams
 
-Team coordination is defined in `.github/agents/AGENTS.md`. Four defined teams:
+Team coordination is defined in `.github/agents/AGENTS.md`. Six defined teams:
 
 - **Document Accessibility Audit** - led by document-accessibility-wizard with format-specific sub-agents
 - **Web Accessibility Audit** - led by accessibility-lead with all web specialist agents
 - **Full Audit** - combined web + document audit workflow
+- **Mobile Accessibility** - led by mobile-accessibility; invoked standalone or as handoff from accessibility-lead
+- **Design System Accessibility** - led by design-system-auditor; validates tokens before UI propagation
 - **GitHub Workflow** - led by github-hub; routes to daily-briefing, pr-review, issue-tracker, analytics, repo-admin, team-manager, contributions-hub, insiders-a11y-tracker, template-builder
-- **Developer Tools** - led by developer-hub; routes to python-specialist, wxpython-specialist, desktop-a11y-specialist, desktop-a11y-testing-coach, a11y-tool-builder for Python, wxPython, desktop accessibility, and tool building. Cross-team handoffs to web-accessibility-wizard and document-accessibility-wizard.
+- **Developer Tools** - led by developer-hub; routes to python-specialist, wxpython-specialist, nvda-addon-specialist, desktop-a11y-specialist, desktop-a11y-testing-coach, a11y-tool-builder, text-quality-reviewer for Python, wxPython, NVDA addons, desktop accessibility, and tool building. Cross-team handoffs to web-accessibility-wizard and document-accessibility-wizard.
 
 ### Decision Matrix
 

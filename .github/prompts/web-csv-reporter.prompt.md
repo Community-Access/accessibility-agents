@@ -1,4 +1,5 @@
 ---
+name: export-web-csv
 description: Export web accessibility audit findings to a CSV file with Accessibility Insights help links for each issue.
 mode: agent
 tools:
