@@ -155,7 +155,7 @@ description = What the addon does.
 author = Your Name <email@example.com>
 url = https://github.com/yourname/myAddon
 version = 1.0.0
-minimumNVDAVersion = 2026.1.0
+minimumNVDAVersion = 2025.1.0
 lastTestedNVDAVersion = 2026.1.0
 ```
 
