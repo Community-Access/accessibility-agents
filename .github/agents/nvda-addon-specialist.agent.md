@@ -88,7 +88,7 @@ NVDA 2026.1 is a **major architecture transition** and an **add-on API compatibi
 - **MathPlayer removed:** `comInterfaces.MathPlayer` and `mathPres.mathPlayer` are gone.
 - **`ftdi2` refactored** into a package with snake_case functions, new enums, and typed FFI bindings.
 - **`gui.nvdaControls.TabbableScrolledPanel` removed** -- use `wx.lib.scrolledpanel.ScrolledPanel`.
-- **Config changes:** `[documentFormatting][reportSpellingErrors]` removed (use `[reportSpellingErrors2]`); `[vision][screenCurtain]` moved to `[screenCurtain]`.
+- **Config changes:** `[documentFormatting][reportSpellingErrors]` removed (use `[documentFormatting][reportSpellingErrors2]`); `[vision][screenCurtain]` moved to `[screenCurtain]`.
 - **`typing_extensions` removed** -- Python 3.13 has native support.
 - **License changed** to GPL-2-or-later.
 
