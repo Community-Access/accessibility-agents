@@ -7,6 +7,8 @@ This guide is maintained against official platform documentation and release not
 - VS Code updates and release notes: `https://code.visualstudio.com/updates`
 - VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
 - GitHub Copilot docs: `https://docs.github.com/copilot`
+- Gemini CLI hooks reference: `https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md`
+- Gemini CLI extensions reference: `https://github.com/google-gemini/gemini-cli/blob/main/docs/extensions/reference.md`
 
 ## Overview
 
@@ -26,7 +28,7 @@ Accessibility Agents v3.0 includes cross-platform lifecycle hooks that automate 
 |----------|--------------|------------------------|
 | GitHub Copilot (VS Code 1.110+) | Yes (Preview) | `.github/hooks/hooks-consolidated.json` |
 | Claude Code | Yes (Full Support) | `.claude/hooks/hooks-consolidated.json` |
-| Gemini CLI | Not yet | TBD |
+| Gemini CLI | Yes | `.gemini/extensions/a11y-agents/hooks/hooks.json` |
 | Codex CLI | Not yet | TBD |
 
 ## Installation
@@ -50,6 +52,8 @@ This creates:
 - `.github/hooks/scripts/` (Python hook scripts)
 - `.github/hooks/hooks-consolidated.json` (VS Code hook configuration)
 - `.claude/hooks/hooks-consolidated.json` (Claude Code hook configuration)
+- `.gemini/extensions/a11y-agents/hooks/hooks.json` (Gemini CLI hook configuration)
+- `.gemini/extensions/a11y-agents/hooks/*.py` (Gemini-specific Python hook scripts)
 
 ## Hook Flow
 
@@ -83,6 +87,20 @@ Action: remove `.github/.a11y-reviewed` marker.
 VS Code (`.github/hooks/hooks-consolidated.json`) uses hook events such as `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, and `Stop`.
 
 Claude Code (`.claude/hooks/hooks-consolidated.json`) uses the same script set with `SessionEnd` compatibility and matcher support.
+
+Gemini CLI (`.gemini/extensions/a11y-agents/hooks/hooks.json`) uses Gemini-native event names and a nested hook definition structure:
+
+| Gemini Event | Purpose | Equivalent (Claude/VS Code) |
+|---|---|---|
+| `SessionStart` | Announce loaded skills | `SessionStart` |
+| `BeforeAgent` | Detect web project, inject context | `UserPromptSubmit` |
+| `BeforeTool` | Block `write_file`/`replace` on UI files | `PreToolUse` |
+| `AfterTool` | Set review marker on `activate_skill` | `PostToolUse` |
+| `SessionEnd` | Remove review marker | `SessionEnd` / `Stop` |
+
+Gemini hooks use `${extensionPath}` to reference scripts within the installed extension directory, and timeouts are specified in milliseconds. Tool matchers (`BeforeTool`, `AfterTool`) accept regular expressions; lifecycle event matchers accept exact strings.
+
+To verify Gemini hooks are active, run `/hooks panel` inside a Gemini CLI session.
 
 ## Troubleshooting
 

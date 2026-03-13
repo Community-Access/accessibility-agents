@@ -1,9 +1,9 @@
 # Cross-Platform Hooks Implementation Strategy
 
-> **Document Version:** 1.0  
-> **Date:** March 5, 2026  
-> **Status:** Planning Phase - No Implementation Yet  
-> **Author:** Accessibility Agents Team  
+> **Document Version:** 1.1
+> **Date:** March 5, 2026 (updated March 13, 2026)
+> **Status:** Gemini CLI hooks implemented
+> **Author:** Accessibility Agents Team
 > **Purpose:** Design reliable cross-platform lifecycle hooks that work across GitHub Copilot (VS Code), Claude Code, Gemini, Windows, and macOS without repeating past compatibility failures.
 
 ---
@@ -18,7 +18,7 @@ This document presents a comprehensive strategy for implementing lifecycle hooks
 - **Critical difference:** VS Code uses `Stop` event; Claude Code uses `SessionEnd` (no direct equivalent in VS Code)
 - **Blocking capability difference:** Claude Code `permissionDecision: "deny"` can block; VS Code `PreToolUse` can block but implementation differs
 - **Configuration format:** VS Code uses `.github/hooks/*.json` (separate files); Claude Code uses `~/.claude/settings.json` (centralized)
-- **Gemini hook support:** Currently unknown - requires investigation
+- **Gemini hook support:** Confirmed supported via `hooks/hooks.json` in the extension directory; uses distinct event names (`BeforeAgent`, `BeforeTool`, `AfterTool`) and `decision: "deny"` blocking
 
 ---
 
@@ -28,24 +28,35 @@ This document presents a comprehensive strategy for implementing lifecycle hooks
 
 | Event Name (VS Code) | Event Name (Claude Code) | VS Code 1.110 | Claude Code | Gemini CLI | Notes |
 |---------------------|--------------------------|---------------|-------------|------------|-------|
-| `SessionStart` | `SessionStart` | ✅ | ✅ | ❓ | Identical naming |
-| `UserPromptSubmit` | `UserPromptSubmit` | ✅ | ✅ | ❓ | Identical naming |
-| `PreToolUse` | `PreToolUse` | ✅ | ✅ | ❓ | Identical naming |
-| `PostToolUse` | `PostToolUse` | ✅ | ✅ | ❓ | Identical naming |
-| `PreCompact` | `PreCompact` | ✅ | ✅ | ❓ | Identical naming |
-| `SubagentStart` | `SubagentStart` | ✅ | ✅ | ❓ | Identical naming |
-| `SubagentStop` | `SubagentStop` | ✅ | ✅ | ❓ | Identical naming |
-| `Stop` | `SessionEnd` | ✅ | ✅ | ❓ | **INCOMPATIBLE** - Different naming |
+| `SessionStart` | `SessionStart` | ✅ | ✅ | ✅ `SessionStart` | Identical naming |
+| `UserPromptSubmit` | `UserPromptSubmit` | ✅ | ✅ | ✅ `BeforeAgent` | **Different name** in Gemini |
+| `PreToolUse` | `PreToolUse` | ✅ | ✅ | ✅ `BeforeTool` | **Different name** in Gemini |
+| `PostToolUse` | `PostToolUse` | ✅ | ✅ | ✅ `AfterTool` | **Different name** in Gemini |
+| `PreCompact` | `PreCompact` | ✅ | ✅ | ✅ `PreCompress` | **Different name** in Gemini |
+| `SubagentStart` | `SubagentStart` | ✅ | ✅ | ❓ | Not confirmed in Gemini |
+| `SubagentStop` | `SubagentStop` | ✅ | ✅ | ❓ | Not confirmed in Gemini |
+| `Stop` | `SessionEnd` | ✅ | ✅ | ✅ `SessionEnd` | VS Code uses `Stop`; Gemini and Claude use `SessionEnd` |
 | N/A | `CompactComplete` | ❌ | ✅ | ❓ | Claude-only |
-| N/A | `TeammateIdle` | ❌ | ✅ | ❓ | Claude-only (Experimental Teams) |
-| N/A | `TaskCompleted` | ❌ | ✅ | ❓ | Claude-only (Experimental Teams) |
-| N/A | 8 more events | ❌ | ✅ | ❓ | Claude has 18 total events |
+| N/A | `TeammateIdle` | ❌ | ✅ | ❌ | Claude-only (Experimental Teams) |
+| N/A | `TaskCompleted` | ❌ | ✅ | ❌ | Claude-only (Experimental Teams) |
+| N/A | 8 more events | ❌ | ✅ | ❌ | Claude has 18 total events |
+| N/A | N/A | ❌ | ❌ | ✅ `BeforeModel` | Gemini-only |
+| N/A | N/A | ❌ | ❌ | ✅ `AfterModel` | Gemini-only |
+| N/A | N/A | ❌ | ❌ | ✅ `AfterAgent` | Gemini-only |
+| N/A | N/A | ❌ | ❌ | ✅ `BeforeToolSelection` | Gemini-only |
+| N/A | N/A | ❌ | ❌ | ✅ `Notification` | Gemini-only |
 
-**Cross-platform compatible events (7):** SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, PreCompact, SubagentStart, SubagentStop
+**Cross-platform compatible events (5 confirmed):** SessionStart, BeforeAgent/UserPromptSubmit, BeforeTool/PreToolUse, AfterTool/PostToolUse, SessionEnd/Stop
+
+**Gemini event name mapping for this extension:**
+- `BeforeAgent` (Gemini) → replaces `UserPromptSubmit` (Claude/VS Code)
+- `BeforeTool` (Gemini) → replaces `PreToolUse` (Claude/VS Code)
+- `AfterTool` (Gemini) → replaces `PostToolUse` (Claude/VS Code)
 
 **Platform-specific events:**
 - VS Code only: `Stop`
 - Claude Code only: `SessionEnd`, `CompactComplete`, `TeammateIdle`, `TaskCompleted` + 8 others
+- Gemini only: `BeforeModel`, `AfterModel`, `AfterAgent`, `BeforeToolSelection`, `Notification`
 
 ### Configuration Locations
 
@@ -53,17 +64,17 @@ This document presents a comprehensive strategy for implementing lifecycle hooks
 |----------|-----------------|---------------------|-------|
 | **VS Code 1.110** | `.github/hooks/*.json` | `.claude/settings.json`, `.claude/settings.local.json`, `~/.claude/settings.json` | Reads Claude Code configs for compatibility |
 | **Claude Code** | `~/.claude/settings.json` | Project: `.claude/settings.json`, Plugin: `.claude-plugin/plugin.json` | Centralized config with hook arrays |
-| **Gemini CLI** | `.gemini/extensions/a11y-agents/` | ❓ | Extension system - hook support unknown |
+| **Gemini CLI** | `.gemini/extensions/a11y-agents/hooks/hooks.json` | `.gemini/settings.json` (project-level) | Extension hooks use `${extensionPath}`; nested definition structure with `matcher` + `hooks` array |
 
 ### Hook Handler Types
 
-| Type | VS Code 1.110 | Claude Code | Description |
-|------|---------------|-------------|-------------|
-| `command` | ✅ Required | ✅ Supported | Execute shell command |
-| `prompt` | ❌ | ✅ Supported | Inject prompt text |
-| `agent` | ❌ | ✅ Supported | Delegate to subagent |
+| Type | VS Code 1.110 | Claude Code | Gemini CLI | Description |
+|------|---------------|-------------|------------|-------------|
+| `command` | ✅ Required | ✅ Supported | ✅ Required | Execute shell command |
+| `prompt` | ❌ | ✅ Supported | ❌ | Inject prompt text |
+| `agent` | ❌ | ✅ Supported | ❌ | Delegate to subagent |
 
-**Compatibility:** VS Code only supports `type: "command"`. Claude Code's `prompt` and `agent` handler types have no VS Code equivalent.
+**Compatibility:** VS Code and Gemini CLI only support `type: "command"`. Claude Code's `prompt` and `agent` handler types have no cross-platform equivalent.
 
 ---
 
@@ -463,21 +474,33 @@ cp templates/hooks-scripts/*.py ~/.claude/hooks/scripts/
 
 ---
 
-## Gemini CLI Hook Support Investigation
+## Gemini CLI Hook Support
 
-**Status:** Unknown - requires testing
+**Status:** Implemented - confirmed supported via `hooks/hooks.json` in extension directory
 
-**Investigation Plan:**
-1. Check if `.gemini/extensions/a11y-agents/` supports hook configuration
-2. Test if Gemini CLI reads hooks from `.github/hooks/` (VS Code compatibility)
-3. Test if Gemini CLI reads hooks from `~/.claude/settings.json` (Claude Code compatibility)
-4. Document Gemini-specific hook format (if different)
+**Key Differences from Claude Code / VS Code:**
 
-**Hypothesis:**
-Gemini CLI likely uses VS Code Copilot compatibility mode since the extension format (`gemini-extension.json`) resembles VS Code extensions.
+| Aspect | Claude / VS Code | Gemini CLI |
+|--------|-----------------|------------|
+| Config location | `hooks-consolidated.json` | `hooks/hooks.json` inside extension directory |
+| Event name for prompt | `UserPromptSubmit` | `BeforeAgent` |
+| Event name for pre-tool | `PreToolUse` | `BeforeTool` |
+| Event name for post-tool | `PostToolUse` | `AfterTool` |
+| Session cleanup | `SessionEnd` / `Stop` | `SessionEnd` |
+| Blocking mechanism | `permissionDecision: "deny"` | `decision: "deny"` |
+| Context injection | `contextToInject` | `hookSpecificOutput.additionalContext` |
+| Timeout unit | seconds | milliseconds |
+| Tool matchers | exact strings | regular expressions |
+| Path variable | N/A | `${extensionPath}` for extension files |
 
-**Fallback:**
-If Gemini does not support hooks, use always-on `GEMINI.md` instructions as a substitute (lower reliability but better than nothing).
+**Implementation:**
+Gemini CLI hooks are defined in `.gemini/extensions/a11y-agents/hooks/hooks.json`. Each event entry
+contains a nested structure: an array of hook groups, where each group has an optional `matcher`,
+optional `sequential` flag, and a `hooks` array of command definitions.
+
+Gemini-specific Python scripts in `.gemini/extensions/a11y-agents/hooks/` output the correct Gemini
+format and handle the `activate_skill` tool as the accessibility-lead completion signal (replacing the
+`agent_name` / `subagent_type` fields that Claude Code provides).
 
 ---
 
@@ -710,13 +733,10 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 
 ### Medium Risk
 
-**Issue:** Gemini CLI does not support hooks  
-**Probability:** High  
-**Impact:** Medium (Gemini users miss hook-based enforcement)  
-**Mitigation:**
-- Use `GEMINI.md` always-on instructions as fallback
-- Document Gemini limitations clearly
-- Investigate Gemini CLI extension APIs for alternative solutions
+**Issue:** Gemini CLI does not support hooks
+**Probability:** Resolved - Gemini CLI confirmed to support hooks
+**Impact:** N/A
+**Mitigation:** Hooks implemented in `.gemini/extensions/a11y-agents/hooks/hooks.json`
 
 ### Low Risk
 
@@ -733,7 +753,7 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 
 ## Open Questions
 
-1. **Gemini CLI Hook Support:** Does Gemini CLI support lifecycle hooks? If so, what format?
+1. **Gemini CLI Hook Support:** ~~Does Gemini CLI support lifecycle hooks?~~ Resolved: Yes, confirmed supported. Hooks defined in `hooks/hooks.json` within extension directory.
 2. **VS Code Remote Development:** Do hooks work in SSH, Containers, WSL scenarios? (Documentation mentions extension host platform detection)
 3. **Copilot CLI Compatibility:** Does Copilot CLI use same hook format as VS Code? (Release notes mention hook format compatibility)
 4. **Hook Performance:** What is acceptable hook execution time before it degrades UX?
@@ -747,7 +767,7 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 
 - **Hook Reliability:** 99%+ successful hook executions (no crashes, timeouts, or JSON parse errors)
 - **Cross-Platform Parity:** All 7 core hooks work identically on Windows, macOS, Linux
-- **Platform Coverage:** Hooks work on VS Code (confirmed), Claude Code (confirmed), Gemini CLI (TBD)
+- **Platform Coverage:** Hooks work on VS Code (confirmed), Claude Code (confirmed), Gemini CLI (confirmed)
 - **Installation Success Rate:** 95%+ successful installations (Python dependency satisfied)
 
 ### User Experience Metrics

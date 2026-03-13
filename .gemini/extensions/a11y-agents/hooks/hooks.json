@@ -1,0 +1,71 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "name": "a11y-session-start",
+            "type": "command",
+            "command": "python ${extensionPath}/hooks/session-start.py",
+            "timeout": 10000,
+            "description": "Initialize accessibility review session and announce loaded skills"
+          }
+        ]
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "name": "a11y-detect-web-project",
+            "type": "command",
+            "command": "python ${extensionPath}/hooks/detect-web-project.py",
+            "timeout": 5000,
+            "description": "Detect web UI project and inject accessibility reminder before agent processes prompt"
+          }
+        ]
+      }
+    ],
+    "BeforeTool": [
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "a11y-enforce-edit-gate",
+            "type": "command",
+            "command": "python ${extensionPath}/hooks/enforce-edit-gate.py",
+            "timeout": 5000,
+            "description": "Block UI file edits until accessibility-lead skill has been activated"
+          }
+        ]
+      }
+    ],
+    "AfterTool": [
+      {
+        "matcher": "activate_skill",
+        "hooks": [
+          {
+            "name": "a11y-mark-reviewed",
+            "type": "command",
+            "command": "python ${extensionPath}/hooks/mark-reviewed.py",
+            "timeout": 5000,
+            "description": "Create accessibility review marker after accessibility-lead skill completes"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "name": "a11y-session-end",
+            "type": "command",
+            "command": "python ${extensionPath}/hooks/session-end.py",
+            "timeout": 5000,
+            "description": "Remove accessibility review marker at session end"
+          }
+        ]
+      }
+    ]
+  }
+}
