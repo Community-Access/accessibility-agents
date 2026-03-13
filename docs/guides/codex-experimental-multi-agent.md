@@ -4,9 +4,9 @@ Accessibility Agents now includes an **experimental** Codex multi-agent layer on
 
 ## Upstream Codex References
 
-- [OpenAI Codex: Multi-agents](https://developers.openai.com/codex/multi-agent/) — experimental multi-agent workflows, feature flag, and orchestration behavior
-- [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md/) — how Codex discovers and applies `AGENTS.md`
-- [OpenAI Codex: Customization](https://developers.openai.com/codex/concepts/customization/) — where AGENTS.md, skills, MCP, and multi-agents fit together
+- [OpenAI Codex: Multi-agents](https://developers.openai.com/codex/multi-agent/) -- experimental multi-agent workflows, feature flag, and orchestration behavior
+- [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md/) -- how Codex discovers and applies `AGENTS.md`
+- [OpenAI Codex: Customization](https://developers.openai.com/codex/concepts/customization/) -- where AGENTS.md, skills, MCP, and multi-agents fit together
 
 ## What Is Stable vs Experimental
 
