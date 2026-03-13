@@ -12,6 +12,8 @@
 
 set -e
 
+ORIG_DIR="$(pwd)"
+
 REPO_URL="https://github.com/Community-Access/accessibility-agents.git"
 CACHE_DIR="$HOME/.claude/.a11y-agent-team-repo"
 VERSION_FILE="$HOME/.claude/.a11y-agent-team-version"
@@ -132,7 +134,7 @@ PYEOF
 }
 
 if [ "$TARGET" = "project" ]; then
-  INSTALL_DIR="$(pwd)/.claude"
+  INSTALL_DIR="$ORIG_DIR/.claude"
 else
   INSTALL_DIR="$HOME/.claude"
 fi
@@ -317,7 +319,7 @@ GITHUB_SRC="$CACHE_DIR/.github"
 
 # Update Copilot assets for project install
 if [ "$TARGET" = "project" ]; then
-  PROJECT_GITHUB="$(pwd)/.github"
+  PROJECT_GITHUB="$ORIG_DIR/.github"
   if [ -d "$PROJECT_GITHUB" ]; then
     # Agents (all files: *.agent.md + AGENTS.md and support files)
     sync_github_dir "$GITHUB_SRC/agents" "$PROJECT_GITHUB/agents" "agents"
@@ -434,7 +436,7 @@ fi
 
 # Update Codex assets if Codex support was previously installed
 if [ "$TARGET" = "project" ]; then
-  CODEX_ROOT="$(pwd)/.codex"
+  CODEX_ROOT="$ORIG_DIR/.codex"
 else
   CODEX_ROOT="$HOME/.codex"
 fi
