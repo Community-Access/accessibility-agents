@@ -463,6 +463,17 @@ fi
 CODEX_ROLE_PATHS=()
 for entry in "${MANIFEST_ENTRIES[@]}"; do
   case "$entry" in
+    codex-config/path:*)
+      config_path="${entry#codex-config/path:}"
+      if [ -f "$config_path" ]; then
+        result=$(remove_our_section "$config_path")
+        case "$result" in
+          deleted) echo "    - $(basename "$config_path") (removed)" ;;
+          cleaned) echo "    ~ $(basename "$config_path") (removed our section, kept your content)" ;;
+          skipped) echo "    ! $(basename "$config_path") (could not remove section — edit manually)" ;;
+        esac
+      fi
+      ;;
     codex-role/path:*)
       CODEX_ROLE_PATHS+=("${entry#codex-role/path:}")
       ;;
