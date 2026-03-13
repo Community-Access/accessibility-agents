@@ -1,4 +1,4 @@
-{ "generated": "2026-03-13T20:00:00Z", "sections": [
+{ "generated": "2026-03-13T18:44:05Z", "sections": [
 {"name":"Getting Started","id":"getting-started","items":[
 {"path":"docs/getting-started.md","title":"Getting Started"}
 ,
@@ -87,9 +87,9 @@
 ,
 {"path":"docs/agents/pdf-scan-config.md","title":"pdf-scan-config - PDF Scan Configuration"}
 ,
-{"path":"docs/agents/playwright-scanner.md","title":"playwright-scanner - Playwright-Based Accessibility Scanner"}
+{"path":"docs/agents/playwright-scanner.md","title":"playwright-scanner Agent"}
 ,
-{"path":"docs/agents/playwright-verifier.md","title":"playwright-verifier - Playwright-Based Fix Verifier"}
+{"path":"docs/agents/playwright-verifier.md","title":"playwright-verifier Agent"}
 ,
 {"path":"docs/agents/powerpoint-accessibility.md","title":"powerpoint-accessibility - Microsoft PowerPoint (PPTX) Accessibility"}
 ,
@@ -169,11 +169,11 @@
 ,
 {"path":"docs/tools/mcp-tools.md","title":"MCP Tools Reference"}
 ,
-{"path":"docs/tools/pdf-form-converter.md","title":"PDF Form-to-HTML Converter"}
+{"path":"docs/tools/pdf-form-converter.md","title":"PDF Form to Accessible HTML Converter"}
 ,
-{"path":"docs/tools/playwright-integration.md","title":"Playwright Accessibility Integration"}
+{"path":"docs/tools/playwright-integration.md","title":"Playwright Integration"}
 ,
-{"path":"docs/tools/verapdf-integration.md","title":"veraPDF PDF/UA Validator"}
+{"path":"docs/tools/verapdf-integration.md","title":"veraPDF Integration"}
 ,
 {"path":"docs/tools/vpat-generation.md","title":"VPAT / ACR Template Generation"}
 ]},
