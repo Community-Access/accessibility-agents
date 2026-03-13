@@ -183,8 +183,9 @@ PYEOF
       local start_count
       start_count=$(grep -cF "$start" "$filepath" 2>/dev/null || echo 0)
       if [ "$start_count" -gt 0 ]; then
-        rm "$filepath"
-        echo "deleted"
+        echo "Warning: python3 unavailable — cannot safely remove our section from '$filepath'." >&2
+        echo "To remove manually: open the file and delete lines between '$start' and '$end'." >&2
+        echo "skipped"
       else
         echo "skipped"
       fi
