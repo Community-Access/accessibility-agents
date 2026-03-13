@@ -32,15 +32,26 @@ def detect_web_project():
 
 def detect_ui_prompt(prompt):
     """Check if user prompt involves web UI work."""
-    ui_keywords = [
+    import re
+
+    # Word-boundary patterns for short keywords that risk substring false-positives
+    word_boundary_keywords = {"ui", "page", "form", "menu", "style", "input"}
+    # Longer, unambiguous substrings safe for plain inclusion check
+    substring_keywords = [
         "html", "jsx", "tsx", "vue", "component", "button", "modal",
-        "form", "input", "navigation", "menu", "dialog", "page",
-        "ui", "interface", "web page", "website", "css", "style",
+        "navigation", "dialog", "interface", "web page", "website", "css",
         "tailwind", "react", "angular", "svelte",
     ]
 
     prompt_lower = prompt.lower()
-    return any(keyword in prompt_lower for keyword in ui_keywords)
+
+    if any(keyword in prompt_lower for keyword in substring_keywords):
+        return True
+
+    return any(
+        re.search(r"\b" + re.escape(kw) + r"\b", prompt_lower)
+        for kw in word_boundary_keywords
+    )
 
 
 def main():

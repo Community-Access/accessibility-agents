@@ -26,6 +26,8 @@ This document presents a comprehensive strategy for implementing lifecycle hooks
 
 ### Hook Events
 
+The following table compares lifecycle hook event names across VS Code 1.110, Claude Code, and Gemini CLI. Gemini CLI uses different names for several cross-platform events.
+
 | Event Name (VS Code) | Event Name (Claude Code) | VS Code 1.110 | Claude Code | Gemini CLI | Notes |
 |---------------------|--------------------------|---------------|-------------|------------|-------|
 | `SessionStart` | `SessionStart` | ✅ | ✅ | ✅ `SessionStart` | Identical naming |
@@ -731,11 +733,9 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 - Add version detection to installer
 - Create adapter layer for API changes
 
-### Medium Risk
+### Resolved Risk (previously Medium)
 
-**Issue:** Gemini CLI does not support hooks
-**Probability:** Resolved - Gemini CLI confirmed to support hooks
-**Impact:** N/A
+**Issue:** ~~Gemini CLI does not support hooks~~ - Resolved: Gemini CLI confirmed to support hooks
 **Mitigation:** Hooks implemented in `.gemini/extensions/a11y-agents/hooks/hooks.json`
 
 ### Low Risk

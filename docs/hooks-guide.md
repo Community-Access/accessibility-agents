@@ -4,11 +4,11 @@
 
 This guide is maintained against official platform documentation and release notes.
 
-- VS Code updates and release notes: `https://code.visualstudio.com/updates`
-- VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
-- GitHub Copilot docs: `https://docs.github.com/copilot`
-- Gemini CLI hooks reference: `https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md`
-- Gemini CLI extensions reference: `https://github.com/google-gemini/gemini-cli/blob/main/docs/extensions/reference.md`
+- [VS Code updates and release notes](https://code.visualstudio.com/updates)
+- [VS Code Copilot customization docs](https://code.visualstudio.com/docs/copilot/customization/overview)
+- [GitHub Copilot docs](https://docs.github.com/copilot)
+- [Gemini CLI hooks reference](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md)
+- [Gemini CLI extensions reference](https://github.com/google-gemini/gemini-cli/blob/main/docs/extensions/reference.md)
 
 ## Overview
 
@@ -23,6 +23,8 @@ Accessibility Agents v3.0 includes cross-platform lifecycle hooks that automate 
 5. Session End: Clean up markers for next session.
 
 ## Supported Platforms
+
+The following table lists each supported platform, whether hooks are active, and where the hook configuration file is located.
 
 | Platform | Hook Support | Configuration Location |
 |----------|--------------|------------------------|
