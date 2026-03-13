@@ -38,6 +38,8 @@ agents/nvda-addon-specialist.md
 agents/office-scan-config.md
 agents/pdf-accessibility.md
 agents/pdf-scan-config.md
+agents/playwright-scanner.md
+agents/playwright-verifier.md
 agents/powerpoint-accessibility.md
 agents/pr-review.md
 agents/python-specialist.md
@@ -108,6 +110,8 @@ copilot-agents/nvda-addon-specialist.agent.md
 copilot-agents/office-scan-config.agent.md
 copilot-agents/pdf-accessibility.agent.md
 copilot-agents/pdf-scan-config.agent.md
+copilot-agents/playwright-scanner.agent.md
+copilot-agents/playwright-verifier.agent.md
 copilot-agents/powerpoint-accessibility.agent.md
 copilot-agents/pr-review.agent.md
 copilot-agents/python-specialist.agent.md
@@ -175,6 +179,7 @@ copilot-prompts/explain-code.prompt.md
 copilot-prompts/fix-markdown-issues.prompt.md
 copilot-prompts/fix-web-issues.prompt.md
 copilot-prompts/forms-specialist.prompt.md
+copilot-prompts/generate-a11y-tests.prompt.md
 copilot-prompts/generate-remediation-scripts.prompt.md
 copilot-prompts/generate-vpat.prompt.md
 copilot-prompts/github-hub.prompt.md
@@ -252,6 +257,7 @@ copilot-skills/help-url-reference/SKILL.md
 copilot-skills/lighthouse-scanner/SKILL.md
 copilot-skills/markdown-accessibility/SKILL.md
 copilot-skills/mobile-accessibility/SKILL.md
+copilot-skills/playwright-testing/SKILL.md
 copilot-skills/python-development/SKILL.md
 copilot-skills/report-generation/SKILL.md
 copilot-skills/web-scanning/SKILL.md
