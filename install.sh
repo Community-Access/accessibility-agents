@@ -243,8 +243,29 @@ PYEOF
       echo "    ! $label (section exists; python3 unavailable to update - edit manually)"
     fi
   else
-    { printf '\n%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; echo; } >> "$dst"
-    echo "    + $label (merged into your existing file)"
+    # For TOML files: guard against inserting duplicate table headers
+    _toml_dup=""
+    case "$dst" in
+      *.toml)
+        if command -v python3 &>/dev/null; then
+          _toml_dup=$(python3 - "$src" "$dst" << 'PYEOF'
+import re, sys
+src_hdrs = set(re.findall(r'^\[[\w.\- "\']+\]', open(sys.argv[1]).read(), re.MULTILINE))
+dst_hdrs = set(re.findall(r'^\[[\w.\- "\']+\]', open(sys.argv[2]).read(), re.MULTILINE))
+dupes = src_hdrs & dst_hdrs
+if dupes:
+    print(",".join(sorted(dupes)))
+PYEOF
+          )
+        fi
+        ;;
+    esac
+    if [ -n "$_toml_dup" ]; then
+      echo "    ! $label (skipped — TOML table headers already exist in destination: $_toml_dup)"
+    else
+      { printf '\n%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; echo; } >> "$dst"
+      echo "    + $label (merged into your existing file)"
+    fi
   fi
 }
 
