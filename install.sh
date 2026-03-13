@@ -1282,6 +1282,18 @@ if [ "$install_gemini" = true ] && [ -d "$GEMINI_SRC" ]; then
     echo "    + skills/ ($ADDED new, $SKIPPED skipped)"
   fi
 
+  # Copy hooks — overwrite all files (hooks are versioned with the extension)
+  if [ -d "$GEMINI_SRC/hooks" ]; then
+    mkdir -p "$GEMINI_TARGET/hooks"
+    ADDED=0
+    for src_file in "$GEMINI_SRC/hooks"/*; do
+      [ -f "$src_file" ] || continue
+      cp "$src_file" "$GEMINI_TARGET/hooks/$(basename "$src_file")"
+      ADDED=$((ADDED + 1))
+    done
+    echo "    + hooks/ ($ADDED files)"
+  fi
+
   GEMINI_INSTALLED=true
   GEMINI_DST="$GEMINI_TARGET"
   if [ "$choice" = "1" ]; then

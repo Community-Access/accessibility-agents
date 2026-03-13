@@ -79,7 +79,7 @@ cat .claude/hooks/hooks-consolidated.json
 **Step 2: Check Platform Support**
 - VS Code: Hooks require VS Code 1.110+ (February 2026 or later)
 - Claude Code: Hooks supported in all recent versions
-- Gemini CLI: Hook support TBD
+- Gemini CLI: Hooks supported via `.gemini/extensions/a11y-agents/hooks/hooks.json`
 
 **Step 3: Enable Hook Debugging**
 
@@ -97,16 +97,30 @@ Claude Code (~/.claude/settings.json):
 }
 ```
 
-**Step 4: Test Hook Script Manually**
-```bash
-# SessionStart
-echo '{"hookEventName": "SessionStart"}' | python .github/hooks/scripts/session-start.py
-
-# PreToolUse (edit gate)
-echo '{"hookEventName": "PreToolUse", "tool_name": "replace_string_in_file", "tool_input": {"filePath": "src/App.jsx"}}' | python .github/hooks/scripts/enforce-edit-gate.py
+Gemini CLI (interactive mode):
+```
+/hooks panel
 ```
 
-Expected output: Valid JSON with `hookSpecificOutput` key
+**Step 4: Test Hook Script Manually**
+```bash
+# VS Code / Claude Code SessionStart
+echo '{"hookEventName": "SessionStart"}' | python .github/hooks/scripts/session-start.py
+
+# VS Code / Claude Code PreToolUse (edit gate)
+echo '{"hookEventName": "PreToolUse", "tool_name": "replace_string_in_file", "tool_input": {"filePath": "src/App.jsx"}}' | python .github/hooks/scripts/enforce-edit-gate.py
+
+# Gemini CLI SessionStart
+echo '{"hook_event_name": "SessionStart", "session_id": "test", "cwd": "."}' | python .gemini/extensions/a11y-agents/hooks/session-start.py
+
+# Gemini CLI BeforeTool (edit gate)
+echo '{"tool_name": "write_file", "tool_input": {"file_path": "src/App.jsx", "content": ""}}' | python .gemini/extensions/a11y-agents/hooks/enforce-edit-gate.py
+
+# Gemini CLI BeforeAgent (web project detection)
+echo '{"prompt": "Build a React component with a modal"}' | python .gemini/extensions/a11y-agents/hooks/detect-web-project.py
+```
+
+Expected output: Valid JSON (Gemini hooks output `decision`, `systemMessage`, or `hookSpecificOutput`)
 
 ---
 
@@ -314,10 +328,15 @@ If these solutions don't resolve your issue:
 1. **Check Hook Logs:**
    - VS Code: View → Output → GitHub Copilot Chat
    - Claude Code: ~/.claude/logs/hooks.log
+   - Gemini CLI: `/hooks panel` inside an active session
 
 2. **Test Hook Scripts Manually:**
    ```bash
+   # VS Code / Claude Code
    echo '{"hookEventName": "PreToolUse", "tool_name": "replace_string_in_file", "tool_input": {"filePath": "src/App.jsx"}}' | python .github/hooks/scripts/enforce-edit-gate.py
+
+   # Gemini CLI
+   echo '{"tool_name": "write_file", "tool_input": {"file_path": "src/App.jsx", "content": ""}}' | python .gemini/extensions/a11y-agents/hooks/enforce-edit-gate.py
    ```
 
 3. **Open GitHub Issue:**
@@ -329,6 +348,7 @@ If these solutions don't resolve your issue:
 ## See Also
 
 - [hooks-guide.md](./hooks-guide.md) - Full hooks documentation
-- [HOOKS-CROSS-PLATFORM-STRATEGY.md](../HOOKS-CROSS-PLATFORM-STRATEGY.md) - Implementation strategy (56 pages)
+- [HOOKS-CROSS-PLATFORM-STRATEGY.md](../HOOKS-CROSS-PLATFORM-STRATEGY.md) - Implementation strategy
 - [VS Code Hooks API](https://code.visualstudio.com/api/extension-guides/chat#agent-hooks)
 - [Claude Code Hooks Reference](https://claude.ai/docs/hooks)
+- [Gemini CLI Hooks Reference](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md)

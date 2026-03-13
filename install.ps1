@@ -622,6 +622,19 @@ if (Test-Path $GeminiSrc) {
             Write-Host "    + skills\ ($Added new, $Skipped skipped)"
         }
 
+        # Copy hooks - overwrite all files (hooks are versioned with the extension)
+        $HooksSrc = Join-Path $GeminiSrc "hooks"
+        if (Test-Path $HooksSrc) {
+            $HooksDst = Join-Path $GeminiDst "hooks"
+            New-Item -ItemType Directory -Force -Path $HooksDst | Out-Null
+            $Added = 0
+            Get-ChildItem -Path $HooksSrc -File | ForEach-Object {
+                Copy-Item $_.FullName (Join-Path $HooksDst $_.Name) -Force
+                $Added++
+            }
+            Write-Host "    + hooks\ ($Added files)"
+        }
+
         $GeminiInstalled = $true
         if ($Choice -eq "1") {
             Add-ManifestEntry "gemini/project"
