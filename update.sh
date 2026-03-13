@@ -12,6 +12,8 @@
 
 set -e
 
+ORIG_DIR="$(pwd)"
+
 REPO_URL="https://github.com/Community-Access/accessibility-agents.git"
 CACHE_DIR="$HOME/.claude/.a11y-agent-team-repo"
 VERSION_FILE="$HOME/.claude/.a11y-agent-team-version"
@@ -83,10 +85,21 @@ migrate_prompts() {
 # ---------------------------------------------------------------------------
 merge_config_file() {
   local src="$1" dst="$2" label="$3"
-  local start="<!-- a11y-agent-team: start -->"
-  local end="<!-- a11y-agent-team: end -->"
-  local legacy_start="<!-- accessibility-agents: start -->"
-  local legacy_end="<!-- accessibility-agents: end -->"
+  local start end legacy_start legacy_end
+  case "$dst" in
+    *.toml)
+      start="# a11y-agent-team: start"
+      end="# a11y-agent-team: end"
+      legacy_start="# accessibility-agents: start"
+      legacy_end="# accessibility-agents: end"
+      ;;
+    *)
+      start="<!-- a11y-agent-team: start -->"
+      end="<!-- a11y-agent-team: end -->"
+      legacy_start="<!-- accessibility-agents: start -->"
+      legacy_end="<!-- accessibility-agents: end -->"
+      ;;
+  esac
   if [ ! -f "$dst" ]; then
     { printf '%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; } > "$dst"
     log "+ $label (created)"
@@ -94,18 +107,27 @@ merge_config_file() {
   fi
   if grep -qF "$start" "$dst" 2>/dev/null || grep -qF "$legacy_start" "$dst" 2>/dev/null; then
     if command -v python3 &>/dev/null; then
-      python3 - "$src" "$dst" << 'PYEOF'
+      python3 - "$src" "$dst" "$start" "$end" "$legacy_start" "$legacy_end" << 'PYEOF'
 import re, sys
 src_text = open(sys.argv[1]).read().rstrip()
 dst_path = sys.argv[2]
 dst_text = open(dst_path).read()
-start = "<!-- a11y-agent-team: start -->"
-end   = "<!-- a11y-agent-team: end -->"
-legacy_start = "<!-- accessibility-agents: start -->"
-legacy_end   = "<!-- accessibility-agents: end -->"
+start = sys.argv[3]
+end = sys.argv[4]
+legacy_start = sys.argv[5]
+legacy_end = sys.argv[6]
 block = start + "\n" + src_text + "\n" + end
-pattern = r"(?:" + re.escape(start) + r".*?" + re.escape(end) + r")|(?:" + re.escape(legacy_start) + r".*?" + re.escape(legacy_end) + r")"
-updated = re.sub(pattern, block, dst_text, flags=re.DOTALL)
+patterns = [re.escape(start) + r".*?" + re.escape(end)]
+if legacy_start and legacy_end:
+    patterns.append(re.escape(legacy_start) + r".*?" + re.escape(legacy_end))
+combined = r"(?s)(?:" + "|".join(patterns) + r")"
+m = re.search(combined, dst_text)
+if m:
+    insert_pos = m.start()
+    cleaned = re.sub(combined, "", dst_text)
+    updated = cleaned[:insert_pos] + block + cleaned[insert_pos:]
+else:
+    updated = dst_text
 open(dst_path, "w").write(updated)
 PYEOF
       log "~ $label (updated our existing section)"
@@ -119,7 +141,7 @@ PYEOF
 }
 
 if [ "$TARGET" = "project" ]; then
-  INSTALL_DIR="$(pwd)/.claude"
+  INSTALL_DIR="$ORIG_DIR/.claude"
 else
   INSTALL_DIR="$HOME/.claude"
 fi
@@ -304,7 +326,7 @@ GITHUB_SRC="$CACHE_DIR/.github"
 
 # Update Copilot assets for project install
 if [ "$TARGET" = "project" ]; then
-  PROJECT_GITHUB="$(pwd)/.github"
+  PROJECT_GITHUB="$ORIG_DIR/.github"
   if [ -d "$PROJECT_GITHUB" ]; then
     # Agents (all files: *.agent.md + AGENTS.md and support files)
     sync_github_dir "$GITHUB_SRC/agents" "$PROJECT_GITHUB/agents" "agents"
@@ -417,6 +439,40 @@ if [ "$TARGET" = "global" ]; then
     [ "$CLEANED" -gt 0 ] && log "Cleaned $CLEANED duplicate(s) from $PROFILE"
     log "Updated VS Code profile: $PROFILE"
   done
+fi
+
+# Update Codex assets if Codex support was previously installed
+if [ "$TARGET" = "project" ]; then
+  CODEX_ROOT="$ORIG_DIR/.codex"
+else
+  CODEX_ROOT="$HOME/.codex"
+fi
+CODEX_AGENTS_DST="$CODEX_ROOT/AGENTS.md"
+CODEX_CONFIG_DST="$CODEX_ROOT/config.toml"
+CODEX_ROLES_DST="$CODEX_ROOT/roles"
+CODEX_AGENTS_SRC="$CACHE_DIR/.codex/AGENTS.md"
+CODEX_CONFIG_SRC="$CACHE_DIR/.codex/config.toml"
+CODEX_ROLES_SRC="$CACHE_DIR/.codex/roles"
+
+HAS_CODEX=false
+[ -f "$CODEX_AGENTS_DST" ] && HAS_CODEX=true
+[ -f "$CODEX_CONFIG_DST" ] && HAS_CODEX=true
+if [ "$HAS_CODEX" = true ]; then
+  [ -f "$CODEX_AGENTS_SRC" ] && merge_config_file "$CODEX_AGENTS_SRC" "$CODEX_AGENTS_DST" "Codex AGENTS.md"
+  [ -f "$CODEX_CONFIG_SRC" ] && merge_config_file "$CODEX_CONFIG_SRC" "$CODEX_CONFIG_DST" "Codex config.toml"
+  if [ -d "$CODEX_ROLES_SRC" ]; then
+    mkdir -p "$CODEX_ROLES_DST"
+    while read -r src_file; do
+      rel="${src_file#$CODEX_ROLES_SRC/}"
+      dst_file="$CODEX_ROLES_DST/$rel"
+      mkdir -p "$(dirname "$dst_file")"
+      if ! cmp -s "$src_file" "$dst_file" 2>/dev/null; then
+        cp "$src_file" "$dst_file"
+        log "Updated Codex role: $rel"
+        UPDATED=$((UPDATED + 1))
+      fi
+    done < <(find "$CODEX_ROLES_SRC" -type f -name "*.toml" | sort)
+  fi
 fi
 
 # Update enforcement hooks (global install only)

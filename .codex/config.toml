@@ -1,0 +1,49 @@
+# Experimental Codex multi-agent roles layered on top of .codex/AGENTS.md.
+# AGENTS.md remains the stable baseline that applies automatically to UI work.
+
+[features]
+multi_agent = true
+
+[agents.accessibility-lead]
+description = "Experimental UI accessibility coordinator for planning, scoping, and final synthesis."
+config_file = "roles/accessibility-lead.toml"
+
+[agents.web-accessibility-wizard]
+description = "Experimental guided accessibility auditor for broad web UI reviews."
+config_file = "roles/web-accessibility-wizard.toml"
+
+[agents.aria-specialist]
+description = "Experimental ARIA and semantic HTML reviewer for custom widgets and interaction semantics."
+config_file = "roles/aria-specialist.toml"
+
+[agents.forms-specialist]
+description = "Experimental form accessibility reviewer for labels, validation, and error handling."
+config_file = "roles/forms-specialist.toml"
+
+[agents.keyboard-navigator]
+description = "Experimental keyboard and focus management reviewer for interactive UI flows."
+config_file = "roles/keyboard-navigator.toml"
+
+[agents.contrast-master]
+description = "Experimental color contrast and non-text contrast reviewer for visual accessibility."
+config_file = "roles/contrast-master.toml"
+
+[agents.modal-specialist]
+description = "Experimental dialog and overlay reviewer for focus trapping, inert background, and dismissal."
+config_file = "roles/modal-specialist.toml"
+
+[agents.live-region-controller]
+description = "Experimental dynamic announcement reviewer for live regions, toasts, and loading states."
+config_file = "roles/live-region-controller.toml"
+
+[agents.desktop-a11y-specialist]
+description = "Experimental desktop accessibility reviewer for UIA, MSAA, ATK/AT-SPI, and NSAccessibility."
+config_file = "roles/desktop-a11y-specialist.toml"
+
+[agents.nvda-addon-specialist]
+description = "Experimental NVDA add-on reviewer for architecture, event flow, packaging, and compatibility."
+config_file = "roles/nvda-addon-specialist.toml"
+
+[agents.pr-review]
+description = "Experimental PR reviewer focused on concrete bugs, regressions, and testing gaps."
+config_file = "roles/pr-review.toml"

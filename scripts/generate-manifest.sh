@@ -54,9 +54,18 @@ if [ -d "$SCRIPT_DIR/.github/prompts" ]; then
   done < <(find "$SCRIPT_DIR/.github/prompts" -type f -name "*.prompt.md" -print0 | sort -z)
 fi
 
-# Codex CLI (.codex/AGENTS.md)
+# Codex CLI (.codex/AGENTS.md, .codex/config.toml, .codex/roles/*.toml)
 if [ -f "$SCRIPT_DIR/.codex/AGENTS.md" ]; then
   MANIFEST+="codex/AGENTS.md"$'\n'
+fi
+if [ -f "$SCRIPT_DIR/.codex/config.toml" ]; then
+  MANIFEST+="codex/config.toml"$'\n'
+fi
+if [ -d "$SCRIPT_DIR/.codex/roles" ]; then
+  while IFS= read -r -d '' f; do
+    rel="${f#$SCRIPT_DIR/.codex/roles/}"
+    MANIFEST+="codex/roles/$rel"$'\n'
+  done < <(find "$SCRIPT_DIR/.codex/roles" -type f -name "*.toml" -print0 | sort -z)
 fi
 
 # Gemini CLI extension (.gemini/extensions/a11y-agents/**)
