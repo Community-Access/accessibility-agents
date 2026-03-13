@@ -120,7 +120,14 @@ block = start + "\n" + src_text + "\n" + end
 patterns = [re.escape(start) + r".*?" + re.escape(end)]
 if legacy_start and legacy_end:
     patterns.append(re.escape(legacy_start) + r".*?" + re.escape(legacy_end))
-updated = re.sub(r"(?:" + "|".join(patterns) + r")", block, dst_text, flags=re.DOTALL)
+combined = r"(?s)(?:" + "|".join(patterns) + r")"
+m = re.search(combined, dst_text)
+if m:
+    insert_pos = m.start()
+    cleaned = re.sub(combined, "", dst_text)
+    updated = cleaned[:insert_pos] + block + cleaned[insert_pos:]
+else:
+    updated = dst_text
 open(dst_path, "w").write(updated)
 PYEOF
       log "~ $label (updated our existing section)"
