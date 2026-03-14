@@ -7,11 +7,13 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Lead:** `markdown-a11y-assistant`
 
 **Members:**
+
 - `markdown-scanner` *(hidden helper)* - Per-file scanning across all 9 accessibility domains; returns structured findings
 - `markdown-fixer` *(hidden helper)* - Applies auto-fixes and presents human-judgment items for approval
 - `markdown-csv-reporter` *(hidden helper)* - Exports findings to CSV with WCAG help links and markdownlint rule references
 
 **Workflow:**
+
 1. `markdown-a11y-assistant` receives the user request and runs Phase 0 (discovery + configuration)
 2. `markdown-scanner` is dispatched **in parallel** via the Task tool for each discovered file
 3. All scan results are aggregated; cross-file patterns are identified
@@ -20,6 +22,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 6. Final `MARKDOWN-ACCESSIBILITY-AUDIT.md` report is generated with per-file scores and grades
 
 **Handoffs:**
+
 - `markdown-csv-reporter` for CSV export with WCAG help links
 - `web-accessibility-wizard` after markdown audit is complete for HTML/JSX/TSX files
 - `document-accessibility-wizard` for Office/PDF documents after markdown audit
@@ -29,6 +32,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Lead:** `document-accessibility-wizard`
 
 **Members:**
+
 - `document-inventory` - File discovery, inventory building, delta detection
 - `cross-document-analyzer` - Pattern detection, severity scoring, template analysis
 - `word-accessibility` - DOCX scanning and remediation (DOCX-* rules)
@@ -41,9 +45,11 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `document-csv-reporter` - Exports document audit findings to CSV with Microsoft Office and Adobe PDF help links
 
 **Members (ePub):**
+
 - `epub-accessibility` - EPUB scanning and remediation (EPUB-E*, EPUB-W*, EPUB-T* rules)
 
 **Workflow:**
+
 1. `document-accessibility-wizard` receives the user request and runs Phase 0 (discovery)
 2. `document-inventory` discovers and inventories all matching files
 3. File-type specialists (`word-accessibility`, `excel-accessibility`, `powerpoint-accessibility`, `pdf-accessibility`) scan documents in parallel by type
@@ -51,6 +57,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 5. `document-accessibility-wizard` compiles the final report and presents follow-up options
 
 **Handoffs:**
+
 - After audit, user can hand off to any format specialist for targeted remediation
 - `web-accessibility-wizard` handles web audit handoff when document audit is complete
 
@@ -59,15 +66,18 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Lead:** `epub-accessibility`
 
 **Internal Helpers:**
+
 - `epub-scan-config` - ePub scan configuration management (invoked via document-accessibility-wizard Phase 0)
 
 **Workflow:**
+
 1. `document-accessibility-wizard` detects `.epub` files in scope and invokes `epub-scan-config` to locate or create `.a11y-epub-config.json`
 2. `epub-accessibility` unpacks the EPUB archive, locates the OPF package document, audits metadata, navigation, and content documents
 3. Findings are reported using EPUB-E*, EPUB-W*, EPUB-T* rule IDs with WCAG mappings
 4. Results feed into `document-accessibility-wizard` for the unified document audit report
 
 **Handoffs:**
+
 - `document-accessibility-wizard` orchestrates EPUB scanning as part of the broader document audit
 - `pdf-accessibility` if the user also has PDF documents to scan
 
@@ -76,6 +86,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Lead:** `web-accessibility-wizard`
 
 **Members:**
+
 - `accessibility-lead` - Coordinates specialists, runs final review
 - `aria-specialist` - ARIA roles, states, properties
 - `modal-specialist` - Dialogs, drawers, overlays
@@ -90,6 +101,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `cognitive-accessibility` - WCAG 2.2 cognitive SC, COGA guidance, plain language analysis
 
 **Hidden Helpers:**
+
 - `cross-page-analyzer` - Cross-page pattern detection, severity scoring, remediation tracking
 - `web-issue-fixer` - Automated and guided accessibility fix application
 - `web-csv-reporter` - Exports web audit findings to CSV with Accessibility Insights help links
@@ -99,6 +111,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `playwright-verifier` - Post-fix verification via Playwright (confirms fixes work at runtime)
 
 **Workflow:**
+
 1. `web-accessibility-wizard` receives the user request and runs Phase 0 (discovery)
 2. Phase 0 Step 0: Auto-detects CI scanners (GitHub Scanner, Lighthouse), Playwright availability, and dev server URL
 3. Parallel specialist scanning groups execute based on content:
@@ -112,6 +125,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 6. `testing-coach` provides manual testing instructions for issues that require human verification
 
 **Handoffs:**
+
 - After audit, user can ask for interactive fix mode to apply corrections from the report
 - Remediation tracking is available by comparing audit reports across runs
 - Multi-page comparison audits scan multiple pages and detect cross-cutting patterns
@@ -123,6 +137,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Scope:** React Native, Expo, iOS (SwiftUI/UIKit), Android (Jetpack Compose/Views). Invoked standalone for any mobile code review or as a handoff from `accessibility-lead`.
 
 **Workflow:**
+
 1. `mobile-accessibility` identifies platform (React Native / iOS / Android)
 2. Audits accessibility props, touch target sizes, screen reader compatibility, focus order
 3. Produces a findings report with platform-specific rule IDs and fix code
@@ -135,6 +150,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Scope:** Tailwind config, CSS custom properties, Style Dictionary token files, MUI/Chakra/Radix themes. Invoked standalone or as a Phase 0 step before web or mobile audits.
 
 **Workflow:**
+
 1. `design-system-auditor` locates token files and identifies design system type
 2. Audits color token pairs for WCAG contrast compliance
 3. Audits focus ring tokens (WCAG 2.4.13 Focus Appearance), spacing/touch-target tokens, motion tokens
@@ -146,6 +162,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Lead:** `accessibility-lead`
 
 **Workflow:**
+
 1. `web-accessibility-wizard` runs the web accessibility audit (with severity scoring and framework detection)
 2. `document-accessibility-wizard` runs the document accessibility audit
 3. `accessibility-lead` compiles a unified report covering both web and document findings
@@ -183,16 +200,19 @@ For Section 508, EN 301 549, or organizational compliance:
 ### Web Audit Patterns
 
 **Single-Page Deep Audit:**
+
 1. Run a combined axe-core scan + manual code review
 2. Framework-specific patterns are detected automatically (React, Vue, Angular, Svelte, Tailwind)
 3. Severity scoring produces a 0-100 score with A-F grade
 
 **Multi-Page Comparison:**
+
 1. Provide a base URL and page paths for multi-page scanning
 2. `cross-page-analyzer` identifies systemic vs template vs page-specific issues
 3. Comparative scorecard shows per-page scores and cross-cutting patterns
 
 **Remediation Workflow:**
+
 1. Run initial audit
 2. Apply fixes interactively (auto-fixable + human-judgment items)
 3. Track progress by comparing audit reports between runs
@@ -203,6 +223,7 @@ For Section 508, EN 301 549, or organizational compliance:
 **Lead:** `github-hub` or `nexus` (alternative entry points - same team, both orchestrate all GitHub workflow agents)
 
 **Members:**
+
 - `daily-briefing` - Daily GitHub command center: issues, PRs, reviews, releases, discussions, accessibility updates
 - `issue-tracker` - Issue search, triage, deep-dive, commenting, management, and dual-format workspace documents
 - `pr-review` - PR diff analysis, before/after snapshots, review comments, code suggestions, and review documents
@@ -215,11 +236,13 @@ For Section 508, EN 301 549, or organizational compliance:
 - `repo-manager` - Repo infrastructure scaffolding: templates, CI/CD, labels, README, CONTRIBUTING, licenses
 
 **Skills:**
+
 - `github-workflow-standards` - Auth, smart defaults, dual MD+HTML output, HTML accessibility, safety rules, parallel execution
 - `github-scanning` - Search query patterns, date range handling, cross-repo intelligence, auto-recovery
 - `github-analytics-scoring` - Repo health scoring (0-100/A-F), priority scoring, confidence levels, delta tracking
 
 **Workflow:**
+
 1. User invokes `github-hub` or `nexus` with any natural language request about GitHub
 2. The orchestrator identifies the authenticated user, discovers repos/orgs, and loads `preferences.md`
 3. The orchestrator classifies user intent and routes to the appropriate specialist agent
@@ -228,17 +251,20 @@ For Section 508, EN 301 549, or organizational compliance:
 6. Agents surface relevant handoffs (e.g., `issue-tracker` -> `pr-review` for linked PRs)
 
 **Parallel Execution Model:**
+
 - `daily-briefing` runs Batch 1 streams simultaneously: issues, PRs, CI/security, accessibility
 - `analytics` collects PR metrics, issue metrics, contribution activity, churn, and bottleneck data in parallel
 - `github-hub` routes to multiple sub-agents in one session without repeating context
 - `nexus` routes identically - both orchestrators share the same team and handoff logic
 
 **Confidence & Delta Tracking:**
+
 - All agents tag findings with **High / Medium / Low** confidence
 - `analytics`, `issue-tracker`, `pr-review`, and `insiders-a11y-tracker` support delta tracking across reports:  Resolved /  New /  Persistent /  Regressed
 - Persistent bottlenecks (3+ consecutive reports) trigger escalation flags
 
 **Handoffs:**
+
 - `github-hub`/`nexus` -> any specialist via intent routing
 - `daily-briefing` -> `issue-tracker` (deep dive on issue), `pr-review` (full review), `analytics` (team metrics), `insiders-a11y-tracker` (a11y detail)
 - `issue-tracker` <-> `pr-review` (bidirectional: linked PRs/issues)
@@ -255,12 +281,15 @@ All teams in this workspace follow the engineering patterns from [Multi-agent wo
 Agents MUST return structured data at handoff points. Never pass unstructured prose between agents.
 
 **Accessibility finding:**
+
 - Rule ID, severity (`critical`|`serious`|`moderate`|`minor`), location, description, remediation, confidence (`high`|`medium`|`low`)
 
 **Scored output:**
+
 - Score (0-100), grade (A-F), issue counts by severity, pass/fail verdict
 
 **Action result:**
+
 - Action taken, target, result (`success`|`failure`|`skipped`), reason (if not success)
 
 ### Constrained Action Sets
@@ -300,5 +329,3 @@ At every handoff:
 - Each agent operates on its defined scope. Parallel groups work on distinct concerns.
 - Same inputs produce same structured outputs (idempotent).
 - Output format changes must be backward-compatible.
-
-

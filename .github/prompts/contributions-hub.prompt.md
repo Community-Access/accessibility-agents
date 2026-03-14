@@ -130,6 +130,7 @@ mutation {
 ### Track Contributor Agreements
 
 Check if contributors have signed CLA:
+
 ```bash
 # List PRs from external contributors
 gh pr list --repo ${input:repo} --author ${username} --json author,mergeable

@@ -17,6 +17,7 @@
 ### Lighthouse CI Detection
 
 How to check if a repository uses Lighthouse CI:
+
 - Grep `.github/workflows/` for `treosh/lighthouse-ci-action` or `lhci autorun`
 - Check for config files: `lighthouserc.js`, `lighthouserc.json`, `.lighthouserc.js`, `.lighthouserc.json`, `.lighthouserc.yml`
 - Parse config for URLs, numberOfRuns, score thresholds, and upload targets
@@ -47,12 +48,14 @@ Maps Lighthouse audit weights to the standard agent severity model:
 ### axe-core Rule Correlation
 
 Lighthouse accessibility audits are powered by a subset of axe-core. The skill maps Lighthouse audit IDs directly to axe-core rule IDs for deduplication with local scans. Key mappings include:
+
 - `image-alt`, `color-contrast`, `label`, `button-name`, `link-name`
 - `html-has-lang`, `document-title`, `meta-viewport`, `heading-order`, `tabindex`
 
 ### Score Regression Detection
 
 Tracks accessibility scores across CI runs and classifies changes:
+
 - Score drops of 10+ points: Critical regression
 - Score drops of 5-9 points: Serious regression
 - Score drops of 1-4 points: Moderate regression
@@ -61,6 +64,7 @@ Tracks accessibility scores across CI runs and classifies changes:
 ### Confidence Boosting
 
 Findings confirmed by multiple sources get confidence upgrades:
+
 - Lighthouse + local axe-core = High confidence
 - Lighthouse + agent review = High confidence
 - Lighthouse + axe-core + agent review = Highest confidence

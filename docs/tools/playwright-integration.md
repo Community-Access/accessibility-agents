@@ -4,7 +4,7 @@ Playwright provides the third assessment layer in the accessibility agent ecosys
 
 ## Architecture
 
-```
+```text
 Layer 1: Static Analysis     → 13 specialist agents review source code
 Layer 2: Runtime Rule Scan   → run_axe_scan (axe-core CLI against live URL)
 Layer 3: Behavioral Testing  → Playwright MCP tools (browser interaction)
@@ -17,6 +17,7 @@ Layer 3: Behavioral Testing  → Playwright MCP tools (browser interaction)
 Presses Tab repeatedly, recording which element receives focus after each press. Detects keyboard traps (same element receives focus on consecutive tabs) and unreachable interactive elements.
 
 **Parameters:**
+
 - `url` (required) — Page URL to scan
 - `maxTabs` (optional, default 100) — Maximum Tab presses
 - `selector` (optional) — CSS selector to scope the scan
@@ -28,6 +29,7 @@ Presses Tab repeatedly, recording which element receives focus after each press.
 Clicks interactive triggers (buttons, disclosure widgets, menu toggles), waits for DOM changes, runs axe-core against revealed content. Catches violations that only exist in expanded/active states.
 
 **Parameters:**
+
 - `url` (required) — Page URL
 - `triggers` (optional) — CSS selectors to click; auto-discovers if omitted
 - `axeTags` (optional) — axe-core tags to check
@@ -39,6 +41,7 @@ Clicks interactive triggers (buttons, disclosure widgets, menu toggles), waits f
 Runs axe-core at multiple viewport widths. Measures rendered touch target sizes. Detects horizontal scroll overflow.
 
 **Parameters:**
+
 - `url` (required) — Page URL
 - `viewports` (optional, default [320, 768, 1024, 1440]) — Viewport widths in pixels
 - `measureTargets` (optional, default true) — Whether to measure touch target sizes
@@ -51,6 +54,7 @@ Runs axe-core at multiple viewport widths. Measures rendered touch target sizes.
 Extracts computed foreground and background colors for text elements after full CSS cascade resolution. Computes actual contrast ratios using WCAG relative luminance formula.
 
 **Parameters:**
+
 - `url` (required) — Page URL
 - `selector` (optional) — CSS selector to scope the scan
 
@@ -61,6 +65,7 @@ Extracts computed foreground and background colors for text elements after full 
 Captures the full accessibility tree as seen by the browser's accessibility API via `page.accessibility.snapshot()`.
 
 **Parameters:**
+
 - `url` (required) — Page URL
 - `selector` (optional) — Root element selector
 

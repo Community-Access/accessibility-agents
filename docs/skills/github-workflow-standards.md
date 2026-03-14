@@ -51,7 +51,7 @@ Rules:
 
 - **Never expose tool names or API calls** in progress messages
 - Number steps when there are 3 or more: `(1/7)`, `(2/7)`, etc.
-- Always show a count or summary after each 
+- Always show a count or summary after each
 
 ## Dual Output - Markdown + HTML
 

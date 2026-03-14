@@ -22,6 +22,7 @@ Start here for any GitHub workflow task. No commands to memorize - just describe
 ### Step 1: Understand Your Goal
 
 Ask clarifying questions:
+
 - Which repos/organizations?
 - Time range (today, this week, since date)?
 - Output format (workspace file, console, both)?
@@ -30,12 +31,14 @@ Ask clarifying questions:
 ### Step 2: Discover Context
 
 Check `preferences.md` for:
+
 - Tracked repositories
 - Organization memberships
 - Default date ranges
 - Output preferences
 
 Discover additional repos:
+
 ```bash
 gh repo list --limit 100
 gh org list
@@ -56,6 +59,7 @@ gh org list
 ### Step 4: Execute Workflow
 
 Let the specialist agent:
+
 - Gather data from GitHub API
 - Generate dual markdown + HTML reports
 - Save to workspace
@@ -64,6 +68,7 @@ Let the specialist agent:
 ### Step 5: Follow Up
 
 Offer next steps:
+
 - Schedule recurring briefings
 - Set up notifications
 - Create GitHub Actions workflow

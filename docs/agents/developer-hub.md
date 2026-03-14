@@ -45,5 +45,3 @@
 
 - [web-accessibility-wizard](web-accessibility-wizard.md) -- cross-team handoff for web content auditing
 - [document-accessibility-wizard](document-accessibility-wizard.md) -- cross-team handoff for document auditing
-
-

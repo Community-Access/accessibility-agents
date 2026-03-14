@@ -138,5 +138,3 @@ Focus your manual review effort on medium and low confidence items. High confide
 | [office-scan-config](office-scan-config.md) | To configure which rules run and suppress rules that do not apply to your document type |
 | [excel-accessibility](excel-accessibility.md) | For spreadsheets embedded in Word documents or when auditing a mixed Office collection |
 | [pdf-accessibility](pdf-accessibility.md) | Word documents are often exported to PDF - audit both if the PDF is distributed |
-
-

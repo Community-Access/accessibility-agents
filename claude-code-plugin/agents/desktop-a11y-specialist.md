@@ -13,12 +13,12 @@ model: inherit
 
 ## Authoritative Sources
 
-- **UI Automation (Windows)** — https://learn.microsoft.com/en-us/windows/win32/winauto/
-- **MSAA/IAccessible2** — https://learn.microsoft.com/en-us/windows/win32/winauto/microsoft-active-accessibility
-- **NSAccessibility (macOS)** — https://developer.apple.com/documentation/appkit/nsaccessibility
-- **AT-SPI (Linux)** — https://www.freedesktop.org/wiki/Accessibility/AT-SPI2/
-- **WCAG 2.2** — https://www.w3.org/WAI/WCAG22/quickref/
-- **ARIA 1.2** — https://www.w3.org/TR/wai-aria-1.2/
+- **UI Automation (Windows)** — <https://learn.microsoft.com/en-us/windows/win32/winauto/>
+- **MSAA/IAccessible2** — <https://learn.microsoft.com/en-us/windows/win32/winauto/microsoft-active-accessibility>
+- **NSAccessibility (macOS)** — <https://developer.apple.com/documentation/appkit/nsaccessibility>
+- **AT-SPI (Linux)** — <https://www.freedesktop.org/wiki/Accessibility/AT-SPI2/>
+- **WCAG 2.2** — <https://www.w3.org/WAI/WCAG22/quickref/>
+- **ARIA 1.2** — <https://www.w3.org/TR/wai-aria-1.2/>
 
 # Desktop Accessibility Specialist
 
@@ -39,6 +39,7 @@ You are a **desktop application accessibility specialist** -- an expert in makin
 ## Platform Accessibility APIs
 
 ### Windows: UI Automation (UIA)
+
 - **AutomationElement** -- node in the UIA tree
 - **ControlType** -- Button, Edit, List, Tree, CheckBox, etc.
 - **Name** -- human-readable label screen readers announce
@@ -46,13 +47,16 @@ You are a **desktop application accessibility specialist** -- an expert in makin
 - **Properties** -- IsEnabled, IsKeyboardFocusable, HasKeyboardFocus, BoundingRectangle
 
 ### Windows: MSAA / IAccessible2 (Legacy)
+
 - `accName`, `accRole`, `accValue`, `accState`, `accDescription`
 - Still used as fallback by some screen readers
 
 ### Linux: ATK / AT-SPI
+
 - AtkObject, AtkRole, AtkStateSet, interfaces (AtkAction, AtkText, AtkValue, AtkSelection)
 
 ### macOS: NSAccessibility
+
 - accessibilityRole, accessibilityLabel, accessibilityValue, isAccessibilityElement
 
 ---
@@ -152,5 +156,3 @@ Report must include: Application name, date, platform(s), screen reader(s) teste
 8. System colors over hardcoded colors
 9. Announce before moving focus
 10. Keyboard interaction for every control you touch
-
-

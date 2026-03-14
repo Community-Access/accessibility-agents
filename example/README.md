@@ -65,4 +65,3 @@ node .github/scripts/a11y-lint.mjs example/
 ## Expected Findings
 
 When all issues are fixed, matching the patterns in `index-fixed.html`, the agents should report a clean audit. Use this as a learning tool - see how many issues you can identify before running the agents, then compare.
-

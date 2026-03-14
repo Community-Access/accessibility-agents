@@ -51,6 +51,7 @@ handoffs:
 **You MUST use the `askQuestions` tool** to present structured choices to the user whenever you need to clarify scope, confirm actions, or offer alternatives. Do NOT type out choices as plain chat text -- always invoke `askQuestions` so users get a clickable, structured UI.
 
 Use `askQuestions` when:
+
 - The user's request is ambiguous (globalPlugin vs appModule vs synthDriver)
 - Confirming addon architecture decisions before scaffolding
 - Choosing between manifest format versions or API levels
@@ -172,7 +173,7 @@ NVDA is written in Python with performance-critical in-process injection in C++.
 
 When an accessibility API fires an event:
 
-```
+```text
 API Handler (IAccessible/UIA/JAB)
   -> eventHandler.executeEvent()
     -> Global Plugin 1 .event_*()
@@ -190,7 +191,7 @@ Each handler can consume the event (stop propagation) or call `nextHandler()` to
 
 `findScript()` in `scriptHandler.py` searches in this order:
 
-```
+```text
 1. gesture.scriptableObject (gesture-specific)
 2. Global Plugins (all running, in order)
 3. App Module (for the focused app)
@@ -224,6 +225,7 @@ def script_announceTime(self, gesture):
 ```
 
 **Parameters:**
+
 - `description`: Translatable string shown in Input Gestures dialog
 - `category`: Grouping in Input Gestures dialog
 - `gesture`: Single gesture binding (e.g., `"kb:NVDA+shift+t"`)
@@ -367,7 +369,7 @@ The NVDAObject is NVDA's abstract representation of a UI widget.
 
 ### Object Hierarchy
 
-```
+```text
 NVDAObject (base)
   -> NVDAObjects.IAccessible.IAccessible (MSAA/IA2)
   -> NVDAObjects.UIA.UIA (UI Automation)
@@ -410,7 +412,7 @@ class MyListItemOverlay(NVDAObjects.IAccessible.IAccessible):
 
 Based on the [NVDA Addon Template](https://github.com/nvaccess/addonTemplate):
 
-```
+```text
 myAddon/
   addon/
     globalPlugins/          # Global plugin modules

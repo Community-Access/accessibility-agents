@@ -39,7 +39,7 @@ Ask the user:
 
 Generate the standard NVDA addon directory layout:
 
-```
+```text
 addonName/
   manifest.ini
   installTasks.py          (if needed)

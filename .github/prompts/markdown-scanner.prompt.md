@@ -25,11 +25,13 @@ Parse file content, track line numbers.
 ### Step 2: Scan Domain 1 - Links
 
 **Ambiguous link text patterns:**
+
 - "click here", "here", "link"
 - "read more", "learn more", "more info"
 - "this", "this page", "this site"
 
 **Check:**
+
 - Link text descriptive?
 - Context provides clarity?
 
@@ -38,11 +40,13 @@ Parse file content, track line numbers.
 ### Step 3: Scan Domain 2 - Alt Text
 
 Find all image references:
+
 ```markdown
 ![alt text](image.png)
 ```
 
 **Check:**
+
 - Alt text present?
 - Alt text descriptive (not filename)?
 - Decorative images use empty alt `![](...)`?
@@ -52,6 +56,7 @@ Find all image references:
 ### Step 4: Scan Domain 3 - Headings
 
 **Check:**
+
 - Heading hierarchy (H1 → H2 → H3, no skipping)
 - Only one H1 per document?
 - Headings descriptive?
@@ -61,6 +66,7 @@ Find all image references:
 ### Step 5: Scan Domain 4 - Tables
 
 Find all tables:
+
 ```markdown
 | Header | Header |
 |--------|--------|
@@ -68,6 +74,7 @@ Find all tables:
 ```
 
 **Check:**
+
 - Table description present? `<!-- Table: Description -->`
 - Complex tables have caption?
 
@@ -76,10 +83,12 @@ Find all tables:
 ### Step 6: Scan Domain 5 - Emoji
 
 **Check:**
+
 - Emoji in headings? (screen reader reads Unicode name)
 - Emoji as content substitute? (no text equivalent)
 
 **Options:**
+
 - Remove emoji
 - Translate to English `🎉` → `(celebrate)`
 
@@ -88,6 +97,7 @@ Find all tables:
 ### Step 7: Scan Domain 6 - Diagrams
 
 Find Mermaid diagrams:
+
 ````markdown
 ```mermaid
 graph TD
@@ -98,6 +108,7 @@ graph TD
 Find ASCII diagrams (boxes, arrows)
 
 **Check:**
+
 - Text alternative present?
 - Diagram described in prose?
 
@@ -108,11 +119,13 @@ Find ASCII diagrams (boxes, arrows)
 ### Step 8: Scan Domain 7 - Anchor Links
 
 Find anchor references:
+
 ```markdown
 [Jump to section](#section-name)
 ```
 
 **Check:**
+
 - Target heading exists?
 - Anchor ID matches heading text (lowercase, dashes)?
 
@@ -131,6 +144,7 @@ Find em-dashes: `—` (U+2014)
 ### Step 10: Scan Domain 9 - Quality
 
 **Check:**
+
 - Code blocks have language identifiers?
 - Lists use consistent markers?
 - No trailing whitespace?

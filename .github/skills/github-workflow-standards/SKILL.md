@@ -66,6 +66,7 @@ Additional per-repo filters: `labels.include`, `labels.exclude`, `paths`, `assig
 ### Cross-Repo Intelligence
 
 When searching across multiple repos, agents MUST:
+
 - **Detect cross-repo links** - issues/PRs referencing items in other repos.
 - **Surface related items** - when issue A references repo B, surface both.
 - **Deduplicate** - show each item once, combining all signal context.
@@ -92,6 +93,7 @@ Always announce progress during multi-step operations so the user knows data col
 ```
 
 ### Rules
+
 - Describe operations in plain English - **never expose tool names or API calls**.
 - Always show a count or result summary after each .
 - Skip announcing trivial single-step lookups.
@@ -103,6 +105,7 @@ Always announce progress during multi-step operations so the user knows data col
 Run independent data streams simultaneously. Don't serialize operations that have no dependencies on each other.
 
 **Common parallelizable patterns:**
+
 - Issues + PRs + Discussions searches (no dependency between them)
 - Activity across multiple repos (each repo is independent)
 - Security alerts + CI status + release checks
@@ -110,6 +113,7 @@ Run independent data streams simultaneously. Don't serialize operations that hav
 **Wait-for-all before scoring:** Collect all stream results before computing priorities, scores, or summaries. Never show partial results with scores.
 
 **Announcement for parallel batches:**
+
 ```text
  Running {N} searches in parallel...
  Batch 1 complete - {X} items found
@@ -134,6 +138,7 @@ Good uses: Multiple repos match and you can't determine which one. User wants to
 ## Dual Output: Markdown + HTML
 
 **Every workspace document MUST be generated in both formats.** Save side by side:
+
 - `.md` - for VS Code editing, markdown preview, quick scanning
 - `.html` - for screen reader users, browser viewing, team sharing
 
@@ -260,6 +265,7 @@ summary:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
 ### Reactions & Sentiment
 
 For every issue and PR listed, collect reactions and summarize sentiment:
+
 - **Popular** (5+ positive reactions) - flag as community-endorsed
 - **Controversial** (mixed +1 and -1) - flag as needs discussion
 - **Quiet** (0-1 reactions) - no special flag
@@ -290,6 +296,7 @@ In markdown: `[+1: 5, heart: 2]`
 ## Output Quality Standards
 
 ### Formatting
+
 - **Lead with a summary line** before any table or list: _"Found 12 open issues across 3 repos (last 30 days)."_
 - Use tables for scannable data. Include dividers between sections.
 - Use `diff` code blocks for diffs, language-specific blocks for code.
@@ -298,6 +305,7 @@ In markdown: `[+1: 5, heart: 2]`
 ### GitHub URLs - Always Clickable
 
 Every mention of an issue, PR, file, or comment MUST be a clickable link:
+
 - Issues: `https://github.com/{owner}/{repo}/issues/{number}`
 - PRs: `https://github.com/{owner}/{repo}/pull/{number}`
 - Files: `https://github.com/{owner}/{repo}/blob/{branch}/{path}`
@@ -306,6 +314,7 @@ Every mention of an issue, PR, file, or comment MUST be a clickable link:
 ### Proactive Suggestions
 
 After completing any task, suggest the **most likely next action**:
+
 - After listing issues -> _"Want to dive into any of these? Or reply to one?"_
 - After reading an issue -> _"Want to reply, or check for related PRs?"_
 - After reviewing a PR -> _"Want to leave comments, approve, or request changes?"_
@@ -318,6 +327,7 @@ After completing any task, suggest the **most likely next action**:
 ### Pattern Recognition
 
 When displaying multiple items, ADD INSIGHTS:
+
 - **Hot issues** - high comment velocity or recent activity spikes
 - **Stale items** - no activity for >14 days
 - **Your attention needed** - items where someone @mentioned you or requested changes
@@ -332,6 +342,7 @@ When displaying multiple items, ADD INSIGHTS:
 ### Prioritization Signals
 
 Sort by **urgency**, not just recency:
+
 1. Items where the user was directly @mentioned
 2. Items with `priority`, `urgent`, `critical`, or `P0/P1` labels
 3. Items with recent activity from others (awaiting your response)

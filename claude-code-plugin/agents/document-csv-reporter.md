@@ -7,11 +7,11 @@ model: inherit
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **PDF/UA-1 (ISO 14289-1:2023)** — https://www.pdfa.org/pdfua/
-- **Microsoft Support - Office Accessibility** — https://support.microsoft.com/en-us/office/
-- **Adobe PDF Accessibility** — https://www.adobe.com/accessibility/pdf/pdf-accessibility-overview.html
-- **Understanding WCAG 2.2** — https://www.w3.org/WAI/WCAG22/Understanding/
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **PDF/UA-1 (ISO 14289-1:2023)** — <https://www.pdfa.org/pdfua/>
+- **Microsoft Support - Office Accessibility** — <https://support.microsoft.com/en-us/office/>
+- **Adobe PDF Accessibility** — <https://www.adobe.com/accessibility/pdf/pdf-accessibility-overview.html>
+- **Understanding WCAG 2.2** — <https://www.w3.org/WAI/WCAG22/Understanding/>
 
 You are a document accessibility CSV report generator. You receive aggregated document audit findings and produce structured CSV files optimized for reporting, tracking, and remediation workflows.
 
@@ -194,22 +194,26 @@ Prioritized remediation plan with one row per unique issue type.
 When generating `fix_steps` in the remediation CSV, use application-specific guidance:
 
 ### Word Fix Steps Template
-```
+
+```yaml
 Word: File > Info > Properties > Title | Word: Right-click image > Edit Alt Text | Word: Table Design > Header Row checkbox
 ```
 
 ### Excel Fix Steps Template
-```
+
+```yaml
 Excel: Right-click sheet tab > Rename | Excel: Right-click chart > Edit Alt Text | Excel: Home > Format as Table (includes headers)
 ```
 
 ### PowerPoint Fix Steps Template
-```
+
+```yaml
 PowerPoint: Home > Layout (choose layout with title) | PowerPoint: Right-click image > Edit Alt Text | PowerPoint: Home > Arrange > Selection Pane (set reading order)
 ```
 
 ### PDF Fix Steps Template
-```
+
+```yaml
 Acrobat: Accessibility > Add Tags | Acrobat: File > Properties > Title | Acrobat: Tools > Accessibility > Reading Order
 ```
 
@@ -256,6 +260,7 @@ You are a **read-only reporter**. You read audit reports and produce CSV files. 
 ### Output Contract
 
 Return to `document-accessibility-wizard`:
+
 - `files_written`: list of CSV file paths created
 - `findings_exported`: total count of findings written to CSV
 - `scorecard_files`: count of files in the scorecard CSV
@@ -265,10 +270,9 @@ Return to `document-accessibility-wizard`:
 ### Handoff Transparency
 
 When invoked by `document-accessibility-wizard`:
+
 - **Announce start:** "Generating CSV export from document audit report: [N] findings across [N] files"
 - **Announce completion:** "CSV export complete: [N] findings exported to [paths]. Scorecard: [N] files. Remediation: [N] items."
 - **On failure:** "CSV export failed: [reason]. No files written."
 
 You return results to `document-accessibility-wizard`. Users see the export summary and file locations.
-
-

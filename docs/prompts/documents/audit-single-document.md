@@ -91,5 +91,3 @@ After the report is written, the agent offers:
 - [quick-document-check](quick-document-check.md) - faster triage, no report file
 - [audit-document-folder](audit-document-folder.md) - audit all documents in a folder
 - [generate-vpat](generate-vpat.md) - export findings as a VPAT conformance report
-
-

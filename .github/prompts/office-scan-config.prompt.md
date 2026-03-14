@@ -23,6 +23,7 @@ Create and manage `.a11y-office-config.json` files for Word, Excel, and PowerPoi
 ### Create New Config
 
 Ask:
+
 - **Profile:** strict (all rules, all severities), moderate (all rules, errors+warnings), minimal (errors only)
 - **Document types:** docx, xlsx, pptx (all or specific)
 - **Severity filter:** All, Errors+Warnings, Errors only
@@ -93,6 +94,7 @@ jq '.ignorePatterns += ["**/archive/**"]' .a11y-office-config.json > tmp.json &&
 ### Validate Config
 
 Check:
+
 - ✅ Valid JSON syntax
 - ✅ version field present
 - ✅ All rule IDs valid (DOCX-*, XLSX-*, PPTX-*)
@@ -102,6 +104,7 @@ Check:
 ### Explain Config
 
 For each rule:
+
 - **Rule ID:** DOCX-001
 - **Description:** Missing document title
 - **WCAG Criterion:** 2.4.2 Page Titled

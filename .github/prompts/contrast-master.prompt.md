@@ -32,6 +32,7 @@ Ask the user:
 ### Step 2: Extract Color Pairs
 
 Parse CSS/stylesheets for:
+
 - Text on backgrounds (color + background-color)
 - Links (may have different color from body text)
 - Buttons (text + background + border)
@@ -44,12 +45,14 @@ Parse CSS/stylesheets for:
 For each color pair, compute contrast ratio:
 
 **WCAG AA requirements:**
+
 - Normal text (14pt or 18.5pt bold): 4.5:1
 - Large text (18pt or 14pt bold): 3:1
 - UI components and graphics: 3:1
 - Focus indicators: 3:1 against adjacent colors
 
 **Use built-in task:**
+
 ```bash
 node -e "const fg='#FOREGROUND',bg='#BACKGROUND';function s(c){c=c/255;return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4)}function l(h){h=h.replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return 0.2126*s(r)+0.7152*s(g)+0.0722*s(b)}const l1=l(fg),l2=l(bg),ratio=(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);console.log(ratio.toFixed(2))"
 ```
@@ -73,6 +76,7 @@ WCAG 1.4.1: Don't convey information by color alone
 ### Step 6: Provide Remediation
 
 For each failing color pair:
+
 - Current ratio and WCAG requirement
 - Suggested alternatives (darker/lighter shades that pass)
 - CSS variable or Tailwind class to update

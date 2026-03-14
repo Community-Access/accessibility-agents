@@ -135,7 +135,7 @@ re-docked, or resized.  The layout is saved automatically when you exit.
 
 ### Layout overview
 
-```
+```text
 ┌──────────────────────────────────────────────────────┐
 │  Menu bar │ Toolbar                                   │
 ├───────────┬──────────────────────────┬───────────────┤

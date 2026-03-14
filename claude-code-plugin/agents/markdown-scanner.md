@@ -8,10 +8,10 @@ maxTurns: 20
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **CommonMark Specification** — https://spec.commonmark.org/
-- **markdownlint Rules** — https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
-- **GitHub Flavored Markdown Spec** — https://github.github.com/gfm/
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **CommonMark Specification** — <https://spec.commonmark.org/>
+- **markdownlint Rules** — <https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md>
+- **GitHub Flavored Markdown Spec** — <https://github.github.com/gfm/>
 
 # Markdown Scanner
 
@@ -84,6 +84,7 @@ Scan for all `[text](url)` links and bare URLs.
 **Auto-fix:** Yes - rewrite using surrounding sentence context.
 
 **Never flag:**
+
 - Badge links: `[![text](img)](url)` at top of README
 - Section self-references using the section name as text
 - Links inside code blocks or front matter
@@ -97,6 +98,7 @@ Scan for all `[text](url)` links and bare URLs.
 Scan for all `![text](url)` patterns.
 
 **Flag:**
+
 - Empty alt: `![](...)`
 - Filename as alt: `![img_1234.jpg](...)`
 - Generic alt: `![image](...)`, `![screenshot](...)`, `![photo](...)`
@@ -110,7 +112,7 @@ Scan for all `![text](url)` patterns.
 
 Parse all `#`-prefixed headings. Build the heading tree and validate:
 
-1. **Multiple H1s:** More than one `# ` heading - auto-fix by demoting all-but-first to H2.
+1. **Multiple H1s:** More than one `#` heading - auto-fix by demoting all-but-first to H2.
 2. **Skipped levels:** H1 followed by H3, etc. - auto-fix by interpolating the missing level.
 3. **No H1:** Flag for review (may be intentional fragment).
 4. **Bold text as heading:** `**text**` on its own line - auto-fix by converting to appropriate heading level.
@@ -158,6 +160,7 @@ When removing emoji that convey meaning, the meaning MUST be preserved in adjace
 **Mermaid:** Detect ` ```mermaid ` fenced code blocks (may have leading whitespace).
 
 For each Mermaid block:
+
 1. Identify diagram type: `graph`, `sequenceDiagram`, `classDiagram`, `erDiagram`, `gantt`, `pie`, `stateDiagram`, `flowchart`, `mindmap`, `timeline`
 2. Check if a text description paragraph exists immediately before the block
 3. If no description: flag as Critical
@@ -181,6 +184,7 @@ When `mermaid-preference: replace-with-text`: for simple diagrams (`graph`, `flo
 **ASCII diagrams:** Detect ASCII art patterns (lines containing combinations of `+`, `-`, `|`, `>`, `<`, `^`, `v`, `*`) in non-code-block prose or in plain code blocks without a language identifier.
 
 For each ASCII diagram:
+
 1. If no preceding text description: flag as Critical
 2. When `ascii-preference: replace-with-text`: suggest moving the ASCII art to a `<details>` block with the description as primary content
 
@@ -189,12 +193,14 @@ For each ASCII diagram:
 ## Domain 7: Em-Dash and En-Dash Normalization (Cognitive)
 
 Detect in prose (not code blocks, inline code, YAML front matter, HTML comments):
+
 - `—` (U+2014 em-dash)
 - `–` (U+2013 en-dash)
 - ` -- ` or `--` in prose
 - ` --- ` in prose (not on its own line as HR)
 
 **Auto-fix based on `dash-preference`:**
+
 - `normalize-to-hyphen`: Replace all with ` - `
 - `normalize-to-double-hyphen`: Replace all with ` -- `
 - `leave-unchanged`: Do not flag
@@ -227,9 +233,11 @@ Headings containing emoji produce unstable anchors - flag these separately.
 ## Domain 9: Plain Language and List Structure (Cognitive)
 
 **Auto-fix:**
+
 - Emoji used as the first character of a list item: replace emoji with `-`, preserve text.
 
 **Flag for review:**
+
 - Paragraphs exceeding 150 words with no sub-headings
 - Sentences exceeding 40 words
 - Passive voice in instructional context: "it should be noted", "can be used to", "is recommended to"
@@ -309,6 +317,7 @@ Return structured findings in this exact format:
 ```
 
 Score grades:
+
 - 90-100: A - Excellent, meets WCAG AA
 - 75-89: B - Good, mostly meets WCAG AA
 - 50-74: C - Needs Work, partial compliance
@@ -326,6 +335,7 @@ You are a **read-only scanner**. You analyze markdown files across 9 accessibili
 ### Output Contract
 
 Every finding MUST include these fields:
+
 - `domain`: one of the 9 accessibility domains
 - `severity`: `critical` | `serious` | `moderate` | `minor`
 - `location`: file path and line number
@@ -334,6 +344,7 @@ Every finding MUST include these fields:
 - `confidence`: `high` | `medium` | `low`
 
 Per-file output MUST also include:
+
 - `file_score`: 0-100
 - `grade`: A-F
 - `issue_counts`: by severity level
@@ -343,6 +354,7 @@ Findings missing required fields will be rejected by `markdown-a11y-assistant`.
 ### Handoff Transparency
 
 When you are invoked by `markdown-a11y-assistant`:
+
 - **Announce start:** "Scanning [filename] across 9 accessibility domains"
 - **Announce completion:** "Scan complete for [filename]: [N] issues, score [score]/100 ([grade])"
 - **On failure:** "Scan failed for [filename]: [reason]. This file will be marked as not scanned in the report."

@@ -23,6 +23,7 @@ Create and manage `.a11y-epub-config.json` files for ePub accessibility scanning
 ### Create New Config
 
 Ask:
+
 - **Profile:** strict (all rules), moderate (EPUB + WCAG), minimal (EPUB only)
 - **Severity filter:** All, Errors+Warnings, Errors only
 
@@ -100,6 +101,7 @@ jq '.tools.ace = false' .a11y-epub-config.json > tmp.json && mv tmp.json .a11y-e
 ### Validate Config
 
 Check:
+
 - ✅ Valid JSON syntax
 - ✅ version field present
 - ✅ All rule IDs valid (EPUB-*)
@@ -110,6 +112,7 @@ Check:
 ### Explain Config
 
 For each rule:
+
 - **Rule ID:** EPUB-003
 - **Description:** Navigation document required
 - **Standard:** EPUB 3.x specification

@@ -17,12 +17,14 @@
 ### Scanner Detection
 
 How to check if a repository uses the GitHub Accessibility Scanner:
+
 - Grep `.github/workflows/` for `github/accessibility-scanner`
 - Parse workflow YAML for configured URLs, trigger events, and Copilot assignment settings
 
 ### Issue Body Parsing
 
 Scanner-created issues follow a structured format. The skill teaches agents to extract:
+
 - Rule ID and description
 - Affected URL and element selector
 - WCAG criterion reference
@@ -42,12 +44,14 @@ Maps scanner severity levels to the standard agent severity model:
 ### axe-core Rule Correlation
 
 Maps scanner findings to axe-core rule IDs for deduplication. Covers the most common violations:
+
 - `image-alt`, `color-contrast`, `label`, `button-name`, `link-name`
 - `html-has-lang`, `landmark-one-main`, `region`, `heading-order`, `list`
 
 ### Confidence Boosting
 
 Issues found by multiple sources get confidence upgrades:
+
 - Scanner + local axe-core = High confidence
 - Scanner + agent review = High confidence
 - Scanner + axe-core + agent review = Highest confidence
@@ -56,6 +60,7 @@ Issues found by multiple sources get confidence upgrades:
 ### Copilot Fix Tracking
 
 Tracks the lifecycle of Copilot-assigned fixes:
+
 - Issue assigned to Copilot
 - Fix PR created
 - Fix PR merged

@@ -7,6 +7,7 @@
 This guide tracks behavior documented in official VS Code/Copilot sources.
 
 References:
+
 - VS Code release notes: `https://code.visualstudio.com/updates`
 - VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
 - GitHub Copilot docs: `https://docs.github.com/copilot`
@@ -49,11 +50,13 @@ Visual hierarchy showing:
 ## How to Open the Agent Debug Panel
 
 **Method 1: Command Palette**
+
 1. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
 2. Type "Developer: Open Agent Debug Panel"
 3. Press Enter
 
 **Method 2: Chat View**
+
 1. Click the gear icon at the top of the Chat view
 2. Select "View Agent Logs"
 
@@ -69,7 +72,8 @@ When you start a chat session in a web project:
 4. Verify workspace instructions are loaded - web-accessibility-baseline.instructions.md, semantic-html.instructions.md, aria-patterns.instructions.md
 
 **What to look for:**
-```
+
+```text
 ✅ Hook: UserPromptSubmit
    → Action: Inject accessibility-lead delegation
    → Status: Executed
@@ -105,7 +109,8 @@ If you're unable to edit UI files, the debug panel shows why:
 3. Verify if the session marker exists (set by `PostToolUse` after accessibility-lead completes)
 
 **Troubleshooting edit gate issues:**
-```
+
+```text
 ⚠️  Hook: PreToolUse
    → Tool: editFile
    → File: src/components/Button.tsx
@@ -120,7 +125,8 @@ If you're unable to edit UI files, the debug panel shows why:
 The three-hook enforcement flow should appear as:
 
 **Hook 1: UserPromptSubmit** (Proactive detection)
-```
+
+```yaml
 Event: UserPromptSubmit
 Trigger: User sent message "fix the styling"
 Action: Inject accessibility delegation instruction
@@ -129,7 +135,8 @@ Result: Delegation instruction added to prompt
 ```
 
 **Hook 2: PreToolUse** (Edit gate)
-```
+
+```yaml
 Event: PreToolUse
 Tool: editFile
 Target: src/App.jsx
@@ -139,7 +146,8 @@ Message: Please consult @accessibility-lead before editing UI files
 ```
 
 **Hook 3: PostToolUse** (Session marker)
-```
+
+```yaml
 Event: PostToolUse
 Agent: accessibility-lead
 Action: Create session marker
@@ -161,7 +169,7 @@ When accessibility-lead runs, you'll see tool invocations:
 
 During long audits, watch for:
 
-```
+```yaml
 Event: ContextCompaction
 Trigger: Manual (/compact) or Automatic (context limit)
 Before: 45,000 tokens
@@ -174,12 +182,14 @@ Summary: Audit findings preserved, implementation details compacted
 ### Issue: Agents Not Loading
 
 **Symptoms in Debug Panel:**
-```
+
+```text
 ⚠️  Agents loaded: 0
 ⚠️  Instructions loaded: 0
 ```
 
 **Solutions:**
+
 1. Verify `.github/agents/*.agent.md` files exist
 2. Check `.github/copilot-instructions.md` exists
 3. Reload VS Code window
@@ -188,12 +198,14 @@ Summary: Audit findings preserved, implementation details compacted
 ### Issue: Hook Not Firing
 
 **Symptoms in Debug Panel:**
-```
+
+```text
 ✅ Hook: UserPromptSubmit registered
 ⚠️  No execution events
 ```
 
 **Solutions:**
+
 1. Verify hooks are enabled in settings (check for disabled hooks)
 2. Check workspace trust - hooks may be disabled in untrusted workspaces
 3. Update to latest VS Code and Copilot extensions
@@ -201,7 +213,8 @@ Summary: Audit findings preserved, implementation details compacted
 ### Issue: Edit Gate Blocking Legitimate Edits
 
 **Symptoms in Debug Panel:**
-```
+
+```yaml
 Event: PreToolUse
 Decision: deny
 File: src/utils/api.ts  (backend logic, not UI)
@@ -213,12 +226,14 @@ The edit gate uses file extension patterns. If it's blocking non-UI files incorr
 ### Issue: Skills Not Loading
 
 **Symptoms in Debug Panel:**
-```
+
+```text
 ✅ Skills directory exists: .github/skills/
 ⚠️  Skills loaded: 0
 ```
 
 **Solutions:**
+
 1. Verify `.github/skills/**/SKILL.md` files have valid YAML frontmatter
 2. Check `name:` and `description:` fields are present
 3. Ensure no syntax errors in SKILL.md files
@@ -228,7 +243,7 @@ The edit gate uses file extension patterns. If it's blocking non-UI files incorr
 
 The chart view shows event hierarchy. For a typical Accessibility Agents session:
 
-```
+```text
 Session Start
  ├─ UserPromptSubmit Hook
  │   └─ Inject delegation instruction
@@ -257,6 +272,7 @@ Use the debug panel to measure:
 - **Context compaction time** - How long summarization takes
 
 **Performance tips:**
+
 - Long hook execution (> 500ms) may indicate file I/O issues
 - Slow agent loading suggests too many agents or large agent files
 - High tool call latency points to slow file reads or searches

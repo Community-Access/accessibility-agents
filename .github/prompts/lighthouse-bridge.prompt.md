@@ -24,6 +24,7 @@ Integrate Lighthouse CI accessibility audits with agent ecosystem. Parse reports
 ### Step 1: Detect Lighthouse CI Configuration
 
 Check for:
+
 - `.lighthouserc.json` or `.lighthouserc.js`
 - `lighthouse-ci` in package.json scripts
 - `.github/workflows/lighthouse.yml` (GitHub Actions)
@@ -44,6 +45,7 @@ npx lighthouse ${url} --only-categories=accessibility --output json --output-pat
 ### Step 3: Parse Lighthouse Report
 
 Extract from `report.json`:
+
 - **accessibility score** (0-100)
 - **audits.*.score** (0, 0.5, 1 for each rule)
 - **audits.*.title** (rule description)
@@ -65,6 +67,7 @@ const severityMap = {
 ```
 
 Common mappings:
+
 - `button-name` (weight 10) → Critical
 - `color-contrast` (weight 7) → Serious
 - `image-alt` (weight 10) → Critical
@@ -89,6 +92,7 @@ Convert to agent standard format:
 ### Step 6: Deduplicate Against Local Scans
 
 If web-accessibility-wizard already ran axe-core:
+
 - Match by rule ID (`button-name` = `button-name`)
 - Keep axe-core results (more detailed)
 - Use Lighthouse as fallback for rules axe-core missed
@@ -96,6 +100,7 @@ If web-accessibility-wizard already ran axe-core:
 ### Step 7: Track Score Regressions
 
 Compare current Lighthouse score with previous run:
+
 - Score decreased → Flag regression
 - New violations → List new failing audits
 - Fixed violations → Celebrate improvements

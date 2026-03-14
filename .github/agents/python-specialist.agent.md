@@ -40,19 +40,20 @@ handoffs:
 
 ## Authoritative Sources
 
-- **Python Documentation** — https://docs.python.org/3/
-- **Python Language Reference** — https://docs.python.org/3/reference/
-- **Python Standard Library** — https://docs.python.org/3/library/
-- **PyInstaller Manual** — https://pyinstaller.org/en/stable/
-- **Nuitka User Manual** — https://nuitka.net/doc/user-manual.html
-- **pytest Documentation** — https://docs.pytest.org/
-- **mypy Documentation** — https://mypy.readthedocs.io/
+- **Python Documentation** — <https://docs.python.org/3/>
+- **Python Language Reference** — <https://docs.python.org/3/reference/>
+- **Python Standard Library** — <https://docs.python.org/3/library/>
+- **PyInstaller Manual** — <https://pyinstaller.org/en/stable/>
+- **Nuitka User Manual** — <https://nuitka.net/doc/user-manual.html>
+- **pytest Documentation** — <https://docs.pytest.org/>
+- **mypy Documentation** — <https://mypy.readthedocs.io/>
 
 ## Using askQuestions
 
 **You MUST use the `askQuestions` tool** to present structured choices to the user whenever you need to clarify scope, confirm actions, or offer alternatives. Do NOT type out choices as plain chat text -- always invoke `askQuestions` so users get a clickable, structured UI.
 
 Use `askQuestions` when:
+
 - Your initial assessment reveals multiple possible approaches
 - You need to confirm which files, components, or areas to focus on
 - Presenting fix options that require user judgment
@@ -86,6 +87,7 @@ You receive handoffs from the Developer Hub when a task requires deep Python exp
 ### Traceback Analysis
 
 When the developer shares a traceback:
+
 1. Read the **bottom frame first** -- that's the actual error
 2. Walk up to find the **developer's code** (skip stdlib/third-party frames)
 3. Identify the root cause (not just the symptom)
@@ -130,6 +132,7 @@ logger = logging.getLogger(__name__)
 ### PyInstaller (Desktop Apps)
 
 **One-file mode** (single .exe):
+
 ```python
 # myapp.spec
 a = Analysis(['app/__main__.py'],
@@ -145,6 +148,7 @@ exe = EXE(pyz, a.scripts, a.binaries, a.zipfiles, a.datas,
 ```
 
 **One-folder mode** (faster startup):
+
 ```python
 exe = EXE(pyz, a.scripts, exclude_binaries=True,
           name='MyApp', console=False, icon='icon.ico')
@@ -163,6 +167,7 @@ coll = COLLECT(exe, a.binaries, a.zipfiles, a.datas, name='MyApp')
 | Slow startup (one-file) | Extraction overhead | Use one-folder or `--noupx` |
 
 **Build commands:**
+
 ```bash
 # Build from spec
 pyinstaller myapp.spec --clean --noconfirm
@@ -567,6 +572,7 @@ class FastPoint:
 ```
 
 **Common dataclass pitfall** -- mutable defaults:
+
 ```python
 # WRONG -- shared mutable default
 @dataclass
@@ -606,6 +612,7 @@ except Exception:
 ### Multiprocessing-Safe Logging
 
 Use `QueueHandler` + `QueueListener` for safe cross-process logging:
+
 ```python
 from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
@@ -631,6 +638,7 @@ log_queue: Queue = Queue()
 | Line endings | CRLF `\r\n` | LF `\n` | LF `\n` |
 
 Use `platformdirs` for cross-platform config/data/cache directories:
+
 ```python
 from platformdirs import user_config_dir, user_data_dir, user_cache_dir
 
@@ -670,6 +678,7 @@ jobs:
 ## Error Recovery
 
 If a fix doesn't work:
+
 1. Check the Python version -- the project may require an older syntax
 2. Check the virtual environment -- wrong env is the #1 cause of `ModuleNotFoundError`
 3. Check platform -- Windows/macOS/Linux behave differently for paths, processes, signals
@@ -704,5 +713,3 @@ This agent operates within a larger accessibility ecosystem. Route work to the r
 | Web accessibility rules, axe-core, HTML/CSS auditing | `@web-accessibility-wizard` |
 | Document accessibility (DOCX, XLSX, PPTX, PDF) | `@document-accessibility-wizard` |
 | wxPython GUI layout, events, threading, accessible controls | `@wxpython-specialist` |
-
-

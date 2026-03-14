@@ -185,6 +185,7 @@ jobs:
 **Python script:** `.github/scripts/check_source_currency.py`
 
 The script:
+
 - Reads `SOURCE_REGISTRY.json`
 - For each source due for checking (based on `lastVerified` + `checkFrequency`):
   - HTTP GET the URL
@@ -314,7 +315,7 @@ NVDA is primarily written in Python with performance-critical in-process injecti
 
 #### 3.1.2 The Main Loop
 
-```
+```text
 core.main() -> while running:
     1. Pump API handlers (IAccessible, UIA, JAB events)
     2. Pump input handlers (keyboard, mouse, touch, braille)
@@ -329,7 +330,7 @@ core.main() -> while running:
 
 When an accessibility API fires an event, it flows through this chain. Each handler can consume the event (stop propagation) or call `nextHandler()` to pass it along:
 
-```
+```text
 API Handler (IAccessible/UIA/JAB)
   -> eventHandler.executeEvent()
     -> Global Plugin 1 .event_*()
@@ -346,7 +347,7 @@ API Handler (IAccessible/UIA/JAB)
 
 When the user presses a key or performs a gesture, `findScript()` in `scriptHandler.py` searches for a matching script in this order:
 
-```
+```text
 1. gesture.scriptableObject (gesture-specific)
 2. Global Plugins (all running, in order)
 3. App Module (for the focused app)
@@ -383,6 +384,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 ```
 
 **Decorator parameters:**
+
 - `description`: Translatable string shown in Input Gestures dialog
 - `category`: Grouping in Input Gestures dialog
 - `gesture`: Single gesture binding (e.g., `"kb:NVDA+shift+t"`)
@@ -412,6 +414,7 @@ NVDA supports four addon types, each serving a different purpose:
 **Source:** [`globalPluginHandler.py`](https://github.com/nvaccess/nvda/blob/master/source/globalPluginHandler.py)
 
 **Capabilities:**
+
 - Bind scripts (keyboard commands) that work in any application
 - Receive events for all NVDAObjects in the OS via `event_*` methods
 - Override NVDAObject overlay classes via `chooseNVDAObjectOverlayClasses()`
@@ -462,6 +465,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 **Source:** [`appModuleHandler.py`](https://github.com/nvaccess/nvda/blob/master/source/appModuleHandler.py)
 
 **Capabilities:**
+
 - Scripts that only work when the named application has focus
 - Events for objects within that application only
 - `event_appModule_gainFocus` / `event_appModule_loseFocus` for app switching
@@ -527,6 +531,7 @@ def getAppNameFromHost(processId):
 **Base class:** `synthDriverHandler.SynthDriver`
 
 **Key methods to implement:**
+
 - `name`: Internal identifier string
 - `description`: User-visible name
 - `check()`: Class method -- returns True if the synth is available
@@ -592,6 +597,7 @@ class SynthDriver(SynthDriver):
 **Base class:** `braille.BrailleDisplayDriver`
 
 **Key methods to implement:**
+
 - `name`: Internal identifier
 - `description`: User-visible name
 - `check()`: Returns True if the display is available
@@ -611,7 +617,7 @@ The NVDAObject is NVDA's abstract representation of a UI widget. All objects inh
 
 #### Object Hierarchy
 
-```
+```text
 NVDAObject (base)
   -> NVDAObjects.IAccessible.IAccessible (MSAA/IA2 objects)
   -> NVDAObjects.UIA.UIA (UI Automation objects)
@@ -676,12 +682,14 @@ For working with editable text controls (text editors, word processors, terminal
 **Base class:** `textInfos.TextInfo`
 
 **Key concepts:**
+
 - A TextInfo represents a **range** of text (can be collapsed to a point)
 - Created via `nvdaObject.makeTextInfo(position)`
 - Positions: `textInfos.POSITION_CARET`, `POSITION_SELECTION`, `POSITION_FIRST`, `POSITION_LAST`, `POSITION_ALL`
 - Units: `textInfos.UNIT_CHARACTER`, `UNIT_WORD`, `UNIT_LINE`, `UNIT_PARAGRAPH`, `UNIT_STORY`
 
 **Key methods:**
+
 - `move(unit, direction)`: Move the range
 - `expand(unit)`: Expand range to encompass the specified unit
 - `text`: Property returning the text in the range
@@ -702,6 +710,7 @@ Tree interceptors intercept events and scripts for an entire hierarchy of NVDAOb
 **Virtual buffers:** `virtualBuffers.VirtualBuffer` (uses in-process C++ code for performance)
 
 Key concepts:
+
 - Created when `treeInterceptorClass` property is set on an NVDAObject
 - Has `passThrough` mode (focus mode) vs browse mode
 - Provides single-letter navigation (h for headings, k for links, etc.)
@@ -715,7 +724,7 @@ Key concepts:
 
 Based on the official [NVDA Addon Template](https://github.com/nvaccess/addonTemplate):
 
-```
+```text
 myAddon/
   addon/
     globalPlugins/          # Global plugin modules
@@ -763,7 +772,7 @@ minimumNVDAVersion = 2025.1.0
 lastTestedNVDAVersion = 2026.1.0
 ```
 
-**Source:** [addonHandler/__init__.py](https://github.com/nvaccess/nvda/blob/master/source/addonHandler/__init__.py), [addonTemplate buildVars.py](https://github.com/nvaccess/addonTemplate/blob/master/buildVars.py)
+**Source:** [addonHandler/**init**.py](https://github.com/nvaccess/nvda/blob/master/source/addonHandler/__init__.py), [addonTemplate buildVars.py](https://github.com/nvaccess/addonTemplate/blob/master/buildVars.py)
 
 #### installTasks.py / uninstallTasks.py
 
@@ -804,6 +813,7 @@ scons -c
 ```
 
 The SCons build system:
+
 1. Reads `buildVars.py` for metadata
 2. Generates `manifest.ini` from build variables
 3. Compiles `.po` files to `.mo` for translations
@@ -977,6 +987,7 @@ decision = myDecider.decide(arg1=value1)  # True if any handler returned True
 ```
 
 **Built-in extension points:**
+
 - `addonHandler.isCLIParamKnown` - Let addons handle custom command-line args
 - `appModuleHandler.post_appSwitch` - Notified when the foreground app changes
 - Various speech/braille extension points
@@ -999,6 +1010,7 @@ message = _("Hello, this is a translatable string")
 ```
 
 Translation workflow:
+
 1. Mark all user-facing strings with `_()`
 2. Run `scons pot` to generate `.pot` template
 3. Translators create `.po` files in `addon/locale/{lang}/LC_MESSAGES/`
@@ -1176,7 +1188,7 @@ threading.Thread(target=_fetch_data, daemon=True).start()
 | NVDA-013 | Serious | **Incompatible API version range** -- `lastTestedNVDAVersion` is more than 2 major releases behind current NVDA. Addon will be marked incompatible in the Add-on Store. ([addonHandler/addonVersionCheck.py](https://github.com/nvaccess/nvda/blob/master/source/addonHandler/addonVersionCheck.py)) |
 | NVDA-014 | Minor | **Missing SHA256 for store submission** -- Addon release does not include SHA256 hash. Required for Add-on Store integrity verification. ([jsonMetadata.md](https://github.com/nvaccess/addon-datastore/blob/master/docs/submitters/jsonMetadata.md)) |
 | NVDA-015 | Moderate | **Not using `config.conf.spec`** -- Addon stores persistent settings by writing files directly instead of using NVDA's configuration system. Bypasses profile support and validation. ([config/](https://github.com/nvaccess/nvda/tree/master/source/config)) |
-| NVDA-016 | Serious | **Secure mode vulnerability** -- Addon accesses file system, network, or system commands without checking `NVDAState.shouldWriteToDisk()`. Could be exploited on the lock screen. ([addonHandler/__init__.py](https://github.com/nvaccess/nvda/blob/master/source/addonHandler/__init__.py)) |
+| NVDA-016 | Serious | **Secure mode vulnerability** -- Addon accesses file system, network, or system commands without checking `NVDAState.shouldWriteToDisk()`. Could be exploited on the lock screen. ([addonHandler/**init**.py](https://github.com/nvaccess/nvda/blob/master/source/addonHandler/__init__.py)) |
 
 ---
 
@@ -1185,6 +1197,7 @@ threading.Thread(target=_fetch_data, daemon=True).start()
 Before submitting an addon, verify:
 
 #### Code Quality
+
 - [ ] All event handlers call `nextHandler()` unless intentionally consuming the event
 - [ ] No blocking calls on the main thread (network, file I/O, `time.sleep()`)
 - [ ] `terminate()` cleans up all timers, threads, callbacks, and registered settings panels
@@ -1194,6 +1207,7 @@ Before submitting an addon, verify:
 - [ ] No bare `except:` clauses -- use specific exceptions and log errors
 
 #### Manifest and Packaging
+
 - [ ] `manifest.ini` has correct `name`, `summary`, `version`, `minimumNVDAVersion`, `lastTestedNVDAVersion`
 - [ ] Version numbers follow semantic versioning
 - [ ] `lastTestedNVDAVersion` is within 2 major releases of current NVDA
@@ -1201,6 +1215,7 @@ Before submitting an addon, verify:
 - [ ] SHA256 hash matches the distributed `.nvda-addon` file
 
 #### User Experience
+
 - [ ] All scripts discoverable in Input Gestures dialog (have descriptions)
 - [ ] Default gestures do not conflict with NVDA core commands
 - [ ] Settings panel (if any) properly registered and unregistered
@@ -1208,12 +1223,14 @@ Before submitting an addon, verify:
 - [ ] Documentation exists in `addon/doc/en/readme.md`
 
 #### Security
+
 - [ ] No file system writes without `NVDAState.shouldWriteToDisk()` check
 - [ ] No unbounded network requests (use timeouts and error handling)
 - [ ] No execution of external commands without proper sanitization
 - [ ] CodeQL scan passes without critical findings
 
 #### Store Submission
+
 - [ ] `.nvda-addon` hosted at a permanent URL (GitHub Releases)
 - [ ] JSON metadata matches manifest values exactly
 - [ ] VirusTotal scan clean
@@ -1223,7 +1240,7 @@ Before submitting an addon, verify:
 
 ### 3.16 Example Prompts
 
-```
+```python
 "Scaffold a new globalPlugin that announces the current Wi-Fi network name"
 "Debug why my appModule for firefox.exe isn't loading"
 "Add a settings panel to my addon with a checkbox and a slider"
@@ -1255,7 +1272,7 @@ Every recommendation from this agent is grounded in these official sources:
 | NVDA User Guide | [nvaccess.org userGuide](https://www.nvaccess.org/files/nvda/documentation/userGuide.html) | End-user documentation |
 | Addon Store Design Overview | [designOverview.md](https://github.com/nvaccess/addon-datastore/blob/master/docs/design/designOverview.md) | Store architecture and API endpoints |
 | NVDA Add-on Internals | [DevGuide wiki](https://github.com/nvdaaddons/devguide/wiki) | Deep dives into specific addon mechanics |
-| addonHandler source | [addonHandler/__init__.py](https://github.com/nvaccess/nvda/blob/master/source/addonHandler/__init__.py) | Addon lifecycle, state management |
+| addonHandler source | [addonHandler/**init**.py](https://github.com/nvaccess/nvda/blob/master/source/addonHandler/__init__.py) | Addon lifecycle, state management |
 | globalPluginHandler source | [globalPluginHandler.py](https://github.com/nvaccess/nvda/blob/master/source/globalPluginHandler.py) | Global plugin discovery and loading |
 | appModuleHandler source | [appModuleHandler.py](https://github.com/nvaccess/nvda/blob/master/source/appModuleHandler.py) | App module lifecycle |
 | scriptHandler source | [scriptHandler.py](https://github.com/nvaccess/nvda/blob/master/source/scriptHandler.py) | Script resolution, @script decorator |
@@ -1290,23 +1307,27 @@ Every recommendation from this agent is grounded in these official sources:
 ## Implementation Priority
 
 ### Phase 1: Foundation (Week 1)
+
 1. Create `CITATION_POLICY.md`
 2. Create `SOURCE_REGISTRY.json` (initial set of 20-30 key sources)
 3. Create the NVDA Addon Specialist agent on all 3 platforms + docs
 4. Update all manifests and counts
 
 ### Phase 2: Citation Rollout (Weeks 2-3)
+
 5. Update all Copilot agents with citation behavioral rule + source registry
 6. Update all Claude Code agents
 7. Update all Gemini skills
 8. Update docs pages
 
 ### Phase 3: Currency Automation (Week 4)
+
 9. Create `check_source_currency.py` GitHub Action
 10. Create PR template with citation checklist
 11. Add MCP live-fetch instructions to agents in supported environments
 
 ### Phase 4: Ongoing
+
 12. Weekly source currency checks run automatically
 13. Annual deep review of all agents against current specs
 14. Community feedback on citation quality

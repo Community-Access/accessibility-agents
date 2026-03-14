@@ -46,4 +46,3 @@ ${input:details:Optional: sprint/milestone name, date range, repo, or 'org:orgna
    - Any recurring blockers to address?
 
 After the review: _"Want to plan the next sprint? Or dive into any specific area?"_
-

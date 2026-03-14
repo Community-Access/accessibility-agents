@@ -27,6 +27,7 @@ Wait for all tasks to complete, then merge results.
 Each task runs in its own context window, scanning independently. The orchestrator collects results and merges them.
 
 **Limitations:**
+
 - Tasks share the same filesystem - no isolation between tasks
 - Each task has its own context window but sees the same working directory
 - Progress reporting happens only when tasks complete
@@ -42,6 +43,7 @@ agents: ['word-accessibility', 'excel-accessibility', 'powerpoint-accessibility'
 The orchestrator (document-accessibility-wizard) delegates to sub-agents sequentially or by type group. True background execution is not yet supported - sub-agents run within the main conversation context.
 
 **Practical pattern for large scans:**
+
 1. Use `document-inventory` to build the file list
 2. Group files by type
 3. Process each type group as a batch
@@ -179,5 +181,3 @@ For initial assessment of a large library:
 2. Scan 10-20 representative files
 3. Extrapolate issue rates to estimate total remediation effort
 4. Use the sample results to prioritize which folders to scan first
-
-

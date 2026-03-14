@@ -40,17 +40,18 @@ handoffs:
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **axe-core Rules** — https://github.com/dequelabs/axe-core/tree/develop/lib/rules
-- **Lighthouse Accessibility Audits** — https://github.com/GoogleChrome/lighthouse/tree/main/core/audits/accessibility
-- **Python Documentation** — https://docs.python.org/3/
-- **pytest Documentation** — https://docs.pytest.org/
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **axe-core Rules** — <https://github.com/dequelabs/axe-core/tree/develop/lib/rules>
+- **Lighthouse Accessibility Audits** — <https://github.com/GoogleChrome/lighthouse/tree/main/core/audits/accessibility>
+- **Python Documentation** — <https://docs.python.org/3/>
+- **pytest Documentation** — <https://docs.pytest.org/>
 
 ## Using askQuestions
 
 **You MUST use the `askQuestions` tool** to present structured choices to the user whenever you need to clarify scope, confirm actions, or offer alternatives. Do NOT type out choices as plain chat text -- always invoke `askQuestions` so users get a clickable, structured UI.
 
 Use `askQuestions` when:
+
 - Your initial assessment reveals multiple possible approaches
 - You need to confirm which files, components, or areas to focus on
 - Presenting fix options that require user judgment
@@ -473,6 +474,7 @@ def generate_sarif(findings: list[Finding], tool_name: str, tool_version: str) -
 ### Integrating with Web Accessibility Audit
 
 Tools you build should produce findings compatible with the web audit ecosystem:
+
 - Use `@web-accessibility-wizard` rule IDs and severity levels for web-related checks
 - Export in formats consumable by `@cross-page-analyzer` for cross-page pattern detection
 - Align severity scoring with the `web-severity-scoring` skill formulas
@@ -480,6 +482,7 @@ Tools you build should produce findings compatible with the web audit ecosystem:
 ### Integrating with Document Accessibility Audit
 
 Tools you build should be compatible with the document audit ecosystem:
+
 - Use `@document-accessibility-wizard` rule IDs (DOCX-*, XLSX-*, PPTX-*, PDFUA.*, PDFBP.*)
 - Export in formats consumable by `@cross-document-analyzer`
 - Align severity scoring with the `report-generation` skill formulas
@@ -487,6 +490,7 @@ Tools you build should be compatible with the document audit ecosystem:
 ### Integrating with Desktop Accessibility
 
 For desktop app scanning tools:
+
 - Define DESK-* rule IDs for desktop-specific checks
 - Map every rule to WCAG criteria
 - Produce findings consumable by `@desktop-a11y-specialist` for remediation
@@ -505,5 +509,3 @@ For desktop app scanning tools:
 8. **Always produce multiple output formats.** At minimum: Markdown report + CSV + SARIF.
 9. **Include auto-fix classification.** Every finding should indicate whether it can be auto-fixed.
 10. **Test the tools you build.** Include pytest tests for rule engines and parsers.
-
-

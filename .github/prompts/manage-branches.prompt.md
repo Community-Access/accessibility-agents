@@ -14,23 +14,28 @@ ${input:action:Optional: 'list', 'stale', 'compare branch-a branch-b', 'cleanup'
 ## Capabilities
 
 ### List Branches
+
 - Fetch all branches with last commit date and author
 - Sort by most recently active
 - Show ahead/behind status relative to the default branch
 - Flag: stale (no activity 30+ days), merged (can be deleted), protected
 
 ### Detect Stale Branches
+
 - Identify branches with no commits in 30+ days (configurable)
 - Show last commit author and date
 - Distinguish between: merged (safe to delete), unmerged (needs review), protected (can't delete)
 
 ### Compare Branches
+
 - Show commits ahead/behind between two branches
 - List unique commits on each side
 - Flag potential merge conflicts
 
 ### Delete Merged Branches
+
 **Safety-first approach:**
+
 1. List all branches that have been merged into the default branch
 2. Exclude protected branches and the default branch
 3. Show the full list with last activity date
@@ -38,6 +43,7 @@ ${input:action:Optional: 'list', 'stale', 'compare branch-a branch-b', 'cleanup'
 5. Delete one at a time, confirming each (or batch with single confirmation if user requests)
 
 ### Branch Protection Rules
+
 - Show protection rules for the default branch and any other protected branches
 - Note: required reviews, status checks, enforcement level
 
@@ -61,4 +67,3 @@ Protected (2):
 ```
 
 After listing: _"Want to clean up the merged stale branches? Or compare two branches?"_
-

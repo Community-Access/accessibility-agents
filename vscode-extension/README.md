@@ -237,5 +237,3 @@ When multiple agents match, their expertise is combined into a single response.
 ## License
 
 MIT
-
-

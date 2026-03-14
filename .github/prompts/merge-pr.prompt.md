@@ -22,6 +22,7 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
    - Is the PR a draft? (cannot merge drafts)
    - Any branch protection rules that block merge?
 4. **If not ready**, explain what's blocking:
+
    ```text
    PR #{number} is not ready to merge:
    - Missing required review from @alice
@@ -30,6 +31,7 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 
    Want me to help resolve any of these?
    ```
+
 5. **If ready**, present merge options via #tool:ask_questions:
    - **Squash and merge** (recommended -- clean history, single commit)
    - **Create a merge commit** (preserves all commits)
@@ -51,4 +53,3 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 11. Confirm with link to the merged PR.
 
 **Safety:** Always show what will happen and get explicit confirmation. Never auto-merge.
-

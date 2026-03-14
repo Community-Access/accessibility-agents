@@ -25,6 +25,7 @@ Interactive guided document accessibility audit. Step-by-step wizard for auditin
 ### Phase 0: Scan Configuration
 
 Check for scan config files:
+
 - `.a11y-office-config.json` (Word, Excel, PowerPoint)
 - `.a11y-pdf-config.json` (PDF)
 - `.a11y-epub-config.json` (ePub)
@@ -34,16 +35,20 @@ If missing, offer to create from templates (strict, moderate, minimal).
 ### Phase 1: File Discovery
 
 **Single file:**
+
 - Ask: `${input:filePath}`
 
 **Multiple files:**
+
 - Ask for comma-separated list or pattern
 
 **Folder scan:**
+
 - Delegate to `document-inventory` agent
 - Get full recursive inventory
 
 **Delta scan:**
+
 - Use `git diff` to find changed documents
 - Filter by `.docx`, `.xlsx`, `.pptx`, `.pdf`, `.epub`
 
@@ -64,6 +69,7 @@ Collect results as structured JSON.
 ### Phase 4: Cross-Document Analysis
 
 If multiple files, delegate to `cross-document-analyzer`:
+
 - Identify systemic vs isolated issues
 - Compute overall severity score
 - Generate comparison scorecard

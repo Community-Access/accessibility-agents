@@ -22,6 +22,7 @@ Interactive wizard for creating GitHub issue templates, PR templates, and discus
 ### Step 1: Ask Template Purpose
 
 Questions:
+
 - What type of issue/PR is this template for? (bug, feature, documentation, security, accessibility)
 - Who will use this template? (users, contributors, maintainers)
 - What information do you need to collect?
@@ -29,6 +30,7 @@ Questions:
 ### Step 2: Build Template Interactively
 
 For each field:
+
 - Label (user-facing name)
 - Description (help text)
 - Type (input, textarea, dropdown, checkboxes)

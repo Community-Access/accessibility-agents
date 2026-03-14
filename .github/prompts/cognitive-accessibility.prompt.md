@@ -30,25 +30,31 @@ Ask the user:
 ### Step 2: Check WCAG 2.2 Cognitive Criteria
 
 **3.3.7 Redundant Entry (A)**
+
 - Don't make users re-enter information in same session
 - Auto-fill from previous steps
 - Exceptions: security, confirmation, essential re-entry
 
 **3.3.8 Accessible Authentication (Minimum) (AA)**
+
 - Don't require cognitive function tests (memorization, puzzle solving, calculation)
 - Allow password paste, password managers, email/SMS links
 - Exception: Object recognition (pick the house) if alternative exists
 
 **3.3.9 Accessible Authentication (Enhanced) (AAA)**
+
 - Authentication without any cognitive function test
 
 **2.4.11 Focus Not Obscured (Minimum) (AA)**
+
 - Focus indicator not completely hidden by content
 
 **2.4.12 Focus Not Obscured (Enhanced) (AAA)**
+
 - Focus indicator not hidden at all
 
 **2.4.13 Focus Appearance (AAA)**
+
 - Focus indicator meets size and contrast requirements
 
 ### Step 3: Plain Language Analysis
@@ -77,6 +83,7 @@ Check content for:
 ### Step 6: Provide Remediation
 
 For each issue:
+
 - WCAG 2.2 criterion reference
 - COGA Design Pattern reference (if applicable)
 - Rewrite suggestions for plain language

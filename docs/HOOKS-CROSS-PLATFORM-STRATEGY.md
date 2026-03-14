@@ -13,6 +13,7 @@
 This document presents a comprehensive strategy for implementing lifecycle hooks across multiple agent platforms (GitHub Copilot, Claude Code, Gemini) and operating systems (Windows, macOS, Linux). Based on authoritative documentation from VS Code 1.110 (February 2026) and Claude Code platform references, this plan addresses specific compatibility challenges that caused previous implementation failures.
 
 **Key Findings:**
+
 - VS Code 1.110 (Feb 2026) has **8 hook events** with **official hooks support** (Preview)
 - Claude Code has **18 hook events** with mature hook system
 - **Critical difference:** VS Code uses `Stop` event; Claude Code uses `SessionEnd` (no direct equivalent in VS Code)
@@ -51,11 +52,13 @@ The following table compares lifecycle hook event names across VS Code 1.110, Cl
 **Cross-platform compatible events (5 confirmed):** SessionStart, BeforeAgent/UserPromptSubmit, BeforeTool/PreToolUse, AfterTool/PostToolUse, SessionEnd/Stop
 
 **Gemini event name mapping for this extension:**
+
 - `BeforeAgent` (Gemini) → replaces `UserPromptSubmit` (Claude/VS Code)
 - `BeforeTool` (Gemini) → replaces `PreToolUse` (Claude/VS Code)
 - `AfterTool` (Gemini) → replaces `PostToolUse` (Claude/VS Code)
 
 **Platform-specific events:**
+
 - VS Code only: `Stop`
 - Claude Code only: `SessionEnd`, `CompactComplete`, `TeammateIdle`, `TaskCompleted` + 8 others
 - Gemini only: `BeforeModel`, `AfterModel`, `AfterAgent`, `BeforeToolSelection`, `Notification`
@@ -85,16 +88,19 @@ The following table compares lifecycle hook event names across VS Code 1.110, Cl
 ### Issue 1: Event Name Mismatch - Stop vs SessionEnd
 
 **Problem:**
+
 - VS Code uses `Stop` hook event
 - Claude Code uses `SessionEnd` hook event
 - No direct mapping between these events
 
 **Impact:**
+
 - Hooks written for `SessionEnd` will not fire in VS Code
 - Hooks written for `Stop` will not fire in Claude Code
 
 **Solution:**
 Define hooks for **both** events with identical logic:
+
 ```json
 {
   "hooks": {
@@ -117,6 +123,7 @@ Define hooks for **both** events with identical logic:
 ### Issue 2: Configuration File Format Differences
 
 **VS Code 1.110 Format (`.github/hooks/PreToolUse.json`):**
+
 ```json
 {
   "hooks": {
@@ -133,6 +140,7 @@ Define hooks for **both** events with identical logic:
 ```
 
 **Claude Code Format (`~/.claude/settings.json`):**
+
 ```json
 {
   "hooks": {
@@ -151,12 +159,14 @@ Define hooks for **both** events with identical logic:
 ```
 
 **Key Differences:**
+
 1. **File structure:** VS Code allows separate `.json` files per hook event; Claude Code uses centralized `settings.json`
 2. **Matcher field:** Claude Code supports `"matcher": "Edit|Write"` to filter by tool name; **VS Code ignores matchers** (documented in FAQ)
 3. **Environment variables:** Claude Code `${CLAUDE_PLUGIN_ROOT}`; VS Code has no equivalent
 4. **OS commands:** VS Code uses `windows`, `osx`, `linux` properties; Claude Code uses `powershell`, `bash` properties
 
 **Solution:**
+
 - Use **consolidated format** that VS Code can read
 - Place hooks in `.github/hooks/` for project-level (committed)
 - Place hooks in `~/.claude/settings.json` for user-level (personal)
@@ -165,6 +175,7 @@ Define hooks for **both** events with identical logic:
 ### Issue 3: Tool Input Property Naming
 
 **Problem (documented in VS Code 1.110 FAQ):**
+
 - Claude Code uses `snake_case` property names: `tool_input.file_path`
 - VS Code uses `camelCase` property names: `tool_input.filePath`
 - Claude Code tool names: `Write`, `Edit`
@@ -174,6 +185,7 @@ Define hooks for **both** events with identical logic:
 Hook scripts that parse tool input will break when used on the other platform.
 
 **Example - Claude Code Hook:**
+
 ```bash
 #!/bin/bash
 INPUT=$(cat)
@@ -181,6 +193,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path')  # snake_case
 ```
 
 **Example - VS Code Hook:**
+
 ```bash
 #!/bin/bash
 INPUT=$(cat)
@@ -189,6 +202,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.filePath')  # camelCase
 
 **Solution:**
 Hook scripts must handle **both** naming conventions:
+
 ```bash
 #!/bin/bash
 INPUT=$(cat)
@@ -199,6 +213,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.filePath // .tool_input.file_path
 ### Issue 4: Shell Script Portability (Windows vs macOS/Linux)
 
 **Problem:**
+
 - Bash scripts (`.sh`) do not run natively on Windows (requires Git Bash, WSL, or Cygwin)
 - PowerShell scripts (`.ps1`) do not run natively on macOS/Linux
 - Current Claude Code hooks use bash exclusively (lines 430-680 of install.sh)
@@ -208,6 +223,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.filePath // .tool_input.file_path
 Users on Windows cannot use Claude Code hooks without installing Git Bash or WSL.
 
 **Solution - OS-Specific Commands:**
+
 ```json
 {
   "hooks": {
@@ -223,6 +239,7 @@ Users on Windows cannot use Claude Code hooks without installing Git Bash or WSL
 ```
 
 **Solution - Python for Maximum Portability:**
+
 ```json
 {
   "hooks": {
@@ -241,6 +258,7 @@ Python scripts run identically on Windows, macOS, and Linux without modification
 ### Issue 5: Blocking Capability Differences
 
 **VS Code 1.110 PreToolUse:**
+
 ```json
 {
   "hookSpecificOutput": {
@@ -252,6 +270,7 @@ Python scripts run identically on Windows, macOS, and Linux without modification
 ```
 
 **Claude Code PreToolUse:**
+
 ```json
 {
   "hookSpecificOutput": {
@@ -326,6 +345,7 @@ Python scripts run identically on Windows, macOS, and Linux without modification
 ```
 
 **Key Design Decisions:**
+
 1. ✅ Use Python scripts for maximum portability
 2. ✅ Use single `command` property (no OS-specific overrides needed with Python)
 3. ✅ Define both `Stop` and `SessionEnd` hooks pointing to same script
@@ -430,6 +450,7 @@ if __name__ == "__main__":
 ```
 
 **Design Patterns:**
+
 1. ✅ Read JSON from stdin
 2. ✅ Handle both `camelCase` (VS Code) and `snake_case` (Claude Code) property names
 3. ✅ Use `Path` for cross-platform file operations
@@ -440,6 +461,7 @@ if __name__ == "__main__":
 ### Layer 3: Hook Installation
 
 **Installer must:**
+
 1. Detect platform (VS Code vs Claude Code)
 2. Copy hook configuration to appropriate location
 3. Copy Python hook scripts to `.github/hooks/scripts/`
@@ -447,6 +469,7 @@ if __name__ == "__main__":
 5. Set execute permissions on Unix systems
 
 **VS Code Installation:**
+
 ```bash
 # Copy hook config to workspace
 cp templates/hooks-consolidated.json .github/hooks/hooks-consolidated.json
@@ -462,6 +485,7 @@ fi
 ```
 
 **Claude Code Installation:**
+
 ```bash
 # Copy hook config to Claude Code settings
 CLAUDE_HOOKS_CONFIG="$HOME/.claude/settings.json"
@@ -511,6 +535,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 ### Phase 1: Create Portable Hook Scripts (2 hours)
 
 **Deliverables:**
+
 - `session-start.py` - Session initialization
 - `detect-web-project.py` - Proactive web project detection
 - `enforce-edit-gate.py` - Block UI edits until review
@@ -518,6 +543,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 - `session-end.py` - Session cleanup
 
 **Testing:**
+
 - Run each script standalone with sample JSON input
 - Verify output format matches VS Code/Claude Code expectations
 - Test on Windows (PowerShell), macOS (Terminal), Linux (Bash)
@@ -525,17 +551,20 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 ### Phase 2: Create Hook Configuration Templates (1 hour)
 
 **Deliverables:**
+
 - `templates/hooks-consolidated.json` - VS Code format
 - `templates/hooks-claude.json` - Claude Code format (with matchers)
 - `templates/hooks-scripts/` - Directory with Python scripts
 
 **Testing:**
+
 - Validate JSON syntax
 - Check hook event names match platform requirements
 
 ### Phase 3: Update Installers (2 hours)
 
 **Deliverables:**
+
 - Update `install.sh` (lines 430-680) to use Python scripts
 - Update `install.ps1` (lines 161-254) to use Python scripts
 - Add Python dependency check
@@ -543,6 +572,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 - Add Gemini CLI detection and conditional install
 
 **Testing:**
+
 - Test install.sh on macOS and Linux
 - Test install.ps1 on Windows (PowerShell 5.1 and 7.x)
 - Verify hooks work after installation
@@ -550,6 +580,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 ### Phase 4: Platform-Specific Testing (4 hours)
 
 **Test Matrix:**
+
 | Platform | OS | Hook Events Tested | Expected Result |
 |----------|----|--------------------|-----------------|
 | VS Code 1.110 | Windows | SessionStart, PreToolUse, Stop | All hooks fire correctly |
@@ -562,6 +593,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 | Gemini CLI | macOS | TBD | Determine hook support |
 
 **Test Procedure:**
+
 1. Install hooks using installer
 2. Start agent session
 3. Trigger each hook event
@@ -571,6 +603,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 ### Phase 5: Documentation Updates (1 hour)
 
 **Deliverables:**
+
 - Update `docs/hooks-guide.md` with cross-platform instructions
 - Update `README.md` with hook feature description
 - Update `prd.md` Phase 4 section to mark completion
@@ -655,6 +688,7 @@ def test_allow_ui_file_with_review():
 ### Integration Tests
 
 **Test 1: VS Code Windows**
+
 ```powershell
 # Install hooks
 .\install.ps1 --project
@@ -668,6 +702,7 @@ Test-Path .github\hooks\scripts\enforce-edit-gate.py
 ```
 
 **Test 2: Claude Code macOS**
+
 ```bash
 # Install hooks
 bash install.sh --global
@@ -718,6 +753,7 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 **Probability:** Medium  
 **Impact:** High (hooks completely broken)  
 **Mitigation:**
+
 - Installer checks for Python 3.x before enabling hooks
 - Provide clear error message with installation instructions
 - Fallback to always-on instructions if Python unavailable
@@ -728,6 +764,7 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 **Probability:** Medium  
 **Impact:** Medium (hooks break after VS Code update)  
 **Mitigation:**
+
 - Monitor VS Code release notes for hook API changes
 - Subscribe to VS Code Insiders for early warning
 - Add version detection to installer
@@ -744,6 +781,7 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 **Probability:** Medium  
 **Impact:** Low (individual hook failures, not systemic)  
 **Mitigation:**
+
 - Comprehensive unit tests for all hook scripts
 - Integration tests on all platforms
 - Clear error messages in hook output
@@ -790,17 +828,17 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 ### Authoritative Sources
 
 1. **VS Code 1.110 Release Notes** (Feb 2026)  
-   URL: https://code.visualstudio.com/updates/v1_110  
+   URL: <https://code.visualstudio.com/updates/v1_110>  
    Date Accessed: March 5, 2026  
    Key Sections: Agent hooks, hook lifecycle events, hook configuration format
 
 2. **VS Code Hooks Documentation** (Preview)  
-   URL: https://code.visualstudio.com/docs/copilot/customization/hooks  
+   URL: <https://code.visualstudio.com/docs/copilot/customization/hooks>  
    Date Accessed: March 5, 2026  
    Key Sections: Hook events, input/output format, PreToolUse hook, OS-specific commands
 
 3. **Claude Code Hooks Documentation**  
-   URL: https://code.claude.com/docs/en/hooks  
+   URL: <https://code.claude.com/docs/en/hooks>  
    Date Retrieved: February 2026 (via Context7)  
    Key Sections: 18 hook events, handler types, configuration locations
 

@@ -21,6 +21,7 @@ ${input:pr:Required: PR number or owner/repo#number}
 3. Run the self-review checklist:
 
 ### Description Quality
+
 - [ ] PR title is clear and descriptive (not "fix bug" or "update")
 - [ ] Description explains **what** changed and **why**
 - [ ] Linked issues are referenced (`Fixes #N` or `Closes #N`)
@@ -28,11 +29,13 @@ ${input:pr:Required: PR number or owner/repo#number}
 - [ ] Screenshots included for UI changes (if applicable)
 
 ### CI Status
+
 - [ ] All check runs passing
 - [ ] No merge conflicts with the base branch
 - [ ] Branch is up to date with base (or rebased recently)
 
 ### Code Quality
+
 - [ ] No TODO/FIXME/HACK comments left in the diff
 - [ ] No console.log/print/debug statements left
 - [ ] No commented-out code
@@ -40,6 +43,7 @@ ${input:pr:Required: PR number or owner/repo#number}
 - [ ] Test coverage for new code
 
 ### Reviewer Readiness
+
 - [ ] Reviewers assigned (suggest from preferences if not)
 - [ ] PR is not in draft mode (unless intentional)
 - [ ] Labels are set appropriately
@@ -51,4 +55,3 @@ ${input:pr:Required: PR number or owner/repo#number}
    - Who reviewed similar PRs recently
    - Team member expertise areas from preferences
 6. Summarize: _"Your PR scores {N}/15 on the self-review checklist. {action items}. Ready to request review?"_
-

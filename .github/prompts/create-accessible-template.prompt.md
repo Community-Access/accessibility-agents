@@ -29,6 +29,7 @@ Use the **document-accessibility-wizard** agent to:
 3. For each template type, provide step-by-step creation instructions covering:
 
 ### Word Template Checklist
+
 - Document title set in File > Properties
 - Language set (File > Options > Language)
 - Built-in heading styles (Heading 1, 2, 3) used - never manual formatting
@@ -40,6 +41,7 @@ Use the **document-accessibility-wizard** agent to:
 - No content that relies on color alone
 
 ### Excel Template Checklist
+
 - Descriptive sheet tab names (never "Sheet1")
 - Data formatted as Tables (Insert > Table) with headers
 - No merged cells in data regions
@@ -49,6 +51,7 @@ Use the **document-accessibility-wizard** agent to:
 - No blank rows/columns breaking data regions
 
 ### PowerPoint Template Checklist
+
 - Every slide layout has a title placeholder
 - Reading order set correctly on all slide masters
 - Alt text on all image placeholders in masters
@@ -63,8 +66,7 @@ Use the **document-accessibility-wizard** agent to:
 ## Handoff Transparency
 
 Announce template creation progress:
+
 - **Start:** "Creating accessible document template with [format]-specific guidance..."
 - **Completion:** "Template guidance generated. Config file written to [path]."
 - **On failure:** "Template generation failed: [reason]."
-
-

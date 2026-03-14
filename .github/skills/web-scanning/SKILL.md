@@ -89,6 +89,7 @@ curl -s <BASE_URL>/sitemap.xml | grep -oP '<loc>\K[^<]+' | head -50
 ### Link-based Crawling
 
 When crawling from a start URL:
+
 - Follow only same-domain links
 - Skip anchor links (#), mailto:, tel:, javascript: links
 - Skip file downloads (.pdf, .zip, .doc, etc.)

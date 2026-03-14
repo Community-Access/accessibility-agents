@@ -99,11 +99,13 @@ These rules apply automatically to every HTML and component file. They represent
 ## Motion and Animation
 
 - Wrap all transitions, animations, and auto-playing motion in a `prefers-reduced-motion` media query:
+
   ```css
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
   ```
+
 - Auto-playing carousels and animations must provide a visible pause control.
 - No content may flash more than 3 times per second (WCAG 2.3.1, Level A).
 

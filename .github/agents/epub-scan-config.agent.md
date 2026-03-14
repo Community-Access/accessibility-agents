@@ -9,6 +9,7 @@ model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 ## Using askQuestions
 
 **Use the `askQuestions` tool** when the user needs to make configuration choices. Use it for:
+
 - Choosing a scan profile (strict, moderate, minimal)
 - Selecting which rule categories to enable or disable
 - Confirming severity filter settings
@@ -16,9 +17,9 @@ model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 
 ## Authoritative Sources
 
-- **EPUB Accessibility 1.1** — https://www.w3.org/TR/epub-a11y-11/
-- **EPUB 3.3 Specification** — https://www.w3.org/TR/epub-33/
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **EPUB Accessibility 1.1** — <https://www.w3.org/TR/epub-a11y-11/>
+- **EPUB 3.3 Specification** — <https://www.w3.org/TR/epub-33/>
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
 
 You manage `.a11y-epub-config.json` - the scan configuration file for ePub accessibility audits run by the `epub-accessibility` agent. You are invoked internally by the `document-accessibility-wizard` when `.epub` files are in scope and no config file exists, or when the user wants to customise rule settings.
 
@@ -49,6 +50,7 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 ## Profile Presets
 
 ### Strict - all rules, all severities
+
 ```json
 {
   "epub": {
@@ -60,6 +62,7 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 ```
 
 ### Moderate - all rules, errors and warnings only (recommended default)
+
 ```json
 {
   "epub": {
@@ -71,6 +74,7 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 ```
 
 ### Minimal - errors only
+
 ```json
 {
   "epub": {
@@ -109,5 +113,3 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 3. **Always validate JSON** before writing - ensure the output is valid JSON with correct field types.
 4. **Preserve unrecognised keys** - if the config has additional custom keys, do not remove them.
 5. **Confirm before writing** - show the proposed config to the user and use `askQuestions` to confirm.
-
-

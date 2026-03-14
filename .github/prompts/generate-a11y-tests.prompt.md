@@ -16,7 +16,7 @@ Read an existing accessibility audit report and generate a Playwright + @axe-cor
 
 1. Use askQuestions to ask the user:
    - "Where is your audit report?" — Options: WEB-ACCESSIBILITY-AUDIT.md (default), custom path
-   - "What is the base URL for tests?" — e.g., http://localhost:3000
+   - "What is the base URL for tests?" — e.g., <http://localhost:3000>
    - "Where should test files be saved?" — Options: tests/a11y/ (default), custom path
    - "Which test runner?" — Options: Playwright Test (default), Vitest + Playwright
 
@@ -30,6 +30,7 @@ Read an existing accessibility audit report and generate a Playwright + @axe-cor
 3. Generate test files organized by category:
 
    **axe-rule-tests.spec.ts** — One test per axe-core rule violation:
+
    ```typescript
    import { test, expect } from '@playwright/test';
    import AxeBuilder from '@axe-core/playwright';
@@ -45,6 +46,7 @@ Read an existing accessibility audit report and generate a Playwright + @axe-cor
    ```
 
    **keyboard-tests.spec.ts** — Keyboard reachability for interactive elements:
+
    ```typescript
    test('keyboard: #main-nav is reachable via Tab', async ({ page }) => {
      await page.goto('/');
@@ -61,6 +63,7 @@ Read an existing accessibility audit report and generate a Playwright + @axe-cor
    ```
 
    **contrast-tests.spec.ts** — Computed contrast for flagged elements:
+
    ```typescript
    test('contrast: .muted-text meets 4.5:1', async ({ page }) => {
      await page.goto('/');
@@ -75,6 +78,7 @@ Read an existing accessibility audit report and generate a Playwright + @axe-cor
    ```
 
    **full-page-scan.spec.ts** — Whole-page axe-core sweep per audited URL:
+
    ```typescript
    test('full page: / has no WCAG AA violations', async ({ page }) => {
      await page.goto('/');
@@ -86,6 +90,7 @@ Read an existing accessibility audit report and generate a Playwright + @axe-cor
    ```
 
 4. Generate a `playwright.config.ts` if one does not already exist:
+
    ```typescript
    import { defineConfig } from '@playwright/test';
    export default defineConfig({
@@ -104,6 +109,7 @@ Read an existing accessibility audit report and generate a Playwright + @axe-cor
 ## Handoff Transparency
 
 Announce progress as you generate:
+
 - "Reading audit report... found {N} findings across {M} pages."
 - "Generating {filename}... {N} tests for {category}."
 - "All test files written. Run `npx playwright test tests/a11y/` to execute."

@@ -37,9 +37,9 @@ handoffs:
 
 ## Authoritative Sources
 
-- **GitHub Issue Templates** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
-- **GitHub Pull Request Templates** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository
-- **GitHub Discussion Templates** — https://docs.github.com/en/discussions/managing-discussions-for-your-community/creating-discussion-category-forms
+- **GitHub Issue Templates** — <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository>
+- **GitHub Pull Request Templates** — <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository>
+- **GitHub Discussion Templates** — <https://docs.github.com/en/discussions/managing-discussions-for-your-community/creating-discussion-category-forms>
 
 # Template Builder Agent
 
@@ -52,6 +52,7 @@ A magical interactive agent that guides you through building GitHub issue templa
 ## How to Use
 
 ### In VS Code
+
 1. Open Copilot Chat (`Ctrl+Shift+I` Windows/Linux, `Cmd+Shift+I` macOS)
 2. Type: `@template-builder` or `/build-template`
 3. The agent will ask you a series of questions to understand your template
@@ -60,6 +61,7 @@ A magical interactive agent that guides you through building GitHub issue templa
 6. Copy the output to `.github/ISSUE_TEMPLATE/your-template-name.yml`
 
 ### In GitHub Web
+
 1. Open Copilot Chat (Copilot button in top right)
 2. Mention: `@template-builder`
 3. Type your template goals (e.g., "I want to build an accessibility bug report template")
@@ -70,6 +72,7 @@ A magical interactive agent that guides you through building GitHub issue templa
 **You:** `@template-builder create accessibility bug template`
 
 **Agent asks (via Ask Questions):**
+
 1. Template name? -> You answer: "Accessibility Bug Report"
 2. What's this template for? -> "Report screen reader and keyboard issues"
 3. First field? -> "Screen Reader (dropdown)"
@@ -89,12 +92,14 @@ A magical interactive agent that guides you through building GitHub issue templa
 The agent starts by asking core questions about your template:
 
 **Questions:**
+
 - What is the template name? (e.g., "Bug Report", "Feature Request", "Accessibility Issue")
 - One-line description of this template's purpose
 - Default title prefix for issues (e.g., "[BUG]", "[A11Y]", "[FEAT]")
 - What labels should this template auto-apply? (comma-separated)
 
 **Agent generates:**
+
 ```yaml
 name: Your Template Name
 description: Your description
@@ -109,6 +114,7 @@ labels: ["label1", "label2"]
 The agent walks through adding fields one-by-one:
 
 **Questions for each field:**
+
 1. Field type? -> Show options:
    - `markdown` (instructional text)
    - `input` (single-line text)
@@ -125,6 +131,7 @@ The agent walks through adding fields one-by-one:
 8. Another field? (yes/no)
 
 **Agent generates field YAML:**
+
 ```yaml
   - type: dropdown
     id: screen-reader
@@ -167,11 +174,13 @@ Once all fields are entered, the agent:
 
 The agent includes a guided workflow for the most common case: building an accessibility bug report template.
 
-### Invoke with:
+### Invoke with
+
 - `@template-builder` + "create accessibility template"
 - `/build-a11y-template`
 
-### Workflow:
+### Workflow
+
 The agent skips to Phase 2 but pre-populates it with accessibility-specific fields:
 
 1. Component affected? (dropdown with agent names)
@@ -229,6 +238,7 @@ The Template Builder works alongside the five core agents:
 During the workshop (Chapter 16), you will extend this agent:
 
 ### Exercise 1: Generate Your Project's Template
+
 1. Open VS Code
 2. Activate Copilot Chat
 3. Type: `@template-builder` + describe your project's needs
@@ -236,6 +246,7 @@ During the workshop (Chapter 16), you will extend this agent:
 5. Save the generated YAML to your fork
 
 ### Exercise 2: Add a Workflow Variant
+
 The base agent handles general templates. Add a `security-template` or `documentation-template` variant:
 
 1. Open the Template Builder agent definition
@@ -244,6 +255,7 @@ The base agent handles general templates. Add a `security-template` or `document
 4. Test it with `@template-builder` + "create security template"
 
 ### Exercise 3: Export to Markdown
+
 Currently the agent outputs YAML. Add a follow-up step:
 
 1. After generating YAML, ask: "Also generate a Markdown version?"
@@ -251,6 +263,7 @@ Currently the agent outputs YAML. Add a follow-up step:
 3. Output both versions so users can choose
 
 ### Exercise 4: Create a Template Showcase
+
 Collect anonymous templates built by workshop participants:
 
 1. Your template works - share it
@@ -265,6 +278,7 @@ Collect anonymous templates built by workshop participants:
 The Template Builder uses VS Code's Ask Questions feature to create an interactive wizard. Here's how it works internally:
 
 ### Phase 1: Initial Questions
+
 ```text
 Agent asks (via Ask Questions UI):
 - Template name?
@@ -277,6 +291,7 @@ Accept / Cancel buttons below
 ```
 
 ### Phase 2: Field-by-Field Loop
+
 ```text
 Agent displays:
 "Add a field to your template"
@@ -292,6 +307,7 @@ Agent displays:
 ```
 
 ### Phase 3: Review
+
 ```text
 Agent shows:
 "Here's your YAML template. Ready?"
@@ -302,6 +318,7 @@ Agent shows:
 ```
 
 When the user clicks "Copy to Clipboard", the agent provides instructions:
+
 1. Go to VS Code Explorer
 2. Navigate to `.github/ISSUE_TEMPLATE/`
 3. New file: `your-template-name.yml`
@@ -313,13 +330,17 @@ When the user clicks "Copy to Clipboard", the agent provides instructions:
 ## Troubleshooting & Tips
 
 ### Issue: "I want to reorder my fields"
+
 After the template is generated, ask: `@template-builder reorder fields` + paste your YAML. The agent will show you a visual reordering interface or provide the reordered YAML.
 
 ### Issue: "I want to edit just one field"
+
 Reply to the agent: "Change field 3 to a textarea instead of input" and the agent regenerates with that one change.
 
 ### Tip: "Save time by describing your entire template at once"
+
 Instead of using Ask Questions, you can paste a template description:
+
 ```text
 @template-builder
 
@@ -334,7 +355,9 @@ Create a template with:
 The agent parses your description and generates the template.
 
 ### Tip: "Use the template for documentation too"
+
 This agent creates GitHub issue templates, but the same pattern works for:
+
 - PR templates (saved as `.github/pull_request_template.md`)
 - Discussion templates
 - GitHub Forms on custom websites

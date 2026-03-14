@@ -36,4 +36,3 @@ ${input:issue:Issue reference -- e.g. owner/repo#123 or a GitHub issue URL}
 9. If editing, incorporate feedback and preview again.
 
 **Never post without explicit confirmation.**
-

@@ -45,9 +45,11 @@ This repo uses symlinks inside `claude-code-plugin/` to avoid duplicating docs a
 
 1. Enable **Developer Mode** in Windows Settings (Settings > System > For developers).
 2. Clone with symlinks enabled:
-   ```
+
+   ```bash
    git clone -c core.symlinks=true https://github.com/Community-Access/accessibility-agents.git
    ```
+
    Or set it globally: `git config --global core.symlinks true`
 
 ## Testing Requirements
@@ -65,6 +67,7 @@ This repo uses symlinks inside `claude-code-plugin/` to avoid duplicating docs a
 - **Node.js:** v18.0.0 or higher (for CLI tools like axe-core, pa11y)
 
 **Version checks before testing:**
+
 ```bash
 code --version          # VS Code
 claude code --version   # Claude Code CLI
@@ -73,6 +76,7 @@ npm list -g --depth=0  # Global npm packages
 ```
 
 **Why this matters:**
+
 - Platform API changes affect agent tool use and capabilities
 - New VS Code/Copilot features (browser tools, screenshot analysis) directly impact agent effectiveness
 - Model updates change response quality and context handling
@@ -104,8 +108,8 @@ Suggested PR note template:
 ```text
 Source verification:
 - Claim: <what changed>
-	Source: <official URL>
-	Verified on: <YYYY-MM-DD>
+ Source: <official URL>
+ Verified on: <YYYY-MM-DD>
 ```
 
 ## Guidelines

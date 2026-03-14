@@ -33,4 +33,3 @@ ${input:scope:Optional: specific repo, 'org:orgname', severity filter (e.g. 'cri
 5. For critical and high alerts, show: package, advisory link, affected versions, fix available (yes/no), and any pending PR to fix it.
 6. List dependency update PRs pending review with age and risk assessment.
 7. Offer: _"Want to review a specific Dependabot PR? Or see the full advisory details?"_
-

@@ -7,6 +7,7 @@
 This guide provides step-by-step play scripts for manual testing of agentic browser tools with the web-accessibility-wizard and web-issue-fixer agents.
 
 **Scope:**
+
 - Test on Windows, macOS, Linux
 - Test with VS Code 1.110+
 - Test browser tool availability (enabled/disabled)
@@ -23,19 +24,22 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 ### 2.1 Environment Requirements
 
 **Required:**
+
 - VS Code 1.110+ (March 2026 or later)
 - Node.js 18+ (for dev server)
 - A simple web project with known accessibility issues:
   - Example project: `example/` directory in this repo
-  - Or: Your own project with a dev server running on http://localhost:3000
+  - Or: Your own project with a dev server running on <http://localhost:3000>
 
 **Optional:**
+
 - Multiple OSes for cross-platform testing (Windows, macOS, Linux)
 - Different frameworks (React, Vue, vanilla HTML)
 
 ### 2.2 VS Code Configuration
 
 **Option A: Enable browser tools globally**
+
 ```json
 // File: ~/.config/Code/user/settings.json (macOS/Linux)
 // or: %APPDATA%\Code\User\settings.json (Windows)
@@ -45,6 +49,7 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 ```
 
 **Option B: Enable for this workspace only**
+
 ```json
 // File: s:\code\agents\.vscode\settings.json
 {
@@ -55,6 +60,7 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 ### 2.3 Start Example Dev Server
 
 **For example/ directory:**
+
 ```bash
 cd example/
 npm install
@@ -63,6 +69,7 @@ npm run dev
 ```
 
 **For your own project:**
+
 ```bash
 cd your-project/
 npm install
@@ -78,12 +85,13 @@ npm run dev
 
 **Duration:** 5 minutes
 
-### Steps:
+### Steps
 
 1. **Open Copilot Chat** in VS Code (Ctrl+Alt+I / ⌘+⌘)
 
 2. **Invoke the accessibility-lead agent:**
-   ```
+
+   ```text
    @accessibility-lead can you check if browser tools are available?
    ```
 
@@ -99,7 +107,8 @@ npm run dev
    - Toggle: "✓ Enabled"
    - Result: Agent should now show browser tools as available
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Browser setting is detected correctly
 - ✓ Agent responds with availability status
 - ✓ Toggling setting changes reported availability
@@ -112,7 +121,7 @@ npm run dev
 
 **Duration:** 20 minutes
 
-### Setup:
+### Setup
 
 Use the example project with known issues:
 
@@ -122,10 +131,11 @@ Use the example project with known issues:
 <button style="color: #666; background: #AA9977;">Click me</button>  <!-- Low contrast -->
 ```
 
-### Steps:
+### Steps
 
 1. **Start web-accessibility-wizard:**
-   ```
+
+   ```text
    @web-accessibility-wizard audit the example project
    ```
 
@@ -140,17 +150,19 @@ Use the example project with known issues:
    - Low contrast on button
 
 4. **At Phase 11 (Follow-up Actions), select:**
-   ```
+
+   ```text
    "Verify fixes in browser"
    ```
 
 5. **Accept the browser verification invitation:**
-   ```
+
+   ```text
    "Yes - verify all fixes"
    ```
 
 6. **Observe wizard behavior:**
-   - Detects dev server at http://localhost:3000 ✓
+   - Detects dev server at <http://localhost:3000> ✓
    - Opens page in integrated browser
    - Takes screenshot of #hero image ✓
    - Reports: "Alt text added and verified" ✓
@@ -163,7 +175,8 @@ Use the example project with known issues:
    - `.a11y-screenshots/` directory created ✓
    - Screenshots present with naming: `{timestamp}-fix{n}-{selector}.png` ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Wizard detects issues correctly
 - ✓ Fixes are proposed and applied to code
 - ✓ Browser verification is offered when `workbench.browser.enableChatTools` is enabled
@@ -172,7 +185,8 @@ Use the example project with known issues:
 - ✓ Report includes visual evidence
 - ✓ Page reloads after fix application (shows updated code)
 
-### Fail Handling:
+### Fail Handling
+
 - If dev server not detected, wizard should ask user to provide URL
 - If browser not available, wizard should show graceful degradation message
 - If screenshot fails, wizard should continue with other fixes and report partial evidence
@@ -185,7 +199,7 @@ Use the example project with known issues:
 
 **Duration:** 15 minutes
 
-### Setup:
+### Setup
 
 Create test file with contrast issue:
 
@@ -194,17 +208,19 @@ Create test file with contrast issue:
 <button style="color: #999; background: #EEE;">Low Contrast</button>
 ```
 
-### Steps:
+### Steps
 
 1. **Start web-accessibility-wizard:**
-   ```
+
+   ```text
    @web-accessibility-wizard scan test-contrast.html at http://localhost:3000/test-contrast.html
    ```
 
 2. **Wizard identifies:** Low contrast on button (3.2:1)
 
 3. **At fix phase, ask wizard to:**
-   ```
+
+   ```text
    Fix this button by changing text color to #000
    ```
 
@@ -220,7 +236,8 @@ Create test file with contrast issue:
    - URL is captured ✓
    - Fix number is in filename ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Contrast fix is applied to code
 - ✓ Browser screenshot verifies new contrast
 - ✓ Contrast ratio is computed correctly
@@ -235,7 +252,7 @@ Create test file with contrast issue:
 
 **Duration:** 20 minutes
 
-### Setup:
+### Setup
 
 Create test file with focus issue:
 
@@ -247,17 +264,19 @@ Create test file with focus issue:
 <button id="submit">Submit Form</button>
 ```
 
-### Steps:
+### Steps
 
 1. **Start web-accessibility-wizard:**
-   ```
+
+   ```text
    @web-accessibility-wizard scan test-focus.html for focus management
    ```
 
 2. **Wizard identifies:** Missing focus indicator on button
 
 3. **At fix phase, accepts proposal:**
-   ```
+
+   ```text
    Yes, fix the focus indicator
    ```
 
@@ -273,7 +292,8 @@ Create test file with focus issue:
    - File timestamp matches fix application time
    - Metadata captured with URL and timestamp
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Focus fix is applied (CSS rule added)
 - ✓ Browser simulates Tab key interaction
 - ✓ Focus ring is visible in screenshot
@@ -287,7 +307,7 @@ Create test file with focus issue:
 
 **Duration:** 10 minutes
 
-### Steps:
+### Steps
 
 1. **Disable browser tools:**
    - Open settings: Ctrl+,
@@ -297,17 +317,20 @@ Create test file with focus issue:
 2. **Reload window:** Ctrl+Shift+P > Reload Window
 
 3. **Run web-accessibility-wizard:**
-   ```
+
+   ```text
    @web-accessibility-wizard audit the example project
    ```
 
 4. **When wizard offers Phase 12 (Browser Verification):**
-   ```
+
+   ```text
    "Would you like to verify fixes in the browser?"
    ```
 
 5. **Expected response:**
-   ```
+
+   ```text
    Browser verification is not available in this environment.
    
    To enable browser-assisted verification:
@@ -324,7 +347,8 @@ Create test file with focus issue:
    - No screenshots captured ✓
    - Report shows "verification: NOT_AVAILABLE" ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Graceful degradation message displays correctly
 - ✓ Fixes are still applied even without browser tools
 - ✓ Wizard doesn't crash or hang
@@ -338,9 +362,10 @@ Create test file with focus issue:
 
 **Duration:** 10 minutes
 
-### Steps:
+### Steps
 
 1. **Stop dev server:**
+
    ```bash
    # If running: Ctrl+C in terminal to stop
    npm run dev  # This will be stopped
@@ -350,15 +375,17 @@ Create test file with focus issue:
    - Verify `workbench.browser.enableChatTools` is true
 
 3. **Run web-accessibility-wizard:**
-   ```
+
+   ```text
    @web-accessibility-wizard audit http://localhost:3000
    ```
 
 4. **At Phase 12 (Browser Verification), start fixes:**
-   - Browser attempts to navigate to http://localhost:3000
+   - Browser attempts to navigate to <http://localhost:3000>
    - Connection times out after 10 seconds
    - Expected response:
-     ```
+
+     ```text
      ⚠️ The page didn't load within 10 seconds. Possible causes:
      - Server is not running at http://localhost:3000
      - Network connection issue
@@ -374,7 +401,8 @@ Create test file with focus issue:
    - `npm run dev`
    - Retry verification → Success ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Timeout handling works correctly
 - ✓ User gets helpful error message with solutions
 - ✓ Fixes are still applied even if server not running
@@ -388,10 +416,11 @@ Create test file with focus issue:
 
 **Duration:** 10 minutes
 
-### Steps:
+### Steps
 
 1. **Run web-accessibility-wizard on test page:**
-   ```
+
+   ```text
    @web-accessibility-wizard audit http://localhost:3000
    ```
 
@@ -404,7 +433,8 @@ Create test file with focus issue:
    - Browser verification attempts: `document.querySelector('#non-existent-img')`
    - Returns null
    - Expected response:
-     ```
+
+     ```text
      ⚠️ Element #non-existent-img not found on page at http://localhost:3000
      
      Fix applied to code, but element is not on the current page.
@@ -425,7 +455,8 @@ Create test file with focus issue:
    - Screenshot shows full page (for context) ✓
    - Error is reported clearly ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Missing elements are detected correctly
 - ✓ User gets helpful error message
 - ✓ Fixes are still applied to code
@@ -440,7 +471,7 @@ Create test file with focus issue:
 
 **Duration:** 10 minutes
 
-### Steps:
+### Steps
 
 1. **Create test page with unusual content:**
    - Animated element (colors change)
@@ -449,7 +480,8 @@ Create test file with focus issue:
    -Canvas/SVG with dynamic content
 
 2. **Run web-accessibility-wizard:**
-   ```
+
+   ```text
    @web-accessibility-wizard audit test page with animated content
    ```
 
@@ -460,7 +492,8 @@ Create test file with focus issue:
    - Visual analyzer attempts to extract colors
    - Fails because element is animated (colors inconsistent)
    - Expected response:
-     ```
+
+     ```text
      ⚠️ Visual analysis couldn't verify the complete fix.
      The animated button made color analysis unreliable.
      
@@ -478,7 +511,8 @@ Create test file with focus issue:
    - Verification status: "NEEDS_REVIEW" ✓
    - Wizard continues (doesn't crash) ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Visual analysis tries but gracefully fails
 - ✓ Screenshot still captured
 - ✓ User gets helpful fallback instructions
@@ -493,7 +527,7 @@ Create test file with focus issue:
 
 **Duration:** 30 minutes (10 min per framework)
 
-### Test with React:
+### Test with React
 
 ```bash
 # Create React test project
@@ -503,13 +537,14 @@ npm start  # Runs on http://localhost:3000
 ```
 
 Run web-accessibility-wizard on React app:
-```
+
+```text
 @web-accessibility-wizard audit http://localhost:3000
 ```
 
 Expected: Browser tools work with React ✓
 
-### Test with Vue:
+### Test with Vue
 
 ```bash
 # Create Vue test project
@@ -519,13 +554,14 @@ npm install && npm run dev  # Runs on http://localhost:5173
 ```
 
 Run web-accessibility-wizard:
-```
+
+```text
 @web-accessibility-wizard audit http://localhost:5173
 ```
 
 Expected: Browser tools work with Vue ✓
 
-### Test with Vanilla HTML:
+### Test with Vanilla HTML
 
 ```bash
 # Use example/ in this repo
@@ -534,13 +570,15 @@ npm run dev  # Runs on http://localhost:3000
 ```
 
 Run web-accessibility-wizard:
-```
+
+```text
 @web-accessibility-wizard audit http://localhost:3000
 ```
 
 Expected: Browser tools work with vanilla HTML ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Browser tools work on React apps
 - ✓ Browser tools work on Vue apps
 - ✓ Browser tools work on vanilla HTML
@@ -555,16 +593,18 @@ Expected: Browser tools work with vanilla HTML ✓
 
 **Duration:** 15 minutes
 
-### Steps:
+### Steps
 
 1. **Run full audit with 5+ fixes:**
-   ```
+
+   ```text
    @web-accessibility-wizard full audit of example project
    ```
 
 2. **Apply all fixes and verify in browser**
 
 3. **Check `.a11y-screenshots/` directory:**
+
    ```bash
    ls -la .a11y-screenshots/
    # Expected output:
@@ -592,7 +632,8 @@ Expected: Browser tools work with vanilla HTML ✓
    - Verify: All screenshots are `.png` ✓
    - Verify: No compression artifacts ✓
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Screenshots are clear and readable
 - ✓ Naming convention is consistent: `{YYYY-MM-DD-HH-mm}-fix{n}-{selector}.png`
 - ✓ Timestamps are accurate and match fix application time
@@ -609,7 +650,7 @@ Expected: Browser tools work with vanilla HTML ✓
 
 **Duration:** 20 minutes
 
-### Measurements to Capture:
+### Measurements to Capture
 
 For each test session, time the following operations:
 
@@ -622,7 +663,7 @@ For each test session, time the following operations:
 | Report generation | < 3 sec | ? | ✓/✗ |
 | Full fix cycle (5 fixes) | < 30 sec | ? | ✓/✗ |
 
-### Capture Method:
+### Capture Method
 
 ```bash
 # Terminal
@@ -630,13 +671,15 @@ time @accessibility-lead run browser verification for example
 ```
 
 Or measure manually with stopwatch:
+
 - Screenshot 1: Test 2 (Fix Verification) - actual time taken
 - Screenshot 2: Test 3 (Contrast) - time for each fix
 - Screenshot 3: Test 4 (Focus) - total time for full report
 
 Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Page opens within 5 seconds
 - ✓ Screenshot capture < 2 seconds
 - ✓ Full 5-fix cycle completes within 30 seconds total
@@ -679,7 +722,8 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 4. Verify browser context works in headless environment ✓
 5. Result: ✓/✗
 
-### Pass Criteria:
+### Pass Criteria
+
 - ✓ Browser tools work on all three OSes
 - ✓ File paths are handled correctly per OS
 - ✓ Permissions don't block screenshot creation
@@ -712,12 +756,15 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 **Overall Result:** ✓ ALL TESTS PASS
 
 **Issues Found:**
+
 - None
 
 **Recommendations:**
+
 - Phase 5.4 testing complete - ready for public release
 
 **Sign-off:**
+
 - [Tester Name]
 - [Date]
 - Approved for v3.0.0 release
@@ -728,19 +775,22 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 
 After release, continuous tests to run:
 
-### Weekly Manual Smoke Tests:
+### Weekly Manual Smoke Tests
+
 - [ ] Open example project, run full audit
 - [ ] Verify browser verification for 3+ fixes
 - [ ] Check screenshots are captured
 - [ ] Verify report generation
 
-### Automated Testing (CI/CD):
+### Automated Testing (CI/CD)
+
 - [ ] Run test suite on every commit to `.github/agents/web-*.agent.md`
 - [ ] Verify no syntax errors in agent definitions
 - [ ] Test agent invocation from CLI (if applicable)
 - [ ] Check cross-agent compatibility
 
-### User Reports:
+### User Reports
+
 - [ ] Monitor GitHub issues for browser tool failures
 - [ ] Track which failure modes users encounter most
 - [ ] Plan Phase 5.5 enhancements based on feedback
@@ -772,4 +822,3 @@ After release, continuous tests to run:
 - [Web Issue Fixer Agent](../.github/agents/web-issue-fixer.agent.md)
 - [VS Code 1.110 Release Notes](https://code.visualstudio.com/updates/)
 - [Browser Tool API Documentation](https://code.visualstudio.com/docs/copilot/customization/overview)
-

@@ -27,11 +27,11 @@ handoffs:
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **WAI-ARIA 1.2 Specification** — https://www.w3.org/TR/wai-aria-1.2/
-- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
-- **GitHub GraphQL API** — https://docs.github.com/en/graphql
-- **VS Code Accessibility** — https://code.visualstudio.com/docs/editor/accessibility
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **WAI-ARIA 1.2 Specification** — <https://www.w3.org/TR/wai-aria-1.2/>
+- **GitHub REST API - Issues** — <https://docs.github.com/en/rest/issues>
+- **GitHub GraphQL API** — <https://docs.github.com/en/graphql>
+- **VS Code Accessibility** — <https://code.visualstudio.com/docs/editor/accessibility>
 
 # Accessibility Tracker
 
@@ -71,6 +71,7 @@ Read `accessibility_tracking.repos` from preferences. If not configured, use the
 | User-configured repos | Per-repo label config | Custom a11y tracking |
 
 Users may add additional repos (e.g., their own projects with accessibility labels). Each tracked repo can specify:
+
 - Its own accessibility label name (e.g., `a11y`, `accessibility`, `wcag`)
 - Its own insiders/release label (or none)
 - Whether to use milestone-based or date-based filtering
@@ -85,16 +86,19 @@ For each tracked repo, construct search queries using that repo's configured lab
 ### Configurable Query Templates
 
 **Insiders channel** (when `channels.insiders: true`):
+
 ```text
 repo:{TRACKED_REPO} is:closed label:{a11y_label} label:{insiders_label} milestone:"{Month} {Year}"
 ```
 
 **Stable channel** (when `channels.stable: true`):
+
 ```text
 repo:{TRACKED_REPO} is:closed label:{a11y_label} milestone:"{Month} {Year}" -label:{insiders_label}
 ```
 
 **All accessibility** (both channels):
+
 ```text
 repo:{TRACKED_REPO} is:closed label:{a11y_label} milestone:"{Month} {Year}"
 ```
@@ -108,10 +112,13 @@ repo:microsoft/vscode is:closed label:accessibility milestone:"{Month} {Year}"
 ```
 
 ### Date-Specific
+
 Add `closed:YYYY-MM-DD` for specific dates, `closed:>YYYY-MM-DD` for ranges.
 
 ### Cross-Repository Discovery
+
 In addition to the configured tracked repos, also search for accessibility work across ALL repos the user has access to:
+
 - `user:USERNAME is:closed label:accessibility` -- discover a11y work in the user's own repos
 - `org:ORGNAME is:closed label:accessibility` -- discover a11y work across the user's organizations
 
@@ -124,17 +131,20 @@ Always adjust the milestone to match the current month/year or the timeframe the
 In addition to label-based searches, check each tracked repo for issues created by CI accessibility scanners:
 
 **GitHub Accessibility Scanner issues:**
+
 ```text
 repo:{TRACKED_REPO} is:issue label:accessibility author:app/github-actions
 ```
 
 **Lighthouse CI accessibility regressions:**
 Search for issues or PR comments referencing Lighthouse accessibility score drops:
+
 ```text
 repo:{TRACKED_REPO} is:issue "lighthouse" "accessibility" "score"
 ```
 
 When scanner issues are found:
+
 - Note whether they are assigned to Copilot for automated fixes.
 - Track the Copilot fix PR lifecycle (pending, open, approved, merged, rejected).
 - Include scanner-originated issues in the category breakdown alongside human-filed issues.
@@ -145,7 +155,9 @@ When scanner issues are found:
 ## Capabilities
 
 ### 1. Quick Updates (Chat)
+
 When the user asks "what's new" or "latest a11y changes":
+
 1. Search with #tool:mcp_github_github_search_issues using the Insiders pattern for the current milestone.
 2. Also search Stable if the user asks for "all" or "both channels."
 3. Present results as a categorized list:
@@ -172,6 +184,7 @@ When the user asks "what's new" or "latest a11y changes":
 ```
 
 **Categories** - classify each issue into one of:
+
 - **Screen Reader** - ARIA, announcements, narration, TalkBack, VoiceOver, NVDA, JAWS
 - **Keyboard Navigation** - focus management, tab order, keyboard shortcuts, key bindings
 - **Visual / Contrast** - high contrast, forced colors, color tokens, zoom/reflow, font size
@@ -180,19 +193,25 @@ When the user asks "what's new" or "latest a11y changes":
 - **Other** - anything that doesn't fit above
 
 ### 2. Deep Dive into a Specific Change
+
 When the user asks about a specific issue:
+
 1. Use #tool:mcp_github_github_issue_read to get full details.
 2. Present: title, description, linked PRs, the actual code changes (if discoverable from PR references), user impact, and which build it's available in.
 3. Explain the impact in plain language: _"Before this change, screen reader users couldn't navigate the minimap. Now, the minimap is fully keyboard-accessible and announces its content."_
 
 ### 3. Feature Tracking
+
 When the user asks "has X been fixed" or "is there a11y support for Y":
+
 1. Search with keywords + accessibility label.
 2. Report status: **Fixed (Insiders)**, **Fixed (Stable)**, **In Progress**, **Not Found**.
 3. If not found, suggest filing an issue.
 
 ### 4. Monthly / Weekly Reports
+
 When asked for a report:
+
 1. Gather all accessibility issues for the requested period.
 2. Categorize them.
 3. Generate a workspace document.
@@ -287,9 +306,11 @@ Generate reports at: `.github/reviews/accessibility/a11y-report-{YYYY-MM}.md`
 - If the user says "last month" -> use previous month's milestone.
 - If the user says "today" -> add `closed:YYYY-MM-DD` for today's date.
 - If the user says "this week" -> add `closed:>YYYY-MM-DD` for 7 days ago.
+
 ## Multi-Repo Support
 
 When the user says "track owner/repo" or asks about accessibility in a specific repo:
+
 1. Add that repo to the session's tracked repos list.
 2. Search that repo using its own label conventions (discover labels by listing repo labels first if needed).
 3. Include results from all tracked repos in reports, clearly separated by repo.
@@ -303,7 +324,7 @@ When generating reports, always include a section for each tracked repo. The def
 
 Narrate every collection step. Never mention tool names:
 
-```
+```text
  Scanning accessibility issues in microsoft/vscode (Insiders milestone)...
  Scanning accessibility issues in microsoft/vscode (Stable milestone)...
  Checking custom tracked repos...

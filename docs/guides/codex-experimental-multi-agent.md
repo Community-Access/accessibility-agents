@@ -11,11 +11,13 @@ Accessibility Agents now includes an **experimental** Codex multi-agent layer on
 ## What Is Stable vs Experimental
 
 **Stable baseline:** `.codex/AGENTS.md`
+
 - Loads automatically for UI work
 - Keeps the condensed WCAG 2.2 AA guardrails already documented in this repo
 - Remains the default Codex story
 
 **Experimental layer:** `.codex/config.toml` plus `.codex/roles/*.toml`
+
 - Adds named Codex roles with concise developer instructions
 - Lets you switch into a narrower role when you want a focused pass
 - Keeps the baseline rules in place rather than replacing them
@@ -75,6 +77,7 @@ bash install.sh --global --codex
 ```
 
 That installs:
+
 - the stable `.codex/AGENTS.md` baseline
 - the experimental `.codex/config.toml`
 - the role files under `.codex/roles/`
@@ -86,6 +89,7 @@ If you already have a `config.toml`, the installer merges the Accessibility Agen
 Use Codex normally for general UI work and let `.codex/AGENTS.md` enforce the baseline.
 
 Switch to an experimental role when you want a narrower pass, for example:
+
 - `accessibility-lead` for triage and final synthesis
 - `aria-specialist` for semantics and custom widgets
 - `forms-specialist` for validation and labeling

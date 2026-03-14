@@ -51,6 +51,7 @@ Use the **web-csv-reporter** sub-agent workflow:
 ## Handoff Transparency
 
 This workflow delegates to the `web-csv-reporter` sub-agent:
+
 - **Start:** "Generating CSV export from web audit report: [N] findings across [N] pages"
 - **Completion:** "CSV export complete: [file paths] with [N] rows each"
 - **On failure:** "CSV export failed: [reason]. No files written."

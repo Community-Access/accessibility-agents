@@ -52,6 +52,7 @@ Use the **document-csv-reporter** sub-agent workflow:
 ## Handoff Transparency
 
 This workflow delegates to the `document-csv-reporter` sub-agent:
+
 - **Start:** "Generating CSV export from document audit report: [N] findings across [N] files"
 - **Completion:** "CSV export complete: [file paths] with [N] rows each"
 - **On failure:** "CSV export failed: [reason]. No files written."

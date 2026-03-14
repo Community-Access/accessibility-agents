@@ -52,8 +52,8 @@ Tell the agent what to fix:
 ## Handoff Transparency
 
 This workflow delegates to the `markdown-fixer` sub-agent. Announce transitions:
+
 - **Before delegation:** "Applying [N] fixes to [filename] ([N] auto-fixable, [N] human-judgment)"
 - **Per fix:** Show before/after with accessibility impact
 - **After completion:** "Fix pass complete: [N] applied, [N] skipped, [N] need review. Score: [before] -> [after]"
 - **On failure:** "Fix failed for [target]: [reason]. File left unchanged."
-

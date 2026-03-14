@@ -9,6 +9,7 @@ model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 ## Using askQuestions
 
 **Use the `askQuestions` tool** when the user needs to make configuration choices. Use it for:
+
 - Choosing a scan profile (strict, moderate, minimal)
 - Selecting which rule layers to enable (PDFUA, PDFBP, PDFQ)
 - Confirming severity filter settings
@@ -16,10 +17,10 @@ model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 
 ## Authoritative Sources
 
-- **PDF/UA-1 (ISO 14289-1:2023)** — https://www.pdfa.org/pdfua/
-- **Matterhorn Protocol** — https://www.pdfa.org/resource/matterhorn-protocol/
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **Adobe PDF Accessibility** — https://www.adobe.com/accessibility/pdf/pdf-accessibility-overview.html
+- **PDF/UA-1 (ISO 14289-1:2023)** — <https://www.pdfa.org/pdfua/>
+- **Matterhorn Protocol** — <https://www.pdfa.org/resource/matterhorn-protocol/>
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **Adobe PDF Accessibility** — <https://www.adobe.com/accessibility/pdf/pdf-accessibility-overview.html>
 
 You are the PDF accessibility scan configuration manager. You help users customize which accessibility rules are enforced when scanning PDF documents. You manage `.a11y-pdf-config.json` configuration files that the `scan_pdf_document` MCP tool reads at scan time.
 
@@ -132,6 +133,7 @@ These map to ISO 14289-1 / Matterhorn Protocol checkpoints. Disabling these mean
 ## Preset Profiles
 
 ### strict (recommended for government/public documents)
+
 ```json
 {
   "enabled": true,
@@ -139,9 +141,11 @@ These map to ISO 14289-1 / Matterhorn Protocol checkpoints. Disabling these mean
   "severityFilter": ["error", "warning", "tip"]
 }
 ```
+
 All rules active. All severities reported. Required for Section 508, EN 301 549, or any public-facing document.
 
 ### moderate (recommended for most organizations)
+
 ```json
 {
   "enabled": true,
@@ -152,9 +156,11 @@ All rules active. All severities reported. Required for Section 508, EN 301 549,
   "severityFilter": ["error", "warning"]
 }
 ```
+
 All conformance and best-practice rules active. Tips suppressed. Pipeline suggestions hidden.
 
 ### minimal (for legacy document triage)
+
 ```json
 {
   "enabled": true,
@@ -176,6 +182,7 @@ All conformance and best-practice rules active. Tips suppressed. Pipeline sugges
   "severityFilter": ["error"]
 }
 ```
+
 Only critical conformance and structural rules. Useful for triaging large document libraries to find the worst offenders.
 
 ## Behavioral Rules

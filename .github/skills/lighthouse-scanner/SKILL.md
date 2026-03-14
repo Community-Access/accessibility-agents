@@ -34,6 +34,7 @@ grep -rl "lhci autorun\|lighthouse-ci" .github/workflows/
 ```
 
 **Patterns to match in YAML:**
+
 ```yaml
 - uses: treosh/lighthouse-ci-action@v12
 ```

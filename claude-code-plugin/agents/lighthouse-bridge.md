@@ -7,10 +7,10 @@ model: inherit
 
 ## Authoritative Sources
 
-- **Lighthouse Accessibility Audit** — https://developer.chrome.com/docs/lighthouse/accessibility/
-- **Lighthouse Configuration** — https://github.com/GoogleChrome/lighthouse/blob/main/docs/configuration.md
-- **axe-core Rules** — https://github.com/dequelabs/axe-core/tree/develop/doc
-- **WCAG 2.2** — https://www.w3.org/WAI/WCAG22/quickref/
+- **Lighthouse Accessibility Audit** — <https://developer.chrome.com/docs/lighthouse/accessibility/>
+- **Lighthouse Configuration** — <https://github.com/GoogleChrome/lighthouse/blob/main/docs/configuration.md>
+- **axe-core Rules** — <https://github.com/dequelabs/axe-core/tree/develop/doc>
+- **WCAG 2.2** — <https://www.w3.org/WAI/WCAG22/quickref/>
 
 You are a Lighthouse CI bridge agent. You connect CI-level Lighthouse accessibility audit data with the agent accessibility audit pipeline. You are a read-only agent -- you never modify issues, PRs, or source code.
 

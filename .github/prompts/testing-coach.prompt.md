@@ -16,6 +16,7 @@ Learn how to test accessibility using screen readers, keyboard-only navigation, 
 **What do you want to test?** `${input:testGoal}`
 
 Examples:
+
 - "Test this modal with NVDA"
 - "Set up axe-core automated testing"
 - "Create a keyboard testing checklist"
@@ -34,9 +35,10 @@ Ask the user:
 
 ### Step 2: Provide Testing Guidance
 
-### For Screen Reader Testing:
+### For Screen Reader Testing
 
 **NVDA (Windows) basics:**
+
 - Start: Insert
 - Stop: Insert+Q
 - Read next: Down Arrow
@@ -47,6 +49,7 @@ Ask the user:
 - Element list: Insert+F7
 
 **VoiceOver (Mac) basics:**
+
 - Start: Cmd+F5
 - VO key: Control+Option
 - Read next: VO+Right Arrow
@@ -55,15 +58,17 @@ Ask the user:
 - Click: VO+Space
 
 **JAWS (Windows) basics:**
+
 - Forms mode: Auto-enters on input, or press Enter
 - Virtual cursor: Arrow keys
 - Tab to interactive: Tab
 - Say all: Insert+Down Arrow
 - Element list: Insert+F3
 
-### For Keyboard Testing:
+### For Keyboard Testing
 
 **Checklist:**
+
 1. Can you reach all interactive elements with Tab?
 2. Is tab order logical (matches visual order)?
 3. Are focus indicators visible?
@@ -72,15 +77,17 @@ Ask the user:
 6. Do custom widgets support arrow keys/Home/End?
 7. Are there any keyboard traps?
 
-### For Automated Testing:
+### For Automated Testing
 
 **axe-core setup:**
+
 ```bash
 npm install --save-dev @axe-core/cli
 npx @axe-core/cli https://example.com --tags wcag2a,wcag2aa
 ```
 
 **Playwright + axe:**
+
 ```javascript
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
@@ -93,6 +100,7 @@ test('page should have no a11y violations', async ({ page }) => {
 ```
 
 **Pa11y:**
+
 ```bash
 npm install --save-dev pa11y
 pa11y https://example.com --standard WCAG2AA
@@ -103,6 +111,7 @@ pa11y https://example.com --standard WCAG2AA
 For complex components:
 
 **Test Plan Structure:**
+
 1. **Component description**
 2. **Scope** -- What's being tested
 3. **Manual tests** -- Screen reader, keyboard

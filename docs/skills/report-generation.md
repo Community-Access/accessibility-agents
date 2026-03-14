@@ -121,5 +121,3 @@ When re-scanning against a baseline:
 ## Skill Location
 
 `.github/skills/report-generation/SKILL.md`
-
-

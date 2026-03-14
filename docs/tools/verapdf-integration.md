@@ -38,24 +38,29 @@ When both tiers run, findings are correlated by rule ID. Issues confirmed by bot
 veraPDF requires Java 11 or later.
 
 ### macOS
+
 ```bash
 brew install verapdf
 ```
 
 ### Windows
+
 ```bash
 choco install verapdf
 ```
 
 ### Linux
+
 ```bash
 snap install verapdf
 ```
 
 ### Manual Download
-Download from https://docs.verapdf.org/install/
+
+Download from <https://docs.verapdf.org/install/>
 
 ### Verify Installation
+
 ```bash
 verapdf --version
 ```
@@ -80,6 +85,7 @@ If veraPDF is not installed, the tool returns installation instructions. The exi
 ### `run_verapdf_scan`
 
 **Input:**
+
 - `filePath` (string, required) — Path to the PDF file
 - `flavour` (string, optional, default `"ua1"`) — Validation flavour
 - `maxFindings` (number, optional, default 200) — Maximum findings to return

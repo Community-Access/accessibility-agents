@@ -1,0 +1,11 @@
+{
+  "ignores": [
+    "node_modules/**",
+    "**/node_modules/**",
+    ".git/**",
+    ".history/**",
+    ".claude/**",
+    ".gemini/**",
+    "desktop-extension/**"
+  ]
+}

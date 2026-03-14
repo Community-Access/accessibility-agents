@@ -45,17 +45,18 @@ handoffs:
 
 ## Authoritative Sources
 
-- **wxPython Documentation** — https://docs.wxpython.org/
-- **wxPython API Reference** — https://docs.wxpython.org/wx.1moduleindex.html
-- **wxWidgets Documentation** — https://docs.wxwidgets.org/
-- **wxPython Sizers** — https://docs.wxpython.org/sizers_overview.html
-- **wxPython Events** — https://docs.wxpython.org/events_overview.html
+- **wxPython Documentation** — <https://docs.wxpython.org/>
+- **wxPython API Reference** — <https://docs.wxpython.org/wx.1moduleindex.html>
+- **wxWidgets Documentation** — <https://docs.wxwidgets.org/>
+- **wxPython Sizers** — <https://docs.wxpython.org/sizers_overview.html>
+- **wxPython Events** — <https://docs.wxpython.org/events_overview.html>
 
 ## Using askQuestions
 
 **You MUST use the `askQuestions` tool** to present structured choices to the user whenever you need to clarify scope, confirm actions, or offer alternatives. Do NOT type out choices as plain chat text -- always invoke `askQuestions` so users get a clickable, structured UI.
 
 Use `askQuestions` when:
+
 - Your initial assessment reveals multiple possible approaches
 - You need to confirm which files, components, or areas to focus on
 - Presenting fix options that require user judgment
@@ -130,6 +131,7 @@ self.SetSizer(sizer)
 ### Sizer Debugging
 
 When layouts break:
+
 1. Add colored backgrounds to panels: `panel.SetBackgroundColour(wx.RED)`
 2. Call `sizer.ShowItems(True)` to verify all items are visible
 3. Check `proportion` values -- 0 means minimum size, 1+ means expandable
@@ -320,6 +322,7 @@ class MainFrame(wx.Frame):
 - Use `MinSize` to prevent panes from collapsing too small
 - Use `BestSize` for the initial layout proportions
 - Save/restore perspective strings for user layout persistence:
+
   ```python
   perspective = self._mgr.SavePerspective()
   self._mgr.LoadPerspective(perspective)
@@ -584,7 +587,7 @@ When the user asks you to **audit**, **scan**, or **review accessibility** of a 
 
 Return findings as a structured table:
 
-```
+```python
 ## wxPython Accessibility Audit
 
 **Project:** <name>
@@ -726,6 +729,7 @@ def on_paint(self, event):
 ## Error Recovery
 
 When wxPython breaks:
+
 1. **Blank window:** Check that `SetSizer()` was called and `sizer.Layout()` runs after adding items
 2. **Events not firing:** Verify binding target (self.Bind vs control.Bind), check event type
 3. **Crash on close:** Ensure `wx.Timer.Stop()` in close handler, `AuiManager.UnInit()`, no pending `CallAfter`
@@ -762,4 +766,3 @@ This agent operates within a larger accessibility ecosystem. Route work to the r
 | Web accessibility (HTML, CSS, React, ARIA, axe-core) | `@web-accessibility-wizard` |
 | Document accessibility (DOCX, XLSX, PPTX, PDF auditing) | `@document-accessibility-wizard` |
 | Python debugging, packaging, testing, type checking | `@python-specialist` |
-

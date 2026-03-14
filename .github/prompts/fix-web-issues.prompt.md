@@ -45,11 +45,13 @@ Use the **web-accessibility-wizard** agent's interactive fix mode:
 3. Apply fixes using the detected framework's syntax (React JSX, Vue template, Angular template, etc.)
 
 4. After all fixes, if a URL is available, re-run axe-core to verify:
+
    ```bash
    npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa
    ```
 
 5. Report results:
+
    ```text
    Fixes Applied: [count]
    Verified by re-scan: [count passed] / [count total]
@@ -63,6 +65,7 @@ Use the **web-accessibility-wizard** agent's interactive fix mode:
 ## Handoff Transparency
 
 This workflow delegates to the `web-issue-fixer` sub-agent. Announce transitions:
+
 - **Before delegation:** "Applying [N] fixes to [N] files ([N] auto-fixable, [N] need approval)"
 - **Per fix:** Show the issue, before/after code, and result
 - **After completion:** "Fix pass complete: [N] applied, [N] skipped, [N] pending approval"

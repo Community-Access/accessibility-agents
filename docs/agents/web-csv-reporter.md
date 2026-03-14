@@ -71,7 +71,7 @@ Prioritized action items:
 
 All Accessibility Insights help links follow the pattern:
 
-```
+```text
 https://accessibilityinsights.io/info-examples/web/{rule-id}
 ```
 

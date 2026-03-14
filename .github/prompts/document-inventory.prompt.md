@@ -28,6 +28,7 @@ Discover and catalog Office documents and PDFs in a directory tree. Detect chang
 ### Step 1: Full Inventory Scan
 
 **PowerShell (Windows):**
+
 ```powershell
 $folder = '${input:directory}'
 $files = Get-ChildItem -Path $folder -Recurse -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub | 
@@ -63,6 +64,7 @@ Write-Host "  .epub: $(($files | Where-Object Extension -eq '.epub').Count)"
 ```
 
 **Bash (Linux/macOS):**
+
 ```bash
 find ${input:directory} -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) \
   ! -path "*/.git/*" \
@@ -86,6 +88,7 @@ git log --since="7 days ago" --name-only --pretty=format: -- '*.docx' '*.xlsx' '
 ### Step 3: Extract Document Metadata
 
 **Word (.docx):**
+
 ```powershell
 # Requires Open XML SDK or COM automation
 $word = New-Object -ComObject Word.Application
@@ -99,6 +102,7 @@ $word.Quit()
 ```
 
 **PDF:**
+
 ```bash
 # Requires pdfinfo (from poppler-utils)
 pdfinfo file.pdf | grep -E "(Title|Author|Subject|Keywords)"
@@ -107,6 +111,7 @@ pdfinfo file.pdf | grep -E "(Title|Author|Subject|Keywords)"
 ### Step 4: Build Typed Inventory
 
 For each file:
+
 - **path:** Absolute path
 - **filename:** Base name
 - **extension:** .docx, .xlsx, .pptx, .pdf, .epub

@@ -171,5 +171,3 @@ To disable a rule, set `"enabled": false`. To change a rule from error to warnin
 | [excel-accessibility](excel-accessibility.md) | The config controls which XLSX rules this agent enforces |
 | [powerpoint-accessibility](powerpoint-accessibility.md) | The config controls which PPTX rules this agent enforces |
 | [document-accessibility-wizard](document-accessibility-wizard.md) | The wizard reads the config when running batch scans |
-
-

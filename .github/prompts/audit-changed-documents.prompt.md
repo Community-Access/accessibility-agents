@@ -35,9 +35,8 @@ Use the **document-accessibility-wizard** agent to:
 ## Handoff Transparency
 
 This workflow delegates to format-specific sub-agents for each changed document. Announce transitions:
+
 - **Start:** "Found [N] changed documents since last commit"
 - **Per file:** "Scanning [filename] using [agent-name]..."
 - **After completion:** "Delta scan complete: [N] files scanned, [N] regressions, [N] improvements"
 - **On failure:** "Scan failed for [filename]: [reason]. Continuing with remaining files."
-
-

@@ -7,15 +7,15 @@ model: inherit
 
 ## Authoritative Sources
 
-- **Python Documentation** — https://docs.python.org/3/
-- **wxPython Documentation** — https://docs.wxpython.org/
-- **PyInstaller Manual** — https://pyinstaller.org/en/stable/
-- **Nuitka Documentation** — https://nuitka.net/doc/user-manual.html
-- **pytest Documentation** — https://docs.pytest.org/
-- **mypy Documentation** — https://mypy.readthedocs.io/
-- **UI Automation (Windows)** — https://learn.microsoft.com/en-us/windows/win32/winauto/
-- **NSAccessibility (macOS)** — https://developer.apple.com/documentation/appkit/nsaccessibility
-- **AT-SPI (Linux)** — https://www.freedesktop.org/wiki/Accessibility/AT-SPI2/
+- **Python Documentation** — <https://docs.python.org/3/>
+- **wxPython Documentation** — <https://docs.wxpython.org/>
+- **PyInstaller Manual** — <https://pyinstaller.org/en/stable/>
+- **Nuitka Documentation** — <https://nuitka.net/doc/user-manual.html>
+- **pytest Documentation** — <https://docs.pytest.org/>
+- **mypy Documentation** — <https://mypy.readthedocs.io/>
+- **UI Automation (Windows)** — <https://learn.microsoft.com/en-us/windows/win32/winauto/>
+- **NSAccessibility (macOS)** — <https://developer.apple.com/documentation/appkit/nsaccessibility>
+- **AT-SPI (Linux)** — <https://www.freedesktop.org/wiki/Accessibility/AT-SPI2/>
 
 # Developer Hub - The Developer Workflow Orchestrator
 
@@ -87,6 +87,7 @@ Think of yourself as a senior staff engineer who has shipped production Python a
 ## Handoff Protocol
 
 When routing to a specialist:
+
 1. Summarize detected context (project, Python version, OS, error)
 2. Include the specific user intent
 3. Pass relevant file paths and code snippets
@@ -123,12 +124,10 @@ When a developer task spans into web or document accessibility, hand off to the 
 ## Extending with Custom Skills
 
 Developers can extend the platform with custom skills for:
+
 - **Language-specific accessibility patterns** (Python with asyncio, threading patterns)
 - **Tool chain customizations** (custom CLI patterns, company packaging standards)
 - **Framework extensions** (wxPython 4.3+ patterns, newer async libraries)
 - **Internal best practices** (company style guide, testing standards, deployment patterns)
 
 See [Creating Custom Skills](../../docs/guides/create-custom-skills.md) for step-by-step guidance on building reusable knowledge domains. When you encounter a patterns the agents don't yet cover (framework versions, organization standards, custom tooling), mention the `/create-skill` command to help developers scaffold new guidance immediately.
-
-
-

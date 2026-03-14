@@ -9,6 +9,7 @@ How to package, distribute, and install a11y-agent-team agents in different envi
 The primary distribution method. All agents, skills, and configuration are stored in the repository.
 
 **Install:**
+
 ```bash
 # macOS/Linux
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
@@ -18,6 +19,7 @@ irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main
 ```
 
 **Update:**
+
 ```bash
 # macOS/Linux
 bash update.sh
@@ -27,6 +29,7 @@ bash update.sh
 ```
 
 **Advantages:**
+
 - Full agent set with all configuration
 - Auto-update support via `update.sh` / `update.ps1`
 - Works for Claude Code, Copilot, Claude Desktop, and Codex CLI simultaneously
@@ -37,6 +40,7 @@ bash update.sh
 Pre-built extension for Claude Desktop with MCP tools and prompts.
 
 **Build from source:**
+
 ```bash
 cd desktop-extension
 npm install
@@ -48,10 +52,12 @@ npm run build
 Double-click the `.mcpb` file or drag it into Claude Desktop.
 
 **What's included:**
+
 - MCP tools: `check_contrast`, `get_accessibility_guidelines`, `check_heading_structure`, `check_link_text`, `check_form_labels`, `generate_vpat`, `run_axe_scan`, `scan_office_document`, `scan_pdf_document`, `extract_document_metadata`, `batch_scan_documents`
 - Prompt templates: `accessibility-audit`, `aria-review`, `modal-review`, `contrast-review`, `keyboard-review`, `live-region-review`
 
 **What's NOT included:**
+
 - Agent files (Claude Desktop uses tools and prompts, not agent files)
 - Agent Skills
 
@@ -77,6 +83,7 @@ cp -r .vscode/ /path/to/project/.vscode/
 ```
 
 **Minimal install (agents only):**
+
 ```bash
 cp -r .github/agents/ /path/to/project/.github/agents/
 cp .github/copilot-instructions.md /path/to/project/.github/
@@ -98,6 +105,7 @@ cp -r .claude/agents/ /path/to/project/.claude/agents/
 Create a focused package with only the agents you need:
 
 **Web-only package** (no document agents):
+
 ```text
 .github/agents/
   accessibility-lead.agent.md
@@ -116,6 +124,7 @@ Create a focused package with only the agents you need:
 ```
 
 **Document-only package:**
+
 ```text
 .github/agents/
   document-accessibility-wizard.agent.md
@@ -178,5 +187,3 @@ Approximate sizes for planning distribution:
 | VS Code config | 4 files | ~5 KB |
 | Documentation | Various | ~120 KB |
 | **Total** | **~70 files** | **~1 MB** |
-
-

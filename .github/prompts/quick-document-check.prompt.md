@@ -44,8 +44,7 @@ Verdict: [PASS if 0 errors | NEEDS WORK if 1-3 errors | FAIL if 4+ errors]
 ## Handoff Transparency
 
 Announce scan progress:
+
 - **Start:** "Running quick accessibility check on [filename]..."
 - **Completion:** "Quick check complete: [PASS/FAIL] - [N] errors found"
 - **On failure:** "Quick check failed: [reason]. Verify the file path and format."
-
-

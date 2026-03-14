@@ -51,6 +51,7 @@ Floor: 0 (minimum score)
 Issues found by both axe-core AND agent review are automatically upgraded to **high confidence** regardless of individual confidence ratings.
 
 Issues found by all three sources (axe-core + agent review + Playwright behavioral testing) are upgraded to **confirmed confidence** with a 1.2x weight multiplier. This applies when:
+
 - axe-core reports a violation
 - Agent code review identifies the same issue
 - Playwright behavioral scan confirms the issue at runtime (e.g., keyboard trap confirmed by actual Tab traversal, contrast failure confirmed by rendered CSS computation)
@@ -117,6 +118,7 @@ When Playwright is not available, the maximum achievable confidence remains **Hi
 ## Issue Severity Categories
 
 ### Critical
+
 - No keyboard access to essential functionality
 - Missing form labels on required fields
 - Images conveying critical information have no alt text
@@ -124,6 +126,7 @@ When Playwright is not available, the maximum achievable confidence remains **Hi
 - Keyboard traps with no escape
 
 ### Serious
+
 - Missing skip navigation
 - Poor heading hierarchy (skipped levels)
 - Focus not visible on interactive elements
@@ -131,6 +134,7 @@ When Playwright is not available, the maximum achievable confidence remains **Hi
 - Missing ARIA on custom widgets
 
 ### Moderate
+
 - Redundant ARIA on semantic elements
 - Suboptimal heading structure (multiple H1s)
 - Missing autocomplete on identity fields
@@ -138,6 +142,7 @@ When Playwright is not available, the maximum achievable confidence remains **Hi
 - Missing table captions
 
 ### Minor
+
 - Redundant title attributes
 - Suboptimal button text
 - Missing landmark roles where semantic elements exist

@@ -67,6 +67,7 @@ Check `content.opf` spine order matches logical reading order:
 **Standard:** EPUB 3.x navigation document
 
 Must have `nav.xhtml` with:
+
 - `<nav epub:type="toc">` (table of contents)
 - `<nav epub:type="landmarks">` (major sections)
 
@@ -85,6 +86,7 @@ Must have `nav.xhtml` with:
 **WCAG:** 1.3.1 Info and Relationships, 1.1.1 Non-text Content
 
 For each XHTML file:
+
 - Proper heading structure (H1-H6)
 - Alt text on images
 - Table headers (`<th scope="col">`)
@@ -96,6 +98,7 @@ For each XHTML file:
 **WCAG:** 3.1.1 Language of Page
 
 Each content document must have:
+
 ```html
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 ```
@@ -106,7 +109,7 @@ Each content document must have:
 java -jar epubcheck.jar ${input:epubFile}
 ```
 
-Download: https://github.com/w3c/epubcheck
+Download: <https://github.com/w3c/epubcheck>
 
 ### Step 8: Run Ace by DAISY
 
@@ -119,6 +122,7 @@ Ace checks EPUB Accessibility 1.1 conformance.
 ### Step 9: Provide Remediation Report
 
 For each issue:
+
 - Rule ID (EPUB-xxx)
 - WCAG/EPUB Accessibility criterion
 - Location (file, element)

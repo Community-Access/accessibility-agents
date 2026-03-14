@@ -104,5 +104,3 @@ The agent offers to generate a `.a11y-office-config.json` set to strict profile 
 
 - [audit-single-document](audit-single-document.md) - scan the template after creating it
 - [office-scan-config](../../agents/office-scan-config.md) - configure what gets checked during scanning
-
-

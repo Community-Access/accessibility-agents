@@ -150,7 +150,7 @@ Before using this agent, understand the five GitHub permission levels:
    | @dave | Write | - | Only in a11y-agent-team |
 
 4. Flags anomalies:
-   >  @dave has Write access to `a11y-agent-team` but is not in your team roster (preferences.md). Was this intentional?
+   > @dave has Write access to `a11y-agent-team` but is not in your team roster (preferences.md). Was this intentional?
 
 ### Branch Protection Setup
 

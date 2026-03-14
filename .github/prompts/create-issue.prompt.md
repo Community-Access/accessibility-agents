@@ -31,6 +31,7 @@ ${input:description:Describe the issue -- e.g. 'bug: login timeout after 30 seco
 5. Draft a well-structured issue:
 
    For **bugs**:
+
    ```markdown
    ## Description
    {expanded description}
@@ -52,6 +53,7 @@ ${input:description:Describe the issue -- e.g. 'bug: login timeout after 30 seco
    ```
 
    For **features**:
+
    ```markdown
    ## Description
    {what the feature should do}
@@ -67,6 +69,7 @@ ${input:description:Describe the issue -- e.g. 'bug: login timeout after 30 seco
    ```
 
    For **tasks/chores**:
+
    ```markdown
    ## Description
    {what needs to be done}
@@ -88,4 +91,3 @@ ${input:description:Describe the issue -- e.g. 'bug: login timeout after 30 seco
 9. Confirm with #tool:ask_questions: **Create** (recommended), **Edit title**, **Edit body**, **Change labels**, **Cancel**.
 10. Create with #tool:mcp_github_github_create_issue.
 11. Confirm with link to the created issue.
-

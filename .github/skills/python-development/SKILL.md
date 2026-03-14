@@ -55,12 +55,14 @@ strict = true
 ## PyInstaller Quick Reference
 
 ### One-File Mode
+
 ```python
 exe = EXE(pyz, a.scripts, a.binaries, a.zipfiles, a.datas,
           name='MyApp', console=False, icon='icon.ico')
 ```
 
 ### One-Folder Mode
+
 ```python
 exe = EXE(pyz, a.scripts, exclude_binaries=True,
           name='MyApp', console=False, icon='icon.ico')
@@ -68,6 +70,7 @@ coll = COLLECT(exe, a.binaries, a.zipfiles, a.datas, name='MyApp')
 ```
 
 ### Common Hidden Imports
+
 - `pkg_resources.extern`
 - `accessible_output2` (for a11y desktop apps)
 - `keyring.backends` (for credential storage)
@@ -129,6 +132,7 @@ self.status_bar.SetStatusText("Done")  # CRASH or CORRUPTION
 ## Common Pitfalls
 
 ### Python
+
 - **Mutable default arguments:** `def f(items=[])` shares the list across calls. Use `None` and create inside.
 - **Late binding closures:** `lambda: x` in a loop captures the variable, not the value. Use `lambda x=x: x`.
 - **Circular imports:** Move imports inside functions, use `TYPE_CHECKING` block, or restructure modules.
@@ -137,6 +141,7 @@ self.status_bar.SetStatusText("Done")  # CRASH or CORRUPTION
 - **String concatenation in loops:** Use `"".join()` or `io.StringIO` instead.
 
 ### wxPython
+
 - **GUI from worker thread:** Always use `wx.CallAfter()` or `wx.PostEvent()`.
 - **Missing `event.Skip()`:** Other handlers won't fire. Call `event.Skip()` unless you intentionally consume the event.
 - **Timer not stopped:** Stop timers in `EVT_CLOSE` handler to prevent callbacks after destruction.
@@ -261,6 +266,7 @@ Rule sets don't overlap -- WX covers wxPython widget patterns, DTK covers platfo
 ### Agent Routing
 
 For deeper expertise, the skill routes to these specialists:
+
 - **`desktop-a11y-specialist`** -- Platform API implementation, wx.Accessible, custom widget patterns (DTK-A11Y-* audit rules)
 - **`desktop-a11y-testing-coach`** -- NVDA/JAWS/Narrator testing, Accessibility Insights, automated UIA tests (TST-A11Y-* audit rules)
 - **`a11y-tool-builder`** -- Rule engine architecture, document parsers, severity scoring, report generators

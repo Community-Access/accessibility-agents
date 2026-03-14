@@ -33,10 +33,10 @@ Interpret the scope:
 Present results as a categorized list grouped by: Screen Reader, Keyboard Navigation, Visual/Contrast, Audio/Motion, Cognitive, Other.
 
 For each issue, include:
+
 - WCAG success criteria reference (e.g., "WCAG 2.4.3 Focus Order (Level A)")
 - ARIA design pattern if applicable (e.g., "Dialog pattern")
 - Impact level: Critical / Major / Minor
 - Assistive technologies affected
 
 After showing results, offer: _"Want me to generate a full monthly accessibility report with WCAG coverage analysis, dive into a specific change, or add another repo to tracking?"_
-

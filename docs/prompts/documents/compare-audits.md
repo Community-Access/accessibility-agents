@@ -107,5 +107,3 @@ The comparison is saved to `DOCUMENT-AUDIT-COMPARISON.md`.
 - [audit-document-folder](audit-document-folder.md) - generate new audit reports to compare
 - [audit-changed-documents](audit-changed-documents.md) - incremental comparison on each commit
 - [generate-vpat](generate-vpat.md) - export the current state as a VPAT after improvement
-
-

@@ -34,4 +34,3 @@ ${input:scope:Optional: repo name, 'org:orgname', date range (e.g. 'last 2 weeks
 6. Present a compact summary in chat with top insights and recommendations.
 
 After the dashboard: _"Want to dig into any bottlenecks? Or see individual stats for a team member?"_
-

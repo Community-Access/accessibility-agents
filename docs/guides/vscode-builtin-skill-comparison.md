@@ -14,6 +14,7 @@ VS Code 1.110 introduced a **built-in accessibility skill** to help developers c
 **Scope:** General accessibility guidance for new feature development in VS Code extensions and web projects.
 
 **Coverage:**
+
 - Basic WCAG 2.1 AA principles
 - Semantic HTML recommendations
 - ARIA best practices (high-level)
@@ -22,6 +23,7 @@ VS Code 1.110 introduced a **built-in accessibility skill** to help developers c
 - Screen reader compatibility considerations
 
 **Strengths:**
+
 - Always available (no installation required)
 - Fast, lightweight responses
 - Good for quick accessibility checks during development
@@ -97,13 +99,15 @@ VS Code 1.110 introduced a **built-in accessibility skill** to help developers c
 
 ## When to Use Each
 
-### Use VS Code Built-in Accessibility Skill When:
+### Use VS Code Built-in Accessibility Skill When
+
 - ✅ You need quick accessibility guidance during development
 - ✅ You're adding a new control or feature and want basic checks
 - ✅ You want general WCAG principles without deep domain knowledge
 - ✅ You're working on a non-web, non-document project (e.g., backend API)
 
-### Use Accessibility Agents When:
+### Use Accessibility Agents When
+
 - ✅ You need comprehensive WCAG 2.2 AA conformance audits
 - ✅ You're auditing Office documents, PDFs, or ePub files
 - ✅ You're building React Native or mobile apps
@@ -126,7 +130,7 @@ VS Code 1.110 introduced a **built-in accessibility skill** to help developers c
 
 **Example Workflow:**
 
-```
+```text
 Day-to-day development:
   ├─ VS Code built-in skill suggests accessible patterns ✅
   └─ Developer follows general guidance
@@ -186,6 +190,7 @@ Both are valuable. Both make your projects more accessible.
 ### Q: Do I need Accessibility Agents if VS Code has built-in accessibility?
 
 **A:** If you need:
+
 - Comprehensive WCAG 2.2 audits
 - Document accessibility (Office/PDF)
 - Mobile accessibility (React Native)
@@ -198,6 +203,7 @@ Then yes, you need Accessibility Agents. The built-in skill provides general gui
 ### Q: Can I use Accessibility Agents without VS Code?
 
 **A:** Yes! We support:
+
 - GitHub Copilot (VS Code, VS, JetBrains)
 - Claude Code CLI (terminal-based)
 - Claude Desktop (desktop app)
@@ -219,6 +225,7 @@ Then yes, you need Accessibility Agents. The built-in skill provides general gui
 ---
 
 **Related Documentation:**
+
 - [Agent Debug Panel Guide](agent-debug-panel.md) - Troubleshoot agent loading
 - [Context Management](context-management.md) - Session forking and compaction
 - [Lifecycle Hooks](../hooks-guide.md) - Proactive accessibility enforcement

@@ -5,6 +5,7 @@
 This guide reflects VS Code/Copilot chat session behavior documented in official sources.
 
 References:
+
 - VS Code updates and release notes: `https://code.visualstudio.com/updates`
 - Copilot customization and chat docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
 
@@ -25,7 +26,7 @@ Keep your summary focused on three elements:
 
 Brief count organized by severity level:
 
-```
+```yaml
 CRITICAL: 2 issues
 - Missing ARIA on custom widgets (2 instances)
 
@@ -46,7 +47,7 @@ LOW: 2 issues
 
 Identify issues that repeat across pages or documents:
 
-```
+```text
 PATTERNS DETECTED:
 - Interactive components lack ARIA labels (recurring)
 - Images in CMS missing alt text template (systemic)
@@ -57,7 +58,7 @@ PATTERNS DETECTED:
 
 Top 3 things to tackle, and any blockers:
 
-```
+```yaml
 NEXT PRIORITIES:
 1. Fix ARIA labels on custom widgets (blocks full widget testing)
 2. Batch alt text updates for CMS images (can parallelize)
@@ -108,6 +109,7 @@ Hover over any message in the chat history → click "Fork Conversation" to bran
 **What Changed:** Inline chat now always queues into the existing session instead of making isolated changes.
 
 **What This Means for Accessibility:**
+
 - Inline fixes maintain full audit context from the main chat session
 - Agent remembers findings from comprehensive accessibility review
 - Follow-up fixes reference previous WCAG violations and remediation priorities
@@ -122,6 +124,7 @@ Hover over any message in the chat history → click "Fork Conversation" to bran
 5. Continue using inline chat for all fixes → each one references the audit report
 
 **Best Practice:**
+
 - Complete accessibility audit first (web-accessibility-wizard, document-accessibility-wizard, or markdown-a11y-assistant)
 - Use inline chat for all subsequent fixes within the same session
 - Agent will correlate inline edits with audit findings automatically
@@ -131,17 +134,20 @@ Hover over any message in the chat history → click "Fork Conversation" to bran
 When agents run terminal commands (document scanning, axe-core scans, GitHub CLI calls), the output now appears in collapsible sections to reduce visual noise.
 
 **What to Expect:**
+
 - Commands appear collapsed by default
 - Click to expand and see full output if needed
 - Useful for commands with long output (file lists, scan results, API responses)
 
 **When to Expand:**
+
 - Troubleshooting failed commands
 - Verifying which files were scanned
 - Checking exact CLI output for unexpected behavior
 - Copying output for external tools or reports
 
 **Agents That Use Terminal Commands:**
+
 - `document-accessibility-wizard` - PowerShell/Bash file discovery
 - `web-accessibility-wizard` - `npx @axe-core/cli` scans
 - `github-hub`, `daily-briefing`, `pr-review`, `issue-tracker` - `gh` CLI commands
@@ -155,13 +161,15 @@ When agents run terminal commands (document scanning, axe-core scans, GitHub CLI
 **When:** After phase 6 (Remediation Prioritization), with 8+ conversation turns
 
 **Include:**
+
 - Breakdown of issues by page
 - Which pages have Critical/High issues
 - Framework-specific patterns (React hooks issues, Vue template patterns, etc.)
 - Top 3 pages to fix first
 
 **Example:**
-```
+
+```yaml
 WEB AUDIT SUMMARY (8 turns)
 
 ISSUES: 34 total
@@ -193,13 +201,15 @@ NEXT STEPS:
 **When:** After processing 3+ documents, with 6+ turns
 
 **Include:**
+
 - Document count and format breakdown
 - Which documents have Critical/High issues
 - Most common issue (fix once = fix everywhere)
 - Compliance status by document type
 
 **Example:**
-```
+
+```yaml
 DOCUMENT AUDIT SUMMARY (6 turns)
 
 DOCUMENTS SCANNED: 12
@@ -235,13 +245,15 @@ NEXT STEPS:
 **When:** After scanning 25+ files, with 6+ turns
 
 **Include:**
+
 - File count and scan coverage
 - Most common accessibility issue
 - Link/anchor validation status
 - Auto-fixable vs human-judgment items
 
 **Example:**
-```
+
+```yaml
 MARKDOWN AUDIT SUMMARY (6 turns, 35 files)
 
 FILES SCANNED: 35
@@ -301,7 +313,7 @@ NEXT STEPS:
 
 After compaction, agent has the summary. You can:
 
-```
+```python
 "Remember the 2 Critical issues from the summary? Let's fix those first."
 "Can you generate a batch script for the 8 auto-fixable issues?"
 "What's the best order to fix the 34 issues we found?"
@@ -311,6 +323,7 @@ After compaction, agent has the summary. You can:
 ---
 
 **See also:**
+
 - [Web Accessibility Wizard](../agents/web-accessibility-wizard.md) - guidance per-phase
 - [Document Accessibility Wizard](../agents/document-accessibility-wizard.md) - document-specific
 - [Markdown Accessibility](../agents/markdown-a11y-assistant.md) - markdown audits

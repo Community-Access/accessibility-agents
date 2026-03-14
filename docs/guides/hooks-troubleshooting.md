@@ -5,6 +5,7 @@
 ### Issue 1: "Python not found" or "python: command not found"
 
 **Symptoms:**
+
 - Hook fails with "python: command not found"
 - VS Code shows hook error in console
 - Claude Code logs show exec failure
@@ -12,6 +13,7 @@
 **Cause:** Python not installed or not in PATH
 
 **Solution (macOS / Linux):**
+
 ```bash
 # Check if Python is installed
 which python3
@@ -28,6 +30,7 @@ sed -i 's/python /python3 /g' .github/hooks/hooks-consolidated.json
 ```
 
 **Solution (Windows PowerShell):**
+
 ```powershell
 # Check if Python is installed
 Get-Command python
@@ -44,12 +47,14 @@ winget install Python.Python.3.11
 ### Issue 2: Hook Script "Permission Denied"
 
 **Symptoms:**
+
 - macOS/Linux: "Permission denied: '.github/hooks/scripts/session-start.py'"
 - Hook fails to execute
 
 **Cause:** Hook scripts not marked as executable
 
 **Solution (macOS / Linux):**
+
 ```bash
 chmod +x .github/hooks/scripts/*.py
 ```
@@ -61,6 +66,7 @@ chmod +x .github/hooks/scripts/*.py
 ### Issue 3: Hook Not Firing
 
 **Symptoms:**
+
 - Expected hook output not appearing
 - Edit gate not blocking UI files
 - Session start context not injected
@@ -68,6 +74,7 @@ chmod +x .github/hooks/scripts/*.py
 **Debugging Steps:**
 
 **Step 1: Verify Hook Configuration Exists**
+
 ```bash
 # VS Code
 cat .github/hooks/hooks-consolidated.json
@@ -77,6 +84,7 @@ cat .claude/hooks/hooks-consolidated.json
 ```
 
 **Step 2: Check Platform Support**
+
 - VS Code: Hooks require VS Code 1.110+ (February 2026 or later)
 - Claude Code: Hooks supported in all recent versions
 - Gemini CLI: Hooks supported via `.gemini/extensions/a11y-agents/hooks/hooks.json`
@@ -84,6 +92,7 @@ cat .claude/hooks/hooks-consolidated.json
 **Step 3: Enable Hook Debugging**
 
 VS Code (settings.json):
+
 ```json
 {
   "copilot.hooks.debug": true
@@ -91,6 +100,7 @@ VS Code (settings.json):
 ```
 
 Claude Code (~/.claude/settings.json):
+
 ```json
 {
   "debugHooks": true
@@ -98,11 +108,13 @@ Claude Code (~/.claude/settings.json):
 ```
 
 Gemini CLI (interactive mode):
-```
+
+```text
 /hooks panel
 ```
 
 **Step 4: Test Hook Script Manually**
+
 ```bash
 # VS Code / Claude Code SessionStart
 echo '{"hookEventName": "SessionStart"}' | python .github/hooks/scripts/session-start.py
@@ -127,6 +139,7 @@ Expected output: Valid JSON (Gemini hooks output `decision`, `systemMessage`, or
 ### Issue 4: Review Marker Not Clearing
 
 **Symptoms:**
+
 - `.github/.a11y-reviewed` persists across sessions
 - Edit gate never re-engages after first review
 
@@ -135,11 +148,13 @@ Expected output: Valid JSON (Gemini hooks output `decision`, `systemMessage`, or
 **Solution:**
 
 **Step 1: Manually Remove Marker**
+
 ```bash
 rm .github/.a11y-reviewed
 ```
 
 **Step 2: Verify Session End Hook**
+
 ```bash
 # Test Stop event (VS Code)
 echo '{"hookEventName": "Stop"}' | python .github/hooks/scripts/session-end.py
@@ -150,6 +165,7 @@ echo '{"hookEventName": "SessionEnd"}' | python .github/hooks/scripts/session-en
 
 **Step 3: Check .gitignore**
 Ensure marker is not committed:
+
 ```bash
 # Add to .gitignore if missing
 echo ".github/.a11y-reviewed" >> .gitignore
@@ -160,6 +176,7 @@ echo ".github/.a11y-reviewed" >> .gitignore
 ### Issue 5: Cross-Platform Path Issues
 
 **Symptoms:**
+
 - Windows: Hook fails with "No such file or directory"
 - macOS/Linux: Hook can't find scripts
 
@@ -176,6 +193,7 @@ Python scripts use `pathlib.Path()` which handles cross-platform paths automatic
 ```
 
 **Not:**
+
 ```json
 {
   "command": "python .github\\hooks\\scripts\\session-start.py"
@@ -187,6 +205,7 @@ Python scripts use `pathlib.Path()` which handles cross-platform paths automatic
 ### Issue 6: Hook Timeout
 
 **Symptoms:**
+
 - Hook aborted after 5-10 seconds
 - "Hook execution timeout" in logs
 
@@ -195,6 +214,7 @@ Python scripts use `pathlib.Path()` which handles cross-platform paths automatic
 **Solution:**
 
 Increase timeout in hook configuration:
+
 ```json
 {
   "type": "command",
@@ -204,6 +224,7 @@ Increase timeout in hook configuration:
 ```
 
 Optimize hook script:
+
 - Remove network calls
 - Cache expensive operations
 - Use set() for O(1) lookups instead of list iteration
@@ -213,12 +234,14 @@ Optimize hook script:
 ### Issue 7: JSON Parse Error
 
 **Symptoms:**
+
 - "Invalid JSON input" in stderr
 - Hook fails immediately
 
 **Cause:** Hook script receiving malformed JSON or no input
 
 **Debugging:**
+
 ```bash
 # Test hook with valid input
 echo '{"hookEventName": "SessionStart"}' | python .github/hooks/scripts/session-start.py
@@ -232,6 +255,7 @@ echo '{"hookEventName": "SessionStart"}' | python .github/hooks/scripts/session-
 ### Issue 8: Hook Blocks Non-UI Files
 
 **Symptoms:**
+
 - Edit gate blocks Python, markdown, or non-UI files
 - False positive matches
 
@@ -267,6 +291,7 @@ def is_ui_file(file_path):
 ### Issue 9: Env Variable SKIP_A11Y_HOOKS Not Working
 
 **Symptoms:**
+
 - Set `SKIP_A11Y_HOOKS=1` but hooks still run
 
 **Cause:** Environment variable not read by platform
@@ -274,12 +299,14 @@ def is_ui_file(file_path):
 **Current Status:** Hook scripts don't check for `SKIP_A11Y_HOOKS` yet (feature planned for v3.1)
 
 **Workaround:**
+
 ```bash
 # Disable hooks by renaming configuration
 mv .github/hooks/hooks-consolidated.json .github/hooks/hooks-consolidated.json.disabled
 ```
 
 **Re-enable:**
+
 ```bash
 mv .github/hooks/hooks-consolidated.json.disabled .github/hooks/hooks-consolidated.json
 ```
@@ -289,6 +316,7 @@ mv .github/hooks/hooks-consolidated.json.disabled .github/hooks/hooks-consolidat
 ### Issue 10: VS Code vs Claude Code Naming Confusion
 
 **Symptoms:**
+
 - Hook fires on one platform but not the other
 - "Stop" vs "SessionEnd" confusion
 
@@ -331,6 +359,7 @@ If these solutions don't resolve your issue:
    - Gemini CLI: `/hooks panel` inside an active session
 
 2. **Test Hook Scripts Manually:**
+
    ```bash
    # VS Code / Claude Code
    echo '{"hookEventName": "PreToolUse", "tool_name": "replace_string_in_file", "tool_input": {"filePath": "src/App.jsx"}}' | python .github/hooks/scripts/enforce-edit-gate.py
@@ -340,7 +369,7 @@ If these solutions don't resolve your issue:
    ```
 
 3. **Open GitHub Issue:**
-   https://github.com/Community-Access/accessibility-agents/issues/new?labels=hooks,bug
+   <https://github.com/Community-Access/accessibility-agents/issues/new?labels=hooks,bug>
 
 4. **Discord Community:**
    Join #accessibility-agents channel for real-time help

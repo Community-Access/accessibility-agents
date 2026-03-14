@@ -23,6 +23,7 @@ Create and manage `.a11y-pdf-config.json` files for PDF accessibility scanning.
 ### Create New Config
 
 Ask:
+
 - **Profile:** strict (all 3 layers), moderate (PDFUA + PDFBP), minimal (PDFUA only)
 - **Severity filter:** All, Errors+Warnings, Errors only
 
@@ -85,6 +86,7 @@ jq '.severityFilter = "errors-only"' .a11y-pdf-config.json > tmp.json && mv tmp.
 ### Validate Config
 
 Check:
+
 - ✅ Valid JSON syntax
 - ✅ version field present
 - ✅ All rule IDs valid (PDFUA.*, PDFBP.*, PDFQ.*)
@@ -95,6 +97,7 @@ Check:
 ### Explain Config
 
 For each rule:
+
 - **Rule ID:** PDFUA.001
 - **Layer:** PDF/UA Conformance
 - **Description:** Tagged structure required

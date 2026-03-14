@@ -26,6 +26,7 @@ Audit Microsoft PowerPoint (.pptx) presentations for accessibility compliance wi
 **WCAG:** 2.4.2 Page Titled, 2.4.6 Headings and Labels
 
 Every slide must have:
+
 - Unique, descriptive title
 - Title placeholder used (not text box)
 
@@ -37,6 +38,7 @@ Check: Home → Layout → select layout with Title placeholder
 **WCAG:** 1.1.1 Non-text Content
 
 All images/charts/SmartArt/shapes must have:
+
 - Alt text describing content
 - Or marked as decorative
 
@@ -48,6 +50,7 @@ Add: Right-click → View Alt Text
 **WCAG:** 1.3.2 Meaningful Sequence
 
 Screen reader reading order must match visual order:
+
 - Home → Arrange → Selection Pane
 - Drag to reorder objects (bottom = read first)
 
@@ -77,6 +80,7 @@ Edit: Right-click → Edit Hyperlink → ScreenTip
 **WCAG:** 2.4.6 Headings and Labels
 
 Each slide title should be unique:
+
 - "Introduction", "Overview" → "Introduction to Topic", "Project Overview"
 
 Or use slide numbers to differentiate.
@@ -87,6 +91,7 @@ Or use slide numbers to differentiate.
 **WCAG:** 2.4.1 Bypass Blocks
 
 Use sections to organize long presentations:
+
 - View → Slide Sorter → right-click → Add Section
 
 ### Step 8: Check Media Accessibility
@@ -101,6 +106,7 @@ Use sections to organize long presentations:
 ### Step 9: Provide Remediation Report
 
 For each issue:
+
 - Rule ID (PPTX-xxx)
 - WCAG criterion
 - Location (slide number, object name)

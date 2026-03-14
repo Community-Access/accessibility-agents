@@ -133,29 +133,34 @@ For agents that collect from multiple data streams, run independent streams simu
 ### Example: Daily Briefing - 3 Parallel Batches
 
 **Batch 1 - fully independent, run simultaneously:**
+
 - Issues (assigned, mentioned, authored)
 - Pull requests (review-requested, authored)
 - Releases & deployments
 - Accessibility updates
 
 **Batch 2 - run after Batch 1 (CI needs PR list from Batch 1):**
+
 - GitHub Discussions
 - CI/CD health (cross-references PR list)
 - Security alerts
 
 **Batch 3 - can overlap with Batch 2:**
+
 - Project board status
 - Recently closed/merged work
 
 ### Example: Analytics - 2 Parallel Batches
 
 **Batch 1 - collection (all independent):**
+
 - Closed/merged PRs in period
 - Opened issues in period
 - CI workflow runs in period
 - Security alerts in period
 
 **Batch 2 - analysis (depends on Batch 1 data):**
+
 - Health score computation
 - Velocity metrics calculation
 - Bottleneck detection
@@ -184,6 +189,7 @@ If a search returns 0 results:
 3. Never return 0 results without trying at least one broader query first.
 
 Recovery cascade:
+
 1. First try: Remove date qualifier
 2. Second try: Expand scope (add org: or remove repo: qualifier)
 3. Third try: Remove label filters
@@ -202,6 +208,7 @@ Recovery cascade:
 ## Result Deduplication
 
 When the same item appears in multiple searches (e.g., an issue you're both assigned to AND mentioned in):
+
 - Show it once, with all context combined.
 - In the Signal column, combine signals: _"Assigned, @mentioned"_.
 - In priority calculations, apply the highest-scoring signal, not additive.

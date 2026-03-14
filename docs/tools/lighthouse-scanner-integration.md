@@ -86,6 +86,7 @@ jobs:
 The `lighthouse-bridge` is a hidden helper agent that bridges Lighthouse CI data into the agent ecosystem. It is not user-invokable -- other agents call it automatically.
 
 **What it does:**
+
 - Detects Lighthouse CI workflows and `lighthouserc.*` config files
 - Parses Lighthouse accessibility reports (overall score and individual audit failures)
 - Maps Lighthouse weight-based severity to the agent model (Critical/Serious/Moderate/Minor)

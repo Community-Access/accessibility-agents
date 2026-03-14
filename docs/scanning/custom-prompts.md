@@ -108,5 +108,3 @@ These prompts invoke the GitHub workflow agents (`pr-review`, `issue-tracker`, `
 | `add-collaborator` | Add a collaborator with role guidance and confirmation | [add-collaborator guide](../prompts/github/add-collaborator.md) |
 | `build-template` | Interactive GitHub issue template builder | [build-template guide](../prompts/github/build-template.md) |
 | `build-a11y-template` | Generate a pre-built accessibility bug report issue template | [build-a11y-template guide](../prompts/github/build-a11y-template.md) |
-
-

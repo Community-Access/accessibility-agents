@@ -31,6 +31,7 @@ Ask the user:
 ### Step 2: Check ARIA Implementation
 
 **For standard modals:**
+
 ```jsx
 <div
   role="dialog"
@@ -45,17 +46,20 @@ Ask the user:
 ```
 
 **For alerts:**
+
 - Use `role="alertdialog"` for urgent/destructive actions
 - Screen reader interrupts to announce
 
 ### Step 3: Check Focus Management
 
 **On open:**
+
 1. Save reference to trigger element
 2. Move focus into modal (first focusable element or close button)
 3. Trap focus within modal boundaries
 
 **On close:**
+
 1. Return focus to trigger element
 2. Remove or hide modal from DOM
 
@@ -69,6 +73,7 @@ Ask the user:
 ### Step 5: Check Inert Content
 
 Use `aria-modal="true"` or:
+
 - Set `aria-hidden="true"` on background content
 - Set `inert` attribute on background content (modern browsers)
 - Ensures screen reader can't navigate outside modal
@@ -76,6 +81,7 @@ Use `aria-modal="true"` or:
 ### Step 6: Check Keyboard Support
 
 Required keyboard interactions:
+
 - **Escape** -- Close modal
 - **Tab** -- Cycle forward through focusable elements
 - **Shift+Tab** -- Cycle backward
@@ -85,6 +91,7 @@ Required keyboard interactions:
 ### Step 7: Provide Remediation
 
 For each issue:
+
 - ARIA APG Dialog pattern reference
 - WCAG criterion (2.4.3 Focus Order, 1.3.1 Info and Relationships)
 - Code example showing correct implementation

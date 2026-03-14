@@ -64,8 +64,10 @@ When ASCII art has no preceding description:
 <summary>ASCII diagram</summary>
 
 ```
+
 [original ASCII art]
-```
+
+```html
 
 </details>
 ```

@@ -16,6 +16,7 @@ Get plain-language explanations of WCAG (Web Content Accessibility Guidelines) s
 **What would you like to know?** `${input:question}`
 
 Examples:
+
 - "Explain SC 1.4.3 Contrast (Minimum)"
 - "What changed in WCAG 2.2?"
 - "What's the difference between Level A and AA?"
@@ -26,6 +27,7 @@ Examples:
 ### Step 1: Understand the Question
 
 Classify the question:
+
 - **Specific criterion** -- User wants to understand one SC (e.g., 1.4.3)
 - **Between versions** -- Changes from 2.0 → 2.1 → 2.2
 - **Conformance levels** -- A vs AA vs AAA
@@ -46,6 +48,7 @@ For specific criteria, include:
 ### Step 3: Cite Authoritative Sources
 
 Always reference:
+
 - **WCAG 2.2 specification** (W3C Recommendation)
 - **Understanding WCAG** documents
 - **Techniques for WCAG** (sufficient techniques)
@@ -55,6 +58,7 @@ Always reference:
 This agent teaches the standard itself, not implementation.
 
 For code guidance, recommend:
+
 - `accessibility-lead` -- Web code review
 - `forms-specialist` -- Form-specific implementation
 - Framework-specific agents

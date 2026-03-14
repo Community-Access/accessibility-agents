@@ -71,4 +71,3 @@ The tools accept inputs as described in each tool's parameters. Agents call thes
 # Copilot - same behavior
 @web-accessibility-wizard audit the signup page
 ```
-

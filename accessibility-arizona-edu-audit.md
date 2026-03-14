@@ -1,11 +1,12 @@
 # Web Accessibility Audit Report
+
 ## University of Arizona Accessibility Website
 
 **Project Information**
 
 | Field | Value |
 |-------|-------|
-| URL | http://accessibility.arizona.edu |
+| URL | <http://accessibility.arizona.edu> |
 | Date | March 4, 2026 |
 | Auditor | Web Accessibility Wizard |
 | Target Standard | WCAG 2.2 Level AA |
@@ -30,6 +31,7 @@ The University of Arizona Accessibility website demonstrates good intentions wit
 **Estimated Remediation Effort:** Medium (2-3 days)
 
 **Key Strengths:**
+
 - Skip navigation link present
 - Clear heading structure with H2-H3 hierarchy
 - Contact information readily available
@@ -37,6 +39,7 @@ The University of Arizona Accessibility website demonstrates good intentions wit
 - Comprehensive content organization
 
 **Critical Concerns:**
+
 - Multiple H1 elements on single page
 - Redundant links throughout card components
 - Ambiguous link text without sufficient context
@@ -67,6 +70,7 @@ The University of Arizona Accessibility website demonstrates good intentions wit
 The H1 "Everyone deserves a welcoming Arizona experience" is repeated at least 8-10 times throughout the page markup, likely due to a templating or rendering issue.
 
 **Recommended Fix:**
+
 ```html
 <!-- Use ONE H1 at the top of main content -->
 <main id="content">
@@ -100,6 +104,7 @@ The H1 "Everyone deserves a welcoming Arizona experience" is repeated at least 8
 
 **Current State:**
 Each card component has two links going to the same URL:
+
 ```html
 <!-- Card with redundant links -->
 <h3><a href="/i-am/student-or-family-member">Students & Families</a></h3>
@@ -109,6 +114,7 @@ Each card component has two links going to the same URL:
 
 **Recommended Fix:**
 Combine into a single link wrapping the entire card:
+
 ```html
 <!-- Option 1: Single wrapping link (preferred) -->
 <article class="card">
@@ -143,6 +149,7 @@ Combine into a single link wrapping the entire card:
 **Location:** News section - at least 2 instances of "Read more" links.
 
 **Current State:**
+
 ```html
 <a href="/news/accessibility-fundamentals-training">Read more</a>
 <a href="/news/ada-title-ii-digital-accessibility">Read more</a>
@@ -150,6 +157,7 @@ Combine into a single link wrapping the entire card:
 
 **Recommended Fix:**
 Make link text descriptive:
+
 ```html
 <!-- Option 1: Include article title in link text -->
 <a href="/news/accessibility-fundamentals-training">
@@ -182,12 +190,14 @@ Make link text descriptive:
 **Location:** Multiple card components in "Understand accessibility" section and other areas.
 
 **Current State:**
+
 ```html
 <a href="/accessibility-101/why-it-matters">Learn more</a>
 <!-- Multiple other cards with "Learn more" -->
 ```
 
 **Recommended Fix:**
+
 ```html
 <!-- Include context in link text -->
 <a href="/accessibility-101/why-it-matters">
@@ -214,11 +224,13 @@ Make link text descriptive:
 **Location:** Site header - University of Arizona wordmark logo
 
 **Current State:**
+
 ```html
 <img src="logo.png" alt="The University of Arizona Wordmark Line Logo White">
 ```
 
 **Recommended Fix:**
+
 ```html
 <!-- Remove color reference -->
 <img src="logo.png" alt="The University of Arizona">
@@ -243,6 +255,7 @@ Make link text descriptive:
 **Location:** "Understand accessibility" section - Myths vs. facts card
 
 **Current State:**
+
 ```html
 <h3><a href="/accessibility-101/myths-vs-facts">Myths vs. facts</a></h3>
 <p>Common misconceptions debunked.</p>
@@ -250,6 +263,7 @@ Make link text descriptive:
 ```
 
 **Recommended Fix:**
+
 ```html
 <!-- More descriptive text -->
 <a href="/accessibility-101/myths-vs-facts">View myths vs. facts</a>
@@ -272,11 +286,13 @@ Make link text descriptive:
 **Location:** "Understand accessibility" section - Experience it card
 
 **Current State:**
+
 ```html
 <a href="/tools-checklists/experience-accessibility-simulations">Try simulations</a>
 ```
 
 **Recommended Fix:**
+
 ```html
 <a href="/tools-checklists/experience-accessibility-simulations">
   Try accessibility simulations
@@ -305,6 +321,7 @@ Make link text descriptive:
 Cannot verify without live DOM inspection, but the text "I am aSelect your audienceGoto the page for that group" suggests this may be a custom widget.
 
 **What to Verify:**
+
 1. Is this a native `<select>` element or custom widget?
 2. If custom: Does it use proper ARIA roles (`combobox`, `listbox`, `option`)?
 3. Does it announce the selected value to screen readers?
@@ -312,6 +329,7 @@ Cannot verify without live DOM inspection, but the text "I am aSelect your audie
 5. Does it have a visible label?
 
 **Recommended Implementation:**
+
 ```html
 <!-- Native select (preferred) -->
 <label for="audience-select">I am a</label>
@@ -355,12 +373,14 @@ Cannot verify without live DOM inspection, but the text "I am aSelect your audie
 **Location:** Top of page (before header)
 
 **What to Verify:**
+
 1. Is the skip link visible when focused?
 2. Does the target element (`#content`) exist?
 3. Does the target element receive focus when activated?
 4. Is focus styling clearly visible?
 
 **Recommended Implementation:**
+
 ```html
 <!-- Skip link should be visible on focus -->
 <a href="#content" class="skip-link">Skip to main content</a>
@@ -400,6 +420,7 @@ Cannot verify without live DOM inspection, but the text "I am aSelect your audie
 **Impact:** The `<html lang="en">` attribute is essential for screen readers to use the correct pronunciation. Cannot verify from fetched content.
 
 **What to Verify:**
+
 ```html
 <!-- Verify this is present -->
 <html lang="en">
@@ -407,6 +428,7 @@ Cannot verify without live DOM inspection, but the text "I am aSelect your audie
 
 **Recommended Fix:**
 If missing, add:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -430,11 +452,13 @@ If missing, add:
 **Impact:** Proper viewport configuration is essential for mobile accessibility and text reflow at 200% zoom.
 
 **What to Verify:**
+
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ```
 
 **Avoid:**
+
 ```html
 <!-- These disable pinch-zoom and hurt accessibility -->
 <meta name="viewport" content="user-scalable=no">
@@ -455,12 +479,14 @@ If missing, add:
 **Location:** Multiple locations including consultation form link and feedback link
 
 **Current State:**
+
 ```html
 <a href="https://forms.office.com/...">Accessibility consultation form</a>
 <a href="https://forms.office.com/r/J6rvzSkNhi">Submit feedback</a>
 ```
 
 **Recommended Fix:**
+
 ```html
 <!-- If opens in new tab -->
 <a href="https://forms.office.com/..." target="_blank" rel="noopener">
@@ -488,12 +514,14 @@ If missing, add:
 **Impact:** All interactive elements must have clearly visible focus indicators. This requires live browser testing.
 
 **What to Verify:**
+
 1. Do all links, buttons, and form controls show visible focus?
 2. Is the focus indicator at least 2px solid?
 3. Does it meet 3:1 contrast against adjacent colors?
 4. Is `outline: none` used anywhere without a replacement?
 
 **Recommended Implementation:**
+
 ```css
 /* Ensure visible focus for all interactive elements */
 a:focus,
@@ -524,6 +552,7 @@ button:focus {
 **Impact:** Text must meet minimum contrast ratios: 4.5:1 for normal text, 3:1 for large text (18pt+ or 14pt+ bold).
 
 **What to Verify:**
+
 1. Body text against background
 2. Link text against background
 3. Button text and button background
@@ -531,8 +560,9 @@ button:focus {
 5. Banner text ("Welcome to our new website!")
 
 **Testing Tools:**
+
 - Chrome DevTools Contrast Ratio tool
-- WebAIM Contrast Checker: https://webaim.org/resources/contrastchecker/
+- WebAIM Contrast Checker: <https://webaim.org/resources/contrastchecker/>
 - axe DevTools browser extension
 
 **Priority:** MEDIUM - Requires live testing
@@ -549,18 +579,21 @@ button:focus {
 **Location:** Top of page
 
 **Current State:**
-```
+
+```python
 Welcome to our new website! The content and organization have been heavily
 redone and we want to hear from you! [Submit feedback]
 ```
 
 **What to Verify:**
+
 1. Can users dismiss this banner?
 2. Does it persist across pages?
 3. Is there a close button?
 4. Does it use `role="status"` or `role="banner"`?
 
 **Recommended Implementation:**
+
 ```html
 <div role="banner" aria-label="Site notification" class="notice-banner">
   <p>
@@ -588,11 +621,13 @@ redone and we want to hear from you! [Submit feedback]
 **Location:** Site header
 
 **What to Verify:**
+
 1. Does the search input have a visible label or aria-label?
 2. Is there a submit button with proper accessible name?
 3. Does it use role="search" on the containing element?
 
 **Recommended Implementation:**
+
 ```html
 <form role="search" action="/search" method="get">
   <label for="site-search">Search the site</label>
@@ -632,11 +667,13 @@ redone and we want to hear from you! [Submit feedback]
 **Location:** End of News section
 
 **Current State:**
+
 ```html
 <a href="/news">Read all news</a>
 ```
 
 **Recommended Enhancement:**
+
 ```html
 <a href="/news">Read all accessibility news</a>
 <!-- OR -->
@@ -657,11 +694,13 @@ redone and we want to hear from you! [Submit feedback]
 **Location:** After "Start by role" cards
 
 **Current State:**
+
 ```html
 <a href="/i-am">Browse all role guides</a>
 ```
 
 **Recommended Enhancement:**
+
 ```html
 <a href="/i-am">Browse all accessibility role guides</a>
 ```
@@ -680,11 +719,13 @@ redone and we want to hear from you! [Submit feedback]
 **Location:** Contact section in Need Help area
 
 **Current State:**
+
 ```html
 <a href="tel:+15206213268">520-621-3268</a>
 ```
 
 **Enhancement:**
+
 ```html
 <!-- Current implementation is correct -->
 <!-- Could optionally display country code for international users -->
@@ -705,11 +746,13 @@ redone and we want to hear from you! [Submit feedback]
 **Location:** Need Help section
 
 **Current State:**
+
 ```html
 <a href="https://drc.arizona.edu/asl-cart">DRC request form</a>
 ```
 
 **Enhancement:**
+
 ```html
 <a href="https://drc.arizona.edu/asl-cart">
   DRC request form
@@ -731,6 +774,7 @@ redone and we want to hear from you! [Submit feedback]
 **Location:** Footer
 
 **Current State:**
+
 ```html
 <a href="https://www.arizona.edu/university-arizona-land-acknowledgment">
   the University of Arizona is on the land and territories of Indigenous peoples
@@ -738,6 +782,7 @@ redone and we want to hear from you! [Submit feedback]
 ```
 
 **Enhancement:**
+
 ```html
 We respectfully acknowledge 
 <a href="https://www.arizona.edu/university-arizona-land-acknowledgment">
@@ -774,16 +819,19 @@ We respectfully acknowledge
 **Note:** This audit covers only the homepage. The following patterns should be investigated across the entire site:
 
 ### Systemic Issues (Likely on Every Page)
+
 1. **Multiple H1 elements** - If this is a template issue, it affects all pages
 2. **Logo alt text with "White"** - Appears in site header, likely on every page
 3. **Navigation components** - "I am a" selector, Search, Menu accessibility needs verification site-wide
 
 ### Component-Level Issues (Fix Once, Fix Everywhere)
+
 1. **Card components with redundant links** - Used throughout site for role cards, area cards, understanding cards
 2. **News card "Read more" links** - Template pattern likely reused on news listing pages
 3. **CTA button text patterns** - "Learn more," "See the truth," etc. may be reused
 
 ### Remediation Priority
+
 1. **Fix the card component template** (addresses 20+ redundant link instances)
 2. **Fix the H1 rendering issue** (template/layout bug affecting all pages)
 3. **Update logo alt text** (header component fix affecting all pages)
@@ -794,11 +842,13 @@ We respectfully acknowledge
 ## Recommended Testing Setup
 
 ### Automated Testing
-1. **Install axe DevTools** browser extension: https://www.deque.com/axe/devtools/
+
+1. **Install axe DevTools** browser extension: <https://www.deque.com/axe/devtools/>
 2. **Run axe-core scan** on all major page templates
 3. **Set up Lighthouse CI** for continuous accessibility scoring
 
 ### Manual Testing Checklist
+
 - [ ] Test keyboard navigation on all interactive elements (Tab, Shift+Tab, Enter, Escape)
 - [ ] Verify skip link is visible on focus and works correctly
 - [ ] Test "I am a" dropdown with keyboard only (Arrow keys, Enter, Escape)
@@ -810,7 +860,8 @@ We respectfully acknowledge
 - [ ] Test with browser high contrast mode enabled
 
 ### Screen Reader Testing
-- **Windows:** NVDA (free) + Firefox - https://www.nvaccess.org/
+
+- **Windows:** NVDA (free) + Firefox - <https://www.nvaccess.org/>
 - **macOS:** VoiceOver (built-in) + Safari - Cmd+F5 to enable
 - **Test scenarios:**
   - Navigate by headings (H key in NVDA, VO+Cmd+H in VoiceOver)
@@ -819,6 +870,7 @@ We respectfully acknowledge
   - Use "I am a" dropdown with screen reader only
 
 ### CI/CD Recommendation
+
 ```yaml
 # Add to .github/workflows/accessibility.yml
 name: Accessibility Check
@@ -845,6 +897,7 @@ jobs:
 ## Remediation Roadmap
 
 ### Phase 1: Critical Fixes (Week 1)
+
 **Effort:** 8-16 hours  
 **Impact:** High
 
@@ -860,6 +913,7 @@ jobs:
    - Deploy and verify across all pages using cards
 
 ### Phase 2: Major Fixes (Week 2)
+
 **Effort:** 8-12 hours  
 **Impact:** Medium-High
 
@@ -884,6 +938,7 @@ jobs:
    - Apply to forms.office.com links and other external links
 
 ### Phase 3: Moderate Fixes (Week 3)
+
 **Effort:** 4-8 hours  
 **Impact:** Medium
 
@@ -896,6 +951,7 @@ jobs:
 13. **Audit search form accessibility** (1 hour)
 
 ### Phase 4: Minor Enhancements (Week 4)
+
 **Effort:** 2-4 hours  
 **Impact:** Low
 
@@ -940,32 +996,37 @@ jobs:
 ## Additional Resources
 
 ### WCAG 2.2 Quick Reference
-- **WCAG 2.2:** https://www.w3.org/WAI/WCAG22/quickref/
-- **Understanding WCAG 2.2:** https://www.w3.org/WAI/WCAG22/Understanding/
+
+- **WCAG 2.2:** <https://www.w3.org/WAI/WCAG22/quickref/>
+- **Understanding WCAG 2.2:** <https://www.w3.org/WAI/WCAG22/Understanding/>
 
 ### Testing Tools
-- **axe DevTools:** https://www.deque.com/axe/devtools/
-- **WAVE:** https://wave.webaim.org/
+
+- **axe DevTools:** <https://www.deque.com/axe/devtools/>
+- **WAVE:** <https://wave.webaim.org/>
 - **Lighthouse:** Built into Chrome DevTools
-- **Color Contrast Checker:** https://webaim.org/resources/contrastchecker/
+- **Color Contrast Checker:** <https://webaim.org/resources/contrastchecker/>
 
 ### Screen Readers
-- **NVDA (Windows):** https://www.nvaccess.org/
-- **JAWS (Windows):** https://www.freedomscientific.com/products/software/jaws/
+
+- **NVDA (Windows):** <https://www.nvaccess.org/>
+- **JAWS (Windows):** <https://www.freedomscientific.com/products/software/jaws/>
 - **VoiceOver (Mac/iOS):** Built-in (Cmd+F5 to enable)
 - **TalkBack (Android):** Built-in
 
 ### Learning Resources
-- **WebAIM:** https://webaim.org/
-- **Deque University:** https://dequeuniversity.com/
-- **A11y Project:** https://www.a11yproject.com/
-- **W3C WAI Tutorials:** https://www.w3.org/WAI/tutorials/
+
+- **WebAIM:** <https://webaim.org/>
+- **Deque University:** <https://dequeuniversity.com/>
+- **A11y Project:** <https://www.a11yproject.com/>
+- **W3C WAI Tutorials:** <https://www.w3.org/WAI/tutorials/>
 
 ---
 
 ## Contact
 
 For questions about this audit report:
+
 - **Auditor:** Web Accessibility Wizard
 - **Date:** March 4, 2026
 - **Report Version:** 1.0

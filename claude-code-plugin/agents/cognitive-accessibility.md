@@ -12,12 +12,12 @@ model: inherit
 
 ## Authoritative Sources
 
-- **WCAG Cognitive and Learning Disabilities** — https://www.w3.org/WAI/WCAG2/supplemental/#cognitive-accessibility-guidance
-- **WCAG 3.3.7 Redundant Entry** — https://www.w3.org/WAI/WCAG22/Understanding/redundant-entry.html
-- **WCAG 3.3.8 Accessible Authentication (Minimum)** — https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-minimum.html
-- **WCAG 3.3.9 Accessible Authentication (Enhanced)** — https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-enhanced.html
-- **COGA (Cognitive Accessibility)** — https://www.w3.org/WAI/WCAG2/supplemental/about/
-- **Plain Language Guidelines** — https://www.plainlanguage.gov/guidelines/
+- **WCAG Cognitive and Learning Disabilities** — <https://www.w3.org/WAI/WCAG2/supplemental/#cognitive-accessibility-guidance>
+- **WCAG 3.3.7 Redundant Entry** — <https://www.w3.org/WAI/WCAG22/Understanding/redundant-entry.html>
+- **WCAG 3.3.8 Accessible Authentication (Minimum)** — <https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-minimum.html>
+- **WCAG 3.3.9 Accessible Authentication (Enhanced)** — <https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-enhanced.html>
+- **COGA (Cognitive Accessibility)** — <https://www.w3.org/WAI/WCAG2/supplemental/about/>
+- **Plain Language Guidelines** — <https://www.plainlanguage.gov/guidelines/>
 
 # Cognitive Accessibility Specialist
 
@@ -70,6 +70,7 @@ Identify any time limits on content:
 - Exception: real-time events (live auctions, timed tests) are exempt, but must still be disclosed upfront.
 
 **Findings pattern:**
+
 - `[FAIL]` - Session expires without warning
 - `[FAIL]` - Warning shown but no way to extend
 - `[WARN]` - Timeout exists but is set very short (< 5 minutes for non-financial apps)
@@ -139,6 +140,7 @@ In multi-step forms or wizards, information already entered by the user must not
 - The information has become stale and must be re-confirmed for accuracy
 
 **Finding pattern:**
+
 - `[FAIL]` - User enters email on step 1; step 3 asks for email again with no pre-fill
 - `[FAIL]` - Billing address requested again when same as shipping address was already entered
 - `[PASS]` - Billing address pre-filled from shipping address with "same as above" checkbox
@@ -152,6 +154,7 @@ Authentication processes must not rely on a cognitive function test (memorizing 
 - A mechanism provided at the object recognition / personal content level
 
 **Finding pattern:**
+
 - `[FAIL]` - Login form blocks password paste (prevents password manager use)
 - `[FAIL]` - CAPTCHA that requires transcribing distorted text with no audio or image-free alternative
 - `[FAIL]` - Security question that requires exact recall of personal information
@@ -184,7 +187,7 @@ Every error message must:
 
 1. **Identify the problem** - what went wrong ("Email address is not valid")
 2. **Explain the cause** - why it's wrong ("Email addresses must include @")
-3. **Provide a solution** - how to fix it ("Enter your email in this format: name@example.com")
+3. **Provide a solution** - how to fix it ("Enter your email in this format: <name@example.com>")
 4. **Not use blame language** - avoid "You entered the wrong password" -> "The password doesn't match"
 
 ### Instruction Clarity
@@ -226,6 +229,7 @@ After:  [corrected code/text]
 ```
 
 Severity mapping:
+
 - **Critical** - Level A failures or 3.3.8 (blocks authentication entirely)
 - **High** - Level AA failures (3.3.7, 2.2.1, 3.3.2, 3.3.4)
 - **Medium** - Advisory AAA items with significant practical impact (reading level, error message quality)

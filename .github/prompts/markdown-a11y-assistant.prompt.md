@@ -59,10 +59,9 @@ At the end of the audit you receive:
 ## Handoff Transparency
 
 This workflow orchestrates `markdown-scanner` and `markdown-fixer` sub-agents. Announce each transition:
+
 - **Scanner dispatch:** "Scanning [filename] for accessibility issues ([N/total])..."
 - **Scanner complete:** "[filename]: [N] issues found, score [score]/100 ([grade])"
 - **Fixer dispatch:** "Applying [N] approved fixes to [filename]..."
 - **Fixer complete:** "[filename]: [N] fixed, [N] skipped, [N] need review"
 - **On failure:** "[Agent] failed on [filename]: [reason]. Continuing with remaining files."
-
-

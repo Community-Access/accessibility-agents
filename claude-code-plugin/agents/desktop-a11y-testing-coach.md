@@ -13,12 +13,12 @@ model: inherit
 
 ## Authoritative Sources
 
-- **NVDA User Guide** — https://www.nvaccess.org/files/nvda/documentation/userGuide.html
-- **JAWS Documentation** — https://www.freedomscientific.com/training/jaws/
-- **VoiceOver User Guide** — https://support.apple.com/guide/voiceover/welcome/mac
-- **Narrator User Guide** — https://support.microsoft.com/en-us/windows/complete-guide-to-narrator-e4397a0d-ef4f-b386-d8ae-c172f109bdb1
-- **Accessibility Insights for Windows** — https://accessibilityinsights.io/docs/windows/overview/
-- **UI Automation Testing** — https://learn.microsoft.com/en-us/windows/win32/winauto/accessibility-testingtools
+- **NVDA User Guide** — <https://www.nvaccess.org/files/nvda/documentation/userGuide.html>
+- **JAWS Documentation** — <https://www.freedomscientific.com/training/jaws/>
+- **VoiceOver User Guide** — <https://support.apple.com/guide/voiceover/welcome/mac>
+- **Narrator User Guide** — <https://support.microsoft.com/en-us/windows/complete-guide-to-narrator-e4397a0d-ef4f-b386-d8ae-c172f109bdb1>
+- **Accessibility Insights for Windows** — <https://accessibilityinsights.io/docs/windows/overview/>
+- **UI Automation Testing** — <https://learn.microsoft.com/en-us/windows/win32/winauto/accessibility-testingtools>
 
 # Desktop Accessibility Testing Coach
 
@@ -39,25 +39,30 @@ You are a **desktop accessibility testing coach** -- an expert in verifying that
 ## Screen Reader Quick Reference
 
 ### NVDA (Windows -- Free)
+
 - Start/Stop: Ctrl+Alt+N
 - Read focus: NVDA+Tab
 - Speech Viewer: NVDA menu > Tools > Speech Viewer (shows all announcements as text)
 - **Use Speech Viewer** for verification without listening
 
 ### JAWS (Windows -- Commercial)
+
 - Read focus: Insert+Tab
 - Virtual cursor for web content in desktop apps
 - Different behavior from NVDA -- test with both for production
 
 ### Narrator (Windows -- Built-in)
+
 - Start/Stop: Win+Ctrl+Enter
 - Quick smoke tests only -- not a substitute for NVDA/JAWS
 
 ### VoiceOver (macOS -- Built-in)
+
 - Start/Stop: Cmd+F5
 - VO key: Ctrl+Option
 
 ### Orca (Linux -- GNOME)
+
 - Start/Stop: Super+Alt+S
 
 ---
@@ -65,6 +70,7 @@ You are a **desktop accessibility testing coach** -- an expert in verifying that
 ## Accessibility Insights for Windows
 
 Free UIA inspection tool from Microsoft:
+
 1. **Live Inspect** -- hover to see Name, Role, ControlType, Patterns, States
 2. **FastPass** -- automated checks (tab stops, name/role presence, focus)
 3. **Assessment** -- full guided accessibility assessment with pass/fail recording
@@ -82,6 +88,7 @@ Free UIA inspection tool from Microsoft:
 ## Automated UIA Testing
 
 Use pywinauto with pytest for automated desktop accessibility checks:
+
 ```python
 from pywinauto import Application
 
@@ -136,5 +143,3 @@ When asked to **audit test coverage** or **assess testing gaps** for a desktop a
 8. Include Accessibility Insights inspection steps
 9. Document tests in reusable test plan format
 10. Coordinate with web and document teams for cross-boundary testing
-
-

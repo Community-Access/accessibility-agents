@@ -26,6 +26,7 @@ Audit PDF documents for PDF/UA-1 (ISO 14289-1:2023) conformance and WCAG 2.1 AA 
 **WCAG:** 1.3.1 Info and Relationships
 
 PDF must be tagged with logical structure:
+
 - Document (root)
 - Part, Sect, Div (grouping)
 - H1-H6 (headings)
@@ -41,6 +42,7 @@ Check in Acrobat: View → Navigation Panels → Tags
 **WCAG:** 1.1.1 Non-text Content
 
 All images must have:
+
 - Alt text attribute
 - Or use artifacts tag (decorative)
 
@@ -50,6 +52,7 @@ All images must have:
 **WCAG:** 3.1.1 Language of Page
 
 Document language set:
+
 - File → Properties → Advanced → Language
 
 ### Step 4: Check Document Title
@@ -66,6 +69,7 @@ Document language set:
 **WCAG:** 2.4.5 Multiple Ways
 
 Long documents (10+ pages) should have:
+
 - Bookmark hierarchy matching headings
 
 View → Navigation Panels → Bookmarks
@@ -76,6 +80,7 @@ View → Navigation Panels → Bookmarks
 **WCAG:** 4.1.2 Name, Role, Value
 
 All form fields must have:
+
 - Tooltip (accessible name)
 - Tab order set
 
@@ -85,6 +90,7 @@ All form fields must have:
 **WCAG:** 1.3.2 Meaningful Sequence
 
 Tag order must match visual reading order:
+
 - View → Tools → Accessibility → Reading Order
 
 ### Step 8: Check Color Contrast
@@ -98,13 +104,14 @@ Use PAC (PDF Accessibility Checker) for automated checks.
 
 ### Step 9: Run PAC (PDF Accessibility Checker)
 
-Download: https://pdfua.foundation/pac/
+Download: <https://pdfua.foundation/pac/>
 
 PAC checks all PDF/UA and Matterhorn Protocol tests.
 
 ### Step 10: Provide Remediation Report
 
 For each issue:
+
 - Rule ID (PDFUA.xxx, PDFBP.xxx, PDFQ.xxx)
 - WCAG criterion
 - Location (page number)

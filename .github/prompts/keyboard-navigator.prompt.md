@@ -38,18 +38,22 @@ Ask the user:
 ### Step 3: Review Focus Management
 
 **On page load:**
+
 - Focus on first heading or main content?
 - Skip link focused first (if present)?
 
 **After route changes (SPA):**
+
 - Focus moved to new page heading or content?
 - Announced to screen readers?
 
 **After deletions:**
+
 - Focus moves to next logical element?
 - Not left orphaned?
 
 **After modals open:**
+
 - Focus moves to modal?
 - Focus returns to trigger on close?
 
@@ -70,16 +74,19 @@ Ask the user:
 ### Step 6: Check Focus Traps
 
 **Intentional traps (modals):**
+
 - Tab cycles within modal?
 - Escape closes modal and returns focus?
 
 **Unintentional traps:**
+
 - Focus can move past all elements and loops back?
 - No dead ends where Tab stops working?
 
 ### Step 7: Provide Remediation
 
 For each issue:
+
 - WCAG criterion (2.1.1, 2.1.2, 2.4.3, 2.4.7)
 - Keyboard pattern (Tab, Enter, Esc, Arrows)
 - Code example showing fix

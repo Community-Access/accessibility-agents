@@ -113,7 +113,3 @@ Reusable knowledge modules in `.github/skills/`:
 | document-scanning | File discovery, delta detection, scan config profiles |
 | accessibility-rules | Cross-format rule reference with WCAG 2.2 mapping |
 | report-generation | Report formatting, severity scoring, VPAT/ACR export |
-
-
-
-

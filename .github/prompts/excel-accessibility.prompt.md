@@ -36,6 +36,7 @@ Rename: Right-click sheet tab → Rename
 **WCAG:** 1.3.1 Info and Relationships
 
 All data tables must have:
+
 - Header row with descriptive labels
 - "My table has headers" checked
 
@@ -47,6 +48,7 @@ Convert to table: Insert → Table → check "My table has headers"
 **WCAG:** 1.1.1 Non-text Content
 
 All charts/images must have:
+
 - Alt text describing data
 - Or marked as decorative
 
@@ -67,6 +69,7 @@ Unmerge: Home → Merge & Center → Unmerge Cells
 **WCAG:** 1.4.1 Use of Color
 
 Don't convey information by color alone:
+
 - Red/green status → Add icon or text
 - Color-coded categories → Add category labels
 
@@ -86,11 +89,13 @@ Edit: Right-click link → Edit Hyperlink → ScreenTip
 **WCAG:** 2.4.2 Page Titled
 
 Workbook must have title:
+
 - File → Info → Properties → Title
 
 ### Step 8: Provide Remediation Report
 
 For each issue:
+
 - Rule ID (XLSX-xxx)
 - WCAG criterion
 - Location (sheet name, cell range)

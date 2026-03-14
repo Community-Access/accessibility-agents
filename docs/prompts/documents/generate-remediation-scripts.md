@@ -120,5 +120,3 @@ Get-Content remediation-log.txt
 - [audit-single-document](audit-single-document.md) - generate the audit report first
 - [audit-document-folder](audit-document-folder.md) - audit the whole library before scripting
 - [compare-audits](compare-audits.md) - verify improvement after running the scripts
-
-

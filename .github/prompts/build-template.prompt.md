@@ -20,11 +20,13 @@ ${input:goal:Optional: describe what you want -- e.g. 'bug report template', 'fe
 ### Step 1: Determine Template Type
 
 If not already clear from the input, ask:
+
 - **Issue template** (`.github/ISSUE_TEMPLATE/name.yml`) -- structured form for filing issues
 - **PR template** (`.github/pull_request_template.md`) -- checklist shown when opening a pull request
 - **Discussion template** -- guided structure for GitHub Discussions
 
 For **issue templates**, also ask:
+
 - Template name (e.g., "Bug Report", "Feature Request")
 - One-line description shown in the template chooser
 - Default title prefix (e.g., `[BUG]`, `[FEAT]`, `[A11Y]`)
@@ -34,6 +36,7 @@ For **issue templates**, also ask:
 ### Step 2: Check for Existing Templates
 
 Use #tool:listDirectory to look in `.github/ISSUE_TEMPLATE/`:
+
 - List existing templates so the user can see what already exists
 - Warn if a template with the same name already exists
 
@@ -67,6 +70,7 @@ For each field, use #tool:ask_questions to collect:
 Produce the complete YAML (for issue templates) or Markdown (for PR/discussion templates).
 
 **Issue template YAML format:**
+
 ```yaml
 name: Bug Report
 description: Report a bug or unexpected behavior
@@ -118,4 +122,3 @@ body:
 - Don't know what fields to add? Describe what information you need from issue reporters and the agent will suggest fields.
 - For a full pre-built accessibility bug template: use `/build-a11y-template`
 - To edit an existing template: paste the YAML and say what to change.
-

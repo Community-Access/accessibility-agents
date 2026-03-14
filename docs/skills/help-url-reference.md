@@ -17,6 +17,7 @@
 Maps axe-core rule IDs to `https://accessibilityinsights.io/info-examples/web/{rule-id}/` URLs. Covers 20+ common rules including `color-contrast`, `image-alt`, `label`, `button-name`, `link-name`, `html-has-lang`, `document-title`, `heading-order`, and more.
 
 Also includes W3C/WAI topic page URLs for agent-detected issues without axe-core rule IDs:
+
 - Focus management: `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html`
 - Live regions: `https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html`
 - Modal dialogs: `https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/`
@@ -53,6 +54,6 @@ The skill also provides templated fix step text for each application:
 
 The full skill file with all URL mappings and fix step templates is at:
 
-```
+```text
 .github/skills/help-url-reference/SKILL.md
 ```

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Playwright Integration (MCP Tools)
+
 - **5 new Playwright-based accessibility scanning tools** for Claude Desktop MCP extension
   - `keyboard_scan` - Automated keyboard navigation testing
   - `state_scan` - ARIA state and property validation
@@ -22,26 +23,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - URL validation (http/https only) and CSS selector sanitization for security
 
 #### Playwright Agent Ecosystem
+
 - **playwright-scanner** agent (Copilot + Claude Code) - Orchestrates Playwright-based scanning
 - **playwright-verifier** agent (Copilot + Claude Code) - Verifies fixes against live pages
 - **playwright-testing** skill - Patterns and examples for Playwright accessibility testing
 - Integration docs and cross-platform handoff updates
 
 #### veraPDF PDF/UA Validator
+
 - `verapdf-tools.js` MCP tool with Matterhorn Protocol severity mapping
 - Uses `execFile` (not `exec`) for command injection prevention
 - Path validation with symlink resolution and 500MB file size limit
 
 #### PDF Form-to-HTML Converter
+
 - `pdf-form-tools.js` using pdf-lib (pure JS, MIT licensed)
 - XSS prevention via `escapeHtml` on all dynamic values
 - Accessible HTML5 output with labels, fieldsets, ARIA attributes, and focus styles
 
 #### Test Generation
+
 - `generate-a11y-tests` prompt for CI pipeline scaffolding
 - GitHub Actions template for Playwright accessibility tests (`docs/templates/a11y-tests-ci.md`)
 
 #### askQuestions Integration (all 59 agents)
+
 - Fixed 31 Claude Code agents: `ask_questions` renamed to `askQuestions` (camelCase)
 - Added `askQuestions` to 10 agent tool lists
 - Added domain-specific `askQuestions` body instructions to 39 agents
@@ -49,17 +55,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hub agents (developer-hub, github-hub, nexus): `askQuestions` principles and examples
 
 #### Wizard and Fixer Integration
+
 - web-accessibility-wizard Playwright phase integration
 - web-issue-fixer and cross-page-analyzer Playwright support
 - Severity scoring updates for Playwright findings
 
 ### Changed
+
 - Agent count: 57 to 59 (added playwright-scanner and playwright-verifier)
 - Prompt count: 104 to 106
 - Skill count: 17 to 18 (added playwright-testing)
 - All version numbers bumped to 3.2.0
 
 ### Fixed (v3.0.0 to v3.2.0)
+
 - Plugin distribution drift fixed with symlinks for docs, templates, and example directories (PR #57)
 - Added `.gitattributes` for Windows symlink compatibility
 - Added Windows clone instructions (`git clone -c core.symlinks=true`) to CONTRIBUTING.md
@@ -289,7 +298,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial public release with 113 accessibility agents across 5 teams
 - Web Accessibility team (17 agents)
-- Document Accessibility team (7 agents) 
+- Document Accessibility team (7 agents)
 - GitHub Workflow team (11 agents)
 - Developer Tools team (7 agents)
 - Cross-platform support: Claude Code, GitHub Copilot, Gemini CLI, Claude Desktop (MCP), Codex CLI

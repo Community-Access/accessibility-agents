@@ -72,6 +72,7 @@ Floor: 0
 ### Emoji Detection
 
 Emoji appear in Unicode ranges:
+
 - `U+1F600–U+1F64F` Emoticons
 - `U+1F300–U+1F5FF` Misc Symbols and Pictographs
 - `U+1F680–U+1F6FF` Transport and Map
@@ -84,7 +85,7 @@ Emoji appear in Unicode ranges:
 
 ### High-confidence ambiguous (always flag as Serious)
 
-```
+```text
 click here | here | this | read more | learn more | see more | more
 more details | more info | details | continue | go | visit | view
 link | click | tap | open | see | check out | find out
@@ -99,7 +100,7 @@ link | click | tap | open | see | check out | find out
 
 ### Context-dependent (flag as Moderate)
 
-```
+```text
 documentation | guide | article | page | post | info | instructions
 download | file | resource | example | demo | source
 ```
@@ -133,8 +134,10 @@ When replacing a Mermaid block, the description comes first as primary content:
 <summary>ASCII diagram</summary>
 
 ```
+
 [original ASCII art preserved verbatim]
-```
+
+```html
 
 </details>
 ```

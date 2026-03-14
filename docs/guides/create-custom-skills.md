@@ -5,6 +5,7 @@ This guide explains how to extend the accessibility agents platform with custom 
 ## What Is a Skill?
 
 A **Skill** is a reusable knowledge domain that agents reference for guidance on a specific topic. Each skill is:
+
 - **Focused** — covers one domain (e.g., WCAG scoring, Tailwind contrast, etc.)
 - **Authoritative** — grounds recommendations in official sources
 - **Reusable** — referenced by multiple agents across the platform
@@ -12,7 +13,7 @@ A **Skill** is a reusable knowledge domain that agents reference for guidance on
 
 ### Skill Structure
 
-```
+```text
 Claude Code Plugin Structure:
   .claude/
     agents/
@@ -32,7 +33,8 @@ Your Custom Skill Structure:
 ### Step 1: Plan Your Skill
 
 Ask yourself:
-1. **What accessibility domain is this?** 
+
+1. **What accessibility domain is this?**
    - New accessibility standard?
    - Industry-specific rules (e.g., fintech, healthcare)?
    - Framework-specific patterns (e.g., Svelte 5)?
@@ -122,10 +124,12 @@ This skill applies to:
 If you're unsure whether to apply this skill, use this decision tree:
 
 ```
+
 Do you have [context X]?
 ├─ Yes → Apply Rule 1, Rule 2
 ├─ No  → Apply Rule 3
-```
+
+```python
 
 ## Edge Cases
 
@@ -201,6 +205,7 @@ If your skill defines many rules, create a `rules.json` file for programmatic ac
 Create `.claude/skills/my-custom-domain/examples/` with real-world examples:
 
 **example-1.md:**
+
 ```markdown
 # Example: Implementing Rule 1
 
@@ -284,6 +289,7 @@ To publish a skill for the public accessibility-agents repository:
 ### Maintenance
 
 Skills are considered "maintained" if:
+
 - Links to authoritative sources pass `verify-sources.yml` checks
 - No unresolved issues tagged `skill:my-skill`
 - At least one maintainer has reviewed recent changes
@@ -291,12 +297,14 @@ Skills are considered "maintained" if:
 ### Deprecation
 
 Skills are deprecated if:
+
 - Authority changes (e.g., WCAG 2.3 supersedes a criterion)
 - Platform/framework drops support
 - New research contradicts previous guidance
 - Better alternative skill exists
 
 **Deprecation process:**
+
 1. Add `status: deprecated` to SKILL.md frontmatter
 2. Add deprecation notice in overview
 3. Link to replacement skill
@@ -309,7 +317,7 @@ Skills are deprecated if:
 
 For React, Vue, Angular, Svelte, etc.:
 
-```
+```text
 .claude/skills/framework-accessibility-[name]/
   SKILL.md              # Framework-specific patterns
   rules.json            # Framework-specific rules
@@ -322,7 +330,7 @@ For React, Vue, Angular, Svelte, etc.:
 
 For detailed guidance on a single SC:
 
-```
+```text
 .claude/skills/wcag-[criterion]/
   SKILL.md              # Deep dive on that criterion
   rules.json            # How to test it
@@ -335,7 +343,7 @@ For detailed guidance on a single SC:
 
 For vertical markets (fintech, healthcare, education, e-commerce):
 
-```
+```text
 .claude/skills/[industry]-accessibility/
   SKILL.md              # Industry-standard requirements
   rules.json            # Industry-specific rules
@@ -348,7 +356,7 @@ For vertical markets (fintech, healthcare, education, e-commerce):
 
 For accessibility-focused libraries:
 
-```
+```text
 .claude/skills/[library]-accessibility/
   SKILL.md              # How to use [library] accessibly
   rules.json            # [Library] accessibility checks
@@ -362,6 +370,7 @@ For accessibility-focused libraries:
 Here's a complete walkthrough of creating a fintech-specific skill:
 
 ### 1. Plan (5 min)
+
 - Domain: Financial services accessibility
 - Authority: WCAG 2.2 AA + PCI DSS Accessibility + Industry standards
 - Users: E-commerce specialist, developer-hub agents
@@ -370,6 +379,7 @@ Here's a complete walkthrough of creating a fintech-specific skill:
 ### 2. Create (30 min)
 
 **`.claude/skills/fintech-accessibility/SKILL.md`:**
+
 ```markdown
 ---
 name: fintech-accessibility
@@ -401,6 +411,7 @@ When accepting currency input:
 ### 3. Examples (20 min)
 
 **`.claude/skills/fintech-accessibility/examples/correct-payment-form.tsx`:**
+
 ```tsx
 // Correct: Validating currency input accessibly
 <form onSubmit={handleSubmit}>
@@ -438,6 +449,7 @@ When accepting currency input:
 ## Maintenance Going Forward
 
 Once published, your skill is:
+
 - Included in `verify-sources.yml` link checking
 - Upgraded in agent references when new versions drop
 - Monitored for link rot and standard changes
@@ -448,6 +460,7 @@ Once published, your skill is:
 ## Checklists
 
 ### Skill Creation Checklist
+
 - [ ] Skill domain identified (singular focus)
 - [ ] Authority source(s) identified and linked
 - [ ] SKILL.md created with full structure
@@ -457,6 +470,7 @@ Once published, your skill is:
 - [ ] Reviewed by 1 team member
 
 ### Public Skill Checklist (before PR)
+
 - [ ] Above checklist complete ✅
 - [ ] rules.json created (if 5+ rules)
 - [ ] 3+ examples/ files included
@@ -469,6 +483,7 @@ Once published, your skill is:
 ---
 
 **See also:**
+
 - [Authoritative Sources Guide](./authoritative-sources.md) - Citing sources correctly
 - [Context Management Guide](./context-management.md) - Managing conversation context
 - [Agent Architecture](../architecture.md) - How agents are structured

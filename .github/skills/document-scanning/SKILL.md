@@ -17,6 +17,7 @@ description: Document discovery, inventory building, and metadata extraction for
 ## File Discovery Commands
 
 ### PowerShell (Windows)
+
 ```powershell
 # Non-recursive scan
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf
@@ -28,6 +29,7 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurs
 ```
 
 ### Bash (macOS/Linux)
+
 ```bash
 # Non-recursive scan
 find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" \) ! -name "~\$*"
@@ -41,6 +43,7 @@ find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o
 ## Delta Detection
 
 ### Git-based
+
 ```bash
 # Files changed since last commit
 git diff --name-only HEAD~1 HEAD -- '*.docx' '*.xlsx' '*.pptx' '*.pdf'
@@ -53,6 +56,7 @@ git log --since="N days ago" --name-only --diff-filter=ACMR --pretty="" -- '*.do
 ```
 
 ### Timestamp-based (PowerShell)
+
 ```powershell
 # Files modified since a specific date
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurse |
@@ -62,6 +66,7 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurs
 ## Files to Skip
 
 Always exclude these patterns during scanning:
+
 - `~$*` - Office lock/temp files (created when a document is open)
 - `*.tmp` - Temporary files
 - `*.bak` - Backup files

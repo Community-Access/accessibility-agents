@@ -141,7 +141,7 @@ When re-running an analysis against a previous report, classify every finding by
 
 If a finding is **Persistent for 3+ consecutive reports**, escalate:
 
->  **Escalation:** [{Finding}] has been present for {N} consecutive reports. Consider a team discussion or explicit ownership assignment to resolve this.
+> **Escalation:** [{Finding}] has been present for {N} consecutive reports. Consider a team discussion or explicit ownership assignment to resolve this.
 
 ---
 

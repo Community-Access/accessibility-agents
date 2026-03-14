@@ -352,4 +352,3 @@ ci:
 - **Examples**: Check `preferences.example.md` for the complete configuration reference
 - **Issues**: Create an issue if something isn't working
 - **Discussions**: Use GitHub Discussions for questions
-

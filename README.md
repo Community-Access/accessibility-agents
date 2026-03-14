@@ -45,24 +45,29 @@ All agents run on:
 ### Required Tools (Latest Versions)
 
 **For GitHub Copilot (VS Code):**
+
 - **VS Code:** Latest stable release ([Download](https://code.visualstudio.com/))
 - **GitHub Copilot Extension:** Latest version from VS Code Marketplace
 - **GitHub Copilot Chat Extension:** Latest version from VS Code Marketplace
 - **Node.js:** v18.0.0 or higher (for CLI tools like axe-core)
 
 **For Claude Code:**
+
 - **Claude Code CLI:** Latest version ([Installation](https://docs.anthropic.com/en/docs/claude-code))
 - **Claude Subscription:** Pro, Max, or Team plan
 
 **For Gemini CLI:**
+
 - **Gemini CLI:** Latest version ([Installation](https://github.com/google-gemini/gemini-cli))
 - **Google AI Studio API Key:** Active key ([Get Started](https://ai.google.dev/))
 
 **For Claude Desktop:**
+
 - **Claude Desktop App:** Latest version ([Download](https://claude.ai/download))
 - **Claude Subscription:** Pro plan or higher
 
 **Operating Systems:**
+
 - **macOS:** 10.15 (Catalina) or later
 - **Linux:** Ubuntu 20.04+, Fedora 35+, or equivalent with bash 4.0+
 - **Windows:** Windows 10/11 with PowerShell 5.1+ (pre-installed)
@@ -129,6 +134,7 @@ Accessibility Agents are tested against the **latest stable releases** of all su
 This project bases platform-specific guidance on official vendor documentation and release notes, not secondary summaries.
 
 Primary references:
+
 - VS Code release notes: `https://code.visualstudio.com/updates`
 - VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/custom-instructions`
 - VS Code custom agents docs: `https://code.visualstudio.com/docs/copilot/customization/custom-agents`
@@ -136,6 +142,7 @@ Primary references:
 - GitHub Copilot product docs: `https://docs.github.com/copilot`
 
 Attribution policy:
+
 - Platform claims in this repo should cite at least one official source link.
 - New behavior tied to a specific release should include the release note URL.
 - When settings keys are documented, link to the official settings/docs page where possible.
@@ -165,15 +172,18 @@ Attribution policy:
 ```
 
 **Options:**
+
 - `"mode": "append"` - Adds your phrases to VS Code's default list (recommended)
 - `"mode": "replace"` - Only shows your custom phrases
 
 **Why This Matters:**
+
 - Reinforces accessibility focus during agent work
 - Reminds team members that accessibility is actively considered
 - Optional fun enhancement to make wait time more engaging
 
 **How to Add:**
+
 1. Open VS Code Settings (Ctrl/Cmd + ,)
 2. Click "Open Settings (JSON)" icon in top-right
 3. Add the `chat.agent.thinking.phrases` setting
@@ -236,6 +246,7 @@ To reinstall a specific agent from scratch, delete it first and rerun the instal
 **GitHub Copilot users (VS Code):** A VS Code extension is in development that will allow one-click install from the Extensions marketplace. Until then, use the **one-liner install** above or the manual steps in [Getting Started](docs/getting-started.md).
 
 **What the extension will include:**
+
 - ✅ 59 fully-integrated agents in GitHub Copilot (VS Code and CLI)
 - ✅ 18 reusable accessibility skills (WCAG rules, severity scoring, scanning patterns)
 - ✅ 106 custom prompts for web audits, document audits, GitHub workflows, and developer tooling

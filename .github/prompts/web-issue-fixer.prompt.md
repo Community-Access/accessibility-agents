@@ -25,6 +25,7 @@ Apply accessibility fixes to web source code. Auto-fix safe changes, present hum
 ### Step 1: Load Audit Report
 
 Parse findings from audit report:
+
 - Rule ID (axe-core or custom)
 - Severity/Impact
 - Affected elements (selectors)
@@ -35,6 +36,7 @@ Parse findings from audit report:
 ### Step 2: Detect Framework
 
 Check workspace for:
+
 - React: `package.json` with `react` dependency, `.jsx/.tsx` files
 - Vue: `package.json` with `vue` dependency, `.vue` files
 - Angular: `angular.json`, `.component.ts` files
@@ -44,12 +46,14 @@ Check workspace for:
 ### Step 3: Group Fixes by Category
 
 **Auto-fixable (high confidence):**
+
 - Missing `lang` attribute on `<html>`
 - Missing `alt` on images (use filename as placeholder)
 - Positive `tabindex` → `tabindex="0"` or remove
 - Missing form labels (wrap input with label)
 
 **Human judgment required:**
+
 - Ambiguous link text (needs context)
 - Color contrast (requires color picker)
 - ARIA role conflicts (needs architectural decision)
@@ -60,6 +64,7 @@ Check workspace for:
 **Example: Add lang attribute**
 
 React:
+
 ```jsx
 // Old: <html>
 // New:
@@ -67,6 +72,7 @@ React:
 ```
 
 HTML:
+
 ```html
 <!-- Old: <!DOCTYPE html><html> -->
 <!-- New: -->
@@ -85,6 +91,7 @@ HTML:
 **Example: Add missing form label**
 
 React:
+
 ```jsx
 // Old:
 <input type="text" name="email" />
@@ -116,12 +123,14 @@ Apply via `multiReplaceStringInFile`.
 **Image Analysis:** Banner image showing team collaboration in modern office
 
 **Suggested Fix:**
+
 ```tsx
 <img src="/hero-banner.jpg" alt="Team collaboration in modern office" />
 ```
 
 **Accept this fix?** (yes/no/edit)
-```
+
+```html
 
 If user says "edit", ask for custom alt text.
 

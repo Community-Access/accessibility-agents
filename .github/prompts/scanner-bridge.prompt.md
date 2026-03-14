@@ -24,6 +24,7 @@ Integrate GitHub Accessibility Scanner CI data with agent ecosystem. Parse scann
 ### Step 1: Detect Scanner Presence
 
 Check for:
+
 - `.github/workflows/accessibility-scanner.yml`
 - GitHub Actions run with `github/accessibility-scanner` action
 - Issues labeled `accessibility` from `github-actions[bot]`
@@ -63,6 +64,7 @@ ${steps}
 ```
 
 Extract:
+
 - Rule ID
 - Impact/severity
 - WCAG criteria
@@ -72,6 +74,7 @@ Extract:
 ### Step 4: Map Scanner Severity
 
 GitHub Scanner uses axe-core severity model:
+
 - `critical` → Critical
 - `serious` → Serious
 - `moderate` → Moderate
@@ -82,6 +85,7 @@ Direct mapping to agent severity model.
 ### Step 5: Correlate with Local Scans
 
 If web-accessibility-wizard already ran:
+
 - Match by: rule ID + page URL + element selector
 - **Duplicate:** Issue found by both scanner and local → mark as "confirmed"
 - **Scanner-only:** Issue found by scanner but not local → flag for investigation (may be fixed locally)
@@ -90,10 +94,12 @@ If web-accessibility-wizard already ran:
 ### Step 6: Track Copilot Fix Status
 
 Scanner issues may have:
+
 - Label `copilot-assigned` - Assigned to Copilot for auto-fix
 - Comment from Copilot with fix PR number
 
 Extract fix status:
+
 - **Open** - Not yet addressed
 - **Assigned to Copilot** - Auto-fix in progress
 - **PR submitted** - Fix awaiting review
@@ -103,10 +109,12 @@ Extract fix status:
 ### Step 7: Deduplicate Findings
 
 Priority:
+
 1. Local scan (most recent, most detailed)
 2. Scanner issue (CI-detected, tracked in GitHub)
 
 Merged format:
+
 ```json
 {
   "ruleId": "button-name",

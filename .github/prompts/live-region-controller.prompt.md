@@ -31,18 +31,21 @@ Ask the user:
 ### Step 2: Classify Update Urgency
 
 **Assertive (interrupts screen reader):**
+
 - Error messages
 - Critical alerts
 - Time-sensitive notifications
 - Form submission failures
 
 **Polite (waits for pause):**
+
 - Success messages
 - Loading state changes
 - Search result counts
 - Non-critical updates
 
 **Off (not announced):**
+
 - Decorative animations
 - Progress bars (use aria-valuenow instead)
 - Content user hasn't interacted with yet
@@ -50,6 +53,7 @@ Ask the user:
 ### Step 3: Check Live Region Implementation
 
 **For toasts/notifications:**
+
 ```jsx
 <div role="status" aria-live="polite" aria-atomic="true">
   Toast message here
@@ -57,6 +61,7 @@ Ask the user:
 ```
 
 **For errors:**
+
 ```jsx
 <div role="alert" aria-live="assertive" aria-atomic="true">
   Error message here
@@ -64,6 +69,7 @@ Ask the user:
 ```
 
 **For status updates:**
+
 ```jsx
 <div role="status" aria-live="polite">
   Loading... 5 of 20 items loaded
@@ -78,6 +84,7 @@ Ask the user:
 ### Step 5: Check Focus Management
 
 For interactive updates like form errors:
+
 1. **aria-live announces** message
 2. **Focus moves** to first error input (optional)
 3. **aria-describedby** links error to input
@@ -92,6 +99,7 @@ For interactive updates like form errors:
 ### Step 7: Provide Remediation
 
 For each dynamic update:
+
 - Current implementation (if any)
 - Urgency classification (assertive/polite/off)
 - Live region pattern to use

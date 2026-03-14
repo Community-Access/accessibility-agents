@@ -22,11 +22,13 @@ Analyze accessibility patterns across multiple web page audit results. Identify 
 ### Step 1: Load All Page Audit Results
 
 Read each page audit JSON file from:
+
 - web-audit-{url-slug}.json
 
 ### Step 2: Aggregate Findings
 
 Group findings by:
+
 - **Rule ID:** button-name, html-has-lang, image-alt, color-contrast, etc.
 - **WCAG Criterion:** 1.1.1, 1.3.1, 1.4.3, 2.4.4, 4.1.2, etc.
 - **Impact:** Critical, Serious, Moderate, Minor
@@ -35,11 +37,13 @@ Group findings by:
 ### Step 3: Identify Systemic Issues
 
 **Systemic** = appears on 50%+ of pages:
+
 - Missing form labels → systemic (likely component library issue)
 - Insufficient color contrast → systemic (likely design tokens)
 - Missing landmark roles → systemic (likely base template)
 
 **Page-specific** = appears on < 50%:
+
 - Individual missing alt text
 - Single ambiguous link
 - One-off ARIA issues
@@ -47,7 +51,8 @@ Group findings by:
 ### Step 4: Compute Cross-Page Severity Score
 
 Formula:
-```
+
+```text
 Base Score = 100
 For each unique rule violation:
   systemic issue → deduct (impact * occurrence_rate * 10)
@@ -112,6 +117,7 @@ Grade = A (90-100), B (80-89), C (70-79), D (60-69), F (0-59)
 ### Step 6: Generate Remediation Priority List
 
 Order by:
+
 1. **Systemic issues** (highest occurrence rate first)
 2. **Impact** (Critical > Serious > Moderate > Minor)
 3. **Blast radius** (shared components > individual pages)

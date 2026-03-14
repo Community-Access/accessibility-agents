@@ -14,10 +14,10 @@
 4. [What Is Working Well](#what-is-working-well)
 5. [Redundancies and Simplification Opportunities](#redundancies-and-simplification-opportunities)
 6. [High-Impact Gaps](#high-impact-gaps)
-7. [Phase 1 - Quick Wins](#phase-1--quick-wins)
-8. [Phase 2 - New Agents and Skills](#phase-2--new-agents-and-skills)
-9. [Phase 3 - Ecosystem Expansion](#phase-3--ecosystem-expansion)
-10. [Phase 4 - Strategic Horizon](#phase-4--strategic-horizon)
+7. [Phase 1 - Quick Wins](#phase-1---quick-wins)
+8. [Phase 2 - New Agents and Skills](#phase-2---new-agents-and-skills)
+9. [Phase 3 - Ecosystem Expansion](#phase-3---ecosystem-expansion)
+10. [Phase 4 - Strategic Horizon](#phase-4---strategic-horizon)
 11. [Full Proposed Inventory](#full-proposed-inventory)
 12. [Success Metrics](#success-metrics)
 
@@ -803,5 +803,3 @@ New instructions files should be declarative (what must be true) rather than pro
 ---
 
 *End of plan. Awaiting review.*
-
-

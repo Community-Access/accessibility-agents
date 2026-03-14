@@ -18,6 +18,7 @@ Audit design tokens (color, focus, motion, spacing) for accessibility compliance
 **Path:** `${input:tokenFile}`
 
 Examples:
+
 - `tailwind.config.js`
 - `tokens.json` (Style Dictionary)
 - `theme.ts` (MUI/Chakra)
@@ -36,6 +37,7 @@ Ask the user:
 ### Step 2: Extract Color Token Pairs
 
 Parse token file for:
+
 - `colors.text` + `colors.background`
 - Button variants (primary, secondary, ghost)
 - Input states (default, hover, focus, disabled)
@@ -46,6 +48,7 @@ Parse token file for:
 For each token pair, compute WCAG contrast:
 
 **Requirements:**
+
 - Text on background: 4.5:1 (normal), 3:1 (large/bold)
 - UI components: 3:1
 - Focus indicators: 3:1 against adjacent colors
@@ -55,11 +58,13 @@ Use contrast formula (see `contrast-master` skill).
 ### Step 4: Check Focus Ring Tokens
 
 **WCAG 2.4.13 Focus Appearance (AAA):**
+
 - Focus indicator area ≥ 2 CSS pixels solid outline OR equivalent area
 - Contrast ≥ 3:1 against background and adjacent colors
 - Not obscured by other content
 
 Example tokens:
+
 ```js
 focusRing: {
   width: '2px',
@@ -72,6 +77,7 @@ focusRing: {
 ### Step 5: Check Motion Tokens
 
 **prefers-reduced-motion support:**
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -86,6 +92,7 @@ Ensure tokens respect user preference.
 ### Step 6: Check Touch Target Tokens
 
 **Spacing tokens for 44x44pt minimum:**
+
 ```js
 spacing: {
   touch: '44px',  // Minimum touch target
@@ -96,6 +103,7 @@ spacing: {
 ### Step 7: Provide Remediation
 
 For each failing token pair:
+
 - Current contrast ratio
 - WCAG requirement (4.5:1 or 3:1)
 - Suggested alternatives (darker/lighter shades that pass)

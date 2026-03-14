@@ -60,7 +60,6 @@ When invoking a sub-agent, provide this context block:
 
 ````
 
-
 ---
 
 ## E2: Reporting Preferences

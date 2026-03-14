@@ -29,7 +29,7 @@
   - [Hidden Helper Sub-Agents (11)](#hidden-helper-sub-agents-11)
   - [Infrastructure Agents (2)](#infrastructure-agents-2)
 - [Prompts and Skills](#prompts-and-skills)
-  - [Custom Prompts (54)](#custom-prompts-54)
+  - [Custom Prompts (60)](#custom-prompts-60)
   - [Reusable Skills (17)](#reusable-skills-17)
   - [Instruction Files (6)](#instruction-files-6)
   - [Agent Teams (AGENTS.md)](#agent-teams-agentsmd)

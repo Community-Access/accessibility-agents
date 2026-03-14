@@ -113,7 +113,7 @@ For emoji not in this table: flag as `needs-human-review`. Do not guess.
 
 ### Emoji Detection Unicode Ranges
 
-```
+```text
 [\u{1F600}-\u{1F64F}]  - Emoticons
 [\u{1F300}-\u{1F5FF}]  - Misc symbols and pictographs
 [\u{1F680}-\u{1F6FF}]  - Transport and map symbols
@@ -180,8 +180,10 @@ ASCII art patterns: non-code-block lines (or unnamed code blocks) containing com
 <summary>ASCII diagram</summary>
 
 ```
+
 [original ASCII art - unchanged]
-```
+
+```html
 
 </details>
 ```
@@ -192,7 +194,7 @@ Match these patterns (case-insensitive, trim whitespace):
 
 ### Exact-match violations
 
-```
+```text
 here, click here, read more, learn more, more, more info,
 link, details, info, go, see more, continue, start, download,
 view, open, submit, this, that
@@ -200,7 +202,7 @@ view, open, submit, this, that
 
 ### Starts-with violations
 
-```
+```text
 click here to ..., read more about ..., learn more about ...,
 here to ..., see more ...
 ```
@@ -246,7 +248,7 @@ For headings containing emoji: GitHub strips the emoji character and generates a
 
 Unicode emoji ranges for regex detection:
 
-```
+```text
 [\u{1F600}-\u{1F64F}]  # Emoticons
 [\u{1F300}-\u{1F5FF}]  # Misc symbols and pictographs
 [\u{1F680}-\u{1F6FF}]  # Transport and map symbols
@@ -268,7 +270,7 @@ Emoji-as-bullet pattern: List item where first non-whitespace character is an em
 
 Detection patterns:
 
-```
+```text
 —           Unicode em-dash (U+2014)
 –           Unicode en-dash (U+2013)
 ---         Three hyphens in prose (not on its own line as HR)
@@ -276,6 +278,7 @@ Detection patterns:
 ```
 
 Safe to skip (do not modify):
+
 - Line containing only `---` (horizontal rule)
 - Content inside ` ``` ` code fences
 - Content inside backtick inline code

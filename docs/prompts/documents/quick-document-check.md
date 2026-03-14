@@ -71,5 +71,3 @@ If errors are found, the agent asks: "Want to run a full audit with detailed rem
 
 - [audit-single-document](audit-single-document.md) - full strict audit with saved report
 - [audit-document-folder](audit-document-folder.md) - quick-check all documents in a folder
-
-

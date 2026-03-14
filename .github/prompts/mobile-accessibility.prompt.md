@@ -31,12 +31,14 @@ Ask the user:
 ### Step 2: Check Accessibility Props (React Native/Expo)
 
 **Every touchable element needs:**
+
 - `accessibilityLabel` -- Descriptive label ("Submit form" not "Button")
 - `accessibilityRole` -- "button", "link", "header", "text", etc.
 - `accessibilityHint` -- Additional context ("Opens settings screen")
 - `accessible={true}` -- Marks as accessibility element
 
 **Touch targets:**
+
 - Minimum 44x44pt (iOS) or 48x48dp (Android)
 - Use `hitSlop` to expand touchable area if visual is smaller
 
@@ -45,11 +47,13 @@ Check: `mobile-accessibility` skill for full prop reference
 ### Step 3: Check iOS-Specific (Swift)
 
 **UIKit:**
+
 - `isAccessibilityElement = true`
 - `accessibilityLabel = "Submit form"`
 - `accessibilityTraits = .button`
 
 **SwiftUI:**
+
 - `.accessibilityLabel("Submit form")`
 - `.accessibilityAddTraits(.isButton)`
 - `.accessibilityHint("Opens settings")`
@@ -57,12 +61,14 @@ Check: `mobile-accessibility` skill for full prop reference
 ### Step 4: Check Android-Specific (Kotlin/Java)
 
 **Views API:**
+
 ```kotlin
 button.contentDescription = "Submit form"
 button.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
 ```
 
 **Jetpack Compose:**
+
 ```kotlin
 Button(
     onClick = {},
@@ -84,6 +90,7 @@ Button(
 ### Step 6: Provide Remediation
 
 For each issue:
+
 - WCAG criterion (often 4.1.2 Name, Role, Value)
 - Platform-specific fix (React Native, iOS, Android)
 - Code example showing correct props

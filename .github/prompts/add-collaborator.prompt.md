@@ -23,6 +23,7 @@ ${input:target:Who and where -- e.g. '@alice to owner/my-repo as write', 'add bo
    - If no: proceed.
 
 3. Preview the action:
+
    ```text
    About to add @{username} to {owner}/{repo} as {role}.
    This will send them an invitation email.
@@ -38,6 +39,7 @@ ${input:target:Who and where -- e.g. '@alice to owner/my-repo as write', 'add bo
    > Note: If {owner} is an organization, consider adding @{username} to a team instead -- use `@team-manager` for that.
 
 **Role guide (show if the user is unsure):**
+
 | Role | Can push? | Can manage issues? | Can change settings? |
 |------|-----------|--------------------|---------------------|
 | Read | No | No | No |
@@ -45,4 +47,3 @@ ${input:target:Who and where -- e.g. '@alice to owner/my-repo as write', 'add bo
 | Write | Yes | Yes | No |
 | Maintain | Yes | Yes | Partial |
 | Admin | Yes | Yes | Full  |
-

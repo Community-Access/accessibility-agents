@@ -62,6 +62,7 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
     - **Generate summary** -- create a comment summarizing all changes made
 
 11. Optionally, draft a summary comment for the PR:
+
     ```markdown
     Thanks for the review, @{reviewer}! Here's what I addressed:
 
@@ -76,4 +77,3 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 **Release awareness:** If the PR is release-bound, surface blocking comments first and suggest deferring SUGGESTION/NIT items to a follow-up PR after the release.
 
 **Goal:** Turn the review-response cycle from a chaotic back-and-forth into a systematic, trackable workflow -- with release deadlines front and center.
-

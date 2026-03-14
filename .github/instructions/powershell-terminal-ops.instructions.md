@@ -24,6 +24,7 @@ git log --oneline -2
 ```
 
 Key points:
+
 - `` `n `` is the PowerShell newline escape inside a double-quoted string
 - No BOM issues (unlike `Set-Content -Encoding utf8` on older PowerShell)
 - `isBackground: true` spawns a fresh shell, avoiding any inherited stuck state

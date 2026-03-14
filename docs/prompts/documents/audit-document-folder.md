@@ -97,5 +97,3 @@ The full report is written to `DOCUMENT-ACCESSIBILITY-AUDIT.md` with:
 - [audit-changed-documents](audit-changed-documents.md) - re-scan only what changed
 - [compare-audits](compare-audits.md) - track improvement after fixing
 - [generate-vpat](generate-vpat.md) - export as a compliance conformance report
-
-

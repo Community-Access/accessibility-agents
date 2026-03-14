@@ -23,6 +23,7 @@ Every page template must include these landmark elements. Screen reader users na
 | `<article>` | article | Self-contained content that makes sense in isolation: blog post, product card, news item |
 
 **Multiple `<nav>` elements:** Distinguish them with `aria-label`:
+
 ```html
 <nav aria-label="Main">…</nav>
 <nav aria-label="Breadcrumb">…</nav>
@@ -30,6 +31,7 @@ Every page template must include these landmark elements. Screen reader users na
 ```
 
 **Skip navigation link** - First focusable element in every page template:
+
 ```html
 <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4">
   Skip to main content
@@ -76,6 +78,7 @@ For site navigation, use `<nav><ul><li><a>` - this is correct and fully semantic
 Use `<table>` for tabular data - any data that has a meaningful relationship between rows and columns.
 
 **Required markup for every data table:**
+
 ```html
 <table>
   <caption>Monthly revenue by product category</caption>
@@ -106,6 +109,7 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 ## Forms
 
 **Labels:**
+
 ```html
 <!-- Best: visible label associated by for/id -->
 <label for="email">Email address</label>
@@ -116,6 +120,7 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 ```
 
 **Grouped fields:**
+
 ```html
 <!-- Radio group -->
 <fieldset>
@@ -133,6 +138,7 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 ```
 
 **Error states:**
+
 ```html
 <label for="username">Username</label>
 <input id="username" type="text" aria-invalid="true" aria-describedby="username-error">
@@ -144,12 +150,14 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 ## Disclosure Widgets
 
 **Native `<details>` / `<summary>` for simple show/hide:**
+
 ```html
 <details>
   <summary>What is your refund policy?</summary>
   <p>You can return any item within 30 days for a full refund.</p>
 </details>
 ```
+
 No JavaScript required. Browser handles open/close, keyboard, and AT announcements.
 
 **When to use ARIA instead:** When visual design requirements exceed what `<details>` supports, use the ARIA accordion pattern (see `aria-patterns.instructions.md`).
@@ -159,6 +167,7 @@ No JavaScript required. Browser handles open/close, keyboard, and AT announcemen
 ## Dialogs
 
 **Prefer the native `<dialog>` element:**
+
 ```html
 <dialog id="confirm-delete" aria-labelledby="dialog-title">
   <h2 id="dialog-title">Delete this file?</h2>
@@ -167,6 +176,7 @@ No JavaScript required. Browser handles open/close, keyboard, and AT announcemen
   <button type="button" id="confirm-btn">Delete</button>
 </dialog>
 ```
+
 Open with `dialog.showModal()`. The browser handles focus trapping, `Escape` key, and backdrop automatically. When `showModal()` is not available or polyfill constraints apply, use the ARIA dialog pattern (see `aria-patterns.instructions.md`).
 
 ---
@@ -219,12 +229,14 @@ Represents the result of a calculation or user action. Has implicit `role="statu
 ### `<meter>` and `<progress>`
 
 **`<meter>`** -- a scalar value within a known range (disk usage, score, relevance):
+
 ```html
 <label for="disk">Disk usage:</label>
 <meter id="disk" value="0.7" min="0" max="1" low="0.3" high="0.8" optimum="0.5">70%</meter>
 ```
 
 **`<progress>`** -- completion of a task (file upload, multi-step form):
+
 ```html
 <label for="upload">Upload progress:</label>
 <progress id="upload" value="45" max="100">45%</progress>
@@ -235,6 +247,7 @@ Both elements include fallback text content for browsers that do not render them
 ### `<time>`
 
 Marks up dates and times with a machine-readable `datetime` attribute:
+
 ```html
 <p>Published <time datetime="2025-01-15T09:00:00Z">January 15, 2025</time></p>
 ```

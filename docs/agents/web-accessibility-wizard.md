@@ -71,4 +71,3 @@ At the end, it generates a prioritized report with issues grouped by severity (C
 - Groups issues by WCAG conformance level and severity, not by file or line number
 
 </details>
-

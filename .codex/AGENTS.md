@@ -25,11 +25,13 @@ the user does not ask for an accessibility review.
 A `<button>` beats `<div role="button">` every time.
 
 **Never add ARIA to these** (they already have implicit roles):
+
 - `<header>`, `<nav>`, `<main>`, `<footer>`, `<aside>`
 - `<button>`, `<a href>`, `<input>`, `<select>`, `<textarea>`
 - `<h1>`–`<h6>`, `<ul>`, `<ol>`, `<li>`, `<table>`, `<form>`
 
 **Always required:**
+
 - Every interactive element needs an accessible name:
   `aria-label`, `aria-labelledby`, or visible text.
 - Icon-only buttons: `<button aria-label="Close">` — not empty.
@@ -38,6 +40,7 @@ A `<button>` beats `<div role="button">` every time.
   Never use the filename as alt text.
 
 **State attributes — keep them live:**
+
 - Toggle buttons: `aria-pressed="true/false"` (must update on click)
 - Expandable sections: `aria-expanded="true/false"` on the trigger
 - Invalid inputs: `aria-invalid="true"` + `aria-describedby` pointing to error message
@@ -51,6 +54,7 @@ A `<button>` beats `<div role="button">` every time.
 Every interactive element must be reachable and operable by keyboard alone.
 
 **Focus management rules:**
+
 - Tab order must follow visual/reading order — never use `tabindex > 0`.
 - Use `tabindex="0"` only to make non-interactive elements focusable when necessary.
 - Use `tabindex="-1"` for elements you manage focus to programmatically.
@@ -87,6 +91,7 @@ When it closes, focus must return to the trigger element.
 ```
 
 Requirements:
+
 - `aria-modal="true"` and `aria-labelledby` on `<dialog>`
 - Close button is the **first focusable element** inside
 - Focus moves **into** the dialog on open
@@ -109,6 +114,7 @@ Requirements:
 ```
 
 Rules:
+
 - Every `<input>`, `<select>`, `<textarea>` must have a visible `<label>`.
   No placeholder-only labels — placeholder disappears on focus.
 - Error messages must be announced: `role="alert"` or `aria-live="polite"`.
@@ -147,6 +153,7 @@ When content updates without a page reload, screen readers must be notified.
 ```
 
 Rules:
+
 - `aria-live="polite"` for status updates (toasts, search results, counts)
 - `role="alert"` (implies `aria-live="assertive"`) for errors only
 - Live regions must be in the DOM **before** content is injected — do not

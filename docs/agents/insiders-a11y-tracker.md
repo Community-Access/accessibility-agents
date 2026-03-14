@@ -115,7 +115,7 @@ It does not just list issues. It maps each fix to the WCAG success criterion it 
    - **Regressed** - was fixed, has reopened
 
 7. **Escalation flag:**
-   >  Persistent Issue Detected (3+ scans): Focus trap not working in Settings editor (#11200). This issue has appeared in 3 consecutive monthly scans without resolution. Recommended action: comment on the issue to signal continued impact, or file a priority escalation issue.
+   > Persistent Issue Detected (3+ scans): Focus trap not working in Settings editor (#11200). This issue has appeared in 3 consecutive monthly scans without resolution. Recommended action: comment on the issue to signal continued impact, or file a priority escalation issue.
 
 ---
 

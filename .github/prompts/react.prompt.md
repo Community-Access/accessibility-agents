@@ -46,4 +46,3 @@ Parse the target to determine:
 4. If the user says "react to #42" without specifying which reaction, show the available reactions and ask.
 
 **Never modify issue/PR state -- reactions only.**
-

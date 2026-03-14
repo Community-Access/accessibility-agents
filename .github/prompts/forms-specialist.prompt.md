@@ -62,6 +62,7 @@ WCAG 1.3.5: Use autocomplete tokens for common inputs
 ### Step 6: Provide Remediation
 
 For each issue:
+
 - WCAG criterion (1.3.1, 3.3.1, 3.3.2, 3.3.3, 4.1.2)
 - Code example with correct implementation
 - Framework-specific patterns

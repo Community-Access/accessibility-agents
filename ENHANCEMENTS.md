@@ -37,7 +37,7 @@ All new components follow the existing MCP tool architecture established by `run
 
 ## Architecture
 
-```
+```text
                         ┌──────────────────────────┐
                         │  web-accessibility-wizard │
                         └──────────┬───────────────┘
@@ -100,10 +100,12 @@ These components use proven Playwright APIs with deterministic, structured outpu
 **What it does:** Launches Playwright, loads a URL, presses Tab repeatedly, records which element receives focus after each press. Returns the complete tab-order sequence with element metadata.
 
 **API surface:**
+
 - Input: `url` (required), `maxTabs` (optional, default 100), `selector` (optional, scope to container)
 - Output: Ordered array of `{index, tagName, role, name, id, classList, tabIndex, isTrap}` where `isTrap` is true if the same element received focus twice consecutively (potential keyboard trap)
 
 **Why high confidence:**
+
 - `page.keyboard.press('Tab')` — stable Playwright API since v1.0
 - `page.evaluate(() => document.activeElement)` — standard DOM API
 - Boolean trap detection: same `activeElement` after N consecutive tabs
@@ -116,10 +118,12 @@ These components use proven Playwright APIs with deterministic, structured outpu
 **What it does:** Clicks interactive triggers (buttons, disclosure widgets, menu toggles), waits for DOM change, runs `@axe-core/playwright` against the newly revealed content. Catches violations that only exist in expanded/active states.
 
 **API surface:**
+
 - Input: `url` (required), `triggers[]` (optional — CSS selectors to click; if omitted, auto-discovers clickable elements with `aria-expanded`, `aria-haspopup`, or disclosure patterns), `axeTags` (optional, defaults to WCAG 2.2 AA)
 - Output: Array of `{trigger, stateDescription, axeViolations[]}` per triggered state
 
 **Why high confidence:**
+
 - `page.click(selector)` — stable Playwright API
 - `page.waitForSelector()` / `page.waitForTimeout()` — standard state-change detection
 - `new AxeBuilder({page}).include(selector).withTags(tags).analyze()` — official `@axe-core/playwright` API, documented and maintained by Deque
@@ -131,10 +135,12 @@ These components use proven Playwright APIs with deterministic, structured outpu
 **What it does:** Runs axe-core at multiple viewport widths. Measures rendered touch target sizes. Detects horizontal scroll overflow.
 
 **API surface:**
+
 - Input: `url` (required), `viewports[]` (optional, defaults to `[320, 768, 1024, 1440]`), `measureTargets` (optional boolean, default true)
 - Output: Per viewport: `{width, axeViolations[], horizontalScrollDetected, touchTargets[{selector, width, height, meetsMinimum}]}`
 
 **Why high confidence:**
+
 - `page.setViewportSize()` — stable Playwright API
 - `element.getBoundingClientRect()` — standard DOM API, returns exact rendered pixel dimensions
 - `document.documentElement.scrollWidth > window.innerWidth` — one boolean check
@@ -147,10 +153,12 @@ These components use proven Playwright APIs with deterministic, structured outpu
 **What it does:** Extracts computed foreground and background colors for every text element on the page after full CSS cascade resolution. Computes actual contrast ratios.
 
 **API surface:**
+
 - Input: `url` (required), `selector` (optional, scope to container)
 - Output: Array of `{selector, text, foreground, background, contrastRatio, fontSize, fontWeight, required (4.5 or 3.0), pass}`
 
 **Why high confidence:**
+
 - `window.getComputedStyle(el).color` and `.backgroundColor` — standard DOM APIs
 - WCAG relative luminance and contrast ratio formulas are well-defined math (already implemented in the workspace's Check Contrast task)
 - Resolves the CSS cascade, inheritance, transparency, and overlay stacking that static analysis cannot compute
@@ -162,10 +170,12 @@ These components use proven Playwright APIs with deterministic, structured outpu
 **What it does:** Captures the full accessibility tree as seen by the browser's accessibility API.
 
 **API surface:**
+
 - Input: `url` (required), `selector` (optional, root element)
 - Output: Serialized accessibility tree JSON from `page.accessibility.snapshot({interestingOnly: false})`
 
 **Why high confidence:**
+
 - `page.accessibility.snapshot()` — built-in Playwright API, returns structured JSON
 - No parsing or interpretation — returns raw tree data
 - Useful input for `cross-page-analyzer` tree-level pattern detection
@@ -185,6 +195,7 @@ These agents consume the MCP tools from P1 and fit into the existing web-accessi
 **Action set:** Calls P1 MCP tools, aggregates results, returns structured findings. Never edits files.
 
 **Capabilities:**
+
 - Keyboard flow mapping (via P1.1)
 - Dynamic state scanning (via P1.2)
 - Responsive viewport scanning (via P1.3)
@@ -193,7 +204,8 @@ These agents consume the MCP tools from P1 and fit into the existing web-accessi
 - Focus management tests: click modal trigger → check `activeElement` → close modal → check `activeElement` returns (combination of P1.1 keyboard scanning and P1.2 state triggering)
 
 **Output contract:**
-```
+
+```json
 {
   keyboard_flow: [{element, role, name, tab_index, trap_detected}],
   focus_tests:   [{trigger, expected_target, actual_target, pass}],
@@ -213,6 +225,7 @@ These agents consume the MCP tools from P1 and fit into the existing web-accessi
 **Action set:** Navigates to the fixed element, runs a targeted axe-core assertion, reports PASS/FAIL/REGRESSION. Never edits files.
 
 **Workflow per fix:**
+
 1. Receive: fix number, axe-core rule ID, element selector, dev server URL
 2. Navigate Playwright to the page
 3. Run `new AxeBuilder({page}).include(selector).withRules([ruleId]).analyze()`
@@ -221,7 +234,8 @@ These agents consume the MCP tools from P1 and fit into the existing web-accessi
 6. If original violation absent but new violations introduced → `REGRESSION` with details
 
 **Output contract:**
-```
+
+```json
 {
   fix_number, rule_id, selector,
   verification: "PASS" | "FAIL" | "REGRESSION",
@@ -237,6 +251,7 @@ These agents consume the MCP tools from P1 and fit into the existing web-accessi
 **Purpose:** Reusable knowledge module providing Playwright + axe-core integration patterns, test generation templates, CI configuration, and graceful degradation guidance.
 
 **Contents:**
+
 - `@axe-core/playwright` usage patterns (scan page, scan element, scan after interaction)
 - Keyboard traversal test templates
 - Focus management test templates
@@ -307,6 +322,7 @@ Update the web-severity-scoring skill to add a "Confirmed" confidence level:
 After a verified fix, `playwright-verifier` outputs a Playwright test file that encodes the assertion. The agent generates test code using `@axe-core/playwright` patterns from the `playwright-testing` skill.
 
 Example generated test:
+
 ```javascript
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
@@ -370,6 +386,7 @@ Compare tab-order sequences across pages to detect inconsistent navigation patte
 The existing `scan_pdf_document` MCP tool uses a custom regex-based parser that reads the PDF binary as latin1 and matches structural markers. This catches ~70% of real-world issues but fundamentally **cannot validate object relationships** — it detects presence/absence of tagged structures, not whether those structures are semantically correct.
 
 **veraPDF** is the reference implementation for PDF/UA (ISO 14289) validation. It is:
+
 - **Cross-platform** — Java-based, runs on Windows, macOS, and Linux
 - **Open source** — Apache 2.0 / MPL-2.0 dual licensed
 - **Authoritative** — Used by PDF Association, Library of Congress, and EU accessibility bodies
@@ -380,10 +397,12 @@ The existing `scan_pdf_document` MCP tool uses a custom regex-based parser that 
 **What it does:** Shells out to `verapdf` CLI, parses JSON output, maps findings to the existing rule layer structure, and returns structured results compatible with the document-accessibility-wizard workflow.
 
 **API surface:**
+
 - Input: `filePath` (required), `flavour` (optional, default `ua1`, also supports `ua2`), `reportPath` (optional markdown output), `sarifPath` (optional SARIF 2.1.0 output)
 - Output: veraPDF findings mapped to PDFUA rule IDs, with veraPDF-specific detail (clause references, test numbers, object context)
 
 **Why high confidence:**
+
 - `child_process.execFile('verapdf', [...args])` — standard Node.js subprocess API
 - veraPDF `--format json` output is well-documented and stable (JSON schema versioned)
 - No interpretation needed — veraPDF already maps to Matterhorn Protocol checkpoints
@@ -414,10 +433,11 @@ Update `document-accessibility-wizard` and `pdf-accessibility` agents:
 ### P6.3: Availability Detection
 
 Same pattern as Playwright:
+
 - Probe `verapdf --version` once, cache result
 - `isVeraPdfAvailable()` — lazy, cached, non-blocking
 - Graceful degradation: regex-only scan if veraPDF not installed
-- Report: "For full PDF/UA conformance, install veraPDF: https://verapdf.org/software/"
+- Report: "For full PDF/UA conformance, install veraPDF: <https://verapdf.org/software/>"
 
 ### P6.4: Confidence Scoring Integration
 
@@ -443,6 +463,7 @@ PDF forms (AcroForm) are inherently inaccessible to many users — screen reader
 **What it does:** Reads a PDF file, extracts all AcroForm fields using `pdf-lib`, and generates a fully accessible HTML5 form with proper semantic markup.
 
 **API surface:**
+
 - Input: `filePath` (required), `title` (optional, defaults to filename)
 - Output: Complete HTML document with extracted fields, plus a field inventory summary
 
@@ -460,6 +481,7 @@ PDF forms (AcroForm) are inherently inaccessible to many users — screen reader
 | Signature | Descriptive text | Explains signature requirement |
 
 **Accessibility guarantees:**
+
 - Every input has an associated `<label>` with `for/id` binding
 - Radio button groups wrapped in `<fieldset>` with `<legend>`
 - Required fields marked with `aria-required="true"` and visual indicator
@@ -469,6 +491,7 @@ PDF forms (AcroForm) are inherently inaccessible to many users — screen reader
 - Read-only fields marked with `readonly` attribute and visual notice
 
 **Reliability:**
+
 - **High** for standard AcroForm PDFs (text, checkbox, radio, dropdown) — 80-90% of real-world forms
 - **Medium** for calculated fields — values extracted but formulas not converted
 - **Low** for XFA forms — pdf-lib cannot parse XFA
@@ -501,7 +524,7 @@ These items were evaluated and deferred due to low confidence, high maintenance 
 ## Graceful Degradation
 
 | Playwright Installed? | Dev Server Running? | Behavior |
-|----------------------|--------------------|---------| 
+|----------------------|--------------------|---------|
 | Yes | Yes | Full behavioral testing (Phase 10) + closed-loop fix verification |
 | Yes | No | Phase 10 skipped. Note in report: "Start dev server for behavioral testing." |
 | No | Yes | axe-core CLI only (current behavior). Note: "Install Playwright for keyboard, focus, and state testing." |

@@ -7,14 +7,15 @@ tools: ['run_playwright_keyboard_scan', 'run_playwright_state_scan', 'run_playwr
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **axe-core Rules** — https://github.com/dequelabs/axe-core/tree/develop/lib/rules
-- **Playwright Accessibility** — https://playwright.dev/docs/accessibility-testing
-- **@axe-core/playwright** — https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **axe-core Rules** — <https://github.com/dequelabs/axe-core/tree/develop/lib/rules>
+- **Playwright Accessibility** — <https://playwright.dev/docs/accessibility-testing>
+- **@axe-core/playwright** — <https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright>
 
 ## Using askQuestions
 
 **Use the `askQuestions` tool** when reporting results back to the parent agent or user. Use it for:
+
 - Asking which scan profile to run if not specified (quick, standard, deep)
 - Confirming the URL and viewport settings before scanning
 - Presenting scan results with options: "Scan another page?", "Run a deeper scan?", "Export results?"
@@ -104,11 +105,13 @@ BEHAVIORAL CONFIDENCE: {High|Medium|Low}
 ## Graceful Degradation
 
 If Playwright is not installed:
+
 - Report that behavioral scans are unavailable
 - List the install command: `npm install -D playwright @axe-core/playwright && npx playwright install chromium`
 - Return a "degraded" status so the wizard can proceed with static-only analysis
 
 If @axe-core/playwright is not installed but Playwright is:
+
 - Run keyboard scan, contrast scan, and accessibility tree (Playwright-only tools)
 - Skip state scan and viewport scan (require @axe-core/playwright)
 - Report partial results with a note about the missing dependency

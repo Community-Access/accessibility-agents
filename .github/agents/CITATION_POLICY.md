@@ -27,7 +27,7 @@ If the agent cannot link to an authoritative source for a factual assertion, it 
 
 Cite sources inline using markdown links:
 
-```
+```text
 [WCAG 2.2 SC 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)
 ```
 

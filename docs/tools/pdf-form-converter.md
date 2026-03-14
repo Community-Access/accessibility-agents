@@ -56,7 +56,7 @@ convert_pdf_form_to_html filePath="forms/application.pdf" title="Job Application
 
 For a PDF with 3 text fields, 1 checkbox, and 1 dropdown, the tool generates:
 
-```
+```html
 PDF FORM CONVERSION: application.pdf
 Fields extracted: 5 (text: 3, checkbox: 1, select: 1)
 

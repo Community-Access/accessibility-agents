@@ -20,12 +20,14 @@ ${input:customization:Optional: any customization -- e.g. 'add a field for our c
 ### Step 1: Confirm Customization
 
 If customization was provided, incorporate it. If not, check one thing:
+
 - Ask: "Should the Component field list your specific component names, or use free text?" (Use #tool:ask_questions with options: "Free text is fine" / "Let me add our component names")
 - If they want to add component names, collect them.
 
 ### Step 2: Check for Existing Templates
 
 Use #tool:listDirectory to inspect `.github/ISSUE_TEMPLATE/`:
+
 - If an `accessibility` or `a11y` template already exists, warn the user and offer to overwrite or rename.
 
 ### Step 3: Generate the Template
@@ -215,4 +217,3 @@ body:
 - "Want to add this template to your `config.yml` chooser?"
 - "Want to also add a `good first issue` label for newcomers to help with accessibility fixes?"
 - "Use `@contributions-hub` to check your overall community health, including template coverage."
-

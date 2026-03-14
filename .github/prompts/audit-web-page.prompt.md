@@ -54,6 +54,7 @@ Parse violations, incomplete items, and passes from the JSON output.
 ### Phase 2: Code Review
 
 If source files are available in the workspace:
+
 1. Delegate to **accessibility-lead** to coordinate specialist code review:
    - **aria-specialist** - ARIA roles, states, widget patterns
    - **keyboard-navigator** - Tab order, focus management, skip links
@@ -103,6 +104,7 @@ If source files are available in the workspace:
 ### Phase 4: Follow-Up
 
 Ask the user:
+
 - "Want to fix the critical and serious issues now?" → hand off to `fix-web-issues`
 - "Want to compare against a previous audit?" → hand off to `compare-web-audits`
 - "Want to export findings to CSV?" → hand off to `export-web-csv`
@@ -110,6 +112,7 @@ Ask the user:
 ## Handoff Transparency
 
 Announce progress at each phase:
+
 - **Phase 0:** "Checking workspace config and previous reports..."
 - **Phase 1:** "Running axe-core scan on [URL]..."
 - **Phase 2:** "Running code review with [N] specialists..."

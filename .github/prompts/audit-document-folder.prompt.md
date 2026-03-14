@@ -25,7 +25,7 @@ Run a comprehensive recursive accessibility audit on all documents in the folder
 ## Instructions
 
 1. Discover all documents recursively in the folder
-2. Skip temp files (~$*, *.tmp, *.bak) and ignored directories (.git, node_modules)
+2. Skip temp files (~$*,*.tmp, *.bak) and ignored directories (.git, node_modules)
 3. Present the inventory with counts by type and subfolder
 4. Ask for confirmation before scanning
 5. Scan all files, delegating each to the appropriate sub-agent
@@ -39,9 +39,8 @@ Run a comprehensive recursive accessibility audit on all documents in the folder
 ## Handoff Transparency
 
 This workflow delegates to format-specific sub-agents for each document. Announce transitions:
+
 - **Per file:** "Scanning file [N/total]: [filename] using [agent-name]..."
 - **Per completion:** "[filename]: [N] findings, score [score]/100"
 - **Cross-analysis:** "Running cross-document analysis on [N] files..."
 - **On failure:** "Scan failed for [filename]: [reason]. Continuing with remaining files."
-
-

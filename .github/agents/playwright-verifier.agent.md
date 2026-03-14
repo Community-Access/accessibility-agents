@@ -7,14 +7,15 @@ tools: ['run_playwright_keyboard_scan', 'run_playwright_state_scan', 'run_playwr
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **axe-core Rules** — https://github.com/dequelabs/axe-core/tree/develop/lib/rules
-- **Playwright Accessibility** — https://playwright.dev/docs/accessibility-testing
-- **@axe-core/playwright** — https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **axe-core Rules** — <https://github.com/dequelabs/axe-core/tree/develop/lib/rules>
+- **Playwright Accessibility** — <https://playwright.dev/docs/accessibility-testing>
+- **@axe-core/playwright** — <https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright>
 
 ## Using askQuestions
 
 **Use the `askQuestions` tool** when verification results need user decisions. Use it for:
+
 - Reporting PASS/FAIL/REGRESSION results with next-step options
 - Asking whether to continue verifying remaining fixes or stop on failure
 - Offering to generate a Playwright test file for the verified fix
@@ -33,6 +34,7 @@ When invoked with fix details, follow this exact sequence:
 ### Step 1: Receive Fix Context
 
 Input parameters:
+
 - `fix_number` — Sequential number in the fix batch
 - `rule_id` — axe-core rule ID that was violated (e.g., `color-contrast`, `button-name`)
 - `selector` — CSS selector of the fixed element
@@ -138,6 +140,7 @@ test('contrast: {selector} meets {required}:1 ratio', async ({ page }) => {
 ## Graceful Degradation
 
 If Playwright is not installed:
+
 - Report that live verification is unavailable
 - Suggest the fix is "unverified" and should be manually tested
 - Provide the install command for future use

@@ -18,6 +18,7 @@ ${input:filter:Optional: repo name, 'org:orgname', 'needs review', 'approved', '
 ## Behavior
 
 Parse the filter:
+
 - **Repo name** --> scope to that repo with `repo:owner/name`
 - **Org name** (e.g., "org:microsoft") --> scope to that org with `org:orgname`
 - **"needs review"** --> PRs with no reviews yet
@@ -34,6 +35,7 @@ Also search for PRs where your review was requested: `review-requested:USERNAME 
 ## Enhanced Data Collection
 
 For each PR found, also gather:
+
 - **Reactions** -- on the PR description. Flag Popular/Controversial/Quiet.
 - **Release context** -- check if the PR targets a release branch or is in a release milestone.
 - **Discussions** -- note related GitHub Discussions.
@@ -60,6 +62,7 @@ Display two sections:
 | 1 | [PR #N: Title](url) | repo | @author | 5 | +120/-30 | 2 days | +1: 5, Popular | v2.0 |
 
 **Action signals:**
+
 - **Ready to merge** -- Approved, CI passing, no conflicts
 - **Needs your update** -- Changes requested or CI failing
 - **Blocked** -- Merge conflicts or blocked by dependencies
@@ -68,4 +71,3 @@ Display two sections:
 - **Release-bound** -- Targets an upcoming release
 
 After the table, suggest: _"Want to merge a ready PR, start reviewing one, or generate a full PR report?"_
-

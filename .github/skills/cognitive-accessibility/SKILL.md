@@ -57,7 +57,7 @@ This skill provides reference tables, scoring formulas, and evaluation patterns 
 | 3.1.3 | Unusual Words | Jargon/idiom defined on first use |
 | 3.1.4 | Abbreviations | Abbreviations expanded on first use |
 | 3.1.5 | Reading Level | General content <= Grade 8; see formula below |
-| 3.3.9 | Accessible Authentication Enhanced *(2.2 new)* | No cognitive function test _at all_ (removes the object-recognition exception) |
+| 3.3.9 | Accessible Authentication Enhanced *(2.2 new)* | No cognitive function test *at all* (removes the object-recognition exception) |
 
 ---
 
@@ -143,7 +143,7 @@ Score each error message 0-3 on each dimension:
 |  Fail | "You entered the wrong password." |
 |  Marginal | "Password is incorrect." |
 |  Pass | "The password doesn't match. Passwords are case-sensitive - check Caps Lock and try again." |
-|  Pass | "Email must include @ - for example, name@company.com" |
+|  Pass | "Email must include @ - for example, <name@company.com>" |
 
 ---
 
@@ -154,11 +154,13 @@ Score each error message 0-3 on each dimension:
 $$GL = 0.39 \times \frac{W}{S} + 11.8 \times \frac{Sy}{W} - 15.59$$
 
 Where:
+
 - $W$ = total words
 - $S$ = total sentences
 - $Sy$ = total syllables
 
 **Syllable counting rules:**
+
 - Count each vowel cluster (a, e, i, o, u) as one syllable
 - Subtract one syllable for silent trailing *e* ("made" = 1, "make" = 1)
 - Each word has at least 1 syllable
@@ -176,6 +178,7 @@ Where:
 ### Quick-Estimate Method (when full computation is impractical)
 
 Flag content for reading level review when:
+
 - Any single sentence exceeds 35 words
 - More than 30% of words exceed 3 syllables in a paragraph
 - 3 or more Latin abbreviations in a single page ("i.e.", "e.g.", "et al.", "viz.")
@@ -266,6 +269,7 @@ From the W3C COGA "Making Content Usable for People with Cognitive and Learning 
 ### When Used by web-accessibility-wizard
 
 The wizard invokes `cognitive-accessibility` as part of Phase 3 (Forms and Input) and Phase 5 (Dynamic Content). Specifically:
+
 - Phase 3: delegates 3.3.7 and 3.3.8 detection + error message quality to this skill
 - Phase 5: delegates timeout warning detection to this skill
 

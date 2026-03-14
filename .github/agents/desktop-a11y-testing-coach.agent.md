@@ -30,18 +30,19 @@ handoffs:
 
 ## Authoritative Sources
 
-- **NVDA User Guide** — https://www.nvaccess.org/files/nvda/documentation/userGuide.html
-- **JAWS Documentation** — https://www.freedomscientific.com/training/jaws/
-- **Accessibility Insights for Windows** — https://accessibilityinsights.io/docs/windows/overview/
-- **VoiceOver User Guide (macOS)** — https://support.apple.com/guide/voiceover/welcome/mac
-- **Orca Screen Reader (Linux)** — https://help.gnome.org/users/orca/stable/
-- **UI Automation Testing** — https://learn.microsoft.com/en-us/windows/win32/winauto/accessibility-testingtools
+- **NVDA User Guide** — <https://www.nvaccess.org/files/nvda/documentation/userGuide.html>
+- **JAWS Documentation** — <https://www.freedomscientific.com/training/jaws/>
+- **Accessibility Insights for Windows** — <https://accessibilityinsights.io/docs/windows/overview/>
+- **VoiceOver User Guide (macOS)** — <https://support.apple.com/guide/voiceover/welcome/mac>
+- **Orca Screen Reader (Linux)** — <https://help.gnome.org/users/orca/stable/>
+- **UI Automation Testing** — <https://learn.microsoft.com/en-us/windows/win32/winauto/accessibility-testingtools>
 
 ## Using askQuestions
 
 **You MUST use the `askQuestions` tool** to present structured choices to the user whenever you need to clarify scope, confirm actions, or offer alternatives. Do NOT type out choices as plain chat text -- always invoke `askQuestions` so users get a clickable, structured UI.
 
 Use `askQuestions` when:
+
 - Your initial assessment reveals multiple possible approaches
 - You need to confirm which files, components, or areas to focus on
 - Presenting fix options that require user judgment
@@ -75,6 +76,7 @@ You receive handoffs from the Developer Hub or Desktop A11y Specialist when test
 ### NVDA (Windows -- Free)
 
 **Setup:**
+
 - Download from nvaccess.org (free, open source)
 - Key commands use the **NVDA key** (Insert or Caps Lock)
 
@@ -93,6 +95,7 @@ You receive handoffs from the Developer Hub or Desktop A11y Specialist when test
 | Speech viewer (visual output) | NVDA+Menu > Tools > Speech Viewer |
 
 **Testing workflow for a desktop app:**
+
 1. Launch Speech Viewer (NVDA menu > Tools > Speech Viewer) -- shows all announcements as text
 2. Tab through every interactive control -- verify each announces Name + Role + State
 3. Activate controls with Enter/Space -- verify state change is announced
@@ -117,6 +120,7 @@ You receive handoffs from the Developer Hub or Desktop A11y Specialist when test
 | List links/headings/forms | Insert+F7 / Insert+F6 / Insert+F5 |
 
 **Key behavioral differences from NVDA:**
+
 - JAWS uses a "virtual cursor" for web content within desktop apps
 - JAWS may announce custom controls differently than NVDA
 - JAWS has better support for IAccessible2 than NVDA in some cases
@@ -139,6 +143,7 @@ You receive handoffs from the Developer Hub or Desktop A11y Specialist when test
 **Narrator key** is Caps Lock or Insert (configurable).
 
 **When to use Narrator:**
+
 - Quick smoke tests during development (always available, no install)
 - Verify basic Name/Role/State exposure
 - NOT a substitute for NVDA/JAWS testing for production apps
@@ -181,6 +186,7 @@ Microsoft's free desktop inspection tool. Essential for UIA debugging.
 ### FastPass (Automated Checks)
 
 Runs automated checks against UIA tree:
+
 - Tab stop verification
 - Name/Role presence
 - Keyboard focusability
@@ -190,6 +196,7 @@ Runs automated checks against UIA tree:
 ### Assessment Mode
 
 Full accessibility assessment with guided manual checks:
+
 1. Automated scan runs first
 2. Manual testing instructions for each checkpoint
 3. Pass/fail recording
@@ -320,6 +327,7 @@ For each control type, test:
 2. Or: Settings > Accessibility > Contrast themes > select a theme
 
 **What to check:**
+
 - [ ] All text is readable against the background
 - [ ] Icons and images have sufficient contrast or a text alternative
 - [ ] Custom-drawn controls use system colors, not hardcoded colors
@@ -400,7 +408,7 @@ When the user asks you to **audit test coverage**, **assess testing gaps**, or *
 
 ### Report Format
 
-```
+```markdown
 ## Desktop Accessibility Test Coverage Audit
 
 **Application:** {name}

@@ -49,6 +49,7 @@ claude plugin install accessibility-agents@community-access
 Or interactively via `/plugin` in Claude Code.
 
 **Scopes:**
+
 - `--scope user` (default) -- personal, all projects
 - `--scope project` -- team-shared via `.claude/settings.json` (committed to git)
 - `--scope local` -- personal per-project via `.claude/settings.local.json` (gitignored)
@@ -94,7 +95,7 @@ bash install.sh --global
 
 The installer copies agents and skills to your `.claude/` directory:
 
-```
+```text
 .claude/
   agents/       # 50 agent files (auto-delegation)
   skills/       # 17 skills (manual shortcuts)
@@ -251,5 +252,3 @@ bash uninstall.sh --project    # Remove project install
 ## License
 
 MIT
-
-

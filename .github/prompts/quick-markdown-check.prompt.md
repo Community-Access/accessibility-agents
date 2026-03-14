@@ -55,8 +55,8 @@ Verdict: PASS (no Critical/Serious issues) | FAIL ([N] errors found)
 ## Handoff Transparency
 
 This workflow dispatches `markdown-scanner` sub-agents. Announce transitions:
+
 - **Start:** "Running quick accessibility check on [N] markdown file(s)..."
 - **Per file:** "Scanning [filename]..."
 - **Completion:** "Quick check complete: [PASS/FAIL] - [N] critical/serious issues found"
 - **On failure:** "Scan failed for [filename]: [reason]. Continuing with remaining files."
-

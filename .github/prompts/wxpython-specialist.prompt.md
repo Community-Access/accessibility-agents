@@ -35,7 +35,7 @@ Ask the user:
 
 ### Step 2: Create Project Structure
 
-```
+```text
 app_name/
   __init__.py
   __main__.py            # Entry point

@@ -11,6 +11,7 @@
 Accessibility Agents is a VS Code plugin bundling **57 specialized agents**, **17 reusable skills**, **104 custom prompts**, and **5 workspace instructions** for WCAG 2.2 AA compliance auditing across web, document, and developer accessibility domains.
 
 **Key Stats:**
+
 - ✅ 170+ files across 3 platforms (Copilot, Claude Code, Gemini)
 - ✅ 100% source citation coverage (all agents cite W3C, vendor docs)
 - ✅ Auto-update mechanism with manifest-based tracking
@@ -28,6 +29,7 @@ Accessibility Agents is a VS Code plugin bundling **57 specialized agents**, **1
 ✅ Already created: s:\code\agents\plugin.yaml
 
 Verify it contains:
+
 - Name: "accessibility-agents"
 - Title: "Accessibility Agents for GitHub Copilot"
 - Description: (compelling 1-2 sentence summary)
@@ -38,6 +40,7 @@ Verify it contains:
 - Activation section with recommended agents
 
 **Validate YAML syntax:**
+
 ```powershell
 # PowerShell
 $yaml = Get-Content plugin.yaml -Raw
@@ -47,6 +50,7 @@ $yaml | Out-String -InputObject $yaml | Select-String "^name:|^title:|^version:"
 ### 1.2 Update version in key files
 
 Verify v3.0.0 is set in:
+
 - ✅ plugin.yaml - `version: "3.0.0"`
 - ✅ prd.md - `**Version:** 3.0.0`
 - ✅ README.md - Check header references
@@ -55,6 +59,7 @@ Verify v3.0.0 is set in:
 ### 1.3 Documentation Quality Check
 
 Ensure these docs exist for marketplace visibility:
+
 - ✅ README.md - Main documentation with installation instructions
 - ✅ docs/getting-started.md - Platform-specific setup
 - ✅ docs/agents/README.md - Agent reference with use cases
@@ -81,7 +86,7 @@ git status                             # Should show: working tree clean
 
 ### 2.1 Fork the awesome-copilot Repository
 
-1. **Go to:** https://github.com/copilot-plugins/awesome-copilot
+1. **Go to:** <https://github.com/copilot-plugins/awesome-copilot>
 2. **Click:** Fork (top-right)
 3. **Name:** Leave as `awesome-copilot` (auto-filled)
 4. **Owner:** Select your GitHub account
@@ -145,7 +150,7 @@ git push origin main
 
 ### 2.6 Create a Pull Request
 
-1. **Go to:** Your fork (https://github.com/YOUR_USERNAME/awesome-copilot)
+1. **Go to:** Your fork (<https://github.com/YOUR_USERNAME/awesome-copilot>)
 2. **Click:** "Contribute" → "Open pull request"
 3. **Base:** copilot-plugins/awesome-copilot → main
 4. **Head:** YOUR_USERNAME/awesome-copilot → main
@@ -196,7 +201,8 @@ irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main
 - Section 508, EN 301 549
 
 See [plugin.yaml](https://github.com/Community-Access/accessibility-agents/blob/main/plugin.yaml) for full manifest.
-```
+
+```yaml
 
 7. **Add Labels:** `plugin-submission`, `accessibility`, `useful` (if available)
 8. **Submit PR**
@@ -297,12 +303,13 @@ Or install from VS Code Extensions marketplace (coming soon #370).
 
 ## Contact
 
-- **GitHub Issues:** https://github.com/Community-Access/accessibility-agents/issues
-- **Discussions:** https://github.com/Community-Access/accessibility-agents/discussions
-- **Email:** contact@community-access.org
+- **GitHub Issues:** <https://github.com/Community-Access/accessibility-agents/issues>
+- **Discussions:** <https://github.com/Community-Access/accessibility-agents/discussions>
+- **Email:** <contact@community-access.org>
 
 Thank you for considering Accessibility Agents for the official Copilot plugin registry!
-```
+
+```markdown
 
 ### 3.3 Wait for Triage
 
@@ -347,6 +354,7 @@ Once live, check:
 ```
 
 Verify listing includes:
+
 - ✅ Correct name and version
 - ✅ Description (compelling 1-2 lines)
 - ✅ Repository link (github.com/Community-Access/...)
@@ -407,6 +415,7 @@ curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agen
 ```
 
 **Windows (PowerShell)**
+
 ```powershell
 irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
 ```
@@ -422,13 +431,15 @@ irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main
 ## Acknowledgments
 
 Special thanks to:
+
 - W3C WCAG Working Group and WAI authors
 - GitHub Copilot team for plugin support
 - Community-Access contributors
 - All users reporting issues and feedback
 
 See LICENSE for MIT license details.
-```
+
+```markdown
 
 ### 5.3 Announce on Social/Community
 
@@ -460,11 +471,12 @@ $yaml = Get-Content plugin.yaml -Raw
 [yaml]::ConvertFromYaml($yaml)  # Should return object with no errors
 ```
 
-Or use an online validator: https://www.yamllint.com/
+Or use an online validator: <https://www.yamllint.com/>
 
 ### Issue: Registry review takes >10 days
 
 **Solution:**
+
 - Check registry GitHub for status updates
 - Comment on your submission asking for status
 - Consider submitting to awesome-copilot first (faster, community-driven)
@@ -475,6 +487,7 @@ Or use an online validator: https://www.yamllint.com/
 **Timeline:** 12-48 hours typically, but can take 3-5 days
 
 **Solution:**
+
 - Clear VS Code cache: `~/.vscode/` (or `%APPDATA%\.vscode\` on Windows)
 - Restart VS Code and search again
 - If still missing after 48 hours, contact VS Code Extensions team
@@ -484,6 +497,7 @@ Or use an online validator: https://www.yamllint.com/
 **Cause:** plugin.yaml not in repository root
 
 **Solution:**
+
 ```powershell
 # Verify file location
 ls -Path plugin.yaml

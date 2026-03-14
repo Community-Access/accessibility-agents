@@ -26,14 +26,17 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
    - **Priority level:** CRITICAL, IMPORTANT, SUGGESTION, NIT, or PRAISE (per code review standards)
 7. Preview the comment with surrounding numbered lines from the diff:
    > **Comment on `{file}` L{N} -- {PRIORITY}:**
-   > ```
+>
+   > ```text
    > {N-2} | {context line}
    > {N-1} | {context line}
    > {N}   | {target line}  <-- your comment here
    > {N+1} | {context line}
    > {N+2} | {context line}
    > ```
+>
    > {comment text}
+
 8. Use #tool:ask_questions: **Submit**, **Edit**, **Add another comment first**, **Cancel**.
 9. Create a pending review --> add comment(s) --> when ready, ask for review event:
    - **Approve** -- looks good
@@ -45,4 +48,3 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 **Batch mode:** If the user wants to comment on multiple files, loop steps 4-7 before submitting once.
 
 **Release awareness:** If the PR is release-bound, remind the user to separate blocking issues from nice-to-haves for the release.
-

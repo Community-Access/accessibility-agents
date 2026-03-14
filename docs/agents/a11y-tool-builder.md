@@ -53,5 +53,3 @@
 - [developer-hub](developer-hub.md) -- routes here for tool building tasks
 - [document-accessibility-wizard](document-accessibility-wizard.md) -- reference implementation for document scanning
 - [web-accessibility-wizard](web-accessibility-wizard.md) -- reference implementation for web scanning
-
-

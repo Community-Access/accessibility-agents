@@ -28,9 +28,11 @@ Use the **web-accessibility-wizard** agent workflow in quick mode:
 
 1. Skip Phase 0 discovery - settings are pre-configured above
 2. Run axe-core against the URL:
+
    ```bash
    npx @axe-core/cli ${input:pageUrl} --tags wcag2a,wcag2aa,wcag21a,wcag21aa
    ```
+
 3. Parse the results and report inline in this format:
 
 ```text
@@ -58,6 +60,7 @@ Verdict: [PASS if 0 critical/serious | NEEDS WORK if 1-3 serious | FAIL if 4+ se
 ## Handoff Transparency
 
 Announce scan progress:
+
 - **Start:** "Running axe-core quick scan on [URL]..."
 - **Completion:** "Quick scan complete: [PASS/FAIL] - [N] issues found ([N] critical, [N] serious)"
 - **On failure:** "axe-core scan failed: [reason]. Check the URL and try again."

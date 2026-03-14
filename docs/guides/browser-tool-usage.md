@@ -5,12 +5,14 @@ Web accessibility agents can autonomously navigate, test, and verify fixes in VS
 ## Overview
 
 **Traditional workflow:**
+
 1. Agent scans code → finds issues
 2. Agent suggests fixes
 3. Developer manually tests in browser
 4. Developer reports back if it worked
 
 **Browser-assisted workflow:**
+
 1. Agent scans code → finds issues
 2. Agent applies fix to code
 3. **Agent opens page in integrated browser**
@@ -31,6 +33,7 @@ Browser tools must be enabled in VS Code settings:
 ```
 
 **How to enable:**
+
 1. Open VS Code Settings (Ctrl+,)
 2. Search for "browser chat tools"
 3. Check "Enable Chat Tools"
@@ -67,6 +70,7 @@ After completing the audit and reporting findings, the wizard offers:
 > **Would you like me to verify fixes in the integrated browser?**
 
 If yes:
+
 1. Detects if dev server is running (checks common ports)
 2. Opens page in integrated browser
 3. Takes screenshots of fixed elements
@@ -77,6 +81,7 @@ If yes:
 ### Web Issue Fixer (Auto-Verification)
 
 After applying each fix:
+
 1. Takes screenshot of the affected element
 2. Comments in code: "Fix applied at line 42"
 3. If browser tools available:
@@ -91,13 +96,15 @@ After applying each fix:
 ### Scenario: Missing Alt Text
 
 **Without browser verification:**
-```
+
+```yaml
 web-issue-fixer: Added alt="Company logo" at src/Header.tsx:12
 User: *manually opens browser to check*
 ```
 
 **With browser verification:**
-```
+
+```yaml
 web-issue-fixer: 
   Fix #1: Added alt="Company logo"
   File: src/Header.tsx:12
@@ -109,13 +116,15 @@ web-issue-fixer:
 ### Scenario: Focus Management Fix
 
 **Without browser verification:**
-```
+
+```yaml
 web-issue-fixer: Added focus management to modal at src/Modal.tsx:45
 User: *manually tests keyboard focus with Tab key*
 ```
 
 **With browser verification:**
-```
+
+```yaml
 web-issue-fixer:
   Fix #3: Added focus trap to modal
   File: src/Modal.tsx:45
@@ -129,7 +138,7 @@ web-issue-fixer:
 
 ### Dev Server Not Running
 
-```
+```yaml
 web-accessibility-wizard: 
   I need a running dev server to verify fixes.
   Checked ports: 3000, 5173, 8080, 4200, 8000 - none responding.
@@ -144,7 +153,7 @@ web-accessibility-wizard:
 
 ### Page Load Error
 
-```
+```yaml
 web-issue-fixer:
   Navigation failed: http://localhost:3000/dashboard
   Error: ERR_CONNECTION_REFUSED
@@ -160,7 +169,7 @@ web-issue-fixer:
 
 ### Element Not Found
 
-```
+```yaml
 web-issue-fixer:
   Screenshot target not found: .submit-button
   Taking full-page screenshot instead.
@@ -173,7 +182,7 @@ web-issue-fixer:
 
 ### Browser Tools Disabled
 
-```
+```json
 web-accessibility-wizard (Phase 0):
   Browser tools are not enabled. To use autonomous verification:
   
@@ -193,12 +202,14 @@ web-accessibility-wizard (Phase 0):
 ### When to Use Browser Verification
 
 ✅ **Use browser verification for:**
+
 - Visual fixes (alt text, color contrast, focus indicators)
 - Interactive fixes (keyboard navigation, focus management, ARIA states)
 - Dynamic content (live regions, loading states, form validation)
 - Layout/structure (heading order, landmark regions, skip links)
 
 ❌ **Skip browser verification for:**
+
 - Build-time issues (missing lang on html)
 - Static content without visual changes
 - Server-side rendered content with no client interactivity
@@ -207,11 +218,13 @@ web-accessibility-wizard (Phase 0):
 ### Performance Considerations
 
 Browser verification adds time to the fix process:
+
 - **Page load:** ~1-3 seconds
 - **Screenshot capture:** ~0.5-1 second per element
 - **Interactive testing:** ~2-5 seconds per interaction
 
 **Optimization:**
+
 - Batch fixes: Apply multiple fixes, then verify all at once
 - Selective verification: Verify only high-priority or visual fixes
 - Skip on re-runs: After initial verification, trust subsequent runs
@@ -219,12 +232,14 @@ Browser verification adds time to the fix process:
 ### Screenshot Evidence
 
 Screenshots serve as:
+
 - **Proof of fix** — Visual confirmation that change worked
 - **Audit trail** — Documentation for compliance reporting
 - **Debugging aid** — Shows what agent saw vs. expected state
 - **Training data** — Future improvement of verification logic
 
 Store screenshots in workspace:
+
 - Location: `.a11y-screenshots/`
 - Naming: `{timestamp}-{fix-number}-{element-selector}.png`
 - Include in audit reports as image embeds
@@ -238,6 +253,7 @@ Example screenshot path: `.a11y-screenshots/2026-03-01-fix3-submit-button.png`
 **Cause:** Setting not enabled or VS Code version < 1.110
 
 **Fix:**
+
 ```json
 // .vscode/settings.json
 {
@@ -252,8 +268,9 @@ Then restart VS Code or reload window (Ctrl+Shift+P → "Reload Window")
 **Cause:** Dev server not running or wrong port
 
 **Fix:**
+
 1. Start dev server: `npm run dev` or `npm start`
-2. Check console output for actual port (e.g., "Local: http://localhost:5173")
+2. Check console output for actual port (e.g., "Local: <http://localhost:5173>")
 3. Tell agent the correct port if non-standard
 
 ### "Screenshot shows blank page"
@@ -263,6 +280,7 @@ Then restart VS Code or reload window (Ctrl+Shift+P → "Reload Window")
 **Fix:** Agent should wait for `DOMContentLoaded` or framework-specific ready signal before screenshot
 
 **Agent behavior:**
+
 ```javascript
 // Internal agent logic (not user-facing)
 await page.waitForSelector('body.loaded', { timeout: 5000 })
@@ -272,12 +290,14 @@ await page.screenshot({ selector: targetElement })
 ### "Fix applied but verification says FAIL"
 
 **Possible causes:**
+
 1. **CSS hiding element** — Element exists but visibility:hidden or display:none
 2. **JavaScript override** — JS removes/modifies the fix after page load
 3. **Framework re-render** — Fix not persisted through hot reload
 4. **Timing issue** — Agent checked before framework updated DOM
 
 **Agent should:**
+
 1. Report the discrepancy clearly
 2. Include both the code snapshot and browser snapshot
 3. Suggest manual verification
@@ -300,11 +320,13 @@ Browser verification results are included in audit reports:
 ```
 
 **Verification:** ✅ PASS
+
 - Screenshot: [./a11y-screenshots/2026-03-04-12-45-logo.png](./a11y-screenshots/2026-03-04-12-45-logo.png)
 - Tested in: Chrome 122 (integrated browser)
 - Screen reader impact: Will now announce "Company logo" instead of "logo.png"
 - Date verified: 2026-03-04 12:45 UTC
-```
+
+```markdown
 
 ## Playwright Integration
 

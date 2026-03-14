@@ -32,6 +32,7 @@ gh issue list --repo ${input:repo} --search "${input:filter}" --json number,titl
 ### Step 2: Get Issue Details
 
 For each issue:
+
 ```bash
 gh issue view {number} --repo ${input:repo} --json number,title,author,body,state,createdAt,updatedAt,closedAt,comments,reactions,labels,milestone,assignees
 ```
@@ -46,6 +47,7 @@ gh pr list --repo ${input:repo} --search "fixes #${number} OR closes #${number}"
 ### Step 4: Check Release Context
 
 For closed issues, identify which release included the fix:
+
 ```bash
 gh release list --repo ${input:repo}
 ```
@@ -55,6 +57,7 @@ Check release notes for issue references.
 ### Step 5: Analyze Issue Patterns
 
 Group by:
+
 - Labels (bug, feature, documentation)
 - Milestone
 - Age (stale, recent)
@@ -63,6 +66,7 @@ Group by:
 ### Step 6: Triage Recommendations
 
 For each open issue:
+
 - **Priority:** Critical/High/Medium/Low based on labels, age, reactions, assignee
 - **Status:** Needs info / Ready to work / In progress / Blocked
 - **Estimated effort:** Small/Medium/Large from label or body

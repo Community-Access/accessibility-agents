@@ -43,4 +43,3 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
    - HTML: `.github/reviews/prs/{repo}-pr-{number}.html`
    Include the checklist, action items, Change Map tables, line-numbered diffs, reactions, release context, and a "My Notes" section.
 9. After completion, offer: _"Review documents saved. Say 'comment on L42' to leave feedback on any line, or approve/request changes."_
-

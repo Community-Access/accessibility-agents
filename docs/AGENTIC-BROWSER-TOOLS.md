@@ -43,6 +43,7 @@ Browser tools are **opt-in**. Users must enable:
 ```
 
 When disabled, agents gracefully degrade to:
+
 - "I've applied the fix. Please reload the page to verify visually."
 
 When enabled, agents automatically invoke browser tools to gather visual evidence.
@@ -57,7 +58,7 @@ When enabled, agents automatically invoke browser tools to gather visual evidenc
 **Why:** Confirm the fix actually resolves the issue  
 **How:**
 
-```
+```text
 Agent → Apply fix (add alt text) 
       → Take screenshot 
       → Run axe-core scan on rendered page 
@@ -84,7 +85,7 @@ Applied alt="Diagram showing A11y testing workflow" to <img id="workflow-diagram
 **Why:** Visual accessibility requires visual verification  
 **How:**
 
-```
+```python
 Agent → Apply CSS fix (change button color from #333 to #000)
       → Take screenshot showing button before/after
       → Compare contrast ratio (old: 3.2:1 → new: 4.8:1)
@@ -97,7 +98,7 @@ Agent → Apply CSS fix (change button color from #333 to #000)
 **Why:** Must verify keyboard operability and focus indicators  
 **How:**
 
-```
+```text
 Agent → Apply fix (add missing tabindex, focus management)
       → Invoke browser.click() to trigger interaction
       → Take screenshot showing focus ring
@@ -204,13 +205,15 @@ class AccessibilityAnalyzer:
 ### Scenario: Missing Alt Text + Low Contrast
 
 **Step 1: Agent detects issues**
-```
+
+```html
 web-accessibility-wizard (Phase 7 of 12): Found 2 issues
   1. Image missing alt text: <img id="hero">
   2. Button contrast too low: #666 text on #AA9977 = 2.1:1
 ```
 
 **Step 2: Agent applies fixes**
+
 ```javascript
 // Fix 1: Add alt text
 const fix1 = {
@@ -283,7 +286,8 @@ Both issues are fixed and verified. Ready to merge.
 **Trigger:** `workbench.browser.enableChatTools` is false or no browser context exists
 
 **Response:**
-```
+
+```text
 ⚠️ Browser tools are not enabled. To enable visual verification:
 1. Open VS Code settings
 2. Search for "Browser Chat Tools"
@@ -300,7 +304,8 @@ Without browser tools, fixes are applied but not visually verified.
 **Trigger:** Page takes >10 seconds to load or doesn't load at all
 
 **Response:**
-```
+
+```text
 ⚠️ The page didn't load within 10 seconds. Possible causes:
 - Page is at http://localhost (check if dev server is running)
 - Network connection issue
@@ -316,7 +321,8 @@ Please verify fixes manually or start the dev server and try again.
 **Trigger:** Element specified in fix doesn't exist on current page
 
 **Response:**
-```
+
+```text
 ⚠️ The element to verify (#hero-image) wasn't found on the current page.
 Possible causes:
 - Page hasn't fully rendered yet
@@ -336,7 +342,8 @@ Please navigate to the correct page or verify the selector exists.
 **Trigger:** Analyzed cannot extract colors, detect focus rings, etc.
 
 **Response:**
-```
+
+```yaml
 ⚠️ Visual analysis couldn't verify the complete fix. This can happen if:
 - Screenshot is too blurry or low contrast
 - Element is partially off-screen
@@ -354,6 +361,7 @@ Workaround: Open DevTools and manually inspect the element:
 ## 7. Implementation Phases
 
 ### Phase 5.1: Design & Documentation (4 hours) ✅ COMPLETE
+
 - [x] Define browser tool capabilities (screenshot, click, inspect, evaluate)
 - [x] Document usage patterns (fix verification, visual verification, interaction testing)
 - [x] Design workflow example (alt text + contrast fix)
@@ -361,18 +369,21 @@ Workaround: Open DevTools and manually inspect the element:
 - [x] Create protocol documentation (this file)
 
 ### Phase 5.2: Web Accessibility Wizard Enhancement (3 hours)
+
 - [ ] Add Phase 12 (Browser Verification) to wizard workflow
 - [ ] Update agent prompt to invoke browser tools when appropriate
 - [ ] Collect screenshots and embed in final report
 - [ ] Add "Verified in browser" badge to successful fixes
 
 ### Phase 5.3: Web Issue Fixer Enhancement (3 hours)
+
 - [ ] After applying each fix, call `runBrowserTool({ action: 'screenshot' })`
 - [ ] Analyze screenshot for visual accessibility metrics
 - [ ] Comment on fix with evidence: "✓ Verified" or "⚠️ Manual review needed"
 - [ ] Generate before/after comparison image (if fix is CSS/color related)
 
 ### Phase 5.4: Testing & Iteration (3 hours)
+
 - [ ] Manual testing on real project (load page, apply fix, verify in browser)
 - [ ] Test all 4 failure modes
 - [ ] Test graceful degradation when `workbench.browser.enableChatTools` is false
@@ -385,9 +396,10 @@ Workaround: Open DevTools and manually inspect the element:
 
 ## 8. Success Criteria
 
-### Phase 5 Is Complete When:
+### Phase 5 Is Complete When
 
 **Technical:**
+
 - ✓ Agents can invoke `browser.screenshot()` and receive PNG
 - ✓ Agents can invoke `browser.click()`, `browser.type()`, `browser.navigate()`
 - ✓ Agents can invoke `browser.evaluateInBrowser()` for custom checks
@@ -396,6 +408,7 @@ Workaround: Open DevTools and manually inspect the element:
 - ✓ Screenshots include metadata (URL, timestamp, viewport size)
 
 **User Experience:**
+
 - ✓ Users see "Verified in browser ✓" when fixes are confirmed
 - ✓ Users see "Manual verification recommended ⚠️" when analysis fails
 - ✓ Users can enable/disable browser tools easily
@@ -403,6 +416,7 @@ Workaround: Open DevTools and manually inspect the element:
 - ✓ Before/after images shown for visual fixes (contrast, colors)
 
 **Documentation:**
+
 - [ ] Added "Browser-Assisted Verification" section to web-accessibility-wizard.agent.md
 - [ ] Updated README with "Using Browser Verification" guide
 - [ ] Created troubleshooting section for failure modes
@@ -456,6 +470,7 @@ const result = {
 ### With existing agents (aria-specialist, contrast-master, etc.)
 
 Browser tools are **transparent** to existing agents. They:
+
 - Don't change existing agent APIs
 - Enhance agents by providing visual feedback
 - Are optional (gracefully degrade if disabled)
@@ -496,6 +511,7 @@ window.location.href = '...'     // Navigate (only via browser.navigate())
 ### Enable Browser Tools
 
 **Settings (User Scope):**
+
 ```json
 {
   "workbench.browser.enableChatTools": true
@@ -503,6 +519,7 @@ window.location.href = '...'     // Navigate (only via browser.navigate())
 ```
 
 **Settings (Workspace Scope):**
+
 ```json
 // .vscode/settings.json
 {
@@ -545,10 +562,10 @@ window.location.href = '...'     // Navigate (only via browser.navigate())
 
 ## 13. References
 
-- **VS Code 1.110 Release Notes** — https://code.visualstudio.com/updates/
-- **VS Code Browser Tools API** — https://code.visualstudio.com/docs/copilot/customization/overview
-- **Integrated Browser Documentation** — https://code.visualstudio.com/docs/editor/debugging
-- **WCAG 2.2: Visual Accessibility** — https://www.w3.org/TR/WCAG22/
+- **VS Code 1.110 Release Notes** — <https://code.visualstudio.com/updates/>
+- **VS Code Browser Tools API** — <https://code.visualstudio.com/docs/copilot/customization/overview>
+- **Integrated Browser Documentation** — <https://code.visualstudio.com/docs/editor/debugging>
+- **WCAG 2.2: Visual Accessibility** — <https://www.w3.org/TR/WCAG22/>
 
 ---
 

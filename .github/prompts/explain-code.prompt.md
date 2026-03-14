@@ -22,7 +22,8 @@ ${input:target:What to explain -- e.g. 'lines 40-60 in auth.ts on PR #15', 'the 
    - Fetch the full file from the PR's head branch using #tool:mcp_github_github_get_file_contents.
    - Also fetch the base branch version to show what changed.
    - Display the target lines with **line numbers on every line** and ~10 lines of surrounding context:
-     ```
+
+     ```javascript
      32 |   const config = loadConfig();
      ...
      40 |   function handleAuth(req: Request): AuthResult {
@@ -32,14 +33,17 @@ ${input:target:What to explain -- e.g. 'lines 40-60 in auth.ts on PR #15', 'the 
      44 |     }
      ...
      ```
+
    - If lines were modified, show synchronized before/after with line numbers:
-     ```
+
+     ```javascript
      BEFORE (main, L41-L43):           AFTER (feature branch, L41-L44):
      41 | if (!token) return null;       41 | if (!token) {
      42 | const decoded = validate(t);    42 |   throw new AuthError('Missing');
      43 | return decoded;                 43 | }
                                         44 | const decoded = validate(token);
      ```
+
    - Explain:
      - **What this code does** -- line-by-line plain language breakdown
      - **Why it's here** -- purpose inferred from PR description, commit messages, and surrounding code
@@ -60,4 +64,3 @@ ${input:target:What to explain -- e.g. 'lines 40-60 in auth.ts on PR #15', 'the 
 
 6. After explaining, offer using L-number format:
    _"Want me to comment on L42, suggest a fix for L41-L44, or see the full Change Map?"_
-

@@ -7,12 +7,12 @@ model: inherit
 
 ## Authoritative Sources
 
-- **GitHub REST API - Repositories** — https://docs.github.com/en/rest/repos
-- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
-- **GitHub REST API - Labels** — https://docs.github.com/en/rest/issues/labels
-- **GitHub REST API - Milestones** — https://docs.github.com/en/rest/issues/milestones
-- **GitHub Issue Template Syntax** — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests
-- **GitHub Actions Workflow Syntax** — https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+- **GitHub REST API - Repositories** — <https://docs.github.com/en/rest/repos>
+- **GitHub REST API - Issues** — <https://docs.github.com/en/rest/issues>
+- **GitHub REST API - Labels** — <https://docs.github.com/en/rest/issues/labels>
+- **GitHub REST API - Milestones** — <https://docs.github.com/en/rest/issues/milestones>
+- **GitHub Issue Template Syntax** — <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests>
+- **GitHub Actions Workflow Syntax** — <https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions>
 
 # Repo Manager Agent
 
@@ -25,7 +25,6 @@ You are the Repo Manager. You set up, configure, and maintain GitHub repositorie
 ## Workspace Context
 
 Detect the workspace repo from the current directory before asking the user.
-
 
 ## Core Capabilities
 
@@ -236,6 +235,7 @@ Closes #
 When scaffolding a README, include: project title, badges (shields.io), table of contents, features, getting started, usage, contributing link, license, and contributors section.
 
 Badge format:
+
 ```markdown
 ![Build Status](https://img.shields.io/github/actions/workflow/status/OWNER/REPO/ci.yml?branch=main)
 ![License](https://img.shields.io/github/license/OWNER/REPO)
@@ -248,6 +248,7 @@ Badge format:
 Generate GitHub Actions workflows in `.github/workflows/`. Detect project language first.
 
 Requirements for all workflows:
+
 - Pinned action versions (e.g., `actions/checkout@v4`)
 - `permissions` block with least privilege
 - Dependency caching
@@ -328,6 +329,7 @@ Narrate every detection and generation step. Never mention tool names:
 ```
 
 For multi-file generation:
+
 ```text
  Generating issue templates...
  Generating CI workflow...

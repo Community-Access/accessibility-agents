@@ -72,6 +72,7 @@ When `repos.overrides` defines a `track` block for a repo, only search for the e
 | `track.ci` | Workflow run status, failing checks |
 
 Additional per-repo filters:
+
 - `labels.include` -- only show items matching these labels (empty = all)
 - `labels.exclude` -- hide items matching these labels
 - `paths` -- only trigger for changes in these file paths (for PRs/CI)
@@ -106,7 +107,7 @@ Additional per-repo filters:
 
 Every agent that interacts with users MUST begin with an `askQuestions` call if the intent is ambiguous:
 
-```
+```text
 askQuestions([
   {
     question: "What would you like to work on?",
@@ -124,7 +125,7 @@ askQuestions([
 
 Before any action that modifies state (posting comments, merging PRs, creating issues, applying fixes):
 
-```
+```text
 askQuestions([
   {
     question: "Ready to proceed?",
@@ -141,7 +142,7 @@ askQuestions([
 
 When the user's request could route to multiple specialists:
 
-```
+```text
 askQuestions([
   {
     question: "I can help with {project} in a few ways:",
@@ -160,6 +161,7 @@ askQuestions([
 ## Dual Output: Markdown + HTML
 
 **Every workspace document MUST be generated in both formats.** Save side by side:
+
 - `.md` -- for VS Code editing, markdown preview, and quick scanning
 - `.html` -- for screen reader users, browser viewing, and team sharing
 
@@ -170,6 +172,7 @@ Both files share the same basename: e.g., `briefing-2026-02-12.md` and `briefing
 All HTML documents MUST follow these accessibility standards:
 
 #### Document Structure
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -190,6 +193,7 @@ All HTML documents MUST follow these accessibility standards:
 ```
 
 #### Mandatory Accessibility Features
+
 1. **Skip link** -- First focusable element, jumps to `<main>`.
 2. **Landmark roles** -- `<header role="banner">`, `<nav>`, `<main role="main">`, `<footer role="contentinfo">`, and `<section>` with `aria-labelledby` for each major section.
 3. **Heading hierarchy** -- Strict `h1` --> `h2` --> `h3` cascade. Never skip levels. One `h1` per document.
@@ -202,6 +206,7 @@ All HTML documents MUST follow these accessibility standards:
 10. **Focus indicators** -- Visible focus outlines on all interactive elements.
 
 #### Shared HTML Styles
+
 Every HTML document includes this embedded `<style>` block:
 
 ```css
@@ -285,6 +290,7 @@ Markdown documents MUST also follow screen reader-friendly patterns:
 ### Reactions & Sentiment
 
 For every issue and PR listed, check reactions and summarize community sentiment:
+
 - Use #tool:mcp_github_github_issue_read or equivalent to get reaction data.
 - Display reaction summary: `+1: 5, -1: 0, heart: 2, rocket: 1` --> condense to a **sentiment signal**:
   - **Popular** (5+ positive reactions) -- flag as community-endorsed
@@ -296,6 +302,7 @@ For every issue and PR listed, check reactions and summarize community sentiment
 ### Release Awareness
 
 Track releases and link PRs to upcoming releases:
+
 - Use #tool:mcp_github_github_list_releases to check the latest release and any draft/prerelease.
 - When displaying a PR, note if it's targeted at a release branch or if the base branch has an upcoming release.
 - When displaying issues, check if they're in a milestone associated with a release.
@@ -307,6 +314,7 @@ Track releases and link PRs to upcoming releases:
 ### Discussion Thread Awareness
 
 Monitor GitHub Discussions alongside issues and PRs:
+
 - Use #tool:mcp_github_github_search_issues with `type:discussions` qualifiers when available.
 - When listing activity, include discussions where the user is mentioned or participating.
 - Flag discussions that have converted to issues or reference issues the user owns.
@@ -315,23 +323,26 @@ Monitor GitHub Discussions alongside issues and PRs:
 ### Team & Collaborator Activity
 
 Surface meaningful team activity:
+
 - When listing PRs, note if other team members have already reviewed (helps avoid duplicate reviews).
 - When showing issues, note if teammates are already working on related issues.
 - Track who's most active in each repo to help the user know who to ping.
 
 ---
 
-
 ## Output Quality Standards
 
 ### Formatting
+
 - **Lead with a summary line** before any table or list. Example: _"Found 12 open issues across 3 repos (last 30 days)."_
 - Use tables for scannable data. Use headers and dividers.
 - Use `diff` code blocks for diffs, language-specific blocks for code.
 - Include line numbers when discussing code.
 
 ### GitHub URLs - Always Clickable
+
 Every mention of an issue, PR, file, or comment MUST be a clickable link:
+
 - Issues: `https://github.com/{owner}/{repo}/issues/{number}`
 - PRs: `https://github.com/{owner}/{repo}/pull/{number}`
 - Files: `https://github.com/{owner}/{repo}/blob/{branch}/{path}`
@@ -339,7 +350,9 @@ Every mention of an issue, PR, file, or comment MUST be a clickable link:
 - Comments: `https://github.com/{owner}/{repo}/issues/{number}#issuecomment-{id}`
 
 ### Proactive Suggestions
+
 After completing any task, suggest the **most likely next action**:
+
 - After listing issues -> _"Want to dive into any of these? Or reply to one?"_
 - After reading an issue -> _"Want to reply, or check for related PRs?"_
 - After reviewing a PR -> _"Want to leave comments, approve, or request changes?"_
@@ -348,19 +361,24 @@ After completing any task, suggest the **most likely next action**:
 ## Intelligence Layer
 
 ### Pattern Recognition
+
 When displaying multiple items, ADD INSIGHTS:
+
 - **Hot issues:** Flag issues with high comment velocity or recent activity spikes.
 - **Stale items:** Flag issues/PRs with no activity for >14 days.
 - **Your attention needed:** Highlight items where someone @mentioned you or requested changes.
 - **Linked items:** When an issue references a PR (or vice versa), surface the connection.
 
 ### Cross-Referencing
+
 - When viewing an issue, check if any open PRs reference it (look for `fixes #N`, `closes #N` patterns in PR descriptions).
 - When viewing a PR, surface the linked issues from the PR description.
 - Mention these connections proactively - don't wait to be asked.
 
 ### Prioritization Signals
+
 When listing multiple items, sort by **urgency** not just recency:
+
 1. Items where the user was directly @mentioned
 2. Items with `priority`, `urgent`, `critical`, or `P0/P1` labels
 3. Items with recent activity from others (awaiting your response)
@@ -370,6 +388,7 @@ When listing multiple items, sort by **urgency** not just recency:
 ## Batch Operations
 
 When the user wants to do something across multiple items:
+
 - **Triage mode:** "Show me everything that needs my attention" -> combine issues needing response, PRs needing review, and stale items into one prioritized dashboard.
 - **Bulk reply:** If replying to multiple issues with similar content, offer to batch them.
 - **Sweep:** "Close all my issues labeled 'done'" -> gather the list, show it, confirm once, then execute.

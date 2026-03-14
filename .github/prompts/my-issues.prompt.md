@@ -18,6 +18,7 @@ ${input:filter:Optional: repo name, 'org:orgname', date range, labels, or keywor
 ## Behavior
 
 Parse the filter text:
+
 - **Repo name** --> scope search to that repo with `repo:owner/name`
 - **Org name** (e.g., "org:microsoft") --> scope to that org with `org:orgname`
 - **Date** ("last week", "past 30 days", "since Jan") --> add `updated:>YYYY-MM-DD`
@@ -28,6 +29,7 @@ Parse the filter text:
 ## Enhanced Data Collection
 
 For each issue found, also gather:
+
 - **Reactions** -- summarize positive/negative reactions. Flag as Popular (5+), Controversial (mixed), or Quiet.
 - **Release context** -- check if the issue is in a milestone tied to an upcoming release.
 - **Discussions** -- note if there are related GitHub Discussions.
@@ -45,6 +47,7 @@ Display results sorted by priority (issues with recent comments, @mentions, reac
 | 2 | [Issue #N: Title](url) | repo | `feature` | 2 | +1: 1 | 1 day ago | New activity |
 
 **Signal legend:**
+
 - **Action needed** -- Needs your reply
 - **New activity** -- New comments since your last visit
 - **Popular** -- 5+ positive reactions from community
@@ -54,4 +57,3 @@ Display results sorted by priority (issues with recent comments, @mentions, reac
 - **Stale** -- No activity for 30+ days
 
 After the table, suggest: _"Want me to generate a triage document for these, or dive into a specific issue?"_
-

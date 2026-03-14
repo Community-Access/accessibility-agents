@@ -28,6 +28,7 @@ GitHub repository setup and management specialist. Scaffold community health fil
 ### Setup Issue Templates
 
 Create `.github/ISSUE_TEMPLATE/`:
+
 - `bug_report.yml` - Bug report form
 - `feature_request.yml` - Feature request form
 - `accessibility_issue.yml` - Accessibility-specific template
@@ -91,6 +92,7 @@ All UI changes must meet WCAG 2.1 AA standards:
 Create `CODE_OF_CONDUCT.md`:
 
 Use Contributor Covenant:
+
 ```bash
 curl -o CODE_OF_CONDUCT.md https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md
 ```
@@ -193,12 +195,14 @@ Add badges to `README.md`:
 ### Setup License
 
 Ask for license choice:
+
 - MIT (permissive)
 - Apache 2.0 (permissive with patent grant)
 - GPL-3.0 (copyleft)
 - BSD-3-Clause (permissive)
 
 Generate `LICENSE` file via GitHub API:
+
 ```bash
 gh api repos/${input:repo}/license --method PUT -f license=mit
 ```

@@ -1,0 +1,8 @@
+node_modules
+**/node_modules
+.git
+.history
+.claude
+.gemini
+vscode-extension/node_modules
+desktop-extension

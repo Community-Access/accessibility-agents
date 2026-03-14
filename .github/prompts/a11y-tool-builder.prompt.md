@@ -37,6 +37,7 @@ Ask the user:
 ### Step 2: Design Architecture
 
 Review the **a11y-tool-builder** agent's architecture patterns:
+
 - Rule engine design (rule ID, severity, WCAG mapping, detection logic)
 - Severity scoring formulas (0-100, A-F grades)
 - Parser architecture (DOM/AST traversal, Office XML, PDF structure)
@@ -46,6 +47,7 @@ Review the **a11y-tool-builder** agent's architecture patterns:
 ### Step 3: Implement Core Components
 
 Build the tool following accessibility-first principles:
+
 1. **Scanner/Parser** -- Extract structure from target format
 2. **Rule Engine** -- Apply accessibility rules with WCAG mapping
 3. **Severity Scorer** -- Compute scores using documented formulas

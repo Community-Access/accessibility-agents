@@ -47,4 +47,3 @@ ${input:pr:PR reference -- e.g. owner/repo#123 or a GitHub PR URL}
 6. Confirm: _"PR review documents saved to `{md-path}` and `{html-path}`. Say 'comment on L42' to leave feedback on any line. Open the docs, check off items, and add your notes."_
 
 **Tip:** After annotating the documents, use `/pr-comment` to turn your notes into actual PR comments.
-

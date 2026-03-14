@@ -43,4 +43,3 @@ generate_vpat with:
 2. The wizard produces `ACCESSIBILITY-AUDIT.md` with all findings
 3. Use `generate_vpat` to map findings to WCAG criteria and generate the formal VPAT
 4. Review and adjust conformance levels as needed (agents provide evidence, you make the final call)
-

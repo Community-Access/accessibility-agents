@@ -331,6 +331,7 @@ Every agent declares which tools it can use in its YAML frontmatter. This determ
 | wcag-guide | yes | yes | -- | -- | yes | -- |
 
 **Notes:**
+
 - **accessibility-lead** is the only web specialist with `runSubagent` - it orchestrates the others.
 - **testing-coach** has no `edit` - it teaches testing techniques but does not write product code.
 - **wcag-guide** has no `edit` or `runInTerminal` - it is a pure reference agent.
@@ -352,6 +353,7 @@ Every agent declares which tools it can use in its YAML frontmatter. This determ
 | web-csv-reporter | yes | yes | yes | -- | -- | -- | -- | -- | -- | -- |
 
 **Notes:**
+
 - **web-accessibility-wizard** has the widest tool set of any accessibility agent - it needs full workspace access for guided audits.
 - **cross-page-analyzer** is read-only - it synthesizes data but never modifies files.
 - Internal helpers (`user-invokable: false`) are marked in the agent listing tables above.
@@ -388,6 +390,7 @@ All five document specialists have identical tool sets.
 | document-csv-reporter | yes | yes | yes | -- | -- | -- |
 
 **Notes:**
+
 - **document-inventory** needs terminal access for running file discovery commands.
 - **cross-document-analyzer** is read-only, like its web counterpart.
 
@@ -421,6 +424,7 @@ Config managers only need to read and write config files, and ask the user about
 | markdown-csv-reporter | yes | yes | yes | -- | -- | -- | -- | -- | -- |
 
 **Notes:**
+
 - **markdown-scanner** is read-only plus terminal (for running lint checks).
 - **markdown-fixer** can edit files but cannot search - it receives file paths from the orchestrator.
 
@@ -447,6 +451,7 @@ Config managers only need to read and write config files, and ask the user about
 | template-builder | yes | yes | -- | yes | -- | yes | -- | -- | -- | yes | yes | yes |
 
 **Notes:**
+
 - All GitHub agents have `github/*` (GitHub API access), `createFile`, `createDirectory`, and `listDirectory` for report output.
 - **repo-manager** has the widest tool set - it needs full workspace access for scaffolding repos.
 - **nexus** and **github-hub** are functionally identical orchestrators (nexus is the canonical name).
@@ -517,5 +522,3 @@ Both environments share:
 **Use wcag-guide when debating.** If your team disagrees about what WCAG requires, ask wcag-guide. It gives definitive answers with criterion references, not opinions.
 
 </details>
-
-

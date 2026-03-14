@@ -23,6 +23,7 @@ Apply accessibility fixes to markdown files. Auto-fix safe changes, present huma
 ### Step 1: Load Audit Report
 
 Parse findings from audit report:
+
 - Auto-fix: True/False
 - Category: links, headings, emoji, em-dashes, tables, diagrams, alt-text, anchors
 - Line number
@@ -33,12 +34,14 @@ Parse findings from audit report:
 ### Step 2: Group Fixes by Category
 
 **Auto-fixable (no human judgment):**
+
 - Em-dash normalization (`—` → `---`)
 - Emoji in headings (remove or translate)
 - Table description missing (insert `<!-- Table: ${description} -->`)
 - Broken anchor links (correct fragment identifier)
 
 **Human judgment required:**
+
 - Ambiguous link text ("click here" → user provides context)
 - Missing alt text (image analyzer provides suggestion, user confirms)
 - Mermaid diagram replacement (provide text alternative outline)
@@ -88,12 +91,14 @@ For more info, [click here](https://example.com).
 **Context:** Paragraph about API documentation
 
 **Suggested Fix:**
+
 ```markdown
 For more info, [view the API documentation](https://example.com).
 ```
 
 **Accept this fix?** (yes/no/edit)
-```
+
+```markdown
 
 If user says "edit", ask for custom text.
 

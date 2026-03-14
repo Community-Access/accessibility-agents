@@ -31,6 +31,7 @@ Ask the user:
 ### Step 2: Find All Links
 
 Search for link elements:
+
 - HTML: `<a href="...">`
 - React/JSX: `<Link to="...">`, `<a href="...">`
 - Markdown: `[text](url)`
@@ -40,6 +41,7 @@ Search for link elements:
 Flag these patterns:
 
 **Always ambiguous:**
+
 - "click here"
 - "read more"
 - "learn more"
@@ -52,6 +54,7 @@ Flag these patterns:
 - "this link"
 
 **Context-dependent (review manually):**
+
 - "download" (needs file type/name)
 - "view" (needs what's being viewed)
 - "see" (needs destination)
@@ -60,6 +63,7 @@ Flag these patterns:
 ### Step 4: Check Link Context
 
 WCAG 2.4.4 allows context from:
+
 - Same sentence
 - Same paragraph
 - Same list item
@@ -77,12 +81,14 @@ WCAG 2.4.4 allows context from:
 ### Step 5: Provide Remediation
 
 For each ambiguous link:
+
 - Current text
 - Context (if any)
 - Suggested rewrite
 - WCAG 2.4.4 reference
 
 **Rewrite strategies:**
+
 - Make link text self-descriptive: "Read WCAG 2.2 Guidelines"
 - Include destination: "Download PDF (2.5 MB)"
 - Add hidden text: `<span class="sr-only">about WCAG</span>`

@@ -31,6 +31,7 @@ Ask the user:
 ### Step 2: Check Semantic Markup
 
 **Simple table:**
+
 ```html
 <table>
   <caption>Monthly revenue by region</caption>
@@ -52,6 +53,7 @@ Ask the user:
 ```
 
 **Key elements:**
+
 - `<caption>` -- Descriptive title
 - `<thead>`, `<tbody>`, `<tfoot>` -- Structural grouping
 - `<th scope="col">` -- Column headers
@@ -61,6 +63,7 @@ Ask the user:
 ### Step 3: Check Complex Tables
 
 **For tables with multi-level headers:**
+
 ```html
 <th id="region" scope="col">Region</th>
 <td headers="region q1">$50k</td>
@@ -71,6 +74,7 @@ Use `id` + `headers` attribute to link data cells to multiple headers.
 ### Step 4: Check Sortable Tables
 
 **Interactive headers:**
+
 ```html
 <th scope="col" aria-sort="ascending">
   <button>Region <span aria-hidden="true">▲</span></button>
@@ -78,6 +82,7 @@ Use `id` + `headers` attribute to link data cells to multiple headers.
 ```
 
 **Requirements:**
+
 - `aria-sort="ascending|descending|none"`
 - Keyboard accessible (button or link)
 - Visual indicator (icon, not just color)
@@ -86,6 +91,7 @@ Use `id` + `headers` attribute to link data cells to multiple headers.
 ### Step 5: Check ARIA Grid Pattern
 
 For complex data grids with keyboard navigation:
+
 ```html
 <div role="grid" aria-label="Monthly revenue">
   <div role="rowgroup">
@@ -104,6 +110,7 @@ For complex data grids with keyboard navigation:
 ```
 
 **Use only if:**
+
 - Keyboard navigation required (arrow keys)
 - Cell editing functionality
 - Otherwise, prefer semantic `<table>`
@@ -111,10 +118,12 @@ For complex data grids with keyboard navigation:
 ### Step 6: Check Responsive Patterns
 
 **Avoid:**
+
 - `display: none` hiding columns (inaccessible)
 - Horizontal scroll without indication
 
 **Prefer:**
+
 - Stack rows as cards on mobile
 - Show/hide columns with accessible controls
 - aria-label describing responsive behavior
@@ -122,6 +131,7 @@ For complex data grids with keyboard navigation:
 ### Step 7: Provide Remediation
 
 For each issue:
+
 - WCAG criterion (1.3.1 Info and Relationships)
 - Table markup fix
 - Code example (HTML or framework-specific)

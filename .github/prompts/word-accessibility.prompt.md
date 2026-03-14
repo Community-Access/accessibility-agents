@@ -23,6 +23,7 @@ Audit Microsoft Word (.docx) documents for accessibility compliance with WCAG 2.
 ### Step 1: Run Office Accessibility Checker
 
 **PowerShell (Windows):**
+
 ```powershell
 $word = New-Object -ComObject Word.Application
 $doc = $word.Documents.Open((Resolve-Path "${input:docFile}"))
@@ -33,6 +34,7 @@ $word.Quit()
 ```
 
 **Or use Open XML SDK (cross-platform):**
+
 ```bash
 # Requires custom C# tool
 dotnet run --project CheckAccessibility.csproj document.docx
@@ -44,6 +46,7 @@ dotnet run --project CheckAccessibility.csproj document.docx
 **WCAG:** 2.4.2 Page Titled
 
 Document must have title in properties:
+
 - File → Info → Properties → Title (Word UI)
 - Or `<dc:title>` in docProps/core.xml
 
@@ -62,6 +65,7 @@ Document must have title in properties:
 **WCAG:** 1.1.1 Non-text Content
 
 All images/shapes must have:
+
 - Alt text (meaningful description)
 - Or marked as decorative
 
@@ -92,11 +96,13 @@ Check: Table Tools → Design → Header Row checkbox
 **WCAG:** 3.1.1 Language of Page
 
 Document language set:
+
 - Review → Language → Set Proofing Language
 
 ### Step 8: Provide Remediation Report
 
 For each issue:
+
 - Rule ID (DOCX-xxx)
 - WCAG criterion
 - Location in document (page, paragraph)

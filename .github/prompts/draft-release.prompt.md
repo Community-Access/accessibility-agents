@@ -41,8 +41,8 @@ ${input:details:Optional: repo name, target version (e.g. 'v2.1.0'), or 'compare
 9. Present a summary in chat and offer to create the GitHub release draft.
 
 **Post-release checklist items:**
+
 - [ ] Close the milestone
 - [ ] Update documentation
 - [ ] Announce in discussions/channels
 - [ ] Verify deployment
-

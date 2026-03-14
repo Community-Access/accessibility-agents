@@ -64,6 +64,7 @@ gh pr list --repo ${input:repo} --state all --search "created:>=${startDate}" --
 ### Step 5: Bottleneck Detection
 
 Identify:
+
 - PRs waiting for review (> 3 days)
 - PRs stuck in draft
 - Issues waiting for maintainer response
@@ -131,6 +132,7 @@ Create `ANALYTICS-${input:repo}.md`:
 ### Step 8: Generate HTML Dashboard
 
 Create interactive dashboard with:
+
 - Charts (issue/PR trends, contributor activity)
 - Filterable tables
 - Accessible navigation

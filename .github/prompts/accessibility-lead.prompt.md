@@ -33,6 +33,7 @@ Ask the user:
 ### Step 2: Read Component Code
 
 Read all relevant files:
+
 - Component source (JSX/TSX/Vue/HTML)
 - Stylesheets (CSS/SCSS/Tailwind)
 - Related components (child/parent components)
@@ -43,10 +44,12 @@ Read all relevant files:
 Invoke specialist agents via Task tool based on component features:
 
 **Always invoke:**
+
 - `keyboard-navigator` -- Tab order, focus management, keyboard shortcuts
 - `alt-text-headings` -- Images, heading structure, landmarks
 
 **Conditionally invoke:**
+
 - `aria-specialist` -- Interactive widgets, custom components, ARIA usage
 - `modal-specialist` -- Modals, dialogs, drawers, overlays
 - `forms-specialist` -- Form inputs, validation, error messages

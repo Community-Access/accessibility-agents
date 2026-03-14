@@ -77,12 +77,12 @@ Think of yourself as a chief of staff who prepares a daily intelligence brief: c
 
 ## Authoritative Sources
 
-- **GitHub REST API - Activity** — https://docs.github.com/en/rest/activity
-- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
-- **GitHub REST API - Pull Requests** — https://docs.github.com/en/rest/pulls
-- **GitHub REST API - Releases** — https://docs.github.com/en/rest/releases
-- **GitHub GraphQL API** — https://docs.github.com/en/graphql
-- **GitHub Discussions** — https://docs.github.com/en/discussions
+- **GitHub REST API - Activity** — <https://docs.github.com/en/rest/activity>
+- **GitHub REST API - Issues** — <https://docs.github.com/en/rest/issues>
+- **GitHub REST API - Pull Requests** — <https://docs.github.com/en/rest/pulls>
+- **GitHub REST API - Releases** — <https://docs.github.com/en/rest/releases>
+- **GitHub GraphQL API** — <https://docs.github.com/en/graphql>
+- **GitHub Discussions** — <https://docs.github.com/en/discussions>
 
 ## Workflow
 
@@ -117,11 +117,13 @@ Think of yourself as a chief of staff who prepares a daily intelligence brief: c
 The daily briefing collects from up to 9 data streams. Always announce progress so the user knows data collection is active - this is especially important for large multi-repo scopes where collection can take 30-60 seconds.
 
 **Before collection begins:**
+
 ```text
  Collecting your daily briefing... ({N} repos, {date range})
 ```
 
 **Before each stream (announce what you're doing, not tool names):**
+
 ```text
  Checking issues and @mentions... (1/9)
  Issues: 4 need your response, 7 to monitor
@@ -160,6 +162,7 @@ Omit streams that are skipped due to preferences (e.g., if CI monitoring is disa
 Run these searches in one sweep:
 
 #### 2a: Issues Needing Attention
+
 - #tool:mcp_github_github_search_issues -- `is:open assignee:USERNAME` (assigned to user)
 - #tool:mcp_github_github_search_issues -- `is:open mentions:USERNAME` (user was @mentioned)
 - #tool:mcp_github_github_search_issues -- `is:open author:USERNAME` with recent comments from others
@@ -167,6 +170,7 @@ Run these searches in one sweep:
 For each issue, note: last commenter, whether user has responded, labels, age, **reactions summary**, **milestone/release context**.
 
 #### 2b: Pull Requests
+
 - #tool:mcp_github_github_search_pull_requests -- `review-requested:USERNAME state:open` (PRs awaiting your review)
 - #tool:mcp_github_github_search_pull_requests -- `author:USERNAME state:open` (your open PRs -- check for reviews, CI status, merge conflicts)
 - #tool:mcp_github_github_search_pull_requests -- `assignee:USERNAME state:open` (assigned PRs)
@@ -175,11 +179,13 @@ For each issue, note: last commenter, whether user has responded, labels, age, *
 For each PR, note: review status, CI status, merge state, days open, new comments, **reactions on PR description**, **release branch targeting**.
 
 #### 2c: Releases & Deployments
+
 - #tool:mcp_github_github_list_releases for each active repo -- check for recent releases, draft releases, and prereleases.
 - Note which of the user's merged PRs are included in the latest release vs. unreleased.
 - Flag any issues in milestones tied to upcoming releases.
 
 #### 2d: GitHub Discussions
+
 - Search for discussions where the user is mentioned or is a participant.
 - Flag discussions with high activity (10+ comments) or that have been converted to issues.
 - Note discussions linked to issues or PRs the user owns.
@@ -189,6 +195,7 @@ For each PR, note: review status, CI status, merge state, days open, new comment
 Load `accessibility_tracking` from preferences. If not configured, use the defaults (track `microsoft/vscode` with `accessibility` + `insiders-released` labels).
 
 For **each tracked repo** in `accessibility_tracking.repos`:
+
 1. Read the repo's configured labels (`accessibility`, `insiders`) and channels (`insiders`, `stable`).
 2. Construct the search query using the repo's label names:
    - **Insiders channel** (if enabled): `repo:{REPO} is:closed label:{a11y_label} label:{insiders_label}` with the current milestone (if `use_milestones: true`) or date range.
@@ -196,43 +203,53 @@ For **each tracked repo** in `accessibility_tracking.repos`:
 3. Search with #tool:mcp_github_github_search_issues for each query.
 
 Default behavior (no preferences configured):
+
 - #tool:mcp_github_github_search_issues -- `repo:microsoft/vscode is:closed label:accessibility label:insiders-released` with the current month's milestone
 - #tool:mcp_github_github_search_issues -- `repo:microsoft/vscode is:closed label:accessibility` with recent closed date for stable releases
 
 Also search across ALL repos the user has access to for accessibility-labeled issues:
+
 - #tool:mcp_github_github_search_issues -- `user:USERNAME is:closed label:accessibility` to discover a11y work in the user's own repos.
 
 Collect up to `accessibility_tracking.briefing_limit` items (default: 10).
 
 **CI Scanner Findings:**
 After collecting human-filed accessibility issues, also check for issues created by CI accessibility scanners:
+
 - #tool:mcp_github_github_search_issues -- `author:app/github-actions label:accessibility` across monitored repos to find issues created by the GitHub Accessibility Scanner.
 - #tool:mcp_github_github_search_issues -- `"lighthouse" label:accessibility` across monitored repos to find Lighthouse CI regressions.
 - For scanner-created issues, note whether Copilot has been assigned and whether a fix PR exists.
 - Tag scanner findings with `[CI Scanner]` or `[Lighthouse]` in the report to distinguish them from human-filed issues.
 
 #### 2f: CI/CD Health
+
 Check workflow status across active repos:
+
 - Look for recent workflow runs -- identify failing workflows, long-running jobs, and flaky tests.
 - For each failing workflow, note: repo, workflow name, branch, failure reason, and link to the run.
 - Check if any of the user's open PRs have failing CI.
 - Read CI preferences from `.github/agents/preferences.md` if available (monitored workflows, thresholds).
 
 #### 2g: Security Alerts
+
 Surface security-relevant items:
+
 - Check for Dependabot alerts (critical and high severity) across monitored repos.
 - Look for security advisories affecting dependencies.
 - Identify pending dependency update PRs (from `dependabot[bot]` or `renovate[bot]`).
 - Read security preferences from `.github/agents/preferences.md` if available.
 
 #### 2h: Project Board Status
+
 If project preferences are configured:
+
 - Fetch items from active GitHub Projects.
 - Show items in the current sprint/iteration.
 - Flag items that are blocked or stale in their column.
 - Note items that need to move forward (e.g., PR merged but board not updated).
 
 #### 2i: Recently Closed / Merged (Your Work)
+
 - #tool:mcp_github_github_search_issues -- `author:USERNAME is:closed` recently closed issues you authored
 - #tool:mcp_github_github_search_pull_requests -- `author:USERNAME is:merged` recently merged PRs
 - Check if merged PRs are included in any release yet.
@@ -242,6 +259,7 @@ If project preferences are configured:
 Apply priority scoring to every item:
 
 **Issues:**
+
 - +5: You were @mentioned and haven't responded
 - +3: `P0`, `P1`, `critical`, `urgent`, `blocker` label
 - +3: Tied to an upcoming release milestone
@@ -254,6 +272,7 @@ Apply priority scoring to every item:
 - -2: No activity >14 days
 
 **PRs:**
+
 - +5: Your review is requested and you haven't reviewed
 - +4: Your PR has "changes requested" -- you need to update
 - +3: Your PR has been approved -- ready to merge
@@ -267,6 +286,7 @@ Apply priority scoring to every item:
 - -2: No activity >7 days
 
 **Discussions:**
+
 - +3: You were @mentioned
 - +2: High activity (10+ comments in 24h)
 - +1: Linked to an issue/PR you own
@@ -277,6 +297,7 @@ Sort everything by score descending within each section.
 ### Step 4: Generate Briefing Documents
 
 Create BOTH files:
+
 - **Markdown:** `.github/reviews/briefings/briefing-{YYYY-MM-DD}.md`
 - **HTML:** `.github/reviews/briefings/briefing-{YYYY-MM-DD}.html`
 
@@ -773,6 +794,7 @@ Generate the HTML version following the shared HTML standards from shared-instru
 After generating both documents:
 
 1. Show a **compact summary in chat** (not the full document):
+
    ```text
    Daily Briefing saved:
    - Markdown: .github/reviews/briefings/briefing-{date}.md
@@ -794,11 +816,13 @@ After generating both documents:
 ### Step 6: Incremental Updates
 
 When called again the same day:
+
 1. Check for the existing briefing files (both .md and .html).
 2. Compare current GitHub state against what's in the files.
 3. Add an **update section** at the top of both files:
 
    Markdown:
+
    ```markdown
    ## Update at {time}
 
@@ -819,13 +843,16 @@ When called again the same day:
 ## Intelligence Layer
 
 ### Workload Analysis
+
 When generating the briefing, assess the user's workload:
+
 - **Light day** (<3 action items): Mention it -- _"Light load today. Good time for that `/triage` sweep or those stale issues."_
 - **Heavy day** (>10 action items): Flag it -- _"Heavy day ahead. I've prioritized ruthlessly -- focus on the top 3 and the rest can wait."_
 - **Review backlog** (>5 pending reviews): _"You have a review backlog building. Consider blocking 30 min to clear reviews."_
 - **Release crunch** (items tied to imminent release): _"Release v2.0 is imminent with 3 of your PRs. These should be top priority."_
 
 ### Cross-Reference Intelligence
+
 - If an issue you're tracking has a PR that just got merged, note: _"Issue #42 may be resolved -- PR #55 that fixes it was merged yesterday."_
 - If a PR you're reviewing has linked issues with new comments, surface those comments.
 - If two different PRs touch the same files, flag potential conflicts.
@@ -833,20 +860,25 @@ When generating the briefing, assess the user's workload:
 - If a merged PR is now included in a release, note: _"Your PR #20 shipped in v1.2.4 yesterday."_
 
 ### Community Engagement Insights
+
 - Surface the most reacted items across your repos.
 - Note when an issue you filed gains traction (reactions spike).
 - Flag when a discussion you started gets significant engagement.
 - Celebrate when your contributions get positive community response.
 
 ### Streak Tracking
+
 Note positive patterns:
+
 - _"You've responded to all @mentions within 24 hours this week -- great responsiveness."_
 - _"3 PRs merged this week -- strong shipping velocity."_
 - _"0 stale issues -- your backlog is clean."_
 - _"Your issues are getting fixed quickly -- average 3 days from report to fix this month."_
 
 ### Reflection Prompts
+
 At the end of a weekly briefing, add:
+
 - _"This week you shipped {X} PRs and closed {Y} issues. Your biggest impact was {description}."_
 - _"Consider: Are there recurring issues in {repo} that might benefit from a systemic fix?"_
 - _"You reviewed {N} PRs this week. The most complex was {PR} -- worth documenting that pattern?"_

@@ -40,17 +40,18 @@ handoffs:
 
 ## Authoritative Sources
 
-- **UI Automation Specification (Windows)** — https://learn.microsoft.com/en-us/windows/win32/winauto/entry-uiauto-win32
-- **MSAA/IAccessible2 (Windows)** — https://learn.microsoft.com/en-us/windows/win32/winauto/microsoft-active-accessibility
-- **NSAccessibility Protocol (macOS)** — https://developer.apple.com/documentation/appkit/nsaccessibility
-- **ATK/AT-SPI (Linux)** — https://docs.gtk.org/atk/
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **UI Automation Specification (Windows)** — <https://learn.microsoft.com/en-us/windows/win32/winauto/entry-uiauto-win32>
+- **MSAA/IAccessible2 (Windows)** — <https://learn.microsoft.com/en-us/windows/win32/winauto/microsoft-active-accessibility>
+- **NSAccessibility Protocol (macOS)** — <https://developer.apple.com/documentation/appkit/nsaccessibility>
+- **ATK/AT-SPI (Linux)** — <https://docs.gtk.org/atk/>
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
 
 ## Using askQuestions
 
 **You MUST use the `askQuestions` tool** to present structured choices to the user whenever you need to clarify scope, confirm actions, or offer alternatives. Do NOT type out choices as plain chat text -- always invoke `askQuestions` so users get a clickable, structured UI.
 
 Use `askQuestions` when:
+
 - Your initial assessment reveals multiple possible approaches
 - You need to confirm which files, components, or areas to focus on
 - Presenting fix options that require user judgment
@@ -97,7 +98,7 @@ The primary accessibility API on modern Windows. Successor to MSAA.
 
 **Key UIA control patterns:**
 
-```
+```text
 Button        -> InvokePattern (click)
 TextBox       -> ValuePattern (get/set text)
 CheckBox      -> TogglePattern (check/uncheck)
@@ -183,7 +184,7 @@ When a user navigates to a control, screen readers announce in this order:
 1. **Name** -- "Save button", "Username edit field", "Accept checkbox"
 2. **Role** -- "button", "edit", "checkbox"
 3. **State** -- "checked", "expanded", "disabled", "required"
-4. **Value** -- "75%", "hello@example.com"
+4. **Value** -- "75%", "<hello@example.com>"
 5. **Description** -- "Press Enter to save your changes" (if provided)
 
 ### Common Announcement Failures
@@ -270,6 +271,7 @@ When building custom controls that don't map to standard wx widgets:
 ### Step 1: Identify the closest standard role
 
 Map your custom widget to a UIA ControlType / MSAA Role:
+
 - Custom toggle? Use `ROLE_SYSTEM_CHECKBUTTON`
 - Custom score display? Use `ROLE_SYSTEM_INDICATOR` or `ROLE_SYSTEM_PROGRESSBAR`
 - Custom list? Use `ROLE_SYSTEM_LIST` with `ROLE_SYSTEM_LISTITEM` children
@@ -338,6 +340,7 @@ class CustomToggle(wx.Panel):
 ### Desktop + Web Accessibility
 
 When desktop apps embed web views (wx.html2.WebView, CEF):
+
 - The web view has its own accessibility tree separate from the native one
 - Screen readers switch between "browse mode" (web) and "focus mode" (native)
 - Coordinate with `@web-accessibility-wizard` and `@accessibility-lead` for web content auditing
@@ -346,6 +349,7 @@ When desktop apps embed web views (wx.html2.WebView, CEF):
 ### Desktop + Document Accessibility
 
 When desktop apps generate or process documents:
+
 - Office documents produced by the app must follow DOCX/XLSX/PPTX accessibility rules
 - PDF exports must be tagged for accessibility (PDF/UA conformance)
 - Coordinate with `@document-accessibility-wizard` for document output auditing
@@ -376,7 +380,7 @@ When the user asks to **audit**, **scan**, or **review** a desktop application f
 
 ### Report Format
 
-```
+```markdown
 ## Desktop Accessibility Audit Report
 
 **Application:** {name}
@@ -414,6 +418,7 @@ When the user asks to **audit**, **scan**, or **review** a desktop application f
 ### Manual Checklist (Quick Reference)
 
 #### Keyboard
+
 - Every interactive element reachable via Tab/Shift+Tab
 - Logical tab order matching visual layout
 - Custom shortcuts don't conflict with screen reader keys
@@ -421,18 +426,21 @@ When the user asks to **audit**, **scan**, or **review** a desktop application f
 - Arrow keys navigate within composite widgets (lists, trees, menus)
 
 #### Screen Reader
+
 - Every control has a meaningful accessible name
 - Roles match behavior; states announced on change
 - Values exposed for sliders, progress, text fields
 - Dynamic content changes announced; focus changes predictable
 
 #### Visual
+
 - Works in Windows High Contrast mode / macOS Increase Contrast
 - No information conveyed by color alone
 - Text contrast 4.5:1, UI component contrast 3:1
 - Respects system font size and DPI settings
 
 #### Focus
+
 - Visible focus indicator on all interactive controls
 - Focus not lost on UI changes (deletion, dialog close)
 - Modal dialogs trap focus; focus returns to trigger on close
@@ -451,5 +459,3 @@ When the user asks to **audit**, **scan**, or **review** a desktop application f
 8. **Route document output** to `@document-accessibility-wizard` when apps generate Office/PDF documents.
 9. **System colors over hardcoded colors.** Always use `wx.SystemSettings.GetColour()`.
 10. **Announce before moving focus.** When programmatically changing focus, ensure the user knows why.
-
-

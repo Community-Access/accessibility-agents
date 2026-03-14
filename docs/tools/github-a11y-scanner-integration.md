@@ -63,6 +63,7 @@ jobs:
 The `scanner-bridge` is a hidden helper agent that bridges CI scanner data into the agent ecosystem. It is not user-invokable -- other agents call it automatically.
 
 **What it does:**
+
 - Detects scanner workflows in `.github/workflows/`
 - Fetches scanner-created issues from the GitHub API
 - Normalizes findings into the standard severity model (Critical/Serious/Moderate/Minor)

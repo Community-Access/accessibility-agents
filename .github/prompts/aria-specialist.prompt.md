@@ -33,22 +33,26 @@ Ask the user:
 Reference ARIA APG (Authoring Practices Guide) patterns:
 
 **For modals/dialogs:**
+
 - `role="dialog"` or `role="alertdialog"`
 - `aria-modal="true"`
 - `aria-labelledby` (dialog title)
 - Focus trap, return focus on close
 
 **For tabs:**
+
 - `role="tablist"`, `role="tab"`, `role="tabpanel"`
 - `aria-selected`, `aria-controls`
 - Keyboard navigation (Arrow keys, Home/End)
 
 **For accordions:**
+
 - `<button>` triggers with `aria-expanded`
 - `aria-controls` pointing to panel ID
 - Panel has unique ID
 
 **For comboboxes:**
+
 - `role="combobox"` on input
 - `aria-expanded`, `aria-controls`
 - `role="listbox"` + `role="option"` for dropdown
@@ -65,6 +69,7 @@ Reference ARIA APG (Authoring Practices Guide) patterns:
 ### Step 4: Check Keyboard Support
 
 Each interactive element pattern has required keyboard support:
+
 - Modals: Esc to close, Tab/Shift+Tab within trap
 - Tabs: Arrow keys, Home/End
 - Combobox: Down arrow opens, Esc closes, Enter selects
@@ -73,6 +78,7 @@ Each interactive element pattern has required keyboard support:
 ### Step 5: Provide Remediation
 
 For each issue:
+
 - WCAG criterion (4.1.2 Name, Role, Value)
 - ARIA APG pattern reference
 - Code example with correct implementation

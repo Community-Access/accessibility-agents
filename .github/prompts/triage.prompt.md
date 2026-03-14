@@ -46,4 +46,3 @@ ${input:scope:Optional: repo name, 'org:orgname', label filter, or date range}
    - Quick-action links to each issue on GitHub
    - Community reactions summary for each issue
 7. Confirm: _"Triage dashboard saved to `{md-path}` and `{html-path}` with {N} issues. {X} need immediate action, {Y} are popular with the community."_
-

@@ -230,7 +230,8 @@ async function isPlaywrightAvailable() {
 ### User-Facing Messages
 
 When unavailable:
-```
+
+```yaml
 Playwright not installed. Behavioral testing (keyboard traversal, dynamic states,
 responsive viewport, rendered contrast) is unavailable.
 
@@ -238,7 +239,8 @@ Install: npm install -D playwright @axe-core/playwright && npx playwright instal
 ```
 
 When partially available:
-```
+
+```yaml
 @axe-core/playwright not installed. State scanning and viewport scanning are
 unavailable. Keyboard, contrast, and accessibility tree scans will proceed.
 

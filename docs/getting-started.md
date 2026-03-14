@@ -7,6 +7,7 @@ This guide covers installation and setup for all supported platforms: Claude Cod
 This guide is maintained against official platform documentation and release notes.
 
 Key sources:
+
 - VS Code updates: `https://code.visualstudio.com/updates`
 - VS Code Copilot customization: `https://code.visualstudio.com/docs/copilot/customization/custom-instructions`
 - VS Code custom agents: `https://code.visualstudio.com/docs/copilot/customization/custom-agents`
@@ -40,18 +41,21 @@ For tasks that do not involve UI code (backend logic, scripts, database work), t
 > ⚠️ **IMPORTANT:** Always use the **latest versions** of all tools. Accessibility Agents rely on current platform APIs, new capabilities, and bug fixes. Outdated tools may cause unexpected behavior or missing functionality.
 
 **Required:**
+
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI installed and working (latest version)
 - A Claude Code subscription (Pro, Max, or Team)
 - **macOS/Linux:** bash 4.0+ (pre-installed on modern systems)
 - **Windows:** PowerShell 5.1+ (pre-installed on Windows 10/11)
 
 **Version Checks:**
+
 ```bash
 claude code --version    # Should show latest stable release
 bash --version          # macOS/Linux only
 ```
 
 **How to Update:**
+
 ```bash
 # Update Claude Code CLI
 claude code update
@@ -187,10 +191,12 @@ To see all installed agents at any time, type `/agents` in Claude Code.
 **VS Code users:** Use the **Agent Debug Panel** to verify all agents loaded correctly and see the three-hook enforcement system in action.
 
 **Open the panel:**
+
 - Command Palette → "Developer: Open Agent Debug Panel"
 - Or: Copilot Chat view gear icon → "View Agent Logs"
 
 **Check that you see:**
+
 - **57 agents loaded** across all agent teams (web, document, GitHub, developer tools)
 - **17 active skills** providing domain knowledge
 - **3 workspace instructions** (web-accessibility-baseline, semantic-html, aria-patterns or powershell-terminal-ops depending on platform)
@@ -252,6 +258,7 @@ Auto-updates are fully removed when you run the uninstaller.
 ```
 
 **When This Helps:**
+
 - **Document audits:** Scanning 100+ Office or PDF files can take several minutes
 - **Web wizard audits:** Multi-phase web accessibility workflows spanning 10+ minutes
 - **GitHub briefings:** Background data collection across multiple repos
@@ -260,6 +267,7 @@ Auto-updates are fully removed when you run the uninstaller.
 **Accessibility Benefit:** Screen reader users hear an audio signal when an agent requires input, preventing missed questions during context switches.
 
 **How to Configure:**
+
 1. Open VS Code Settings (Ctrl/Cmd + ,)
 2. Search for "chat notify"
 3. Enable "Notify Window on Response Received" and "Notify Window on Confirmation"
@@ -283,22 +291,26 @@ Auto-updates are fully removed when you run the uninstaller.
 Automatically adds a `Co-authored-by: GitHub Copilot <copilot@github.com>` trailer to git commit messages when code was generated or modified by AI agents.
 
 **Benefits:**
+
 - **Transparency:** Git history accurately reflects human + AI collaboration
 - **Compliance:** Aligns with emerging AI attribution standards
 - **Auditing:** Clear record of which accessibility fixes came from agents vs manual review
 
 **Options:**
+
 - `"chatAndAgent"` - Only for chat-generated and agent-generated code (recommended)
 - `"all"` - Includes inline completions and suggestions
 - `"never"` - No attribution (default)
 
 **How to Configure:**
+
 1. Open VS Code Settings (Ctrl/Cmd + ,)
 2. Search for "git.addAICoAuthor"
 3. Set to `"chatAndAgent"` or `"all"`
 
 **Example Commit:**
-```
+
+```html
 fix: Add ARIA labels to navigation menu controls
 
 Co-authored-by: GitHub Copilot <copilot@github.com>
@@ -329,6 +341,7 @@ The workspace instructions in `.github/copilot-instructions.md` are automaticall
 > ⚠️ **IMPORTANT:** Always use the **latest versions** of VS Code and GitHub Copilot extensions. New features (browser tools, enhanced context, improved tool use) and bug fixes directly impact agent capabilities.
 
 **Required:**
+
 - [GitHub Copilot](https://github.com/features/copilot) subscription (Individual, Business, or Enterprise)
 - **VS Code:** Latest stable release ([Download](https://code.visualstudio.com/))
 - **GitHub Copilot Extension:** Latest version from VS Code Marketplace
@@ -336,11 +349,13 @@ The workspace instructions in `.github/copilot-instructions.md` are automaticall
 - Agent mode and custom agents enabled in VS Code settings
 
 **Version Checks:**
+
 ```bash
 code --version    # Should show latest stable VS Code release
 ```
 
 **How to Update:**
+
 ```bash
 # Update VS Code: Help → Check for Updates
 # Or enable auto-updates: File → Preferences → Settings → search "update mode"
@@ -468,15 +483,18 @@ The A11y Agent Team extension adds:
 > ⚠️ **IMPORTANT:** Always use the **latest version** of Claude Desktop. Anthropic regularly adds new MCP capabilities, tool improvements, and features that enhance extension functionality.
 
 **Required:**
+
 - [Claude Desktop](https://claude.ai/download) app installed (latest version)
 - A Claude subscription (Pro plan or higher)
 
 **Version Checks:**
+
 ```bash
 # Check Claude Desktop: About → Version (or Help menu)
 ```
 
 **How to Update:**
+
 ```bash
 # Claude Desktop auto-updates by default, or check Help → Check for Updates
 # Update Accessibility Agents
@@ -529,15 +547,18 @@ Accessibility Agents keeps that stable AGENTS.md baseline, and now also includes
 > ⚠️ **IMPORTANT:** Always use the **latest version** of Codex CLI. New OpenAI model capabilities, API changes, and bug fixes may affect agent behavior.
 
 **Required:**
+
 - [Codex CLI](https://github.com/openai/codex) installed and working (latest version)
 - An OpenAI API key configured
 
 **Version Checks:**
+
 ```bash
 codex --version    # Should show latest stable release
 ```
 
 **How to Update:**
+
 ```bash
 # Update Codex CLI (follow official documentation)
 # Update Accessibility Agents
@@ -624,15 +645,18 @@ The extension includes 49 agent skills covering all accessibility domains plus 1
 > ⚠️ **IMPORTANT:** Always use the **latest version** of Gemini CLI. Google adds new model capabilities, API improvements, and features that enhance agent functionality.
 
 **Required:**
+
 - [Gemini CLI](https://github.com/google-gemini/gemini-cli) installed and working (latest version)
 - A Gemini API key configured
 
 **Version Checks:**
+
 ```bash
 gemini --version    # Should show latest stable release
 ```
 
 **How to Update:**
+
 ```bash
 # Update Gemini CLI (follow official documentation)
 # Update Accessibility Agents
@@ -705,5 +729,3 @@ rm -rf .gemini/extensions/a11y-agents/
 # Global install
 rm -rf ~/.gemini/extensions/a11y-agents/
 ```
-
-

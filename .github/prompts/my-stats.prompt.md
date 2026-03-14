@@ -30,4 +30,3 @@ ${input:scope:Optional: date range (e.g. 'this month', 'last quarter'), specific
 6. Present a compact summary in chat with key metrics and trends.
 
 After the report: _"Want to see how your metrics compare to specific team members? Or explore a particular area?"_
-

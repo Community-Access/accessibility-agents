@@ -32,6 +32,7 @@ grep -rl "github/accessibility-scanner" .github/workflows/
 ```
 
 **Pattern to match in YAML:**
+
 ```yaml
 - uses: github/accessibility-scanner@v2
 ```
@@ -120,6 +121,7 @@ The scanner uses a `cache_key` to persist results across workflow runs. This ena
 ### Cache Key Conventions
 
 When setting up scanner integration, align the cache key with agent conventions:
+
 - Use a descriptive name: `cached_results-{domain}-{branch}.json`
 - Include branch context for branch-specific scanning
 - The cache is stored as a GitHub Actions artifact
@@ -209,6 +211,7 @@ repo:{OWNER}/{REPO} is:issue label:accessibility created:>{YYYY-MM-DD}
 ### By Scan Run
 
 Issues from a specific scan run share the same creation timestamp and batch pattern. Filter by:
+
 - Creation date matching the workflow run date
 - Common label set applied by the scanner
 

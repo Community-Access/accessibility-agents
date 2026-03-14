@@ -45,6 +45,7 @@ Good: `Read my blog post "[Crafting an accessible resume](https://example.com)"`
 - Do not use `|` pipe characters to create decorative separators outside of table syntax.
 
 Example - add a table summary:
+
 ```markdown
 The following table lists agents with their role and supported platform.
 
@@ -65,6 +66,7 @@ Default behavior (remove-decorative mode):
 - When removing meaning-bearing emoji, preserve the meaning in text.
 
 **Translate mode** (when user requests English translations instead of removal):
+
 - Replace each emoji with its parenthesized English equivalent: `🚀` -> `(Launch)`, `✅` -> `(Done)`, `⚠️` -> `(Warning)`, `💡` -> `(Tip)`, `🔧` -> `(Configuration)`.
 - For unknown emoji, flag for human review.
 - Default mode is removal, not translation. Only translate when the user explicitly requests it.
@@ -74,6 +76,7 @@ Default behavior (remove-decorative mode):
 Both Mermaid diagrams and ASCII art render without accessible text alternatives for screen reader users.
 
 **Mermaid diagrams:**
+
 - Flag every ` ```mermaid ` block that does not have a text description immediately before it.
 - For replacement: add a text description, then wrap the original Mermaid source in `<details>` so sighted users retain the visual:
 
@@ -95,6 +98,7 @@ graph TD
 - Complex diagrams (`sequenceDiagram`, `classDiagram`, `erDiagram`): generate a draft description and ask the author to verify accuracy before applying.
 
 **ASCII art diagrams:**
+
 - Flag any ASCII art block (combinations of `+`, `-`, `|`, `>`, `<`, `^`, `v`, `*` forming a visual structure) without a preceding text description.
 - For replacement: add a text description (author must provide or approve), then move the ASCII art into a `<details>` block to preserve it for sighted users.
 - Never silently remove ASCII art - always preserve it in the collapsed `<details>` block.

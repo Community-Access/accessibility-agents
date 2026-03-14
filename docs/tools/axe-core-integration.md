@@ -140,4 +140,3 @@ npx playwright install chromium
 Playwright is optional. Without it, the CLI-based workflow continues as before.
 
 See [Playwright Integration](playwright-integration.md) for full details.
-

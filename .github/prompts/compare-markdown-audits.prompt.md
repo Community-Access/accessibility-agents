@@ -72,7 +72,7 @@ Use the `markdown-a11y-assistant` agent's remediation tracking capabilities:
 ## Handoff Transparency
 
 Announce comparison progress:
+
 - **Start:** "Comparing markdown audit reports - analyzing [N] findings..."
 - **Completion:** "Comparison complete: [N] fixed, [N] new, [N] persistent, [N] regressed"
 - **On failure:** "Could not parse [report]: [reason]. Comparison aborted."
-

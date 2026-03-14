@@ -26,6 +26,7 @@ When generating custom interactive widgets, apply these role-specific ARIA patte
 **Required attributes:** `aria-selected` on every tab (true/false), `aria-controls` -> panel `id`, `aria-labelledby` on panels.
 
 **Keyboard - roving tabindex pattern:**
+
 - Only the selected tab has `tabindex="0"`. All others have `tabindex="-1"`.
 - `Arrow Left` / `Arrow Right` - move focus between tabs; update `aria-selected`.
 - `Home` - move focus to first tab.
@@ -61,6 +62,7 @@ Use `dialog.showModal()` when using the native element. For the ARIA pattern (no
 **Required attributes:** `aria-modal="true"`, `aria-labelledby` pointing to the heading `id`.
 
 **Required behavior:**
+
 - On open: move focus to the first focusable element (or the dialog container if `tabindex="-1"`).
 - While open: Tab and Shift+Tab cycle focus only within the dialog. Focus must not leave.
 - `Escape`: closes the dialog.
@@ -91,6 +93,7 @@ Use `dialog.showModal()` when using the native element. For the ARIA pattern (no
 **Required attributes:** `aria-expanded` (true when list is open), `aria-controls` -> listbox `id`, `aria-activedescendant` -> focused option `id` (or empty string when no option is focused).
 
 **Keyboard:**
+
 - `Down Arrow` - opens list, moves focus to first option (set `aria-activedescendant`).
 - `Up/Down Arrow` - moves between options.
 - `Enter` - selects the highlighted option, closes list.
@@ -149,6 +152,7 @@ Use `role="menu"` only for application-style action menus (Edit / Delete / Renam
 **Required attributes:** `aria-haspopup="menu"` on trigger, `aria-expanded` (true/false), `role="menu"` on container, `role="menuitem"` on items, `role="none"` on list items (removes list semantics that would conflict with menu role).
 
 **Keyboard:**
+
 - `Enter`/`Space`/`Down Arrow` - opens menu, moves focus to first item.
 - `Up/Down Arrow` - moves between items (roving tabindex).
 - `Home`/`End` - jump to first/last item.
@@ -177,6 +181,7 @@ Use `role="menu"` only for application-style action menus (Edit / Delete / Renam
 **Required:** `aria-roledescription="carousel"` on container, `role="group" aria-roledescription="slide"` on each slide, `aria-label="Slide N of M"` on each slide, live region announcing current slide, pause control for auto-advancing carousels.
 
 **Auto-advancing carousels must:**
+
 - Provide a visible pause/stop control.
 - Pause automatically when keyboard focus enters the carousel.
 - Respect `prefers-reduced-motion` (stop all auto-advancement, keep manual controls).
@@ -206,6 +211,7 @@ Use `role="menu"` only for application-style action menus (Edit / Delete / Renam
 **Required attributes:** `aria-expanded` on items with children (true = open, false = closed), `role="group"` wrapping child lists, `aria-selected` on all items (for single-select trees).
 
 **Keyboard:**
+
 - `Down/Up Arrow` - moves focus between visible items.
 - `Right Arrow` - on collapsed item: expands it. On expanded item: moves to first child.
 - `Left Arrow` - on expanded item: collapses it. On collapsed item or leaf: moves to parent.
@@ -223,6 +229,7 @@ Use `role="menu"` only for application-style action menus (Edit / Delete / Renam
 ```
 
 Or as a styled checkbox (semantically equivalent):
+
 ```html
 <label>
   <input type="checkbox" role="switch">
@@ -249,6 +256,7 @@ Or as a styled checkbox (semantically equivalent):
 **Tooltip vs. description:** A tooltip supplements an already-named element with additional context. The button above has an accessible name ("Copy" from the visually hidden span) and the tooltip adds clarification. Do not use a tooltip as the sole accessible name.
 
 **Required behavior:**
+
 - Appears on focus and on hover.
 - Remains visible while focused (does not auto-dismiss).
 - Dismissible with `Escape`.

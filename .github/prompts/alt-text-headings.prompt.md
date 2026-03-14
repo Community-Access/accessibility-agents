@@ -56,6 +56,7 @@ For each image/icon/SVG:
 ### Step 5: Provide Remediation
 
 For each issue:
+
 - WCAG criterion violated (1.1.1, 2.4.1, 2.4.6)
 - Code example showing fix
 - Alt text suggestions (for images)

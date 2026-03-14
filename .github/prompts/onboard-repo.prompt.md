@@ -44,4 +44,3 @@ ${input:repo:Required: repository in owner/repo format}
    - HTML: `.github/reviews/onboarding/onboard-{repo-slug}-{date}.html`
    With sections: Repo Overview, Health Check, Issues Summary, PR Summary, CI/CD Status, Security Status, Quick Wins, Recommended Actions
 7. Present a compact summary and offer: _"Want to start triaging issues? Or review the oldest PRs?"_
-

@@ -22,6 +22,7 @@ Analyze accessibility patterns across multiple document audit results. Identify 
 ### Step 1: Load All Audit Results
 
 Read each audit JSON file from:
+
 - word-audit-{filename}.json
 - excel-audit-{filename}.json
 - powerpoint-audit-{filename}.json
@@ -31,6 +32,7 @@ Read each audit JSON file from:
 ### Step 2: Aggregate Findings
 
 Group findings by:
+
 - **Ruleid:** DOCX-001, XLSX-002, PDFUA.003, etc.
 - **WCAG Criterion:** 1.1.1, 1.3.1, 2.4.2, etc.
 - **Severity:** Critical, Serious, Moderate, Minor
@@ -38,18 +40,21 @@ Group findings by:
 ### Step 3: Identify Systemic Issues
 
 **Systemic** = appears in 50%+ of documents:
+
 - Missing document titles → systemic
 - No alt text on images → systemic
 - Heading structure issues → systemic
 
 **Document-specific** = appears in < 50%:
+
 - Individual spelling errors
 - One-off formatting issues
 
 ### Step 4: Compute Cross-Document Severity Score
 
 Formula:
-```
+
+```text
 Base Score = 100
 For each unique rule violation:
   systemic issue → deduct (severity * occurrence_rate * 10)
@@ -108,6 +113,7 @@ Grade = A (90-100), B (80-89), C (70-79), D (60-69), F (0-59)
 ### Step 6: Generate Remediation Priority List
 
 Order by:
+
 1. Systemic issues (highest occurrence rate)
 2. Severity (Critical > Serious > Moderate > Minor)
 3. Effort (estimated time to fix)

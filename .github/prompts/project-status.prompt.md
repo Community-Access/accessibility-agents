@@ -46,4 +46,3 @@ ${input:details:Optional: project number, org/repo name, 'org:orgname', or 'my i
 7. Present in chat with option to generate a saved document.
 
 After the overview: _"Want to see a specific column, update an item's status, or check a team member's workload?"_
-

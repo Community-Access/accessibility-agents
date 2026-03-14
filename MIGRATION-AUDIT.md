@@ -42,11 +42,13 @@
 ### Phase 1 Content (Contexts Compaction, Citations, Custom Skills)
 
 **PLAN.md Original:**
+
 - Lines 33-70: Phase 1A with 2 detailed subsections (agent updates, documentation)
 - Lines 72-250: Phase 1B with 3 detailed subsections (agent updates, workflow, script)
 - Lines 252-450: Phase 1C with 3 detailed subsections (README, guides, agent nudges)
 
 **Migrated To:**
+
 - ✅ prd.md Phase 1A section: All deliverables documented
 - ✅ prd.md Phase 1B section: All deliverables documented with GitHub Actions workflow details
 - ✅ prd.md Phase 1C section: Agent plugin packaging documented
@@ -59,12 +61,14 @@
 ### Deferred Phases  (v3.1+)
 
 **PLAN.md Original (Lines 452-540):**
+
 - Phase 2: Agent Plugins (marketplace bundles)
 - Phase 3: Lifecycle Hooks
 - Phase 4: Agentic Browser Tools
 - Phase 5: Agent Debug Panel Guidance
 
 **Migrated To prd.md (with renumbering):**
+
 - Phase 3: Agentic Browser Tools (completed March 5, 2026)
 - Phase 4: Lifecycle Hooks (strategy complete, code pending)
 - Phase 2: Custom Skills Development Framework (planned)
@@ -75,12 +79,14 @@
 ### Release Requirements
 
 **PLAN.md Original (Lines 543-599):**
+
 - Documentation Requirements: 5 items (checklist)
 - Testing Checklist: 5 items
 - Git Commits: 16 commit messages across 4 phases + version bump
 - Version bump commits: 2 items
 
 **Migrated To prd.md "v3.0 Release Management":**
+
 - ✅ Documentation Requirements: 5 items + expanded checklist
 - ✅ Testing Checklist: Expanded from 5 to 12+ specific test items
 - ✅ Git Commits: All 16+ commit messages with execution status
@@ -91,9 +97,11 @@
 ### Success Metrics
 
 **PLAN.md Original (Lines 601-615):**
+
 - 4 quantitative metrics with targets and measurement methods
 
 **Migrated To prd.md (Table format):**
+
 - Source coverage: 100% of agents cite sources
 - Source currency: Automated weekly verification
 - Custom skill adoption: 5+ community submissions
@@ -107,9 +115,11 @@
 ### Version History
 
 **PLAN.md Original (Lines 617-631):**
+
 - 1 row showing v3.0 initial plan
 
 **Migrated To prd.md (Expanded table):**
+
 - Initial plan: 2026-03-04
 - Phase 1A complete: 2026-03-07
 - Phase 1B complete: 2026-03-14
@@ -161,6 +171,7 @@
 9. **All code examples** → Implemented in `.github/` and agent definitions ✅
 
 **Nothing of value is lost.** PLAN.md was a strategic planning document written in early March. All actionable content has been:
+
 - Integrated into PRD with updated execution status
 - Linked in README for user discoverability  
 - Implemented in actual code and documentation files
@@ -171,6 +182,7 @@
 ## Files That Should Exist Post-Deletion
 
 Essential documentation replacing PLAN.md:
+
 - ✅ prd.md (single source of truth for product status)
 - ✅ README.md (user-facing documentation index)
 - ✅ docs/guides/context-management.md

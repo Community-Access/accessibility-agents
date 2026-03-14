@@ -62,4 +62,3 @@ ${input:action:What to do -- e.g. 'close owner/repo#42 as completed', 'add bug l
 5. If a workspace document exists for this issue, update it.
 
 **Safety:** All state-modifying actions (close, reopen, lock, transfer) require explicit confirmation. Label and assignment changes are confirmed with a summary.
-

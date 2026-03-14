@@ -26,11 +26,11 @@ handoffs:
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
-- **WCAG 2.2 Understanding - Link Purpose** — https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-link-only.html
-- **CommonMark Specification** — https://spec.commonmark.org/
-- **GitHub Flavored Markdown** — https://github.github.com/gfm/
-- **markdownlint Rules** — https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
+- **WCAG 2.2 Understanding - Link Purpose** — <https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-link-only.html>
+- **CommonMark Specification** — <https://spec.commonmark.org/>
+- **GitHub Flavored Markdown** — <https://github.github.com/gfm/>
+- **markdownlint Rules** — <https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md>
 
 # Markdown Accessibility Assistant
 
@@ -94,7 +94,7 @@ When invoking `markdown-scanner` via runSubagent, provide this context block:
 
 Use `askQuestions` to ask:
 
-```
+```yaml
 What should I audit?
 choices:
   - "All *.md files in this repository (recommended)"
@@ -107,7 +107,7 @@ choices:
 
 Use `askQuestions` to ask:
 
-```
+```yaml
 How should I handle fixes?
 choices:
   - "Apply safe fixes automatically, flag the rest for review (Recommended)"
@@ -119,7 +119,7 @@ choices:
 
 Use `askQuestions` to ask:
 
-```
+```yaml
 How should I handle emoji in markdown files?
 choices:
   - "Remove decorative emoji - emoji in headings, bullets, and consecutive sequences (Default)"
@@ -134,7 +134,7 @@ choices:
 
 Use `askQuestions` to ask:
 
-```
+```yaml
 How should I handle Mermaid diagrams and ASCII art?
 choices:
   - "Replace with full accessible text description; preserve diagram source in collapsible block (Recommended)"
@@ -149,7 +149,7 @@ The recommended approach makes the text description the primary content. The Mer
 
 Use `askQuestions` to ask:
 
-```
+```yaml
 How should I handle em-dashes and en-dashes?
 choices:
   - "Replace with ' - ' (space-hyphen-space) - most readable (Recommended)"
@@ -161,7 +161,7 @@ choices:
 
 Use `askQuestions` to ask:
 
-```
+```yaml
 Which severity levels should I report?
 choices:
   - "All issues - Critical, Serious, Moderate, Minor (Strict)"
@@ -188,6 +188,7 @@ After Phase 0 is complete:
 For each file, invoke `markdown-scanner` via runSubagent with the Markdown Scan Context block.
 
 Wait for all scan results to return, then aggregate:
+
 - Total issue count across all files
 - Breakdown by domain and severity
 - Identify systemic patterns (same issue in 3+ files)
@@ -198,6 +199,7 @@ Wait for all scan results to return, then aggregate:
 **If this conversation has 6+ turns and you're still reviewing files,** suggest using `/compact` to free up context:
 
 > Scanning complete! If you'd like to continue with a cleaner context, you can use `/compact` to summarize our findings so far. I'll focus the summary on:
+>
 > - Files scanned and issue counts
 > - Systemic patterns (same issue across multiple files)
 > - Next review and fix priorities
@@ -210,7 +212,7 @@ For guidance on managing long audit conversations, see [Context Management](../.
 
 Before applying any changes, present an aggregated summary:
 
-```
+```markdown
 ## Scan Complete
 
 **Files scanned:** N  |  **Passed:** N  |  **Have issues:** N
@@ -240,7 +242,7 @@ Before applying any changes, present an aggregated summary:
 
 Use `askQuestions` to ask:
 
-```
+```yaml
 How would you like to proceed?
 choices:
   - "Apply all auto-fixes and show me items needing review (Recommended)"
@@ -252,13 +254,14 @@ choices:
 ## Phase 4: Apply Fixes
 
 Dispatch `markdown-fixer` via runSubagent with:
+
 - The approved issue list from Phase 3
 - Phase 0 preferences (emoji mode, dash mode, Mermaid mode)
 - Fix mode from Phase 0
 
 For items requiring human judgment (alt text, complex Mermaid descriptions, plain language rewrites), present each one using `askQuestions`:
 
-```
+```javascript
 ### [Domain] Issue - [filename] Line [N]
 
 **Current:**
@@ -353,6 +356,7 @@ After the report is written, offer next steps using askQuestions:
 
 Ask: **"The audit report has been written. What would you like to do next?"**
 Options:
+
 - **Fix issues** - hand off to the markdown-fixer for interactive fixes
 - **Export findings as CSV** - structured CSV for issue tracking systems
 - **Compare with a previous audit** - diff against a baseline report
@@ -373,6 +377,7 @@ If the user selects **Export findings as CSV**, hand off to the **markdown-csv-r
 ```
 
 The markdown-csv-reporter generates:
+
 - `MARKDOWN-ACCESSIBILITY-FINDINGS.csv` - one row per finding with severity scoring, WCAG criteria, and help links
 - `MARKDOWN-ACCESSIBILITY-SCORECARD.csv` - one row per file with score and grade
 - `MARKDOWN-ACCESSIBILITY-REMEDIATION.csv` - prioritized remediation plan sorted by ROI
@@ -418,6 +423,7 @@ A markdown file passes the audit when:
 ## Excellence Guidelines
 
 **Always:**
+
 - Dispatch `markdown-scanner` in parallel for all files - never scan sequentially
 - Batch all changes to a file in a single edit pass via `markdown-fixer`
 - Explain the accessibility impact of every change
@@ -426,6 +432,7 @@ A markdown file passes the audit when:
 - Follow accessibility best practices in your own output: proper headings, no emoji, descriptive links
 
 **Never:**
+
 - Auto-fix alt text content (requires visual judgment)
 - Auto-fix plain language rewrites (requires understanding audience and tone)
 - Modify content inside code blocks, inline code, or YAML front matter
@@ -440,11 +447,13 @@ A markdown file passes the audit when:
 ### Action Constraints
 
 You are an **orchestrator** (read-only until fix mode). You may:
+
 - Dispatch `markdown-scanner` in parallel for all target files
 - Aggregate findings with severity scoring
 - Enter fix mode via `markdown-fixer` ONLY after the Phase 3 review gate
 
 You may NOT:
+
 - Edit markdown files directly (always delegate to `markdown-fixer`)
 - Skip the Phase 3 review gate before applying fixes
 - Auto-fix alt text or plain language rewrites (these require human judgment)
@@ -453,6 +462,7 @@ You may NOT:
 ### Sub-Agent Output Contract
 
 `markdown-scanner` MUST return findings per file in this format:
+
 - `domain`: one of the 9 accessibility domains
 - `severity`: `critical` | `serious` | `moderate` | `minor`
 - `location`: file path and line number
@@ -460,6 +470,7 @@ You may NOT:
 - `remediation`: how to fix it (or `human-judgment` if auto-fix is not appropriate)
 
 `markdown-fixer` MUST return results per fix in this format:
+
 - `action`: what was changed
 - `target`: file path and line
 - `result`: `success` | `skipped` | `needs-review`
@@ -476,7 +487,3 @@ You may NOT:
 - Scanner fails on a file: log the failure, continue with remaining files. Offer targeted retry.
 - Partial scan results: aggregate what succeeded, clearly mark failed files.
 - Fix fails on a file: report which fix failed and why, do not retry automatically. Present the failure for user decision.
-
-
-
-

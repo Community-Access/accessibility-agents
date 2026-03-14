@@ -100,7 +100,7 @@ Based on the [NVDA 2026.1 changelog](https://github.com/nvaccess/nvda/blob/maste
 
 ### Event Chain
 
-```
+```text
 API Handler (IAccessible/UIA/JAB)
   -> eventHandler.executeEvent()
     -> Global Plugin 1 .event_*()
@@ -112,7 +112,7 @@ API Handler (IAccessible/UIA/JAB)
 
 ### Script Resolution Order
 
-```
+```text
 1. gesture.scriptableObject
 2. Global Plugins (all, in order)
 3. App Module (focused app)
@@ -129,21 +129,25 @@ API Handler (IAccessible/UIA/JAB)
 ## Addon Types
 
 ### Global Plugins
+
 - Location: `addon/globalPlugins/yourAddon.py`
 - Base: `globalPluginHandler.GlobalPlugin`
 - Scope: System-wide commands and event handlers
 
 ### App Modules
+
 - Location: `addon/appModules/appname.py` (named after executable)
 - Base: `appModuleHandler.AppModule`
 - Scope: Per-application accessibility support
 
 ### Synth Drivers
+
 - Location: `addon/synthDrivers/mySynth.py`
 - Base: `synthDriverHandler.SynthDriver`
 - Key: `check()`, `speak()`, `cancel()`, `supportedSettings`
 
 ### Braille Display Drivers
+
 - Location: `addon/brailleDisplayDrivers/myDisplay.py`
 - Base: `braille.BrailleDisplayDriver`
 - Key: `check()`, `display()`, `numCells`
@@ -172,7 +176,7 @@ Parameters: `description`, `category`, `gesture`/`gestures`, `canPropagate`, `by
 
 ## Addon File Structure
 
-```
+```text
 myAddon/
   addon/
     globalPlugins/

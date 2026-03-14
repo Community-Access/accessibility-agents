@@ -50,6 +50,7 @@ gh pr checks ${input:prNumber} --repo ${input:repo}
 ### Step 5: Check Related Issues
 
 Extract issue references from PR body and comments:
+
 - `fixes #123`
 - `closes #456`
 - `related to #789`
@@ -66,6 +67,7 @@ gh release list --repo ${input:repo} --limit 10
 ### Step 7: Analyze Code Changes
 
 For each changed file:
+
 - Identify purpose (feature, bug fix, refactor)
 - Check for breaking changes
 - Review test coverage changes

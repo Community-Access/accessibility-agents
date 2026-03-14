@@ -39,6 +39,7 @@ Use the **web-accessibility-wizard** agent workflow:
 ## Handoff Transparency
 
 This workflow delegates to multiple specialist sub-agents across multiple pages. Announce each transition:
+
 - **Before delegation:** "Auditing page [N/total]: [URL] - running [phase name]..."
 - **After completion:** Summarize per-page results before moving to cross-page analysis
 - **On failure:** "[Agent name] failed on [URL]: [reason]. Continuing with remaining pages."

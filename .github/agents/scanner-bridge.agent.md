@@ -11,10 +11,10 @@ tools:
 
 ## Authoritative Sources
 
-- **GitHub Accessibility Scanner** — https://github.com/github/accessibility-scanner
-- **axe-core Rules** — https://github.com/dequelabs/axe-core/tree/develop/lib/rules
-- **GitHub REST API - Issues** — https://docs.github.com/en/rest/issues
-- **WCAG 2.2 Specification** — https://www.w3.org/TR/WCAG22/
+- **GitHub Accessibility Scanner** — <https://github.com/github/accessibility-scanner>
+- **axe-core Rules** — <https://github.com/dequelabs/axe-core/tree/develop/lib/rules>
+- **GitHub REST API - Issues** — <https://docs.github.com/en/rest/issues>
+- **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
 
 You are a GitHub Accessibility Scanner bridge agent. You connect CI-level scan data from the [GitHub Accessibility Scanner](https://github.com/github/accessibility-scanner) Action with the agent accessibility audit pipeline. You are a read-only agent -- you never modify issues, PRs, or source code.
 
@@ -56,13 +56,17 @@ If no scanner workflow is found, return `{"scannerDetected": false}`.
 Query the target repository for issues created by the scanner:
 
 1. Search for open scanner issues:
+
    ```text
    repo:{REPO} is:issue is:open label:accessibility
    ```
+
 2. Search for recently closed scanner issues (remediated):
+
    ```text
    repo:{REPO} is:issue is:closed label:accessibility closed:>{30_DAYS_AGO}
    ```
+
 3. For each issue, extract:
    - Issue number and URL
    - Title (typically the axe-core rule description)
@@ -226,7 +230,8 @@ Every invocation of `scanner-bridge` returns a structured result:
 4. **No GitHub API calls without repo context.** Always require the target repository before querying.
 5. **Respect rate limits.** Batch issue queries where possible. Do not paginate beyond 100 issues per query.
 6. **Announce progress.** Report each step as it completes:
-   ```
+
+   ```text
    Checking for GitHub Accessibility Scanner workflow...
    Scanner detected: .github/workflows/a11y-scan.yml
    Fetching open scanner issues (12 found)...

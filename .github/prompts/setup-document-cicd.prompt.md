@@ -39,9 +39,8 @@ Use the **document-accessibility-wizard** agent to:
 ## Handoff Transparency
 
 Announce CI/CD setup progress:
+
 - **Start:** "Setting up document accessibility CI/CD pipeline..."
 - **Per step:** Announce which config file or workflow is being generated
 - **Completion:** "CI/CD setup complete: [N] files generated. See setup instructions above."
 - **On failure:** "Setup failed at [step]: [reason]."
-
-
