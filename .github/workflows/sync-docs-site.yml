@@ -174,7 +174,7 @@ jobs:
           python3 -m json.tool manifest.json > /dev/null
 
       - name: Create pull request with manifest
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ github.token }}
           commit-message: "chore: update docs manifest [skip ci]"
