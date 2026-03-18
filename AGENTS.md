@@ -20,7 +20,6 @@ This repository contains 59 accessibility-focused AI agents across multiple plat
 | `.codex/` | Codex CLI configuration |
 | `.gemini/` | Gemini CLI extension |
 | `docs/` | Documentation site |
-| `desktop-extension/` | Claude Desktop MCP tools (Playwright) |
 | `vscode-extension/` | VS Code extension (planned) |
 | `scripts/` | Build and validation scripts |
 | `templates/` | Scan configuration templates |

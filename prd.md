@@ -217,28 +217,6 @@ CI integration bridges include lighthouse-bridge and scanner-bridge for correlat
 
 </details>
 
-### MCP Server Architecture
-
-The MCP server (`desktop-extension/server/index.js`) is a single Node.js ESM module that:
-
-1. Registers 11 tools and 6 prompts with the `@modelcontextprotocol/sdk` `McpServer`
-2. Communicates via `StdioServerTransport` (stdin/stdout JSON-RPC)
-3. Performs all document scanning with zero external dependencies:
-   - **Office scanning:** Pure Node.js ZIP Central Directory parsing using `inflateRawSync` from `node:zlib`
-   - **PDF scanning:** Direct buffer parsing using `latin1` encoding with regex-based structure detection
-4. Shells out to `@axe-core/cli` only for the `run_axe_scan` tool (optional external dependency)
-
-<details>
-<summary>MCP server component diagram (text description follows)</summary>
-
-The MCP server (desktop-extension/server/index.js) imports node:child_process, node:fs, node:os, node:path, node:crypto, node:util, node:zlib as built-in modules, plus @modelcontextprotocol/sdk and zod as external packages.
-
-It contains three tool groups: Web Tools (7 tools: check_contrast, get_accessibility_guidelines, check_heading_structure, check_link_text, check_form_labels, generate_vpat, run_axe_scan), Document Tools (4 tools: extract_document_metadata, batch_scan_documents, scan_office_document with scanDocx/scanXlsx/scanPptx, scan_pdf_document with parsePdfBasics/scanPdf), and Output Builders (buildOfficeSarif, buildOfficeMarkdownReport, buildPdfSarif, buildPdfMarkdownReport).
-
-It also registers 6 MCP Prompts: Full Audit, ARIA Review, Modal Review, Contrast Review, Keyboard Review, Live Region Review.
-
-</details>
-
 ### CI/CD Architecture
 
 The following diagram shows the pull request pipeline that triggers accessibility scanning and uploads SARIF results to GitHub Code Scanning.
@@ -320,7 +298,7 @@ The following table lists all document accessibility agents with their rule coun
 | 29 | **nvda-addon-specialist** | NVDA addon development, manifest structure, API patterns, addon-datastore submission | NVDA API, controlTypes, braille, speech | Yes |
 | 30 | **wxpython-specialist** | wxPython accessible application development, screen reader integration | wxWidgets, MSAA/UIA, wx.Accessible | Yes |
 | 31 | **python-specialist** | General Python development with accessibility focus | Python best practices, type safety | Yes |
-| 32 | **a11y-tool-builder** | Building new accessibility tools, MCP servers, browser extensions | MCP SDK, axe-core, Node.js | Yes |
+| 32 | **a11y-tool-builder** | Building new accessibility tools, browser extensions, axe-core integrations | axe-core, Node.js, Playwright | Yes |
 | 33 | **text-quality-reviewer** | Content readability, plain language, inclusive terminology, reading level analysis | WCAG 3.1.5, plain language guidelines | No (review only) |
 
 ### GitHub Workflow Agents (11)
@@ -996,21 +974,6 @@ The `generate_vpat` tool outputs a full VPAT 2.5 / ACR template:
 | Linux | Cron job | Daily 9:00 AM |
 | Windows | Task Scheduler | Daily 9:00 AM |
 
-### Claude Desktop Distribution
-
-- **Current:** Manual download from GitHub Releases (`.mcpb` file, double-click to install)
-- **Pending:** Submitted to Anthropic Connectors Directory for automatic updates
-
-### MCP Extension Build
-
-```bash
-npm install -g @anthropic-ai/mcpb
-cd desktop-extension
-npm install
-mcpb validate .
-mcpb pack . ../a11y-agent-team.mcpb
-```
-
 ---
 
 ## Standards Compliance
@@ -1069,31 +1032,6 @@ mcpb pack . ../a11y-agent-team.mcpb
 
 ## Dependencies
 
-### Runtime Dependencies
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `@modelcontextprotocol/sdk` | ^1.20.0 | MCP server framework |
-| `zod` | 3.25 | Input validation and schema definition |
-
-### Optional Runtime Dependencies
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `@axe-core/cli` | Any | Required only for `run_axe_scan` tool |
-
-### Node.js Built-in Modules Used
-
-| Module | Usage |
-|--------|-------|
-| `node:child_process` | Shell out to axe-core CLI |
-| `node:fs/promises` | File I/O (read documents, write reports) |
-| `node:os` | Temp directory for axe-core results |
-| `node:path` | Path manipulation, extension detection |
-| `node:crypto` | `randomUUID()` for SARIF run IDs |
-| `node:util` | `promisify()` for child_process |
-| `node:zlib` | `inflateRawSync()` for ZIP deflate entries |
-
 ### CI/CD Dependencies
 
 | Package | Version | Purpose |
@@ -1101,6 +1039,12 @@ mcpb pack . ../a11y-agent-team.mcpb
 | Python | 3.12+ | Source currency check script |
 | `hashlib` | stdlib | SHA-256 fingerprinting |
 | `urllib.request` | stdlib | HTTP fetching for source verification |
+
+### Optional Runtime Dependencies
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `@axe-core/cli` | Any | Required only for axe-core web scanning |
 
 ---
 
@@ -1204,16 +1148,12 @@ Single configuration file: `.codex/AGENTS.md`
 | `.vscode/extensions.json` | Recommended VS Code extensions |
 | `.vscode/settings.json` | VS Code accessibility settings |
 | `.vscode/tasks.json` | A11y check tasks |
-| `.vscode/mcp.json` | MCP server configuration for Copilot |
 | `.gemini/GEMINI.md` | Gemini root configuration |
 | `.gemini/gemini-extension.json` | Gemini extension manifest |
 | `CLAUDE.md` | Claude Code root configuration |
 | `GEMINI.md` | Gemini initialization instructions |
 | `.codex/AGENTS.md` | Codex CLI agent configuration |
 | `.a11y-agent-manifest` | Master inventory of all managed files |
-| `desktop-extension/manifest.json` | Claude Desktop extension manifest |
-| `desktop-extension/package.json` | Node.js package configuration |
-| `desktop-extension/server/index.js` | MCP server (11 tools, 6 prompts) |
 
 ### Distribution Files
 

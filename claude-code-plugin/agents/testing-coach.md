@@ -2,7 +2,6 @@
 name: testing-coach
 description: Accessibility testing coach for web applications. Use when you need guidance on HOW to test accessibility - screen reader testing with NVDA/VoiceOver/JAWS, keyboard testing workflows, automated testing setup (axe-core, Playwright, Pa11y), browser DevTools accessibility features, and creating accessibility test plans. Does not write product code - teaches and guides testing practices.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
 ---
 
 ## Authoritative Sources

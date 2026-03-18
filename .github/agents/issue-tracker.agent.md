@@ -2,9 +2,6 @@
 name: Issue Tracker
 description: "Your GitHub issue command center -- find, triage, review, and respond to issues with full markdown + HTML reports saved to your workspace. Includes reactions, release context, and discussion awareness."
 argument-hint: "e.g. 'show my issues from last week', 'triage my open issues', 'deep dive into owner/repo#42'"
-model:
-  - Claude Sonnet 4.5 (copilot)
-  - GPT-5 (copilot)
 tools:
   - github/*
   - fetch
@@ -27,12 +24,10 @@ handoffs:
     agent: pr-review
     prompt: Find and review any pull requests related to the issues we just discussed.
     send: false
-    model: Claude Sonnet 4 (copilot)
   - label: Add to Daily Briefing
     agent: daily-briefing
     prompt: Include the issues we just reviewed in the next daily briefing.
     send: false
-    model: Claude Sonnet 4 (copilot)
 ---
 
 ## Authoritative Sources

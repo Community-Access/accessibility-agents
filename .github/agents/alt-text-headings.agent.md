@@ -4,7 +4,6 @@ description: Alternative text and heading structure specialist for web applicati
 argument-hint: "e.g. 'check image alt text', 'review heading structure', 'audit page landmarks'"
 infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "Full Web Audit"
     agent: accessibility-lead

@@ -12,7 +12,6 @@ Guide for seamless handoff between Claude Code and GitHub Copilot agent environm
 | Hidden helpers | N/A (all agents user-invokable) | `user-invokable: false` in frontmatter | N/A | N/A |
 | Skills | N/A | `.github/skills/*/SKILL.md` | Extension skills | N/A |
 | Context file | `CLAUDE.md` | `copilot-instructions.md` | `GEMINI.md` | `AGENTS.md` |
-| MCP tools | Direct via `mcp_*` prefix | Via `.vscode/mcp.json` config | Via extension manifest | N/A |
 | Interactive UI | Terminal prompts | `askQuestions` tool | Terminal prompts | Terminal prompts |
 
 ## Handoff Scenarios

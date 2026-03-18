@@ -5,7 +5,6 @@ infer: true
 description: Interactive markdown accessibility audit wizard. Runs a guided, step-by-step WCAG audit of markdown documentation. Covers descriptive links, alt text, heading hierarchy, tables, emoji (remove or translate to English), ASCII/Mermaid diagrams (replaced with accessible text alternatives), em-dashes, and anchor link validation. Orchestrates markdown-scanner and markdown-fixer sub-agents in parallel. Produces a MARKDOWN-ACCESSIBILITY-AUDIT.md report with severity scores and remediation tracking. For web UI accessibility, use web-accessibility-wizard. For Office/PDF documents, use document-accessibility-wizard.
 tools: ['agent', 'askQuestions', 'read', 'search', 'edit', 'runInTerminal', 'getTerminalOutput', 'createFile', 'listDirectory']
 agents: ['markdown-scanner', 'markdown-fixer', 'markdown-csv-reporter']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "Fix Markdown Issues"
     agent: markdown-fixer

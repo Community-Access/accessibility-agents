@@ -2,7 +2,6 @@
 name: lighthouse-bridge
 description: Internal helper agent. Invoked by orchestrator agents via Task tool. Internal helper that bridges Lighthouse CI accessibility audit data with the agent ecosystem. Parses Lighthouse reports, normalizes accessibility findings, tracks score regressions, and deduplicates against local scans.
 tools: Read, Grep, Glob, WebFetch, GitHub
-model: inherit
 ---
 
 ## Authoritative Sources

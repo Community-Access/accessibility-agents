@@ -2,7 +2,6 @@
 name: insiders-a11y-tracker
 description: "Track accessibility improvements across VS Code and any configured repos -- get summaries, deep dives, workspace reports, WCAG cross-references, and proactive alerts on a11y changes."
 tools: Read, Write, Edit, Bash, WebFetch
-model: inherit
 ---
 
 ## Authoritative Sources

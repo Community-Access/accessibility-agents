@@ -1483,20 +1483,6 @@ if [ "$install_gemini" = true ] && [ -d "$GEMINI_SRC" ]; then
   echo "  Run: gemini \"Build a login form\" — accessibility skills apply automatically."
 fi
 
-# ---------------------------------------------------------------------------
-# Install MCP server dependencies (if Node.js is available)
-# The desktop-extension/ MCP server requires npm packages to function.
-# This is optional — the core agents work without it.
-# ---------------------------------------------------------------------------
-MCP_PKG="$SCRIPT_DIR/desktop-extension/package.json"
-if [ -f "$MCP_PKG" ] && command -v node &>/dev/null && command -v npm &>/dev/null; then
-  echo ""
-  echo "  Installing MCP server dependencies..."
-  (cd "$SCRIPT_DIR/desktop-extension" && npm install --omit=dev --silent 2>/dev/null) && \
-    echo "    + MCP server dependencies installed" || \
-    echo "    ! MCP server dependency install failed (non-fatal)"
-fi
-
 # Verify installation
 echo ""
 echo "  ========================="

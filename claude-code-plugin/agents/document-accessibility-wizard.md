@@ -2,7 +2,6 @@
 name: document-accessibility-wizard
 description: Interactive document accessibility audit wizard. Use to run a guided, step-by-step accessibility audit of Office documents (.docx, .xlsx, .pptx) and PDFs. Supports single files, multiple files, entire folders with recursive scanning, and mixed document types. Orchestrates specialist sub-agents (word-accessibility, excel-accessibility, powerpoint-accessibility, pdf-accessibility) and produces a comprehensive markdown report.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
 maxTurns: 100
 memory: project
 ---

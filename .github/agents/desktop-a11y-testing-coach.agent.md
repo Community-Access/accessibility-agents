@@ -4,28 +4,23 @@ description: "Desktop accessibility testing expert -- testing with NVDA, JAWS, N
 argument-hint: "e.g. 'test this with NVDA', 'create a11y test plan', 'verify keyboard navigation', 'set up automated UIA tests'"
 infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "Fix Desktop A11y Issues"
     agent: desktop-a11y-specialist
     prompt: "Testing found accessibility issues that need fixing -- platform API implementation, focus management, screen reader compatibility, or visual accessibility."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "wxPython Implementation"
     agent: wxpython-specialist
     prompt: "The user needs the accessibility fix implemented in wxPython code."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Web A11y Testing"
     agent: testing-coach
     prompt: "The user needs web accessibility testing guidance -- axe-core, Playwright, browser DevTools, or web screen reader testing."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Back to Developer Hub"
     agent: developer-hub
     prompt: "Task complete or needs broader project-level coordination. Return to the Developer Hub for next steps."
     send: true
-    model: Claude Sonnet 4 (copilot)
 ---
 
 ## Authoritative Sources

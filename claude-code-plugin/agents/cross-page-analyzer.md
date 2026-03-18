@@ -2,7 +2,6 @@
 name: cross-page-analyzer
 description: Internal helper agent. Invoked by orchestrator agents via Task tool. Internal helper for cross-page accessibility pattern detection, severity scoring, and scorecard generation. Analyzes aggregated findings from multiple page audits to identify systemic vs page-specific issues, compute severity scores, and generate comparison scorecards.
 tools: Read, Grep, Glob
-model: inherit
 ---
 
 ## Authoritative Sources

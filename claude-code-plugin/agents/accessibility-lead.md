@@ -6,7 +6,6 @@ tools:
   - Read
   - Glob
   - Grep
-model: inherit
 ---
 
 ## Authoritative Sources

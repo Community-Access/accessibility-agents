@@ -2,7 +2,6 @@
 name: cross-document-analyzer
 description: Internal helper agent. Invoked by orchestrator agents via Task tool. Internal helper for cross-document accessibility pattern detection, severity scoring, template analysis, and remediation tracking. Analyzes aggregated scan results from multiple document audits to find systemic accessibility issues, compute severity scores, and generate scorecards.
 tools: Read, Grep, Glob
-model: inherit
 ---
 
 ## Authoritative Sources

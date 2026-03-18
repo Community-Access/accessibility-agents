@@ -35,33 +35,7 @@ bash update.sh
 - Works for Claude Code, Copilot, Claude Desktop, and Codex CLI simultaneously
 - Git-based versioning and rollback
 
-### 2. Claude Desktop Extension (.mcpb)
-
-Pre-built extension for Claude Desktop with MCP tools and prompts.
-
-**Build from source:**
-
-```bash
-cd desktop-extension
-npm install
-npm run build
-# Output: a11y-agent-team.mcpb
-```
-
-**Install:**
-Double-click the `.mcpb` file or drag it into Claude Desktop.
-
-**What's included:**
-
-- MCP tools: `check_contrast`, `get_accessibility_guidelines`, `check_heading_structure`, `check_link_text`, `check_form_labels`, `generate_vpat`, `run_axe_scan`, `scan_office_document`, `scan_pdf_document`, `extract_document_metadata`, `batch_scan_documents`
-- Prompt templates: `accessibility-audit`, `aria-review`, `modal-review`, `contrast-review`, `keyboard-review`, `live-region-review`
-
-**What's NOT included:**
-
-- Agent files (Claude Desktop uses tools and prompts, not agent files)
-- Agent Skills
-
-### 3. Per-Project Install (Copilot)
+### 2. Per-Project Install (Copilot)
 
 Copy only the GitHub Copilot files into an existing project:
 
@@ -89,7 +63,7 @@ cp -r .github/agents/ /path/to/project/.github/agents/
 cp .github/copilot-instructions.md /path/to/project/.github/
 ```
 
-### 4. Per-Project Install (Claude Code)
+### 3. Per-Project Install (Claude Code)
 
 Copy only the Claude Code files into an existing project:
 
@@ -98,7 +72,7 @@ Copy only the Claude Code files into an existing project:
 cp -r .claude/agents/ /path/to/project/.claude/agents/
 ```
 
-### 5. Per-Project Install (Gemini CLI)
+### 4. Per-Project Install (Gemini CLI)
 
 Copy the Gemini CLI extension into an existing project:
 
@@ -204,7 +178,6 @@ Approximate sizes for planning distribution:
 | Agent Skills | 3 `SKILL.md` files | ~30 KB |
 | Prompts | 9 `.prompt.md` files | ~15 KB |
 | Templates | 7 config files | ~10 KB |
-| MCP server | `server/index.js` | ~100 KB |
 | VS Code config | 4 files | ~5 KB |
 | Documentation | Various | ~120 KB |
-| **Total** | **~70 files** | **~1 MB** |
+| **Total** | **~65 files** | **~900 KB** |

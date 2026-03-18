@@ -4,7 +4,6 @@ description: ARIA implementation specialist for web applications. Use when build
 argument-hint: "e.g. 'check this modal ARIA', 'review tab panel', 'audit combobox pattern'"
 infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'askQuestions', 'getDiagnostics']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "Full Web Audit"
     agent: accessibility-lead

@@ -4,7 +4,6 @@ description: Accessibility team lead and orchestrator. Use on EVERY task that in
 argument-hint: "e.g. 'review this component', 'audit this page', 'check all form accessibility'"
 infer: true
 tools: ['agent', 'read', 'search', 'edit', 'runInTerminal', 'askQuestions', 'getDiagnostics']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "Guided Web Audit"
     agent: web-accessibility-wizard

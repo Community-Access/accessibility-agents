@@ -7,7 +7,6 @@ description: >
   2.4.13 Focus Appearance), timeout warnings, memory demands, distraction, and alignment with
   COGA (Cognitive Accessibility) guidance. Works alongside aria-specialist and forms-specialist.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
 ---
 
 ## Authoritative Sources

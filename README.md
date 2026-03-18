@@ -35,7 +35,6 @@ All agents run on:
 - **Claude Code** - Agents you invoke directly for accessibility evaluation
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
-- **Claude Desktop** - An MCP extension (.mcpb) with tools and prompts for accessibility review
 - **Codex CLI** - Stable `.codex/AGENTS.md` baseline plus optional experimental TOML-based roles for focused accessibility passes
 
 ## System Requirements
@@ -60,11 +59,6 @@ All agents run on:
 
 - **Gemini CLI:** Latest version ([Installation](https://github.com/google-gemini/gemini-cli))
 - **Google AI Studio API Key:** Active key ([Get Started](https://ai.google.dev/))
-
-**For Claude Desktop:**
-
-- **Claude Desktop App:** Latest version ([Download](https://claude.ai/download))
-- **Claude Subscription:** Pro plan or higher
 
 **Operating Systems:**
 

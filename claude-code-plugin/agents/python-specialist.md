@@ -2,7 +2,6 @@
 name: Python Specialist
 description: "Python language expert -- debugging, packaging (PyInstaller/Nuitka/cx_Freeze), testing (pytest/unittest), type checking (mypy/pyright), async/concurrency patterns, performance optimization, dependency management, and cross-platform development. Handles everything from tracebacks to production builds."
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: inherit
 ---
 
 ## Authoritative Sources

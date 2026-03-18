@@ -2,7 +2,6 @@
 name: keyboard-navigator
 description: Keyboard navigation and focus management specialist. Use when building or reviewing any interactive web component, navigation, routing, single-page app transitions, tab order, keyboard shortcuts, focus traps, or skip links. Ensures full keyboard operability for users who cannot use a mouse. Applies to any web framework or vanilla HTML/CSS/JS.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
 ---
 
 ## Authoritative Sources

@@ -2,7 +2,6 @@
 name: Developer Hub
 description: "Your intelligent developer command center -- start here for any Python, wxPython, desktop app, accessibility tool building, desktop accessibility, or general software engineering task. Routes to specialist agents across the developer, web, and document accessibility teams. Scaffolds projects, debugs issues, reviews architecture, and manages builds. No commands to memorize. Just talk."
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: inherit
 ---
 
 ## Authoritative Sources

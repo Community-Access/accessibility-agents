@@ -4,38 +4,31 @@ description: "Desktop application accessibility expert -- platform APIs (UI Auto
 argument-hint: "e.g. 'audit this control for screen readers', 'add UIA support', 'fix focus order', 'high contrast mode'"
 infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "wxPython Implementation"
     agent: wxpython-specialist
     prompt: "The user needs the accessibility pattern implemented in wxPython -- sizers, events, wx.Accessible, SetName(), keyboard navigation, or dialog design."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Desktop A11y Testing"
     agent: desktop-a11y-testing-coach
     prompt: "The user needs to verify accessibility with screen readers (NVDA, JAWS, Narrator, VoiceOver), Accessibility Insights, or automated UIA testing."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Build A11y Tools"
     agent: a11y-tool-builder
     prompt: "The user wants to build automated accessibility scanning, rule engines, or audit tooling for desktop applications."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Web Accessibility Audit"
     agent: web-accessibility-wizard
     prompt: "The user needs web accessibility auditing -- HTML, JSX, CSS, React, Vue, or any web UI content."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Document Accessibility Audit"
     agent: document-accessibility-wizard
     prompt: "The user needs document accessibility auditing -- Word, Excel, PowerPoint, PDF, or ePub files."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Back to Developer Hub"
     agent: developer-hub
     prompt: "Task complete or needs broader project-level coordination. Return to the Developer Hub for next steps."
     send: true
-    model: Claude Sonnet 4 (copilot)
 ---
 
 ## Authoritative Sources

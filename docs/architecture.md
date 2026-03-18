@@ -1,14 +1,10 @@
 # Architecture
 
-## Why Agents Instead of Skills or MCP
+## Why Agents Instead of Skills
 
 **Skills** rely on the model deciding to check them. Activation rates are roughly 20% without intervention. Skills are a single block of instructions that get deprioritized as context grows.
 
-**MCP servers** add external tool calls but do not change how the model reasons about code. They are better suited for runtime checks than code-generation-time enforcement.
-
 **Agents** run in their own context window with a dedicated system prompt. The accessibility rules are not suggestions - they are the agent's entire identity. An ARIA specialist cannot forget about ARIA. A contrast master cannot skip contrast checks.
-
-The Desktop Extension uses MCP because Claude Desktop does not have an agent system. The MCP server packs the same specialist knowledge into tools and prompts.
 
 ## Why Hooks Instead of Instructions
 
@@ -46,7 +42,6 @@ accessibility-agents/
     scripts/             # CI scripts (lint, office scan, PDF scan)
   .vscode/
     extensions.json      # Recommended extensions
-    mcp.json             # MCP server config for Copilot
     settings.json        # VS Code settings
     tasks.json           # Accessibility check tasks
   claude-code-plugin/
@@ -60,13 +55,9 @@ accessibility-agents/
     CLAUDE.md            # Plugin context (decision matrix, standards)
     AGENTS.md            # Agent team definitions
     README.md            # Plugin documentation
-  desktop-extension/
-    manifest.json        # Claude Desktop extension manifest
-    package.json         # Node.js config
-    server/index.js      # MCP server (11 tools + 6 prompts)
   docs/                  # Documentation (you are here)
     agents/              # Individual agent reference docs
-    tools/               # MCP tools and integrations
+    tools/               # Tool integrations (axe-core, etc.)
     scanning/            # Document scanning guides
     advanced/            # Advanced topics
     hooks-guide.md       # Hook enforcement system documentation

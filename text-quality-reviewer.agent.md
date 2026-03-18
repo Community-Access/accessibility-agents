@@ -3,9 +3,6 @@ name: Text Quality Reviewer
 description: "Non-visual text quality reviewer for web applications. Use when reviewing any page, component, or template for low-quality alt text, aria-labels, or button names. Detects template variables ({0}, {{var}}), code syntax in text attributes (property.alttext), placeholder text as labels, typos in short accessible names, whitespace-only names, and duplicate control labels. Enforces WCAG 1.1.1 (Non-text Content), 4.1.2 (Name, Role, Value), and 2.5.3 (Label in Name). Applies to any web framework or vanilla HTML/CSS/JS."
 argument-hint: "e.g. 'check alt text quality', 'find template variables in aria-labels', 'audit non-visual text'"
 infer: true
-model:
-  - Claude Sonnet 4.5 (copilot)
-  - GPT-5 (copilot)
 tools:
   - read
   - search
@@ -16,7 +13,6 @@ handoffs:
     agent: accessibility-lead
     prompt: Text quality review complete. Run a full accessibility audit covering ARIA, keyboard, contrast, forms, and all other WCAG dimensions.
     send: true
-    model: Claude Sonnet 4 (copilot)
 ---
 
 # Text Quality Reviewer

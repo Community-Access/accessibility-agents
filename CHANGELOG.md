@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **MCP Server and Desktop Extension** - Removed `desktop-extension/` folder and `.vscode/mcp.json`
+  - The MCP server was redundant for Copilot CLI and VS Code - agents have full capabilities via native tools
+  - Removes startup failures when MCP server failed to connect
+  - Simplifies project architecture and maintenance burden
+  - Users who need document scanning or browser automation can use Claude Code or Copilot CLI agents directly
+
 ### Added
 
 #### GitHub Copilot CLI Support

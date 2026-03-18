@@ -2,7 +2,6 @@
 name: issue-tracker
 description: "Your GitHub issue command center -- find, triage, review, and respond to issues with full markdown + HTML reports saved to your workspace. Includes reactions, release context, and discussion awareness."
 tools: Read, Write, Edit, Bash, WebFetch
-model: inherit
 ---
 
 ## Authoritative Sources

@@ -3,7 +3,6 @@ name: pdf-scan-config
 description: PDF accessibility scan configuration manager. Use to create, edit, validate, or explain .a11y-pdf-config.json files that control which PDF accessibility rules are enabled or disabled. Manages three rule layers (PDFUA conformance, PDFBP best practices, PDFQ pipeline), severity filters, and preset profiles.
 user-invokable: false
 tools: ['read', 'edit', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 ---
 
 ## Using askQuestions

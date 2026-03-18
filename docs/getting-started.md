@@ -428,37 +428,6 @@ Once an agent has been picked, you can mention it by name to invoke it:
 
 The workspace instructions in `.github/copilot-instructions.md` are loaded into every Copilot Chat conversation. When you ask Copilot to build or modify UI code, it will automatically consider accessibility requirements.
 
-### MCP Server Setup (Required for MCP Tools)
-
-The workspace includes an MCP server in `.vscode/mcp.json` that provides accessibility tools (contrast checking, heading structure analysis, link text validation, form label checking, document scanning, and more) directly in Copilot Chat.
-
-**The server requires Node.js dependencies to be installed before it will load:**
-
-```bash
-cd desktop-extension
-npm install
-```
-
-This installs the `@modelcontextprotocol/sdk` and `zod` packages that the server needs. The `node_modules/` directory is gitignored, so you must run this step after every fresh clone.
-
-**Verify the server loads:**
-
-After running `npm install`, reload VS Code. The MCP server should appear in the Copilot Chat tool list. If you see an error about missing packages, re-run `npm install` in the `desktop-extension/` directory.
-
-**What the MCP server provides:**
-
-| Tool | Purpose |
-|------|---------|
-| `check_contrast` | Calculate WCAG contrast ratios between hex colors |
-| `get_accessibility_guidelines` | Get WCAG AA guidelines for specific component types |
-| `check_heading_structure` | Analyze HTML heading hierarchy |
-| `check_link_text` | Detect ambiguous link text |
-| `check_form_labels` | Validate form input label associations |
-| `generate_vpat` | Generate VPAT 2.5 conformance report |
-| `run_axe_scan` | Run axe-core against a live URL |
-| `scan_office_document` | Scan DOCX, XLSX, PPTX for accessibility issues |
-| `scan_pdf_document` | Scan PDFs for PDF/UA conformance |
-
 ### Differences from Claude Code
 
 | Feature | Claude Code | GitHub Copilot |
@@ -469,7 +438,7 @@ After running `npm install`, reload VS Code. The MCP server should appear in the
 | Commit messages | N/A | `.github/copilot-commit-message-instructions.md` |
 | PR template | N/A | `.github/PULL_REQUEST_TEMPLATE.md` |
 | CI workflow | N/A | `.github/workflows/a11y-check.yml` |
-| VS Code config | N/A | `.vscode/` (extensions, settings, tasks, MCP) |
+| VS Code config | N/A | `.vscode/` (extensions, settings, tasks) |
 | Invocation | `/agent-name` or `@agent-name` | `@agent-name` |
 | Auto-activation | Invoke agents directly | Workspace instructions provide guidance |
 | Global install | `~/.claude/agents/` | VS Code user profile folder or per-project |

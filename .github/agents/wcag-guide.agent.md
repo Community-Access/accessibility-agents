@@ -4,7 +4,6 @@ argument-hint: "e.g. 'explain SC 1.4.3', 'what changed in WCAG 2.2', 'when does 
 infer: true
 description: WCAG 2.2 AA learning and reference agent. Use when you need to understand WCAG success criteria, learn what changed between versions, understand conformance levels, clarify when criteria apply, or get plain-language explanations of accessibility standards. Does not write or review code - teaches the standard itself.
 tools: ['read', 'search', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "Apply to My Code"
     agent: accessibility-lead

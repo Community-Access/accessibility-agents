@@ -4,38 +4,31 @@ description: "Python language expert -- debugging, packaging (PyInstaller/Nuitka
 argument-hint: "e.g. 'debug this crash', 'package my app', 'add type hints', 'optimize this code', 'set up pytest'"
 infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "wxPython GUI Work"
     agent: wxpython-specialist
     prompt: "The user needs wxPython-specific expertise -- GUI construction, event handling, sizers, AUI, custom controls, threading, or desktop accessibility."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Build A11y Tools"
     agent: a11y-tool-builder
     prompt: "The user wants to design or build accessibility scanning tools, rule engines, parsers, or report generators."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Desktop A11y Patterns"
     agent: desktop-a11y-specialist
     prompt: "The user needs guidance on platform accessibility APIs (UIA, MSAA, ATK, NSAccessibility) for desktop application development."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Web A11y Reference"
     agent: web-accessibility-wizard
     prompt: "The user needs web accessibility scanning methodology, axe-core patterns, or WCAG rule references for a tool being built."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Document A11y Reference"
     agent: document-accessibility-wizard
     prompt: "The user needs document accessibility rule references, Office/PDF scanning patterns, or document audit methodology."
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: "Back to Developer Hub"
     agent: developer-hub
     prompt: "Task complete or needs broader project-level coordination. Return to the Developer Hub for next steps."
     send: true
-    model: Claude Sonnet 4 (copilot)
 ---
 
 ## Authoritative Sources

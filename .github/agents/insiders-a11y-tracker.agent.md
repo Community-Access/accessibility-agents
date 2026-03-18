@@ -2,9 +2,6 @@
 name: Accessibility Tracker
 description: "Track accessibility improvements across VS Code and any configured repos -- get summaries, deep dives, workspace reports, WCAG cross-references, and proactive alerts on a11y changes."
 argument-hint: "e.g. 'what a11y changes shipped this week', 'screen reader improvements in Feb', 'full a11y report for this month', 'track owner/my-app'"
-model:
-  - Claude Sonnet 4.5 (copilot)
-  - GPT-5 (copilot)
 tools:
   - github/*
   - fetch
@@ -22,7 +19,6 @@ handoffs:
     agent: daily-briefing
     prompt: Include the latest accessibility updates in the user's daily briefing.
     send: false
-    model: Claude Sonnet 4 (copilot)
 ---
 
 ## Authoritative Sources
@@ -413,9 +409,5 @@ VS Code 1.112 (March 2026) includes several features that enhance accessibility 
 
 - **Autopilot mode** (`chat.autopilot.enabled`) — Auto-approves all tool calls and continues working autonomously. Good for read-only accessibility scans. Use with caution for fix-applying workflows.
 - **Bypass Approvals** — Auto-approves tools without dialog prompts. Useful for batch scanning but bypasses safety confirmations.
-
-### MCP Server Sandboxing
-
-- **`sandboxEnabled: true`** in `mcp.json` — Run MCP servers in a sandboxed environment with restricted file system and network access (macOS/Linux only). Enhances security for accessibility scanning tools that only need read access.
 
 When users ask about "what's new in VS Code for accessibility," include both GitHub issues with the `accessibility` label AND these platform features that enhance accessibility workflows.

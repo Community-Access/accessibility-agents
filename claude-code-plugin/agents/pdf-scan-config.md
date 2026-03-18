@@ -2,7 +2,6 @@
 name: pdf-scan-config
 description: Internal helper agent. Invoked by orchestrator agents via Task tool. PDF accessibility scan configuration manager. Use to create, edit, validate, or explain .a11y-pdf-config.json files that control which PDF accessibility rules are enabled or disabled. Manages three rule layers (PDFUA conformance, PDFBP best practices, PDFQ pipeline), severity filters, and preset profiles.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
 ---
 
 ## Authoritative Sources

@@ -2,9 +2,6 @@
 name: GitHub Hub
 description: "Your intelligent GitHub command center -- start here. GitHub Hub discovers your repos and organizations, understands what you want to accomplish in plain English, and guides you to the right outcome by orchestrating every other agent. No commands to memorize. Just talk."
 argument-hint: "e.g. 'what should I work on?', 'I need to manage access for my team', 'show me my repos', 'help me review that PR from this morning', 'onboard a new developer', or just say hello"
-model:
-  - Claude Sonnet 4.5 (copilot)
-  - GPT-5 (copilot)
 tools:
   - github/*
   - fetch
@@ -30,52 +27,42 @@ handoffs:
     agent: daily-briefing
     prompt: The user wants their daily briefing for the selected scope.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Issue Work
     agent: issue-tracker
     prompt: The user wants to find, triage, or respond to issues in the selected repo or org.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Code Review
     agent: pr-review
     prompt: The user wants to review pull requests in the selected repo.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Team Analytics
     agent: analytics
     prompt: The user wants velocity, team, or contribution metrics for the selected scope.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Repository Administration
     agent: repo-admin
     prompt: The user wants to manage collaborators, branch protection, labels, or repo settings.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Team & People Management
     agent: team-manager
     prompt: The user wants to manage org teams, onboard, or offboard people.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Community & Discussions
     agent: contributions-hub
     prompt: The user wants to manage discussions, community health, or contributor insights.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Accessibility Tracking
     agent: insiders-a11y-tracker
     prompt: The user wants to track accessibility changes in their repos.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Build a Template
     agent: template-builder
     prompt: The user wants to create a GitHub issue template, PR template, or accessibility bug report template.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Set Up Repository
     agent: repo-manager
     prompt: The user wants to scaffold issue templates, CI workflows, contributing guides, labels, or other repo infrastructure.
     send: true
-    model: Claude Sonnet 4 (copilot)
 ---
 
 ## Authoritative Sources

@@ -2,7 +2,6 @@
 name: wxPython Specialist
 description: "wxPython GUI expert -- sizer layouts, event handling, AUI framework, custom controls, threading (wx.CallAfter/wx.PostEvent), dialog design, menu/toolbar construction, and desktop accessibility (screen readers, keyboard navigation). Covers cross-platform gotchas for Windows, macOS, and Linux."
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: inherit
 ---
 
 ## Authoritative Sources

@@ -3,9 +3,6 @@ name: NVDA Addon Development Specialist
 description: "Expert in NVDA screen reader addon development -- architecture, APIs, plugin types (globalPlugins, appModules, synthDrivers, brailleDisplayDrivers), manifest format, event/script handling, NVDAObject overlays, tree interceptors, addon packaging, Add-on Store submission, testing with NVDA, braille table and speech dictionary authoring, and internationalization. Grounded in the official NVDA source code (github.com/nvaccess/nvda) and community development guides."
 argument-hint: "e.g. 'scaffold a globalPlugin', 'debug this appModule', 'submit to the Add-on Store', 'create a synthDriver', 'add braille table support'"
 infer: true
-model:
-  - Claude Sonnet 4.5 (copilot)
-  - GPT-5 (copilot)
 tools:
   - read
   - search
@@ -18,27 +15,22 @@ handoffs:
     agent: wxpython-specialist
     prompt: The addon has GUI components built with wxPython -- settings panels, dialogs, or custom controls. Route for sizer layouts, event handling, and wx thread safety.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Desktop A11y Testing
     agent: desktop-a11y-testing-coach
     prompt: The user needs to test their NVDA addon with screen readers, verify announcements, or validate keyboard interaction with the addon's features.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Build A11y Tools
     agent: a11y-tool-builder
     prompt: The user wants to build automated accessibility scanning or rule engine functionality into their NVDA addon.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Desktop A11y APIs
     agent: desktop-a11y-specialist
     prompt: The user needs platform accessibility API expertise -- UI Automation, MSAA/IAccessible2, or ATK/AT-SPI -- for understanding how NVDA interacts with applications.
     send: true
-    model: Claude Sonnet 4 (copilot)
   - label: Back to Developer Hub
     agent: developer-hub
     prompt: The NVDA addon task is complete or the user needs broader developer coordination beyond NVDA addon development.
     send: true
-    model: Claude Sonnet 4 (copilot)
 ---
 
 # NVDA Addon Development Specialist

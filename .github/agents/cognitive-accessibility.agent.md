@@ -8,7 +8,6 @@ description: >
   2.4.13 Focus Appearance), timeout warnings, memory demands, distraction, and alignment with
   COGA (Cognitive Accessibility) guidance. Works alongside aria-specialist and forms-specialist.
 tools: ['read', 'search', 'edit', 'runInTerminal', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 handoffs:
   - label: "Full Web Audit"
     agent: accessibility-lead

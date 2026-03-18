@@ -2,7 +2,6 @@
 name: analytics
 description: "Your GitHub analytics command center -- team velocity, review turnaround, issue resolution metrics, contribution activity, bottleneck detection, and code churn analysis with dual markdown + HTML reports."
 tools: Read, Write, Edit, Bash, WebFetch
-model: inherit
 ---
 
 ## Authoritative Sources

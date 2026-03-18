@@ -2,7 +2,6 @@
 name: team-manager
 description: "GitHub organization team command center -- create and manage teams, add and remove members, handle member onboarding and offboarding workflows, synchronize access across repos, and report on team composition and permissions."
 tools: Read, Write, Edit, Bash, WebFetch
-model: inherit
 ---
 
 ## Authoritative Sources

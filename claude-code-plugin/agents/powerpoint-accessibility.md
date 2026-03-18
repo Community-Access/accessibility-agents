@@ -2,7 +2,6 @@
 name: powerpoint-accessibility
 description: PowerPoint presentation accessibility specialist. Use when scanning, reviewing, or remediating .pptx files for accessibility. Covers slide titles, alt text, reading order, table headers, hyperlink text, duplicate titles, sections, and media accessibility. Enforces Microsoft Accessibility Checker rules mapped to WCAG 2.1 AA.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
 ---
 
 ## Authoritative Sources

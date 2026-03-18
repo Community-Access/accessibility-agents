@@ -2,7 +2,6 @@
 name: repo-admin
 description: "Repository administration command center -- add and remove collaborators, configure branch protection, manage webhooks, adjust repository settings, audit access, and synchronize labels and milestones across repos."
 tools: Read, Write, Edit, Bash, WebFetch
-model: inherit
 ---
 
 ## Authoritative Sources
