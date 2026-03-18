@@ -7,8 +7,8 @@ model:
   - GPT-5 (copilot)
 tools:
   - github/*
-  - readFile
-  - editFiles
+  - read
+  - edit
   - createFile
   - createDirectory
   - listDirectory

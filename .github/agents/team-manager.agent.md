@@ -8,8 +8,8 @@ model:
 tools:
   - github/*
   - fetch
-  - readFile
-  - editFiles
+  - read
+  - edit
   - createFile
   - createDirectory
   - listDirectory

@@ -2,7 +2,7 @@
 name: markdown-csv-reporter
 description: Internal helper for exporting markdown accessibility audit findings to CSV format. Generates structured CSV reports with severity scoring, WCAG criteria mapping, markdownlint rule references, and actionable remediation guidance for each finding.
 user-invokable: false
-tools: ['read', 'search', 'editFiles']
+tools: ['read', 'search', 'edit']
 model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 ---
 

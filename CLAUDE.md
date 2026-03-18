@@ -135,6 +135,43 @@ When starting any accessibility audit, review, or remediation task, proactively 
 2. **Previous audit reports:** Check for existing `ACCESSIBILITY-AUDIT.md`, `WEB-ACCESSIBILITY-AUDIT.md`, `DOCUMENT-ACCESSIBILITY-AUDIT.md`, and `MARKDOWN-ACCESSIBILITY-AUDIT.md` in the workspace root. If found, note the date, overall score, and issue count. Offer comparison/delta mode so the user can track remediation progress.
 3. **Scan config templates:** If no config file exists and the user is starting a new audit, mention that pre-built profiles (strict, moderate, minimal) are available in the `templates/` directory.
 
+## VS Code 1.112 Features
+
+VS Code 1.112 (March 2026) includes several features that enhance accessibility agent workflows:
+
+### Monorepo Customization Discovery
+
+Enable `chat.useCustomizationsInParentRepositories` to discover accessibility agents from parent folders up to the repository root. This is essential for monorepo setups where you open a package subfolder rather than the repo root. See [docs/advanced/advanced-scanning-patterns.md](docs/advanced/advanced-scanning-patterns.md#monorepo-customization-discovery-vs-code-1112) for details.
+
+### Agent Debugging
+
+- **`/troubleshoot`** - Type `/troubleshoot` in chat to analyze agent debug logs and debug why instructions/agents aren't loading
+- **Export/Import** - Save agent debug sessions as JSONL for offline analysis or team sharing
+- **Agent Flow Chart** - Visualize agent orchestration sequences
+
+Enable with: `github.copilot.chat.agentDebugLog.enabled` and `github.copilot.chat.agentDebugLog.fileLogging.enabled`
+
+### Image Analysis
+
+Enable `chat.imageSupport.enabled` to allow agents to read images natively. This enhances:
+- **alt-text-headings** - Analyze actual images to suggest accurate alt text
+- **contrast-master** - Analyze screenshots for visual contrast issues
+
+### Integrated Browser
+
+The new `editor-browser` debug type allows debugging web apps without leaving VS Code. Useful for:
+- Testing zoom/reflow accessibility (WCAG 1.4.4, 1.4.10)
+- Visual debugging of focus management
+- Screenshot capture for accessibility analysis
+
+### Permission Levels
+
+- **Autopilot** (`chat.autopilot.enabled`) - Fully autonomous operation. Good for read-only accessibility scans.
+- **Bypass Approvals** - Auto-approve tools without dialogs. Useful for batch scanning.
+- **Default** - Manual approval. Recommended for fix-applying workflows.
+
+See [docs/configuration.md](docs/configuration.md) for detailed guidance on when to use each level.
+
 ## Scan Configuration
 
 The `templates/` directory contains pre-built scan configuration profiles:

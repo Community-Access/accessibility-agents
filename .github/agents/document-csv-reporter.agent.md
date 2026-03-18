@@ -2,7 +2,7 @@
 name: document-csv-reporter
 description: Internal helper for exporting document accessibility audit findings to CSV format. Generates structured CSV reports with severity scoring, WCAG criteria mapping, Microsoft Support help links for Office remediation, and PDF/UA conformance references for each finding.
 user-invokable: false
-tools: ['read', 'search', 'editFiles']
+tools: ['read', 'search', 'edit']
 model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 ---
 

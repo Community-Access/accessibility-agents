@@ -1,6 +1,97 @@
 # Advanced Scanning Patterns
 
-Patterns for background execution and isolated scanning contexts when working with large document libraries.
+Patterns for background execution, isolated scanning contexts, and monorepo configurations when working with large document libraries.
+
+## Monorepo Customization Discovery (VS Code 1.112+)
+
+### The Problem
+
+In monorepo setups, developers often open a subfolder (e.g., `packages/frontend/`) rather than the repository root. Previously, VS Code only discovered agent customizations from the open workspace folder, meaning shared team configurations at the repo root were invisible.
+
+### The Solution
+
+VS Code 1.112 introduces `chat.useCustomizationsInParentRepositories`, which discovers customizations from parent folders up to the `.git` repository root.
+
+**Enable it:**
+
+```json
+// .vscode/settings.json or user settings
+{
+  "chat.useCustomizationsInParentRepositories": true
+}
+```
+
+### How It Works
+
+When enabled, VS Code walks up the folder hierarchy from each workspace folder until it finds a `.git` folder. All customizations found along this path are loaded:
+
+- Always-on instructions: `copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md`
+- File-based instructions: `*.instructions.md`
+- Prompt files: `*.prompt.md`
+- Custom agents: `*.agent.md`
+- Agent skills: skill directories
+- Hooks: hook configuration files
+
+### Example Monorepo Structure
+
+```
+my-monorepo/                       # repo root (has .git folder)
+├── .github/
+│   ├── copilot-instructions.md    # ✅ Discovered
+│   ├── instructions/
+│   │   └── a11y.instructions.md   # ✅ Discovered
+│   ├── prompts/
+│   │   └── audit-web-page.prompt.md  # ✅ Discovered
+│   └── agents/
+│       └── accessibility-lead.agent.md  # ✅ Discovered
+├── packages/
+│   └── frontend/                  # ← Opened as workspace folder
+│       ├── .github/
+│       │   └── prompts/
+│       │       └── local.prompt.md  # ✅ Also discovered (local)
+│       └── src/
+```
+
+If you open `packages/frontend/` in VS Code with the setting enabled, you get:
+- The frontend package's local customizations
+- ALL parent repo customizations (instructions, agents, prompts, skills)
+
+### Requirements
+
+For parent discovery to work:
+1. Your workspace folder must NOT be a git repository root itself
+2. A parent folder must contain a `.git` folder
+3. The parent repository must be trusted (VS Code prompts for trust)
+
+### Recommended Monorepo Setup
+
+Place shared accessibility agent configurations at the repo root:
+
+```
+my-monorepo/
+├── .github/
+│   ├── agents/                    # Shared across all packages
+│   │   ├── accessibility-lead.agent.md
+│   │   ├── aria-specialist.agent.md
+│   │   ├── contrast-master.agent.md
+│   │   └── ...
+│   ├── skills/                    # Shared skills
+│   │   ├── framework-accessibility/
+│   │   └── web-severity-scoring/
+│   ├── prompts/                   # Shared prompts
+│   │   ├── audit-web-page.prompt.md
+│   │   └── quick-web-check.prompt.md
+│   └── instructions/              # Shared instructions
+│       └── web-accessibility-baseline.instructions.md
+├── packages/
+│   ├── frontend/                  # Each package inherits all shared configs
+│   ├── admin-dashboard/
+│   └── marketing-site/
+```
+
+Team members opening any package folder will automatically inherit all accessibility agents.
+
+---
 
 ## Background Scanning
 

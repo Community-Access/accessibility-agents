@@ -1,6 +1,6 @@
 # Agent Debug Panel Guide
 
-> **New in VS Code 1.110:** The Agent Debug panel provides real-time visibility into chat sessions, showing which customizations are loaded, tool calls, system prompts, and more.
+> **Updated for VS Code 1.112:** The Agent Debug panel now includes the `/troubleshoot` skill, JSONL export/import, and Agent Flow Chart visualization. This guide covers the original features from 1.110 plus all new capabilities.
 
 ## Authoritative References
 
@@ -9,7 +9,9 @@ This guide tracks behavior documented in official VS Code/Copilot sources.
 References:
 
 - VS Code release notes: `https://code.visualstudio.com/updates`
+- VS Code 1.112 Release Notes: `https://code.visualstudio.com/updates/v1_112`
 - VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
+- Agent Debug Logs docs: `https://code.visualstudio.com/docs/copilot/chat/chat-debug-view`
 - GitHub Copilot docs: `https://docs.github.com/copilot`
 
 ## What is the Agent Debug Panel?
@@ -287,10 +289,138 @@ The Agent Debug panel is in **preview** as of VS Code 1.110. Share feedback:
 ## Limitations (Current Release)
 
 - **Local sessions only** - Background and Claude agent sessions not yet supported
-- **No log persistence** - Logs clear when VS Code restarts
-- **No export** - Cannot save logs for sharing or offline analysis
+- ~~**No log persistence** - Logs clear when VS Code restarts~~ (Fixed in 1.112 with export/import)
+- ~~**No export** - Cannot save logs for sharing or offline analysis~~ (Fixed in 1.112)
 
-Future releases may add these capabilities.
+## New in VS Code 1.112
+
+### The `/troubleshoot` Skill
+
+Type `/troubleshoot` in chat followed by a question to analyze agent debug logs directly in the conversation. This is ideal for debugging why Accessibility Agents customizations aren't loading.
+
+**Enable required settings:**
+
+```json
+{
+  "github.copilot.chat.agentDebugLog.enabled": true,
+  "github.copilot.chat.agentDebugLog.fileLogging.enabled": true
+}
+```
+
+**Example queries:**
+
+```text
+/troubleshoot why isn't web-accessibility-baseline.instructions.md loading?
+/troubleshoot list all paths you tried to load customizations
+/troubleshoot how many tokens did you use?
+/troubleshoot which tools were invoked for the last audit?
+```
+
+The `/troubleshoot` skill reads the JSONL debug log files and provides insights into:
+
+- Why tools or subagents were used or skipped
+- Why instructions or skills did not load
+- What contributed to slow response times
+- Whether network connectivity problems occurred
+
+### Export and Import Debug Sessions
+
+You can now save agent debug sessions for offline analysis or team sharing.
+
+**To export:**
+
+1. Open the Agent Debug Logs panel
+2. Navigate to the session you want to export
+3. Click the **Export** icon (download) in the top-right toolbar
+4. Save as a JSONL file (OTLP format)
+
+**To import:**
+
+1. Click the **Import** icon (upload) in the Agent Debug Logs panel
+2. Select a previously exported JSONL file
+3. The session opens with full overview and metrics
+
+**Use cases for Accessibility Agents:**
+
+- Share debug sessions when reporting issues with agent loading
+- Save audit sessions for compliance documentation
+- Compare hook execution between different configurations
+- Analyze slow accessibility scans offline
+
+> **Note:** Files larger than 50 MB trigger a warning. Export shorter sessions or trim large files.
+
+### Agent Flow Chart View
+
+The new Agent Flow Chart view visualizes the sequence of events and interactions between agents, making complex orchestrations easier to understand.
+
+**To open:**
+
+1. Open the Agent Debug Logs panel
+2. Select the session description in the breadcrumb
+3. Click **Agent Flow Chart** from the Summary view
+
+**What it shows for Accessibility Agents:**
+
+```text
+┌─────────────────────┐
+│ User Prompt         │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ UserPromptSubmit    │ ← Inject delegation instruction
+│ Hook                │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ accessibility-lead  │ ← Orchestrator agent
+└─────────┬───────────┘
+          │
+    ┌─────┴─────┬─────────────┐
+    ▼           ▼             ▼
+┌────────┐ ┌────────────┐ ┌────────────┐
+│aria    │ │keyboard    │ │contrast    │
+│special │ │navigator   │ │master      │
+└────────┘ └────────────┘ └────────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ PostToolUse Hook    │ ← Create session marker
+└─────────────────────┘
+```
+
+You can pan/zoom the chart and click any node to see event details.
+
+### Summary View
+
+The Summary view shows aggregate statistics for the chat session:
+
+- Total tool calls
+- Token usage (input/output)
+- Error count
+- Overall duration
+- Breakdown by agent
+
+**Access it:** Select the session description in the breadcrumb at the top of the Agent Debug panel.
+
+### Three Views in Agent Debug Panel
+
+| View | Purpose |
+|------|---------|
+| **Logs** | Chronological event list with filtering |
+| **Summary** | Aggregate statistics for the session |
+| **Agent Flow Chart** | Visual sequence diagram |
+
+### Attach Debug Events to Chat
+
+You can attach a snapshot of debug events to a chat conversation:
+
+1. Open the Logs view for your session
+2. Click the sparkle icon in the top-right
+3. The Chat view opens with debug events attached
+
+This lets you ask questions about the current session directly, such as "which accessibility agents were invoked?" or "why did the ARIA check fail?"
 
 ## Related Documentation
 

@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### GitHub Copilot CLI Support
+
+- **`--cli` installer flag** for both `install.sh` and `install.ps1`
+  - Copies agents to `~/.copilot/agents/` for global CLI access
+  - Copies skills to `~/.copilot/skills/` for global CLI access
+  - Project install (`--project --cli`) uses `.github/agents/` which CLI reads directly
+- **Copilot CLI Setup documentation** in `docs/getting-started.md`
+  - Discovery path reference (repository, user, organization)
+  - Installation options (global vs project)
+  - Tool compatibility notes
+- **CLI Troubleshooting Guide** at `docs/guides/copilot-cli-troubleshooting.md`
+  - Agents not appearing in `/agent` picker
+  - Skills not loading
+  - Tool name compatibility
+  - Platform-specific issues
+- **Tool Alias Reference** in `docs/configuration.md`
+  - Cross-platform tool name mappings (CLI vs Claude Code vs VS Code)
+  - Which properties CLI ignores (`argument-hint`, `handoffs`, `model` arrays)
+- **Cross-Platform Tool Mapping Guide** at `docs/cross-platform-tool-mapping.md`
+  - Canonical tool names per platform (Claude Code, Copilot CLI, VS Code, Codex, Gemini)
+  - Migration checklist for normalizing agent files
+  - Validation commands for checking tool name consistency
+- Fixed missing YAML frontmatter in `playwright-testing` skill SKILL.md
+
+#### Repository Modernization (AgentRC Compliance)
+
+- **`AGENTS.md`** - AI agent guidance file for repository
+  - Documents all 59 agents, team structure, conventions
+  - Required by AgentRC readiness framework
+- **`.github/dependabot.yml`** - Automated dependency updates
+  - GitHub Actions workflows (monthly)
+  - npm packages in desktop-extension, vscode-extension (weekly)
+  - pip packages in scripts directory (weekly)
+- **`scripts/validate-agents.js`** - Agent/skill validation script
+  - Validates YAML frontmatter in all agent files
+  - Checks tool name CLI compatibility
+  - Verifies skill SKILL.md format
+  - Exit code 1 on errors, 0 on warnings-only
+- **`.github/workflows/validate-agents.yml`** - CI validation workflow
+  - Runs on PRs and pushes affecting agent/skill files
+  - Ensures tool name compatibility across platforms
+
+### Changed
+
+- **Normalized all 59 Copilot agent tool declarations** to use CLI-compatible names:
+  - `readFile` → `read`
+  - `editFiles` → `edit`
+  - `textSearch` / `fileSearch` → `search`
+  - `runSubagent` → `agent`
+  - Affected: All agents in `.github/agents/` including GitHub workflow agents (analytics, contributions-hub, daily-briefing, github-hub, insiders-a11y-tracker, issue-tracker, lighthouse-bridge, nexus, pr-review, repo-admin, repo-manager, scanner-bridge, team-manager, template-builder)
+
+#### VS Code 1.112 Platform Feature Support
+
+- **Monorepo customization discovery** documentation in `docs/advanced/advanced-scanning-patterns.md`
+  - `chat.useCustomizationsInParentRepositories` setting guidance
+  - Example monorepo structures and recommended setup
+- **Agent debugging enhancements** in `docs/guides/agent-debug-panel.md`
+  - `/troubleshoot` skill documentation
+  - Export/import sessions as JSONL
+  - Agent Flow Chart visualization
+  - Summary view and attach debug events
+- **Integrated browser testing** in testing-coach agents
+  - `editor-browser` debug type for zoom/reflow testing
+  - launch.json configuration examples
+  - WCAG 1.4.4/1.4.10 testing workflows
+- **Native image analysis** in alt-text-headings agents
+  - `chat.imageSupport.enabled` workflow
+  - Analyze actual images to suggest accurate alt text
+- **Permission level guidance** in `docs/configuration.md`
+  - Autopilot, Bypass Approvals, Default modes
+  - Recommendations for read-only vs. fix-applying workflows
+
+### Changed
+
+- Updated `insiders-a11y-tracker` agents (Copilot + Claude Code) with VS Code 1.112 features section
+- Added VS Code 1.112 features overview to CLAUDE.md, .github/copilot-instructions.md, and GEMINI.md
+
 ## [3.2.0] - 2026-03-13
 
 ### Added

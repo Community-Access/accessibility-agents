@@ -445,6 +445,211 @@ The workspace instructions in `.github/copilot-instructions.md` are loaded into 
 
 ---
 
+## GitHub Copilot CLI Setup
+
+This is for **GitHub Copilot CLI** - the terminal-native agent interface. If you want the VS Code extension, see [GitHub Copilot Setup](#github-copilot-setup) above.
+
+### How It Works
+
+GitHub Copilot CLI is a standalone terminal application that runs Copilot directly in your shell. It supports custom agents via `.github/agents/*.agent.md` files and skills via `.github/skills/*/SKILL.md` folders.
+
+The accessibility agents work in Copilot CLI with these capabilities:
+- **Agent invocation** via `/agent` command or natural language
+- **Skill loading** for domain-specific knowledge (accessibility rules, WCAG reference)
+- **Tool access** for file reading, editing, searching, and command execution
+
+### Prerequisites
+
+**Required:**
+
+- [GitHub Copilot CLI](https://docs.github.com/copilot/concepts/agents/about-copilot-cli) installed
+- An active Copilot subscription
+- **Windows:** PowerShell v6 or higher
+
+**Installation:**
+
+```bash
+# npm (all platforms)
+npm install -g @github/copilot
+
+# Homebrew (macOS/Linux)
+brew install copilot-cli
+
+# WinGet (Windows)
+winget install GitHub.Copilot
+```
+
+### Agent Discovery Paths
+
+Copilot CLI discovers agents from these locations:
+
+| Type | Path | Scope |
+|------|------|-------|
+| Repository | `.github/agents/*.agent.md` | Current project only |
+| User | `~/.copilot/agents/*.agent.md` | All projects |
+| Organization | `.github-private/agents/` | Organization-wide |
+
+### Skill Discovery Paths
+
+Skills provide domain knowledge that agents can load when relevant:
+
+| Type | Path | Scope |
+|------|------|-------|
+| Repository | `.github/skills/*/SKILL.md` | Current project only |
+| User | `~/.copilot/skills/*/SKILL.md` | All projects |
+
+### Installation
+
+#### Option 1: Repository-level (Per-project)
+
+Clone or copy the accessibility agents into your project:
+
+```bash
+# Clone the repo
+git clone https://github.com/Community-Access/accessibility-agents.git
+
+# Copy agents and skills to your project
+cp -r accessibility-agents/.github/agents /path/to/your/project/.github/
+cp -r accessibility-agents/.github/skills /path/to/your/project/.github/
+```
+
+#### Option 2: User-level (Global)
+
+Install agents globally so they're available in all projects:
+
+```bash
+# Create directories if they don't exist
+mkdir -p ~/.copilot/agents
+mkdir -p ~/.copilot/skills
+
+# Copy agents
+cp accessibility-agents/.github/agents/*.agent.md ~/.copilot/agents/
+
+# Copy skills (each skill is a folder with SKILL.md inside)
+cp -r accessibility-agents/.github/skills/* ~/.copilot/skills/
+```
+
+Or use the installer with the `--cli` flag:
+
+```bash
+bash install.sh --global --cli
+```
+
+### Using Agents in Copilot CLI
+
+**List available agents:**
+
+```bash
+/agent
+```
+
+**Use an agent directly:**
+
+```bash
+# Select from the agent picker
+/agent
+
+# Or mention the agent in your prompt
+Use the accessibility-lead agent to review this component
+
+# Or specify via command line
+copilot --agent=accessibility-lead --prompt "Review the accessibility of src/components/"
+```
+
+**List and manage skills:**
+
+```bash
+/skills list        # Show available skills
+/skills             # Toggle skills on/off interactively
+/skills info        # Show skill details and locations
+/skills reload      # Reload skills after adding new ones
+```
+
+### Tool Compatibility
+
+Copilot CLI uses standardized tool aliases. The accessibility agents include tool declarations that work across platforms:
+
+| CLI Tool | Purpose | Agent Usage |
+|----------|---------|-------------|
+| `read` | Read file contents | View source files for review |
+| `edit` | Edit files | Apply accessibility fixes |
+| `search` | Search files | Find accessibility patterns |
+| `execute` | Run shell commands | Run axe-core scans |
+| `agent` | Delegate to sub-agents | Coordinate specialist agents |
+| `web` | Fetch web content | Retrieve WCAG documentation |
+
+### Troubleshooting
+
+**Agents not appearing in `/agent` list:**
+
+1. Verify files are in correct location: `.github/agents/*.agent.md` or `~/.copilot/agents/*.agent.md`
+2. Ensure workspace is trusted (CLI prompts on first use)
+3. Check file naming: must end in `.agent.md`
+4. Restart CLI session after adding new agents
+
+**Skills not loading:**
+
+1. Verify skill structure: `.github/skills/skill-name/SKILL.md`
+2. Check SKILL.md has required YAML frontmatter with `name` and `description`
+3. Run `/skills reload` to refresh after adding new skills
+4. Use `/skills info` to check where skills are loaded from
+
+**"Tool not found" errors:**
+
+- Agents may reference VS Code-specific tools that CLI doesn't have. This is expected behavior.
+- CLI ignores unknown tool names gracefully. Core functionality (read, edit, search) works.
+
+**Agent not behaving as expected:**
+
+1. Enable debug logging: `/troubleshoot` (requires VS Code 1.112+ settings)
+2. Check that instructions file is being loaded: `/instructions`
+3. Verify workspace trust is granted for the project
+
+For detailed troubleshooting, see [Copilot CLI Troubleshooting Guide](guides/copilot-cli-troubleshooting.md).
+
+### Differences from VS Code Extension
+
+| Feature | VS Code Extension | Copilot CLI |
+|---------|-------------------|-------------|
+| Agent picker | Dropdown in Chat panel | `/agent` command |
+| Skills | Auto-loaded based on context | `/skills` to manage |
+| Tools | Extension-specific (runSubagent, getDiagnostics) | Standard aliases (read, edit, search, agent) |
+| Debugging | Agent Debug Panel | `/troubleshoot` command |
+| Global agents | VS Code user profile folder | `~/.copilot/agents/` |
+| Instructions | `.github/copilot-instructions.md` | Same (auto-loaded) |
+| Model selection | Settings/dropdown | `/model` command |
+
+### CLI-Specific Tips
+
+**Autopilot mode for batch scans:**
+
+Press `Shift+Tab` to cycle to Autopilot mode for hands-free accessibility audits:
+
+```bash
+# Start in autopilot mode
+copilot --experimental
+# Then Shift+Tab to cycle to autopilot
+```
+
+**Resume sessions:**
+
+```bash
+# Resume last session
+copilot --continue
+
+# List and select a session
+/resume
+```
+
+**Include specific files:**
+
+```bash
+# Use @ to include files in context
+Explain @src/components/Modal.tsx for accessibility issues
+```
+
+---
+
 ## Claude Desktop Setup
 
 This is for the **Claude Desktop app** (the standalone application).

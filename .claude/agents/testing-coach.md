@@ -471,6 +471,63 @@ Same as Chrome (Chromium-based), plus:
 1. **Accessibility tree in Elements panel**
 2. **ARIA validation warnings** in Issues panel
 
+### VS Code Integrated Browser (VS Code 1.112+)
+
+VS Code 1.112 introduces an integrated browser with full debugging support. This is excellent for accessibility testing because you never leave VS Code.
+
+**Setup:**
+
+1. Create or modify `launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "editor-browser",
+      "request": "launch",
+      "name": "A11y Test: Integrated Browser",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}
+```
+
+2. Start your dev server (`npm run dev` or equivalent)
+3. Press F5 to launch the integrated browser
+
+**Accessibility Testing Features:**
+
+- **Independent zoom:** The integrated browser has its own zoom level (separate from VS Code's). Use Ctrl+= / Ctrl+- to test WCAG 1.4.4 (Resize Text) and 1.4.10 (Reflow) directly.
+- **DevTools access:** Right-click > Inspect to open DevTools inside VS Code with the Accessibility Tree, contrast checker, and CSS Overview.
+- **Screenshot capture:** Agents can capture screenshots of the integrated browser, enabling visual accessibility analysis with image-capable models.
+- **Breakpoint debugging:** Set breakpoints on focus handlers, keyboard event listeners, and ARIA updates to debug accessibility issues in real-time.
+
+**Testing Workflow:**
+
+1. Launch the integrated browser with your app
+2. Open DevTools > Accessibility tab
+3. Use "Show Tabbing Order" to visualize tab sequence
+4. Test keyboard navigation without switching windows
+5. Run axe-core via Playwright tests or the browser console
+6. Debug any focus management issues with breakpoints
+
+**Zoom Testing (WCAG 1.4.4 / 1.4.10):**
+
+The `workbench.browser.pageZoom` setting controls the default zoom level. To test reflow:
+
+1. Set browser zoom to 400% (or use Ctrl+= repeatedly)
+2. Verify content reflows to single column
+3. No horizontal scrolling required
+4. No content or functionality lost
+
+**Limitations:**
+
+- DevTools accessibility features depend on Chromium - same as Chrome/Edge
+- Not a replacement for real screen reader testing
+- Cannot emulate mobile screen readers (TalkBack/VoiceOver iOS)
+
 ---
 
 ## Writing Accessibility Test Plans

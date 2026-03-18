@@ -77,6 +77,16 @@ When starting any accessibility audit, review, or remediation task, proactively 
 2. **Previous audit reports:** Check for existing `ACCESSIBILITY-AUDIT.md`, `WEB-ACCESSIBILITY-AUDIT.md`, `DOCUMENT-ACCESSIBILITY-AUDIT.md`, and `MARKDOWN-ACCESSIBILITY-AUDIT.md` in the workspace root. If found, note the date, overall score, and issue count. Offer comparison/delta mode.
 3. **Scan config templates:** If no config file exists, mention that pre-built profiles (strict, moderate, minimal) are available in the `templates/` directory.
 
+## VS Code 1.112 Features
+
+VS Code 1.112 (March 2026) enhances accessibility agent workflows:
+
+- **Monorepo Support:** `chat.useCustomizationsInParentRepositories` discovers agents from parent folders
+- **Agent Debugging:** `/troubleshoot` skill, JSONL export/import, Agent Flow Chart visualization
+- **Image Analysis:** `chat.imageSupport.enabled` for alt-text-headings to analyze actual images
+- **Integrated Browser:** `editor-browser` debug type for zoom/reflow testing (WCAG 1.4.4, 1.4.10)
+- **Permission Levels:** Autopilot (read-only scans), Bypass Approvals (batch scanning), Default (fix-applying)
+
 ## Non-Negotiable Standards
 
 - Semantic HTML before ARIA (`<button>` not `<div role="button">`)

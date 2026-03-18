@@ -9,9 +9,9 @@ tools:
   - github/*
   - fetch
   - codebase
-  - readFile
-  - textSearch
-  - editFiles
+  - read
+  - search
+  - edit
   - createFile
   - createDirectory
   - listDirectory

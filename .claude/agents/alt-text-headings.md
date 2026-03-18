@@ -42,6 +42,34 @@ You own everything related to text alternatives and document structure:
 
 When you encounter images in the codebase, follow this workflow:
 
+### VS Code 1.112 Native Image Support
+
+VS Code 1.112 introduces native image file reading for agents via the `chat.imageSupport.enabled` setting. This enhances your image analysis capabilities:
+
+**Enable image support:**
+
+```json
+{
+  "chat.imageSupport.enabled": true,
+  "imageCarousel.explorerContextMenu.enabled": true
+}
+```
+
+**What this enables:**
+
+- **Direct image reading:** Read local image files from disk without downloading or converting
+- **Image carousel:** When multiple images are involved, view them in a dedicated carousel UI
+- **Agent output images:** Screenshots from the integrated browser appear as selectable images in chat
+- **Explorer context menu:** Right-click image files or folders > "Open Images in Carousel" for batch review
+
+**Enhanced workflow with 1.112:**
+
+1. Ask the user to enable `chat.imageSupport.enabled` if not already set
+2. Read images directly using the file system tools
+3. Images appear inline in the chat for visual comparison
+4. Use the carousel view for reviewing multiple images at once
+5. Compare existing alt text against what you see in the image
+
 ### Step 1: Find All Images
 
 Search the codebase for image references:

@@ -5,8 +5,8 @@ user-invokable: false
 tools:
   - github/*
   - fetch
-  - readFile
-  - textSearch
+  - read
+  - search
 ---
 
 ## Authoritative Sources

@@ -6,10 +6,12 @@
 #   bash install.sh                    Interactive mode (prompts for project or global)
 #   bash install.sh --global           Install globally to ~/.claude/
 #   bash install.sh --global --copilot Also install Copilot agents to VS Code
+#   bash install.sh --global --cli     Also install Copilot CLI agents to ~/.copilot/
 #   bash install.sh --global --codex   Also install Codex CLI support to ~/.codex/
 #   bash install.sh --global --gemini  Also install Gemini CLI extension
 #   bash install.sh --project          Install to .claude/ in the current directory
 #   bash install.sh --project --copilot Also install Copilot agents to project
+#   bash install.sh --project --cli    Also install Copilot CLI agents to project
 #   bash install.sh --project --codex  Also install Codex CLI support to .codex/
 #   bash install.sh --project --gemini Also install Gemini CLI extension
 #
@@ -145,6 +147,7 @@ migrate_prompts() {
 # Parse flags for non-interactive install
 choice=""
 COPILOT_FLAG=false
+COPILOT_CLI_FLAG=false
 CODEX_FLAG=false
 GEMINI_FLAG=false
 for arg in "$@"; do
@@ -152,6 +155,7 @@ for arg in "$@"; do
     --global) choice="2" ;;
     --project) choice="1" ;;
     --copilot) COPILOT_FLAG=true ;;
+    --cli) COPILOT_CLI_FLAG=true ;;
     --codex) CODEX_FLAG=true ;;
     --gemini) GEMINI_FLAG=true ;;
   esac
@@ -1211,6 +1215,110 @@ INITSCRIPT
 fi
 
 # ---------------------------------------------------------------------------
+# Copilot CLI support (GitHub Copilot CLI uses ~/.copilot/)
+# ---------------------------------------------------------------------------
+COPILOT_CLI_INSTALLED=false
+
+install_copilot_cli=false
+if [ "$COPILOT_CLI_FLAG" = true ]; then
+  install_copilot_cli=true
+elif { true < /dev/tty; } 2>/dev/null; then
+  echo ""
+  echo "  Would you also like to install Copilot CLI agents?"
+  echo "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
+  echo "  (For VS Code Copilot Chat extension, use --copilot instead)"
+  echo ""
+  printf "  Install Copilot CLI agents? [y/N]: "
+  read -r cli_choice < /dev/tty
+  if [ "$cli_choice" = "y" ] || [ "$cli_choice" = "Y" ]; then
+    install_copilot_cli=true
+  fi
+fi
+
+if [ "$install_copilot_cli" = true ]; then
+  echo ""
+  echo "  Installing Copilot CLI agents..."
+
+  if [ "$choice" = "1" ]; then
+    # Project install: put agents in .github/agents/ (CLI reads this path)
+    PROJECT_DIR="$(pwd)"
+    CLI_AGENTS_DST="$PROJECT_DIR/.github/agents"
+    CLI_SKILLS_DST="$PROJECT_DIR/.github/skills"
+    mkdir -p "$CLI_AGENTS_DST" "$CLI_SKILLS_DST"
+
+    # Copy agents (skip existing)
+    if [ -d "$COPILOT_AGENTS_SRC" ]; then
+      for f in "$COPILOT_AGENTS_SRC"/*; do
+        [ -f "$f" ] || continue
+        dst_f="$CLI_AGENTS_DST/$(basename "$f")"
+        if [ -f "$dst_f" ]; then
+          echo "    ~ $(basename "$f") (skipped - exists)"
+        else
+          cp "$f" "$CLI_AGENTS_DST/"
+          echo "    + $(basename "$f")"
+        fi
+      done
+    fi
+
+    # Copy skills (skip existing folders)
+    SKILLS_SRC="$COPILOT_CONFIG_SRC/skills"
+    if [ -d "$SKILLS_SRC" ]; then
+      for skill_dir in "$SKILLS_SRC"/*/; do
+        [ -d "$skill_dir" ] || continue
+        skill_name=$(basename "$skill_dir")
+        dst_skill="$CLI_SKILLS_DST/$skill_name"
+        if [ -d "$dst_skill" ]; then
+          echo "    ~ $skill_name/ (skipped - exists)"
+        else
+          mkdir -p "$dst_skill"
+          cp -R "$skill_dir"* "$dst_skill/"
+          echo "    + $skill_name/"
+        fi
+      done
+    fi
+
+    echo "  Copilot CLI: Project agents installed to .github/agents/"
+
+  else
+    # Global install: copy to ~/.copilot/agents/ and ~/.copilot/skills/
+    CLI_AGENTS_DST="$HOME/.copilot/agents"
+    CLI_SKILLS_DST="$HOME/.copilot/skills"
+    mkdir -p "$CLI_AGENTS_DST" "$CLI_SKILLS_DST"
+
+    # Copy agents
+    if [ -d "$COPILOT_AGENTS_SRC" ]; then
+      count=0
+      for f in "$COPILOT_AGENTS_SRC"/*; do
+        [ -f "$f" ] || continue
+        cp "$f" "$CLI_AGENTS_DST/"
+        count=$((count + 1))
+      done
+      echo "    Copied $count agents to ~/.copilot/agents/"
+    fi
+
+    # Copy skills
+    SKILLS_SRC="$COPILOT_CONFIG_SRC/skills"
+    if [ -d "$SKILLS_SRC" ]; then
+      count=0
+      for skill_dir in "$SKILLS_SRC"/*/; do
+        [ -d "$skill_dir" ] || continue
+        skill_name=$(basename "$skill_dir")
+        dst_skill="$CLI_SKILLS_DST/$skill_name"
+        mkdir -p "$dst_skill"
+        cp -R "$skill_dir"* "$dst_skill/"
+        count=$((count + 1))
+      done
+      echo "    Copied $count skills to ~/.copilot/skills/"
+    fi
+
+    echo "  Copilot CLI: Global agents installed to ~/.copilot/"
+  fi
+
+  COPILOT_CLI_INSTALLED=true
+  add_manifest_entry "copilot-cli/agents"
+fi
+
+# ---------------------------------------------------------------------------
 # Codex CLI support
 # ---------------------------------------------------------------------------
 CODEX_SRC="$SCRIPT_DIR/.codex/AGENTS.md"
@@ -1461,6 +1569,14 @@ if [ "$COPILOT_INSTALLED" = true ]; then
     name="$(basename "${f%.agent.md}")"
     echo "    [x] $name"
   done
+fi
+if [ "$COPILOT_CLI_INSTALLED" = true ]; then
+  echo ""
+  echo "  Copilot CLI agents installed to:"
+  echo "    -> $CLI_AGENTS_DST"
+  echo "    -> $CLI_SKILLS_DST"
+  echo ""
+  echo "  Verify with: copilot /agent"
 fi
 if [ "$CODEX_INSTALLED" = true ]; then
   echo ""

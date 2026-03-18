@@ -178,6 +178,31 @@ When starting any accessibility audit, review, or remediation task, proactively 
 2. **Previous audit reports:** Check for existing `ACCESSIBILITY-AUDIT.md`, `WEB-ACCESSIBILITY-AUDIT.md`, `DOCUMENT-ACCESSIBILITY-AUDIT.md`, and `MARKDOWN-ACCESSIBILITY-AUDIT.md` in the workspace root. If found, note the date, overall score, and issue count. Offer comparison/delta mode so the user can track remediation progress.
 3. **Scan config templates:** If no config file exists and the user is starting a new audit, mention that pre-built profiles (strict, moderate, minimal) are available in the `templates/` directory.
 
+### VS Code 1.112 Features
+
+VS Code 1.112 (March 2026) includes features that enhance accessibility agent workflows:
+
+**Monorepo Support:**
+Enable `chat.useCustomizationsInParentRepositories` to discover accessibility agents from parent folders. Essential for teams who open package subfolders rather than the repo root.
+
+**Agent Debugging:**
+- `/troubleshoot` - Analyze agent debug logs directly in chat
+- Export/import debug sessions as JSONL for team sharing
+- Agent Flow Chart visualization
+
+Enable: `github.copilot.chat.agentDebugLog.enabled` and `github.copilot.chat.agentDebugLog.fileLogging.enabled`
+
+**Image Analysis:**
+Enable `chat.imageSupport.enabled` for alt-text-headings to analyze actual images and suggest accurate alt text, or for contrast-master to analyze screenshots for visual issues.
+
+**Integrated Browser:**
+The `editor-browser` debug type allows testing zoom/reflow accessibility (WCAG 1.4.4, 1.4.10) and visual debugging of focus management without leaving VS Code.
+
+**Permission Levels:**
+- **Autopilot** (`chat.autopilot.enabled`) - Fully autonomous. Good for read-only scans.
+- **Bypass Approvals** - Auto-approve tools. Useful for batch scanning.
+- **Default** - Manual approval. Recommended for fix-applying workflows.
+
 ### Scan Configuration Templates
 
 The `templates/` directory contains pre-built scan configuration profiles:

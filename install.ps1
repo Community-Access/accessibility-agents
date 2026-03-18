@@ -571,6 +571,80 @@ Write-Host "  Your existing files were preserved. Only new content was added."
 }
 
 # ---------------------------------------------------------------------------
+# Copilot CLI support (GitHub Copilot CLI uses ~/.copilot/)
+# ---------------------------------------------------------------------------
+$CopilotCliInstalled = $false
+$CliAgentsDst = ""
+$CliSkillsDst = ""
+
+Write-Host ""
+Write-Host "  Would you also like to install Copilot CLI agents?"
+Write-Host "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
+Write-Host "  (For VS Code Copilot Chat extension, the --copilot option above is used)"
+Write-Host ""
+$CliChoice = Read-Host "  Install Copilot CLI agents? [y/N]"
+
+if ($CliChoice -eq "y" -or $CliChoice -eq "Y") {
+    Write-Host ""
+    Write-Host "  Installing Copilot CLI agents..."
+
+    if ($Choice -eq "1") {
+        # Project install: CLI reads .github/agents/ directly
+        $CliAgentsDst = Join-Path (Get-Location) ".github\agents"
+        $CliSkillsDst = Join-Path (Get-Location) ".github\skills"
+    }
+    else {
+        # Global install: use ~/.copilot/
+        $CliAgentsDst = Join-Path $env:USERPROFILE ".copilot\agents"
+        $CliSkillsDst = Join-Path $env:USERPROFILE ".copilot\skills"
+    }
+
+    New-Item -ItemType Directory -Force -Path $CliAgentsDst | Out-Null
+    New-Item -ItemType Directory -Force -Path $CliSkillsDst | Out-Null
+
+    # Copy agents
+    if (Test-Path $CopilotAgentsSrc) {
+        $Count = 0
+        foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -Filter "*.agent.md") {
+            $DstFile = Join-Path $CliAgentsDst $File.Name
+            if (-not (Test-Path $DstFile)) {
+                Copy-Item -Path $File.FullName -Destination $DstFile
+                Write-Host "    + $($File.Name)"
+                $Count++
+            }
+            else {
+                Write-Host "    ~ $($File.Name) (skipped - exists)"
+            }
+        }
+    }
+
+    # Copy skills
+    $SkillsSrc = Join-Path $CopilotConfigSrc "skills"
+    if (Test-Path $SkillsSrc) {
+        $Count = 0
+        Get-ChildItem -Path $SkillsSrc -Directory | ForEach-Object {
+            $DstSkill = Join-Path $CliSkillsDst $_.Name
+            if (-not (Test-Path $DstSkill)) {
+                New-Item -ItemType Directory -Force -Path $DstSkill | Out-Null
+                Copy-Item -Path "$($_.FullName)\*" -Destination $DstSkill -Recurse
+                Write-Host "    + $($_.Name)/"
+                $Count++
+            }
+            else {
+                Write-Host "    ~ $($_.Name)/ (skipped - exists)"
+            }
+        }
+    }
+
+    Write-Host ""
+    Write-Host "  Copilot CLI agents installed."
+    Write-Host "  Verify with: copilot /agent"
+
+    Add-ManifestEntry "copilot-cli/agents"
+    $CopilotCliInstalled = $true
+}
+
+# ---------------------------------------------------------------------------
 # Gemini CLI extension
 # ---------------------------------------------------------------------------
 $GeminiSrc = Join-Path $ScriptDir ".gemini\extensions\a11y-agents"
@@ -688,6 +762,14 @@ if ($CopilotInstalled) {
         $Name = $File.BaseName -replace '\.agent$', ''
         Write-Host "    [x] $Name"
     }
+}
+if ($CopilotCliInstalled) {
+    Write-Host ""
+    Write-Host "  Copilot CLI agents installed to:"
+    Write-Host "    -> $CliAgentsDst"
+    Write-Host "    -> $CliSkillsDst"
+    Write-Host ""
+    Write-Host "  Verify with: copilot /agent"
 }
 if ($GeminiInstalled) {
     Write-Host ""

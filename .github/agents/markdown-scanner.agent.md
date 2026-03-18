@@ -1,8 +1,8 @@
 ---
 name: markdown-scanner
-description: Internal helper for scanning a single markdown file for accessibility issues across all 9 domains. Returns structured findings with severity, line numbers, suggested fixes, and auto-fix classification. Invoked by markdown-a11y-assistant via runSubagent - not user-invokable directly.
+description: Internal helper for scanning a single markdown file for accessibility issues across all 9 domains. Returns structured findings with severity, line numbers, suggested fixes, and auto-fix classification. Invoked by markdown-a11y-assistant via agent tool - not user-invokable directly.
 user-invokable: false
-tools: ['readFile', 'runInTerminal', 'getTerminalOutput', 'textSearch']
+tools: ['read', 'runInTerminal', 'getTerminalOutput', 'search']
 ---
 
 ## Authoritative Sources

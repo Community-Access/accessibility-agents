@@ -9,15 +9,15 @@ tools:
   - github/*
   - fetch
   - codebase
-  - readFile
-  - textSearch
-  - editFiles
+  - read
+  - search
+  - edit
   - createFile
   - createDirectory
   - listDirectory
   - runInTerminal
   - askQuestions
-  - fileSearch
+  - search
 handoffs:
   - label: Back to GitHub Hub
     agent: github-hub

@@ -1,0 +1,32 @@
+name: Validate Agents
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/agents/**'
+      - '.github/skills/**'
+      - '.claude/agents/**'
+      - 'scripts/validate-agents.js'
+  pull_request:
+    paths:
+      - '.github/agents/**'
+      - '.github/skills/**'
+      - '.claude/agents/**'
+      - 'scripts/validate-agents.js'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate agent and skill files
+        run: node scripts/validate-agents.js
