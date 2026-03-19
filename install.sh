@@ -197,6 +197,18 @@ case "$choice" in
     ;;
 esac
 
+# Manifest: track which files we install so updates never touch user-created files.
+# Keep the helper global so later install paths (Copilot/Codex/Gemini) can always use it,
+# including global/plugin installs that bypass the Claude file-copy branch.
+mkdir -p "$TARGET_DIR"
+MANIFEST_FILE="$TARGET_DIR/.a11y-agent-manifest"
+touch "$MANIFEST_FILE"
+
+add_manifest_entry() {
+  local entry="$1"
+  grep -qxF "$entry" "$MANIFEST_FILE" 2>/dev/null || echo "$entry" >> "$MANIFEST_FILE"
+}
+
 # ---------------------------------------------------------------------------
 # merge_config_file src dst label
 # Appends/updates our section in a config markdown file using section markers.
@@ -759,15 +771,6 @@ mkdir -p "$TARGET_DIR/agents"
 if [ ${#SKILLS[@]} -gt 0 ]; then
   mkdir -p "$TARGET_DIR/skills"
 fi
-
-# Manifest: track which files we install so updates never touch user-created files
-MANIFEST_FILE="$TARGET_DIR/.a11y-agent-manifest"
-touch "$MANIFEST_FILE"
-
-add_manifest_entry() {
-  local entry="$1"
-  grep -qxF "$entry" "$MANIFEST_FILE" 2>/dev/null || echo "$entry" >> "$MANIFEST_FILE"
-}
 
 # Copy agents — skip any file that already exists (preserves user customisations)
 echo ""
@@ -1846,4 +1849,3 @@ echo ""
 echo "  Start Claude Code and try: \"Build a login form\""
 echo "  The accessibility-lead should activate automatically."
 echo ""
-
