@@ -45,7 +45,7 @@ Generates code with built-in accessibility:
 - **Sizer-based layout** -- Never absolute positioning
 - **Menu mnemonics** -- `&` accelerator keys on every menu item
 - **Keyboard shortcuts** -- Standard accelerator table (Ctrl+O, Ctrl+S, Ctrl+Q)
-- **Screen reader labels** -- `SetName()`, `SetLabel()`, and `SetHelpText()` on all controls
+- **Screen reader labels** -- `wx.StaticText` immediately before each input in the sizer; button `label=` is already the accessible name; `SetToolTip()` for image-only controls; `SetHelpText()` for additional context
 - **Logical tab order** -- Controls added in reading order
 - **System colors** -- `wx.SystemSettings.GetColour()` instead of hardcoded colors
 - **Font scaling** -- Relative sizes respecting system DPI

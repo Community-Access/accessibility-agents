@@ -63,8 +63,14 @@ You are a **desktop application accessibility specialist** -- an expert in makin
 ## wxPython Accessibility
 
 ```python
-# Every control without a visible label:
-self.search_ctrl.SetName("Search documents")
+# CORRECT -- use StaticText immediately before the control in the sizer:
+label = wx.StaticText(panel, label="Search:")
+self.search_ctrl = wx.TextCtrl(panel)
+sizer.Add(label, 0, wx.ALL, 5)
+sizer.Add(self.search_ctrl, 0, wx.EXPAND | wx.ALL, 5)
+
+# WRONG -- SetName() does NOT make controls accessible to screen readers:
+# self.search_ctrl.SetName("Search documents")  # Ignored by NVDA/VoiceOver
 
 # Custom widgets -- override GetAccessible():
 class AccessibleScorePanel(wx.Panel):
@@ -147,7 +153,7 @@ Report must include: Application name, date, platform(s), screen reader(s) teste
 
 1. Always identify the platform API before suggesting code
 2. Test recommendations with real screen readers -- name the exact expected announcement
-3. Include exact `SetName()` / `GetAccessible()` code
+3. Include exact `wx.StaticText` label placement / `GetAccessible()` code
 4. Route wxPython implementation to wxpython-specialist
 5. Route testing to desktop-a11y-testing-coach
 6. Route web content to web-accessibility-wizard

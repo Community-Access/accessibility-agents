@@ -86,7 +86,28 @@ self.status_bar.SetStatusText("Done")  # CRASH
 
 ## Desktop Accessibility
 
-- `ctrl.SetName("Purpose")` for controls without visible labels
+**How screen readers get labels from wxPython controls:**
+
+- **Inputs and other controls:** NVDA/VoiceOver read the **preceding `wx.StaticText`** as the label. Add a `wx.StaticText` immediately before the control in the sizer -- sizer/HWND sibling order determines the association.
+- **Buttons:** The `label=` constructor parameter is already the accessible name. No extra work needed.
+- **Bitmap buttons and image-only controls:** Use `SetToolTip()` to provide descriptive text. For a programmatic accessible name, subclass `wx.Accessible`.
+
+> **Common Mistake to Avoid:** `wx.Window.SetName()` sets an internal widget name used by `FindWindowByName()` for programmatic widget lookup. **It has no effect on screen readers.** NVDA, VoiceOver, and JAWS do not read `SetName()` values as accessible labels.
+
+```python
+# CORRECT -- StaticText immediately before the control in the sizer
+label = wx.StaticText(panel, label="Username:")
+ctrl = wx.TextCtrl(panel)
+sizer.Add(label, 0, wx.ALL, 5)
+sizer.Add(ctrl, 0, wx.EXPAND | wx.ALL, 5)
+
+# CORRECT -- button label= is already the accessible name
+btn = wx.Button(panel, label="Save document")
+
+# WRONG -- SetName() does NOT make controls accessible to screen readers
+ctrl.SetName("Username")  # Only affects FindWindowByName() -- screen readers ignore it
+```
+
 - Tab order follows sizer order -- use `MoveAfterInTabOrder()` to override
 - `wx.AcceleratorTable` for keyboard shortcuts
 - `CreateStdDialogButtonSizer()` auto-handles platform button order
@@ -153,12 +174,12 @@ When asked to **audit** or **scan** a wxPython project for accessibility, return
 
 | ID | Severity | What to Flag |
 |---|---|---|
-| WX-A11Y-001 | Critical | Control without `SetName()` and no adjacent `wx.StaticText` label |
+| WX-A11Y-001 | Critical | Control without a preceding `wx.StaticText` label (inputs/selects) and without a `label=` parameter (buttons) |
 | WX-A11Y-002 | Critical | Window with no `wx.AcceleratorTable` |
 | WX-A11Y-003 | Critical | Mouse event binding without equivalent keyboard event |
 | WX-A11Y-004 | Serious | Dialog without `CreateStdDialogButtonSizer()` or Escape handling |
 | WX-A11Y-005 | Serious | `ShowModal()` without `SetFocus()` on a meaningful control |
-| WX-A11Y-006 | Serious | Bitmap/BitmapButton without `SetName()` or `SetToolTip()` |
+| WX-A11Y-006 | Serious | Bitmap/BitmapButton without `SetToolTip()` or `wx.Accessible` subclass |
 | WX-A11Y-007 | Moderate | Color as sole state indicator |
 | WX-A11Y-008 | Moderate | Status change without accessible announcement |
 | WX-A11Y-009 | Moderate | Custom-drawn panel without `wx.Accessible` subclass |

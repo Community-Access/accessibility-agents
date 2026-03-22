@@ -201,7 +201,7 @@ Full accessibility assessment with guided manual checks:
 
 | Issue | Impact | Fix |
 |---|---|---|
-| Missing Name | Screen reader says nothing useful | Add `SetName()` or visible label |
+| Missing Name | Screen reader says nothing useful | Add a preceding `wx.StaticText` label (inputs) or `label=` parameter (buttons). Do not use `SetName()` -- it only affects `FindWindowByName()` and is ignored by screen readers. |
 | Missing keyboard focus | Can't Tab to control | Ensure `wx.WANTS_CHARS` or focusable widget |
 | Wrong ControlType | Screen reader announces wrong type | Override `wx.Accessible.GetRole()` |
 | Missing pattern | Can't interact programmatically | Implement required UIA pattern |

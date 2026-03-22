@@ -61,7 +61,7 @@ Create the main frame with:
 - **Sizer-based layout** -- Never use absolute positioning. Use `wx.BoxSizer`, `wx.GridBagSizer`, and `wx.StaticBoxSizer`
 - **Menu bar with mnemonics** -- Every menu item has an `&` accelerator key
 - **Keyboard shortcuts** -- Standard shortcuts (Ctrl+O, Ctrl+S, Ctrl+Q) via accelerator table
-- **Screen reader labels** -- `SetName()` and `SetLabel()` on all controls; `SetHelpText()` for additional context
+- **Screen reader labels** -- `wx.StaticText` immediately before each input in the sizer; button `label=` is already the accessible name; `SetToolTip()` for image-only controls; `SetHelpText()` for additional context
 - **Tab order** -- Controls added in logical reading order; no manual `MoveAfterInTabOrder()` unless needed
 - **Status bar** -- For non-intrusive status messages
 - **System colors** -- Use `wx.SystemSettings.GetColour()` instead of hardcoded colors

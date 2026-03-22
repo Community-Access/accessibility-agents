@@ -29,7 +29,7 @@ When asked to audit a wxPython project for accessibility, the agent uses 14 stru
 
 | Rule Range | What It Covers |
 |---|---|
-| WX-A11Y-001..003 | Critical: Missing SetName(), no AcceleratorTable, mouse-only events |
+| WX-A11Y-001..003 | Critical: Missing StaticText label or label= parameter, no AcceleratorTable, mouse-only events |
 | WX-A11Y-004..006 | Serious: Dialog UX, focus on ShowModal, bitmap labels |
 | WX-A11Y-007..009 | Moderate: Color-only state, silent status changes, custom-drawn panels |
 | WX-A11Y-010..012 | Minor/Moderate: Tab order, virtual lists, menu accelerators |

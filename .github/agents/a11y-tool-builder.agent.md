@@ -95,10 +95,12 @@ check:
   property: "Name"
   condition: "empty_or_missing"
 fix:
-  description: "Add an accessible name via SetName() or a visible label"
+  description: "Add a preceding wx.StaticText label (for inputs) or label= parameter (for buttons). Do not use SetName() -- it only affects FindWindowByName() and is ignored by screen readers."
   code_template: |
-    # Add before the control is used:
-    {control_var}.SetName("{suggested_name}")
+    # Add a StaticText immediately before the control in the sizer:
+    label = wx.StaticText(panel, label="{suggested_name}:")
+    sizer.Add(label, 0, wx.ALL, 5)
+    sizer.Add({control_var}, 0, wx.EXPAND | wx.ALL, 5)
 auto_fixable: false
 ```
 
@@ -257,7 +259,7 @@ def audit_uia_tree(root_element) -> list[Finding]:
                 element=element.get("control_type", "Unknown"),
                 location=element.get("automation_id", ""),
                 description="Interactive control has no accessible name",
-                fix_suggestion="Add SetName() or a visible label",
+                fix_suggestion="Add a preceding wx.StaticText label (inputs) or label= parameter (buttons). SetName() is ignored by screen readers.",
             ))
         stack.extend(element.get("children", []))
     return findings

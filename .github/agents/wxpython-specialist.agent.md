@@ -452,18 +452,27 @@ self.SetAcceleratorTable(wx.AcceleratorTable(accel_entries))
 wxPython controls generally work well with screen readers (NVDA, JAWS, VoiceOver, Orca) when configured correctly:
 
 ```python
-# Set accessible names for controls without visible labels
-self.search_ctrl.SetName("Search documents")
-self.score_gauge.SetName("Accessibility score")
-
-# Use wx.StaticText as labels -- screen readers associate them automatically
+# CORRECT -- place StaticText immediately before the control in the sizer
 label = wx.StaticText(panel, label="Username:")
 ctrl = wx.TextCtrl(panel)
-# Place label immediately before ctrl in the sizer for automatic association
+sizer.Add(label, 0, wx.ALL, 5)
+sizer.Add(ctrl, 0, wx.EXPAND | wx.ALL, 5)
 
-# For custom controls, set the accessible description
+# CORRECT -- button label= is already the accessible name
+btn = wx.Button(panel, label="Save document")
+
+# CORRECT -- for image-only controls, use SetToolTip()
+bitmap_btn = wx.BitmapButton(panel, bitmap=wx.Bitmap("icon.png"))
+bitmap_btn.SetToolTip("Open file")
+
+# WRONG -- SetName() does NOT make controls accessible to screen readers
+self.search_ctrl.SetName("Search documents")  # Only affects FindWindowByName() -- screen readers ignore it
+
+# For custom controls, subclass wx.Accessible
 self.score_panel.GetAccessible()  # Returns wx.Accessible object
 ```
+
+> **Common Mistake to Avoid:** `wx.Window.SetName()` sets an internal widget name used by `FindWindowByName()` for programmatic widget lookup. **It has no effect on screen readers.** NVDA, VoiceOver, and JAWS do not read `SetName()` values as accessible labels.
 
 ### Keyboard Navigation
 
@@ -542,7 +551,7 @@ Semantic events fire regardless of how the user activated the control (keyboard,
 
 ### Accessibility Checklist
 
-- [ ] Every control has a meaningful name (via label or `SetName()`)
+- [ ] Every control has a meaningful name (via preceding `wx.StaticText`, `label=` parameter, or `SetToolTip()` for image-only controls)
 - [ ] Tab order follows logical reading order
 - [ ] All actions reachable by keyboard (no mouse-only interactions)
 - [ ] Dialogs use `CreateStdDialogButtonSizer()` for platform-correct button order
@@ -560,12 +569,12 @@ When the user asks you to **audit**, **scan**, or **review accessibility** of a 
 
 | ID | Severity | Pattern | What to Flag |
 |---|---|---|---|
-| WX-A11Y-001 | Critical | Missing `SetName()` on controls without adjacent `wx.StaticText` labels | Screen readers announce the control as unlabeled |
+| WX-A11Y-001 | Critical | Missing `wx.StaticText` label immediately before an input/select control, or missing `label=` on a button | Screen readers announce the control as unlabeled |
 | WX-A11Y-002 | Critical | `wx.Panel` or `wx.Frame` with no `wx.AcceleratorTable` | No keyboard shortcuts defined for the window |
 | WX-A11Y-003 | Critical | `wx.EVT_LEFT_DOWN` / `wx.EVT_LEFT_DCLICK` bound without equivalent keyboard event | Mouse-only interaction -- unreachable by keyboard |
 | WX-A11Y-004 | Serious | `wx.Dialog` without `CreateStdDialogButtonSizer()` or explicit Escape handling | Dialog may not close on Escape, non-standard button order |
 | WX-A11Y-005 | Serious | `wx.Dialog.ShowModal()` with no `SetFocus()` call on a meaningful control | Focus starts at an unpredictable position in the dialog |
-| WX-A11Y-006 | Serious | `wx.StaticBitmap` or `wx.BitmapButton` without `SetName()` or `SetToolTip()` | Image has no accessible text for screen readers |
+| WX-A11Y-006 | Serious | `wx.StaticBitmap` or `wx.BitmapButton` without `SetToolTip()` or `wx.Accessible` subclass | Image has no accessible text for screen readers |
 | WX-A11Y-007 | Moderate | `wx.Colour` used as sole state indicator (no text/icon accompaniment) | Color-only information -- invisible to colorblind users and screen readers |
 | WX-A11Y-008 | Moderate | `wx.Timer` or status bar update without `wx.Bell()` or accessible announcement | State change is silent to screen readers |
 | WX-A11Y-009 | Moderate | Custom `wx.Panel` with `EVT_PAINT` override but no `wx.Accessible` subclass | Owner-drawn control is invisible to accessibility APIs |
@@ -596,7 +605,7 @@ Return findings as a structured table:
 
 | # | Rule | Severity | File | Line | Description | Suggested Fix |
 |---|------|----------|------|------|-------------|---------------|
-| 1 | WX-A11Y-001 | Critical | main_frame.py | 42 | `self.search_ctrl` has no accessible name | Add `self.search_ctrl.SetName("Search documents")` |
+| 1 | WX-A11Y-001 | Critical | main_frame.py | 42 | `self.search_ctrl` has no accessible name | Add a `wx.StaticText(panel, label="Search:")` immediately before `self.search_ctrl` in the sizer |
 ```
 
 Each finding must include a **concrete code fix**, not generic advice. If the fix requires judgment (e.g., choosing an accessible name), provide a reasonable default and note that it should be reviewed.

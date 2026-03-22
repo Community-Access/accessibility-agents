@@ -213,7 +213,11 @@ def setup_logging(level: int = logging.INFO) -> None:
 
 ```python
 # Name every control that lacks a visible label
-ctrl.SetName("Scan progress")
+# CORRECT: use StaticText immediately before the control in the sizer
+label = wx.StaticText(panel, label="Scan progress:")
+# ctrl = wx.Gauge(panel)  -- add label to sizer right before ctrl
+# WRONG: SetName() is ignored by screen readers
+# ctrl.SetName("Scan progress")  -- only affects FindWindowByName()
 
 # Tab order follows sizer insertion order; override with:
 ctrl2.MoveAfterInTabOrder(ctrl1)
@@ -235,14 +239,14 @@ Screen readers expose controls as: **Name + Role + Value + State**
 
 | Property | wxPython Source | Example |
 |---|---|---|
-| Name | `SetName()` or visible label | "Scan progress" |
+| Name | Preceding `wx.StaticText`, `label=` parameter, or `SetToolTip()` | "Scan progress" |
 | Role | Widget type (automatic) | button, text field, list |
 | Value | Widget content | "75%", "Hello world" |
 | State | Widget flags | focused, disabled, checked |
 
 ### Desktop A11y Checklist
 
-1. Every control has a meaningful name (`SetName()` or adjacent `wx.StaticText`)
+1. Every control has a meaningful name (preceding `wx.StaticText` for inputs, `label=` for buttons, `SetToolTip()` for image-only controls)
 2. Keyboard-only operation -- every action reachable via Tab/Enter/Space/arrows
 3. Focus visible -- never suppress focus indicators
 4. Tab order is logical (generally top-to-bottom, left-to-right)
@@ -257,7 +261,7 @@ When audit mode is activated, agents use these structured detection rule sets:
 
 | Rule Prefix | Agent | Scope | Count |
 |---|---|---|---|
-| WX-A11Y-001..012 | `wxpython-specialist` | wxPython-specific patterns (SetName, AcceleratorTable, mouse-only events, dialogs) | 12 rules |
+| WX-A11Y-001..012 | `wxpython-specialist` | wxPython-specific patterns (StaticText labels, AcceleratorTable, mouse-only events, dialogs) | 12 rules |
 | DTK-A11Y-001..012 | `desktop-a11y-specialist` | Platform-level API patterns (Name/Role/State/Value, focus, UIA/ATK/NSAccessibility) | 12 rules |
 | TST-A11Y-001..010 | `desktop-a11y-testing-coach` | Test coverage gaps (automated tests, SR testing, keyboard plans, CI integration) | 10 rules |
 

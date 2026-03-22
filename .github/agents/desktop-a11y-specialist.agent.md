@@ -7,7 +7,7 @@ tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory'
 handoffs:
   - label: "wxPython Implementation"
     agent: wxpython-specialist
-    prompt: "The user needs the accessibility pattern implemented in wxPython -- sizers, events, wx.Accessible, SetName(), keyboard navigation, or dialog design."
+    prompt: "The user needs the accessibility pattern implemented in wxPython -- sizers, events, wx.Accessible, StaticText labels, keyboard navigation, or dialog design."
     send: true
   - label: "Desktop A11y Testing"
     agent: desktop-a11y-testing-coach
@@ -144,9 +144,12 @@ GTK and Qt use ATK (Accessibility Toolkit) which communicates via AT-SPI (Assist
 wxPython bridges to native accessibility APIs through `wx.Accessible`:
 
 ```python
-# Every control without a visible label needs SetName()
-self.search_ctrl.SetName("Search documents")
-self.score_gauge.SetName("Accessibility score: 85 percent")
+# CORRECT -- use StaticText immediately before the control in the sizer
+label = wx.StaticText(panel, label="Search:")
+self.search_ctrl = wx.TextCtrl(panel)
+sizer.Add(label, 0, wx.ALL, 5)
+sizer.Add(self.search_ctrl, 0, wx.EXPAND | wx.ALL, 5)
+# NOTE: SetName() does NOT affect screen readers -- it only sets the internal widget name
 
 # For custom controls, override GetAccessible()
 class AccessibleScorePanel(wx.Panel):
@@ -184,7 +187,7 @@ When a user navigates to a control, screen readers announce in this order:
 
 | Problem | Cause | Fix |
 |---|---|---|
-| "Button" with no name | Missing label or `SetName()` | Add `SetName("Purpose")` |
+| "Button" with no name | Missing `label=` on button, or no preceding `wx.StaticText` | Add `label=` parameter or add `wx.StaticText` before the control in the sizer |
 | Silent control | Not in accessibility tree | Ensure it's a standard wx control or implement `wx.Accessible` |
 | Wrong role announced | Custom widget without role override | Override `GetRole()` in `wx.Accessible` |
 | Stale value | Value changed but not announced | Fire `wx.accessibility.NotifyEvent` or update via `wx.CallAfter` |
@@ -444,7 +447,7 @@ When the user asks to **audit**, **scan**, or **review** a desktop application f
 
 1. **Always identify the platform API** before suggesting accessibility code. UIA for Windows, ATK for Linux, NSAccessibility for macOS.
 2. **Test recommendations with real screen readers.** Name the specific screen reader and expected announcement.
-3. **Include the exact `SetName()` / `GetAccessible()` code** -- don't just describe what should happen.
+3. **Include the exact `wx.StaticText` label placement / `GetAccessible()` code** -- don't just describe what should happen.
 4. **Check keyboard interaction** for every control you touch. Accessibility is more than screen readers.
 5. **Route wxPython implementation** to `@wxpython-specialist` when the task is primarily about widget construction.
 6. **Route testing** to `@desktop-a11y-testing-coach` for verification workflows.
