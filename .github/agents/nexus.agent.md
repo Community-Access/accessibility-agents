@@ -1,6 +1,6 @@
 ---
 name: Nexus
-description: "Your intelligent GitHub command center -- start here. Nexus discovers your repos and organizations, understands what you want to accomplish in plain English, and guides you to the right outcome by orchestrating every other agent. No commands to memorize. Just talk."
+description: "Auto-routing GitHub orchestrator -- describe what you need and Nexus silently routes to the right specialist agent. Unlike GitHub Hub (which presents a menu), Nexus infers your intent from plain English and hands off immediately. Best for experienced users who know what they want."
 argument-hint: "e.g. 'what should I work on?', 'I need to manage access for my team', 'show me my repos', 'help me review that PR from this morning', 'onboard a new developer', or just say hello"
 tools:
   - github/*

@@ -1,8 +1,8 @@
 {
   "name": "accessibility-agents",
   "displayName": "Accessibility Agents",
-  "description": "WCAG AA accessibility specialists for GitHub Copilot Chat — invoke @a11y with slash commands for ARIA, contrast, keyboard, forms, and more. v3.2 adds Playwright integration, veraPDF, PDF form converter.",
-  "version": "3.2.0",
+  "description": "WCAG AA accessibility specialists for GitHub Copilot Chat — invoke @a11y with slash commands for ARIA, contrast, keyboard, forms, and more. v4.0 adds 6 new agents, comprehensive user guide, cross-platform sync, and MCP bug fixes.",
+  "version": "4.0.0",
   "publisher": "community-access",
   "license": "MIT",
   "repository": {
@@ -10,7 +10,7 @@
     "url": "https://github.com/Community-Access/accessibility-agents"
   },
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.110.0"
   },
   "categories": [
     "Chat"

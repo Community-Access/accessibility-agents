@@ -29,7 +29,7 @@ We will acknowledge receipt within 48 hours and provide a fix or mitigation as q
 
 - Installer scripts executing unintended commands
 - Auto-update mechanism pulling from unauthorized sources
-- MCP extension (desktop-extension) exposing data it should not
+- MCP server (mcp-server) exposing data it should not
 - Any file operation that could overwrite or delete user data unexpectedly
 
 ## What Is Not in Scope

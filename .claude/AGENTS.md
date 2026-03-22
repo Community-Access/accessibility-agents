@@ -101,7 +101,7 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 2. Phase 0 Step 0: Auto-detects CI scanners (GitHub Scanner, Lighthouse) and dispatches `scanner-bridge` and `lighthouse-bridge` to fetch findings
 3. Parallel specialist scanning groups execute based on content:
    - **Group 1:** `aria-specialist` + `keyboard-navigator` + `forms-specialist`
-   - **Group 2:** `contrast-master` + `alt-text-headings` + `link-checker`
+   - **Group 2:** `contrast-master` + `alt-text-headings` + `link-checker` + `text-quality-reviewer`
    - **Group 3:** `modal-specialist` + `live-region-controller` + `tables-data-specialist`
 3. `cross-page-analyzer` detects cross-page patterns, computes severity scores, and tracks remediation
 4. `web-issue-fixer` applies auto-fixable corrections and presents human-judgment items

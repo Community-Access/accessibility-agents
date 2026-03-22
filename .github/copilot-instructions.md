@@ -89,7 +89,7 @@ Reusable knowledge modules in `.github/skills/` that agents reference automatica
 
 ### Agent Teams
 
-Team coordination is defined in `.github/agents/AGENTS.md`. Six defined teams:
+Team coordination is defined in `.github/agents/AGENTS.md`. Nine defined teams:
 
 - **Document Accessibility Audit** - led by document-accessibility-wizard with format-specific sub-agents
 - **Web Accessibility Audit** - led by accessibility-lead with all web specialist agents

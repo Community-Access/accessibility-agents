@@ -5,3 +5,4 @@ blog.html
 .github/audit/
 .claude/settings.local.json
 source-validation-results.json
+node_modules/

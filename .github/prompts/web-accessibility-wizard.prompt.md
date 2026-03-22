@@ -1,4 +1,5 @@
 ---
+name: web-accessibility-wizard
 description: Run a full web accessibility audit on a single page URL using axe-core runtime scanning and agent code review. Produces a scored report with remediation steps.
 mode: agent
 tools:

@@ -1,4 +1,5 @@
 ---
+name: audit-single-document
 description: Audit a single Office document or PDF for accessibility issues. Runs the document accessibility wizard in focused single-file mode with strict scanning.
 mode: agent
 tools:

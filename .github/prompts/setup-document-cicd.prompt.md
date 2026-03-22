@@ -1,4 +1,5 @@
 ---
+name: setup-document-cicd
 description: Set up CI/CD pipeline for automated document accessibility scanning on every push or PR that modifies documents.
 mode: agent
 tools:

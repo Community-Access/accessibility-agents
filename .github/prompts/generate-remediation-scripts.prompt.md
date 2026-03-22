@@ -1,4 +1,5 @@
 ---
+name: generate-remediation-scripts
 description: Generate PowerShell and Bash scripts to batch-fix automatable document accessibility issues. Creates safe scripts with dry-run mode and backups.
 mode: agent
 tools:

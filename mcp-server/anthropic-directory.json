@@ -1,0 +1,129 @@
+{
+  "name": "A11y Agent Team MCP Server",
+  "description": "Accessibility scanning and remediation tools for WCAG 2.2 compliance. Provides 20 tools for checking contrast, headings, links, forms, document metadata, Office/PDF scanning, Playwright-based browser testing, and audit caching.",
+  "vendor": "Community-Access",
+  "sourceUrl": "https://github.com/Community-Access/accessibility-agents",
+  "homepage": "https://github.com/Community-Access/accessibility-agents/tree/main/mcp-server#readme",
+  "license": "MIT",
+  "icon": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/docs/icon.png",
+  "categories": ["accessibility", "testing", "developer-tools"],
+  "transport": {
+    "stdio": {
+      "command": "npx",
+      "args": ["-y", "@a11y-agent-team/mcp-server", "--stdio"]
+    },
+    "http": {
+      "url": "http://localhost:3456/mcp"
+    }
+  },
+  "tools": [
+    {
+      "name": "check_contrast",
+      "description": "Calculate WCAG 2.x contrast ratio between two hex colors"
+    },
+    {
+      "name": "get_guidelines",
+      "description": "Get accessibility guidelines for a specific component type"
+    },
+    {
+      "name": "check_headings",
+      "description": "Analyze heading structure for hierarchy and skip issues"
+    },
+    {
+      "name": "check_links",
+      "description": "Detect ambiguous link text patterns"
+    },
+    {
+      "name": "check_forms",
+      "description": "Check form inputs for accessible labels and structure"
+    },
+    {
+      "name": "scan_office_document",
+      "description": "Scan .docx, .xlsx, or .pptx for accessibility issues"
+    },
+    {
+      "name": "scan_pdf_document",
+      "description": "Scan PDF files for accessibility issues"
+    },
+    {
+      "name": "get_document_metadata",
+      "description": "Extract metadata from Office documents"
+    },
+    {
+      "name": "batch_scan_documents",
+      "description": "Scan multiple documents in a directory"
+    },
+    {
+      "name": "fix_document_metadata",
+      "description": "Fix title, language, or author in Office document metadata"
+    },
+    {
+      "name": "fix_document_headings",
+      "description": "Analyze and report heading structure issues in .docx files"
+    },
+    {
+      "name": "check_audit_cache",
+      "description": "Check .a11y-cache.json for changed, new, and unchanged files"
+    },
+    {
+      "name": "update_audit_cache",
+      "description": "Write scan results to .a11y-cache.json"
+    },
+    {
+      "name": "run_axe_scan",
+      "description": "Run axe-core accessibility scan on a URL"
+    },
+    {
+      "name": "get_a11y_tree",
+      "description": "Get accessibility tree from a web page"
+    },
+    {
+      "name": "keyboard_scan",
+      "description": "Test keyboard navigation on a web page"
+    },
+    {
+      "name": "contrast_scan",
+      "description": "Scan page for contrast issues using Playwright"
+    },
+    {
+      "name": "viewport_scan",
+      "description": "Test responsive layout accessibility"
+    },
+    {
+      "name": "verify_pdf",
+      "description": "Run veraPDF validation on a PDF"
+    },
+    {
+      "name": "convert_pdf_forms",
+      "description": "Convert PDF form fields for accessibility"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "audit-page",
+      "description": "Structured WCAG audit prompt with tool sequence and severity scoring"
+    },
+    {
+      "name": "check-component",
+      "description": "Component-specific accessibility review using built-in guidelines"
+    },
+    {
+      "name": "explain-wcag",
+      "description": "Explain a WCAG success criterion with examples and testing guidance"
+    }
+  ],
+  "resources": [
+    {
+      "uri": "a11y://guidelines/{component}",
+      "description": "Component accessibility guidelines (button, form, modal, table, navigation, image, heading, link, list)"
+    },
+    {
+      "uri": "a11y://tools",
+      "description": "Auto-generated list of all registered accessibility tools"
+    },
+    {
+      "uri": "a11y://config/{profile}",
+      "description": "Scan configuration templates (strict, moderate, minimal)"
+    }
+  ]
+}

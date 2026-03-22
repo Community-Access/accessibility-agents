@@ -1,4 +1,5 @@
 ---
+name: compare-web-audits
 description: Compare a current web accessibility audit against a previous one to track remediation progress. Shows fixed, new, persistent, and regressed issues.
 mode: agent
 tools:

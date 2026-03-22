@@ -1,4 +1,5 @@
 ---
+name: audit-document-folder
 description: Recursively scan an entire folder for document accessibility issues. Finds all .docx, .xlsx, .pptx, and .pdf files and audits them with cross-document pattern analysis.
 mode: agent
 tools:

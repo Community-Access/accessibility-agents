@@ -1,4 +1,5 @@
 ---
+name: generate-a11y-tests
 description: Generate a Playwright accessibility test suite from an existing audit report. Creates regression tests for every finding so fixes stay fixed.
 mode: agent
 tools:

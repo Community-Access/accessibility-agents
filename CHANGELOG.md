@@ -7,13 +7,100 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2025-07-14
+
+### Added
+
+#### New Agents
+
+- **CI accessibility agent** (`ci-accessibility.agent.md`) — Conversational agent for CI/CD accessibility pipeline setup with 5-phase workflow: detection, configuration, baseline management, PR annotation, and monitoring. Supports GitHub Actions, Azure DevOps, GitLab CI, CircleCI, and Jenkins. Includes SARIF integration and threshold configuration.
+- **Screen reader lab agent** (`screen-reader-lab.agent.md`) — Interactive screen reader simulation for education and debugging. 4 simulation modes: reading order traversal, tab/focus navigation, heading navigation, and form navigation. Includes accessible name computation algorithm walkthrough.
+- **WCAG 3.0 preview agent** (`wcag3-preview.agent.md`) — Educational agent for WCAG 3.0 Working Draft changes. Covers APCA contrast algorithm, new conformance model (Bronze/Silver/Gold vs A/AA/AAA), outcome-based testing, and delta analysis mode for existing audit reports. Includes critical disclaimer about draft status.
+- **WCAG AAA agent** (`wcag-aaa.agent.md`) — Dedicated agent for AAA-level conformance checking beyond the standard AA target. Complete AAA criteria reference tables organized by WCAG principle (Perceivable: 8, Operable: 12, Understandable: 8 criteria). Prerequisite AA compliance check before AAA analysis.
+- **i18n/RTL accessibility agent** (`i18n-accessibility.agent.md`) — Internationalization accessibility auditing. 5 audit areas: document language, text direction, bidirectional text, RTL layout patterns, and form direction. BCP 47 tag reference table. Covers WCAG 3.1.1/3.1.2.
+- **PDF remediator agent** (`pdf-remediator.agent.md`) — Extends PDF audit with programmatic fixes. Auto-fixable table (8 issues via pdf-lib/qpdf/ghostscript) and manual-fix table (6 issues requiring Acrobat Pro). Generates shell scripts for batch remediation and step-by-step Acrobat instructions.
+
+#### New MCP Tools
+
+- **`fix_document_metadata`** — Fix title, language, or author in Office document metadata by generating PowerShell/Bash scripts for OOXML manipulation
+- **`fix_document_headings`** — Analyze and report heading structure issues in .docx files by parsing document.xml heading styles
+- **`check_audit_cache`** — Check `.a11y-cache.json` for changed, new, and unchanged files using size+mtime hash comparison
+- **`update_audit_cache`** — Write scan results (hash, findings count, timestamp) to `.a11y-cache.json` for incremental scanning
+
+#### New Skills
+
+- **CI integration skill** (`ci-integration/SKILL.md`) — axe-core CLI reference, WCAG 2.2 tag set, baseline file schema, comparison logic, CI/CD templates for GitHub Actions/Azure DevOps/GitLab CI, SARIF integration, gating strategies, severity mapping
+
+#### New Prompts
+
+- **Component library audit prompt** (`component-library-audit.prompt.md`) — Per-component accessibility scorecard across an entire component directory. 5-phase workflow: discovery, per-component audit, scorecard generation, cross-component analysis, and report.
+- **Training scenario prompt** (`training-scenario.prompt.md`) — Interactive accessibility training with 4 modes: bad examples, quizzes, WCAG criterion explanations, and before/after comparisons. Covers 10 common UI patterns.
+- **Audit native app prompt** (`audit-native-app.prompt.md`) — Accessibility audit for React Native, Expo, iOS, and Android applications with platform-specific checks.
+- **Web CI/CD setup prompt** (`setup-web-cicd.prompt.md`) — One-click workflow for configuring automated web accessibility scanning pipelines with axe-core, SARIF output, baseline management, and PR annotations
+- **PR accessibility check prompt** (`a11y-pr-check.prompt.md`) — Analyzes pull request diffs for accessibility regressions against WCAG 2.2 AA requirements
+
+#### Infrastructure
+
+- **Multi-language support guide** (`docs/guides/multi-language-support.md`) — Architecture for translating agent instructions. Locale-suffix convention, 3-tier translation priority, BCP 47 codes, translation workflow, and contributing guide.
+- **Enterprise packaging** — Configurable enterprise configuration schema (`templates/enterprise-config.schema.json`) and example configuration (`templates/enterprise-config-example.json`). Supports custom WCAG targets, design token paths, issue tracker routing (GitHub/Jira/Azure DevOps/Linear), scanning profiles, report formats, and CI gating thresholds.
+- **Anthropic directory manifest** (`mcp-server/anthropic-directory.json`) — Directory manifest for Claude Desktop auto-distribution. Lists all 20 tools, 3 prompts, 3 resources with stdio and HTTP transport configurations.
+- **Nexus / GitHub Hub differentiation** — Nexus is now the auto-routing orchestrator (infers intent silently); GitHub Hub is the guided/menu-driven variant (presents options and lets users choose)
+- **MCP Server Test Suite** — 52 tests covering all tools, prompts, and resources
+  - Uses Node built-in test runner (`node --test`)
+  - Tests: path validation (6), contrast (5), headings (5), links (5), forms (5), guidelines (9), createServer (2), Office scanning (2), PDF scanning (2), batch scanning (2), metadata (1), prompts (4), resources (4)
+  - `npm test` script in package.json, `prepublishOnly` runs tests before publish
+- **MCP Prompts** — 3 pre-built prompt templates for accessibility workflows
+  - `audit-page` — Structured WCAG audit instruction with tool sequence and scoring
+  - `check-component` — Component-specific review using built-in guidelines
+  - `explain-wcag` — WCAG criterion explanation with examples and testing guidance
+- **MCP Resources** — 3 read-only data endpoints
+  - `a11y://guidelines/{component}` — Component accessibility guidelines (9 components)
+  - `a11y://tools` — Auto-generated list of all registered tools
+  - `a11y://config/{profile}` — Scan configuration templates (strict/moderate/minimal)
+- **npm Publishability** — MCP server package is now publish-ready
+  - Removed `"private": true`, added `bin`, `files`, `keywords`, `repository`, `license`
+  - Shebang lines on entry points for `npx @a11y-agent-team/mcp-server` usage
+  - `prepublishOnly` runs test suite before publish
+  - `npm pack --dry-run` produces 23.8 KB package with 9 files
+- **VS Code Extension publish readiness**
+  - Fixed `engines.vscode` to match `@types/vscode` version (^1.110.0)
+  - VSIX builds cleanly via `npx @vscode/vsce package` (24.33 KB)
+  - TypeScript compiles with zero errors
+- **Accessibility PR Gate workflow** (`.github/workflows/a11y-pr-gate.yml`)
+  - Required status check that blocks PRs with accessibility violations
+  - Checks: missing alt text, positive tabindex, div role=button, outline removal, missing form labels
+  - Runs axe-core on changed HTML files
+  - Posts summary comment on PR with pass/fail verdict and issue counts
+  - Only triggers on UI file changes (HTML, JSX, TSX, Vue, Svelte, Astro, CSS)
+
+- **Server-based MCP Server** - New `mcp-server/` directory with HTTP-based MCP server
+  - Replaces the old stdio-only `desktop-extension/` with a proper server architecture
+  - Supports Streamable HTTP transport (with SSE fallback) for remote clients
+  - Retains stdio mode (`stdio.js`) for backward-compatible Claude Desktop `mcp.json` use
+  - Stateful (sessions + SSE) and stateless (per-request, CI/CD-friendly) modes
+  - 16 accessibility tools: contrast, guidelines, headings, links, forms, Office scanning, PDF scanning, metadata extraction, batch scanning, axe-core, a11y tree, keyboard navigation, contrast scanning, viewport reflow, veraPDF, PDF form conversion
+  - Binds to 127.0.0.1 by default for security; configurable via environment variables
+  - Health check endpoint at `/health`
+- **Gemini python-development skill** - Added missing knowledge skill for Python/wxPython development reference data
+
+#### Cross-Platform Sync
+
+- **6 new agents synced to Claude Code** — ci-accessibility, screen-reader-lab, wcag3-preview, wcag-aaa, i18n-accessibility, pdf-remediator added to `.claude/agents/`
+- **6 new agents synced to Claude Code Plugin** — Same 6 agents copied to `claude-code-plugin/agents/`
+- **7 new Gemini skills** — ci-accessibility, screen-reader-lab, wcag3-preview, wcag-aaa, i18n-accessibility, pdf-remediator (agent skills) + ci-integration (knowledge skill) added to `.gemini/extensions/a11y-agents/skills/`
+
+#### Documentation
+
+- **Comprehensive User Guide** (`docs/USER_GUIDE.md`) — Instructor-style ecosystem guide covering all 65 agents, 19 skills, 111 prompts, 6 instructions, and 20 MCP tools. Collapsible per-platform sections for GitHub Copilot, Claude Code, Gemini, Codex, and Claude Desktop. Includes team overviews, agent reference, skill catalog, prompt directory, common workflows and recipes, platform comparison, troubleshooting, and glossary.
+
+### Fixed
+
+- **`fix_document_headings` MCP tool** — Was reading raw .docx bytes as UTF-8 string, which fails because .docx files are ZIP archives. Fixed to use `parseZipCd()` + `getZipXml()` to properly extract `word/document.xml` from the OOXML ZIP archive before regex matching.
+- **MCP server test suite** — Added 4 missing tools (`fix_document_metadata`, `fix_document_headings`, `check_audit_cache`, `update_audit_cache`) to the `registers all expected tools` test. All 52 tests pass.
+
 ### Removed
 
-- **MCP Server and Desktop Extension** - Removed `desktop-extension/` folder and `.vscode/mcp.json`
-  - The MCP server was redundant for Copilot CLI and VS Code - agents have full capabilities via native tools
-  - Removes startup failures when MCP server failed to connect
-  - Simplifies project architecture and maintenance burden
-  - Users who need document scanning or browser automation can use Claude Code or Copilot CLI agents directly
+- **Desktop Extension** - Previous `desktop-extension/` folder and `.vscode/mcp.json` replaced by `mcp-server/`
 
 ### Added
 
@@ -403,6 +490,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Community-Access/accessibility-agents/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/Community-Access/accessibility-agents/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/Community-Access/accessibility-agents/compare/v3.2.0...v4.0.0
+[3.2.0]: https://github.com/Community-Access/accessibility-agents/compare/v3.0.0...v3.2.0
 [3.0.0]: https://github.com/Community-Access/accessibility-agents/compare/v2.5...v3.0.0
 [2.6.0]: https://github.com/Community-Access/accessibility-agents/releases/tag/v2.6.0

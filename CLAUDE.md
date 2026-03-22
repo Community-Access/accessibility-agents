@@ -99,7 +99,7 @@ The following knowledge domains are available across agent files. On Copilot the
 
 ## Agent Teams
 
-Team coordination is defined in `.claude/agents/AGENTS.md`. Six defined teams:
+Team coordination is defined in `.claude/agents/AGENTS.md`. Nine defined teams:
 
 - **Document Accessibility Audit** - led by document-accessibility-wizard with format-specific sub-agents
 - **Web Accessibility Audit** - led by accessibility-lead with all web specialist agents

@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "A11y Agent Team Enterprise Configuration",
+  "description": "Customizable enterprise configuration for accessibility agent bundles",
+  "type": "object",
+  "properties": {
+    "organization": {
+      "type": "object",
+      "description": "Organization identity and defaults",
+      "properties": {
+        "name": { "type": "string", "description": "Organization name for report headers" },
+        "standard": {
+          "type": "string",
+          "enum": ["WCAG 2.1 AA", "WCAG 2.1 AAA", "WCAG 2.2 AA", "WCAG 2.2 AAA", "Section 508", "EN 301 549"],
+          "default": "WCAG 2.2 AA",
+          "description": "Default conformance target for all audits"
+        },
+        "locale": {
+          "type": "string",
+          "default": "en",
+          "description": "BCP 47 language code for agent output"
+        }
+      },
+      "required": ["name"]
+    },
+    "agents": {
+      "type": "object",
+      "description": "Agent inclusion and configuration",
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Agent names to include. Use '*' for all agents.",
+          "default": ["*"]
+        },
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Agent names to exclude from the bundle",
+          "default": []
+        }
+      }
+    },
+    "designSystem": {
+      "type": "object",
+      "description": "Design system integration for token-aware auditing",
+      "properties": {
+        "framework": {
+          "type": "string",
+          "enum": ["tailwind", "mui", "chakra", "shadcn", "custom"],
+          "description": "CSS framework / design system in use"
+        },
+        "tokenPath": {
+          "type": "string",
+          "description": "Path to design token file (JSON, CSS custom properties, or Tailwind config)"
+        },
+        "colorPairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "foreground": { "type": "string" },
+              "background": { "type": "string" },
+              "context": { "type": "string" }
+            }
+          },
+          "description": "Known foreground/background color pairs to validate"
+        }
+      }
+    },
+    "issueTracker": {
+      "type": "object",
+      "description": "Issue tracker integration for filing accessibility issues",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["github", "jira", "azure-devops", "linear", "none"],
+          "default": "github"
+        },
+        "projectKey": {
+          "type": "string",
+          "description": "Project key for Jira or Azure DevOps"
+        },
+        "labels": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["accessibility", "a11y"],
+          "description": "Labels to apply to filed issues"
+        },
+        "assigneeMapping": {
+          "type": "object",
+          "description": "Map severity levels to default assignees",
+          "properties": {
+            "critical": { "type": "string" },
+            "serious": { "type": "string" },
+            "moderate": { "type": "string" },
+            "minor": { "type": "string" }
+          }
+        }
+      }
+    },
+    "scanning": {
+      "type": "object",
+      "description": "Default scanning configuration",
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": ["strict", "moderate", "minimal"],
+          "default": "moderate"
+        },
+        "excludePaths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["node_modules", "dist", ".git", "vendor"],
+          "description": "Paths to exclude from scanning"
+        },
+        "fileTypes": {
+          "type": "object",
+          "properties": {
+            "web": { "type": "boolean", "default": true },
+            "office": { "type": "boolean", "default": true },
+            "pdf": { "type": "boolean", "default": true },
+            "markdown": { "type": "boolean", "default": true }
+          }
+        },
+        "caching": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable .a11y-cache.json to skip unchanged files"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "description": "Report output configuration",
+      "properties": {
+        "formats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["markdown", "html", "csv", "sarif", "vpat"]
+          },
+          "default": ["markdown"],
+          "description": "Output formats for audit reports"
+        },
+        "outputDir": {
+          "type": "string",
+          "default": ".",
+          "description": "Directory for generated reports"
+        },
+        "includePassingChecks": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include passing checks in reports (verbose mode)"
+        }
+      }
+    },
+    "ci": {
+      "type": "object",
+      "description": "CI/CD integration defaults",
+      "properties": {
+        "failOnSeverity": {
+          "type": "string",
+          "enum": ["critical", "serious", "moderate", "minor"],
+          "default": "serious",
+          "description": "Minimum severity that causes CI failure"
+        },
+        "baselinePath": {
+          "type": "string",
+          "default": ".a11y-baseline.json",
+          "description": "Path to baseline file for known issues"
+        },
+        "maxNewIssues": {
+          "type": "integer",
+          "default": 0,
+          "description": "Maximum new issues allowed before CI fails"
+        }
+      }
+    }
+  },
+  "required": ["organization"]
+}

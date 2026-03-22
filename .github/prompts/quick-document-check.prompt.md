@@ -1,4 +1,5 @@
 ---
+name: quick-document-check
 description: Quick-check a single document for the most critical accessibility issues. Errors only, no warnings or tips. Fast triage mode.
 mode: agent
 tools:

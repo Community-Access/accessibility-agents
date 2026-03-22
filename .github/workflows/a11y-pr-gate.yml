@@ -1,0 +1,223 @@
+name: Accessibility PR Gate
+
+# Required status check — blocks merge when accessibility violations are found.
+# Configure as a required check in Settings > Branches > Branch protection rules.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.html"
+      - "**/*.htm"
+      - "**/*.jsx"
+      - "**/*.tsx"
+      - "**/*.vue"
+      - "**/*.svelte"
+      - "**/*.astro"
+      - "**/*.css"
+      - "**/*.scss"
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  a11y-gate:
+    name: Accessibility Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Get changed UI files
+        id: changed
+        run: |
+          FILES=$(git diff --name-only --diff-filter=ACMR origin/${{ github.base_ref }}...HEAD -- \
+            '*.html' '*.htm' '*.jsx' '*.tsx' '*.vue' '*.svelte' '*.astro' '*.css' '*.scss' \
+            | head -50)
+          if [ -z "$FILES" ]; then
+            echo "count=0" >> "$GITHUB_OUTPUT"
+            echo "No UI files changed."
+          else
+            COUNT=$(echo "$FILES" | wc -l)
+            echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+            echo "$FILES" > /tmp/changed-ui-files.txt
+            echo "Changed UI files ($COUNT):"
+            echo "$FILES"
+          fi
+
+      - name: Run inline accessibility lint
+        if: steps.changed.outputs.count != '0'
+        id: lint
+        run: |
+          ERRORS=0
+          WARNINGS=0
+          REPORT=""
+
+          while IFS= read -r file; do
+            [ -f "$file" ] || continue
+
+            # Check for images without alt text
+            if grep -qPn '<img(?![^>]*\balt\b)[^>]*>' "$file" 2>/dev/null; then
+              MATCHES=$(grep -Pn '<img(?![^>]*\balt\b)[^>]*>' "$file" 2>/dev/null || true)
+              while IFS= read -r match; do
+                LINE=$(echo "$match" | cut -d: -f1)
+                REPORT="${REPORT}::error file=${file},line=${LINE}::Missing alt attribute on <img> (WCAG 1.1.1)%0A"
+                ERRORS=$((ERRORS + 1))
+              done <<< "$MATCHES"
+            fi
+
+            # Check for positive tabindex
+            if grep -qPn 'tabindex="[1-9]' "$file" 2>/dev/null; then
+              MATCHES=$(grep -Pn 'tabindex="[1-9]' "$file" 2>/dev/null || true)
+              while IFS= read -r match; do
+                LINE=$(echo "$match" | cut -d: -f1)
+                REPORT="${REPORT}::error file=${file},line=${LINE}::Positive tabindex disrupts keyboard navigation (WCAG 2.4.3)%0A"
+                ERRORS=$((ERRORS + 1))
+              done <<< "$MATCHES"
+            fi
+
+            # Check for div role=button (prefer <button>)
+            if grep -qPin 'role\s*=\s*"button"' "$file" 2>/dev/null; then
+              if grep -qPn '<div[^>]*role\s*=\s*"button"' "$file" 2>/dev/null; then
+                MATCHES=$(grep -Pn '<div[^>]*role\s*=\s*"button"' "$file" 2>/dev/null || true)
+                while IFS= read -r match; do
+                  LINE=$(echo "$match" | cut -d: -f1)
+                  REPORT="${REPORT}::warning file=${file},line=${LINE}::Use <button> instead of <div role=\"button\"> (semantic HTML)%0A"
+                  WARNINGS=$((WARNINGS + 1))
+                done <<< "$MATCHES"
+              fi
+            fi
+
+            # Check for outline:none without :focus-visible replacement
+            if grep -qPn 'outline:\s*(none|0)' "$file" 2>/dev/null; then
+              MATCHES=$(grep -Pn 'outline:\s*(none|0)' "$file" 2>/dev/null || true)
+              while IFS= read -r match; do
+                LINE=$(echo "$match" | cut -d: -f1)
+                REPORT="${REPORT}::error file=${file},line=${LINE}::Removing focus outline breaks keyboard navigation (WCAG 2.4.7)%0A"
+                ERRORS=$((ERRORS + 1))
+              done <<< "$MATCHES"
+            fi
+
+            # Check for missing form labels
+            if grep -qPn '<input[^>]*type="(text|email|password|search|tel|url|number)"' "$file" 2>/dev/null; then
+              MATCHES=$(grep -Pn '<input[^>]*type="(text|email|password|search|tel|url|number)"[^>]*>' "$file" 2>/dev/null || true)
+              while IFS= read -r match; do
+                LINE=$(echo "$match" | cut -d: -f1)
+                CONTENT=$(echo "$match" | cut -d: -f2-)
+                if ! echo "$CONTENT" | grep -qP '(aria-label|aria-labelledby|id=)'; then
+                  REPORT="${REPORT}::warning file=${file},line=${LINE}::Input may be missing an accessible label (WCAG 1.3.1)%0A"
+                  WARNINGS=$((WARNINGS + 1))
+                fi
+              done <<< "$MATCHES"
+            fi
+
+          done < /tmp/changed-ui-files.txt
+
+          echo "errors=$ERRORS" >> "$GITHUB_OUTPUT"
+          echo "warnings=$WARNINGS" >> "$GITHUB_OUTPUT"
+
+          if [ -n "$REPORT" ]; then
+            echo -e "$REPORT"
+          fi
+
+          echo ""
+          echo "=== Accessibility Gate Results ==="
+          echo "Errors:   $ERRORS"
+          echo "Warnings: $WARNINGS"
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "❌ PR blocked: $ERRORS accessibility error(s) found."
+            echo "Fix the errors above before merging."
+            exit 1
+          else
+            echo ""
+            echo "✅ Accessibility gate passed."
+          fi
+
+      - name: Run axe-core on HTML files
+        if: steps.changed.outputs.count != '0'
+        run: |
+          HTML_FILES=$(grep -E '\.(html|htm)$' /tmp/changed-ui-files.txt 2>/dev/null || true)
+          if [ -z "$HTML_FILES" ]; then
+            echo "No HTML files in changeset. Skipping axe-core."
+            exit 0
+          fi
+
+          npx @axe-core/cli --exit \
+            --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
+            --disable color-contrast \
+            $HTML_FILES
+        continue-on-error: true
+
+      - name: Post summary comment
+        if: always() && steps.changed.outputs.count != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const errors = parseInt('${{ steps.lint.outputs.errors }}' || '0');
+            const warnings = parseInt('${{ steps.lint.outputs.warnings }}' || '0');
+            const passed = errors === 0;
+
+            const body = [
+              `## ${passed ? '✅' : '❌'} Accessibility Gate ${passed ? 'Passed' : 'Failed'}`,
+              '',
+              `| Metric | Count |`,
+              `|--------|-------|`,
+              `| Errors | ${errors} |`,
+              `| Warnings | ${warnings} |`,
+              `| Files checked | ${{ steps.changed.outputs.count }} |`,
+              '',
+              passed
+                ? 'No blocking accessibility issues found in changed UI files.'
+                : `**${errors} error(s) must be fixed before this PR can be merged.**`,
+              '',
+              '<details><summary>Checks performed</summary>',
+              '',
+              '- Missing `alt` on `<img>` (WCAG 1.1.1)',
+              '- Positive `tabindex` values (WCAG 2.4.3)',
+              '- `<div role="button">` instead of `<button>` (semantic HTML)',
+              '- `outline: none` removing focus indicators (WCAG 2.4.7)',
+              '- Inputs missing accessible labels (WCAG 1.3.1)',
+              '- axe-core automated scan on HTML files',
+              '',
+              '</details>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Accessibility Gate')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Skip gate (no UI changes)
+        if: steps.changed.outputs.count == '0'
+        run: echo "✅ No UI files changed. Accessibility gate not required."

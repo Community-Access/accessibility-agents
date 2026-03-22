@@ -1,4 +1,5 @@
 ---
+name: create-accessible-template
 description: Create accessible document templates (.docx, .xlsx, .pptx) with proper heading structure, alt text placeholders, language settings, and metadata. Prevents accessibility issues at the source.
 mode: agent
 tools:

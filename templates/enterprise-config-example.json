@@ -1,0 +1,50 @@
+{
+  "organization": {
+    "name": "Example Corp",
+    "standard": "WCAG 2.2 AA",
+    "locale": "en"
+  },
+  "agents": {
+    "include": ["*"],
+    "exclude": []
+  },
+  "designSystem": {
+    "framework": "tailwind",
+    "tokenPath": "tailwind.config.js",
+    "colorPairs": [
+      { "foreground": "--color-text", "background": "--color-bg", "context": "Body text" },
+      { "foreground": "--color-primary", "background": "--color-bg", "context": "Links and CTA" }
+    ]
+  },
+  "issueTracker": {
+    "type": "github",
+    "labels": ["accessibility", "a11y"],
+    "assigneeMapping": {
+      "critical": "",
+      "serious": "",
+      "moderate": "",
+      "minor": ""
+    }
+  },
+  "scanning": {
+    "profile": "moderate",
+    "excludePaths": ["node_modules", "dist", ".git", "vendor"],
+    "fileTypes": {
+      "web": true,
+      "office": true,
+      "pdf": true,
+      "markdown": true
+    },
+    "caching": true
+  },
+  "reporting": {
+    "formats": ["markdown"],
+    "outputDir": ".",
+    "includePassingChecks": false
+  },
+  "ci": {
+    "failOnSeverity": "serious",
+    "baselinePath": ".a11y-baseline.json",
+    "maxNewIssues": 0
+  }
+}

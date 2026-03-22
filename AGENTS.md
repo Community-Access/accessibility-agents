@@ -17,9 +17,10 @@ This repository contains 59 accessibility-focused AI agents across multiple plat
 | `.github/prompts/` | One-click workflow prompts |
 | `.github/instructions/` | Always-on instruction files |
 | `.claude/agents/` | Claude Code agent definitions |
-| `.codex/` | Codex CLI configuration |
+| `.codex/` | Codex CLI configuration (11 roles) |
 | `.gemini/` | Gemini CLI extension |
 | `docs/` | Documentation site |
+| `mcp-server/` | HTTP-based MCP server (Streamable HTTP + stdio) |
 | `vscode-extension/` | VS Code extension (planned) |
 | `scripts/` | Build and validation scripts |
 | `templates/` | Scan configuration templates |
@@ -37,6 +38,7 @@ Led by `accessibility-lead`, coordinates specialists for comprehensive web audit
 - `alt-text-headings` - Images, SVGs, heading hierarchy
 - `tables-data-specialist` - Data table accessibility
 - `link-checker` - Ambiguous link text detection
+- `text-quality-reviewer` - Non-visual text quality review
 
 ### Document Accessibility Team
 Led by `document-accessibility-wizard`, handles Office and PDF audits:

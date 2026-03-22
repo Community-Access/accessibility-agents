@@ -1,4 +1,5 @@
 ---
+name: compare-audits
 description: Compare two document accessibility audit reports and show what improved, what regressed, and what remains. Tracks remediation progress over time.
 mode: agent
 tools:

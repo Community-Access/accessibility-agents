@@ -1,4 +1,5 @@
 ---
+name: audit-web-multi-page
 description: Audit multiple web pages and compare their accessibility scores. Generates a scorecard showing which pages need the most attention.
 mode: agent
 tools:

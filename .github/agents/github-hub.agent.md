@@ -1,6 +1,6 @@
 ---
 name: GitHub Hub
-description: "Your intelligent GitHub command center -- start here. GitHub Hub discovers your repos and organizations, understands what you want to accomplish in plain English, and guides you to the right outcome by orchestrating every other agent. No commands to memorize. Just talk."
+description: "Guided GitHub command center -- presents a menu of available workflows and walks you through each step. Unlike Nexus (which auto-routes silently), GitHub Hub shows you the options and lets you choose. Best for new users or when you want to browse available capabilities."
 argument-hint: "e.g. 'what should I work on?', 'I need to manage access for my team', 'show me my repos', 'help me review that PR from this morning', 'onboard a new developer', or just say hello"
 tools:
   - github/*

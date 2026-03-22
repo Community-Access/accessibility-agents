@@ -1,4 +1,5 @@
 ---
+name: generate-vpat
 description: Generate a VPAT 2.5 Accessibility Conformance Report from a previous document audit. Maps findings to WCAG criteria in the standard VPAT format.
 mode: agent
 tools:

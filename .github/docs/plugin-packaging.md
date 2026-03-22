@@ -35,30 +35,41 @@ bash update.sh
 - Works for Claude Code, Copilot, Claude Desktop, and Codex CLI simultaneously
 - Git-based versioning and rollback
 
-### 2. Claude Desktop Extension (.mcpb)
+### 2. MCP Server (HTTP or stdio)
 
-Pre-built extension for Claude Desktop with MCP tools and prompts.
+Standalone MCP server providing accessibility scanning tools via Streamable HTTP or stdio transport.
 
-**Build from source:**
+**Install and run:**
 
 ```bash
-cd desktop-extension
+cd mcp-server
 npm install
-npm run build
-# Output: a11y-agent-team.mcpb
+npm start          # HTTP on port 3100
+npm run start:stdio # stdio for Claude Desktop
 ```
 
-**Install:**
-Double-click the `.mcpb` file or drag it into Claude Desktop.
+**Claude Desktop config (`claude_desktop_config.json`):**
 
-**What's included:**
+```json
+{
+  "mcpServers": {
+    "a11y-agents": {
+      "command": "node",
+      "args": ["<path-to>/mcp-server/stdio.js"]
+    }
+  }
+}
+```
 
-- MCP tools: `check_contrast`, `get_accessibility_guidelines`, `check_heading_structure`, `check_link_text`, `check_form_labels`, `generate_vpat`, `run_axe_scan`, `scan_office_document`, `scan_pdf_document`, `extract_document_metadata`, `batch_scan_documents`
-- Prompt templates: `accessibility-audit`, `aria-review`, `modal-review`, `contrast-review`, `keyboard-review`, `live-region-review`
+**What's included (16 tools):**
+
+- Core: `check_contrast`, `get_accessibility_guidelines`, `check_heading_structure`, `check_link_text`, `check_form_labels`, `scan_office_document`, `scan_pdf_document`, `extract_document_metadata`, `batch_scan_documents`
+- Playwright (optional): `run_axe_scan`, `run_playwright_a11y_tree`, `run_playwright_keyboard_scan`, `run_playwright_contrast_scan`, `run_playwright_viewport_scan`
+- PDF: `run_verapdf_scan` (requires veraPDF CLI), `convert_pdf_form_to_html` (requires pdf-lib)
 
 **What's NOT included:**
 
-- Agent files (Claude Desktop uses tools and prompts, not agent files)
+- Agent files (Claude Desktop uses tools, not agent files)
 - Agent Skills
 
 ### 3. Per-Project Install (Copilot)
@@ -183,7 +194,7 @@ Approximate sizes for planning distribution:
 | Agent Skills | 3 `SKILL.md` files | ~30 KB |
 | Prompts | 9 `.prompt.md` files | ~15 KB |
 | Templates | 7 config files | ~10 KB |
-| MCP server | `server/index.js` | ~100 KB |
+| MCP server | `mcp-server/` (7 files) | ~120 KB |
 | VS Code config | 4 files | ~5 KB |
 | Documentation | Various | ~120 KB |
 | **Total** | **~70 files** | **~1 MB** |

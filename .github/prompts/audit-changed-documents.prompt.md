@@ -1,4 +1,5 @@
 ---
+name: audit-changed-documents
 description: Scan only documents that changed since the last commit, tag, or audit. Perfect for CI workflows and incremental reviews.
 mode: agent
 tools:

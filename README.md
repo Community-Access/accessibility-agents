@@ -36,6 +36,7 @@ All agents run on:
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
 - **Codex CLI** - Stable `.codex/AGENTS.md` baseline plus optional experimental TOML-based roles for focused accessibility passes
+- **MCP Server** - HTTP-based server providing 16 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
 
 ## System Requirements
 

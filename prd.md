@@ -1184,7 +1184,6 @@ All 17 skills listed in the Reusable Skills section above, stored as `.github/sk
 | `docs/skills/` | Skill documentation |
 | `docs/prompts/` | Prompt documentation |
 | `docs/advanced/` | Cross-platform handoff, advanced scanning, plugin packaging, platform references |
-| `docs/AGENT-ECOSYSTEM-PLAN.md` | Agent ecosystem expansion plan |
 | `docs/RESEARCH-SOURCES.md` | Research source documentation |
 | `docs/getting-started.md` | Installation guide for all platforms |
 | `docs/configuration.md` | Character budget, scan configuration, troubleshooting |

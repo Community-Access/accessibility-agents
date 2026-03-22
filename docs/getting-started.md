@@ -725,15 +725,31 @@ bash update.sh
 ### Building from Source
 
 ```bash
-npm install -g @anthropic-ai/mcpb
 git clone https://github.com/Community-Access/accessibility-agents.git
-cd a11y-agent-team/desktop-extension
+cd accessibility-agents/mcp-server
 npm install
-mcpb validate .
-mcpb pack . ../a11y-agent-team.mcpb
+
+# HTTP mode (recommended)
+npm start
+# → http://127.0.0.1:3100/mcp
+
+# stdio mode (for Claude Desktop mcp.json)
+node stdio.js
 ```
 
-The output file can be double-clicked to install in Claude Desktop.
+Configure Claude Desktop to use the HTTP server:
+
+```json
+{
+  "mcpServers": {
+    "a11y-agent-team": {
+      "url": "http://127.0.0.1:3100/mcp"
+    }
+  }
+}
+```
+
+See [mcp-server/README.md](../mcp-server/README.md) for full setup and deployment options.
 
 ---
 

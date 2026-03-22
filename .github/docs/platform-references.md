@@ -101,7 +101,7 @@ This table maps each project feature to the documentation sources that informed 
 | **Lifecycle hooks (SessionStart, SessionEnd)** | Claude Code Hooks | Hook events, handler types (`command`, `prompt`, `agent`). Quality gates via exit codes. |
 | **Agent Teams (`AGENTS.md`)** | Claude Code Agent teams, GitHub Custom instructions | Enterprise coordination patterns. GitHub supports `AGENTS.md` for agent instructions. |
 | **Persistent memory** | Claude Code Memory | `CLAUDE.md` project memory. Auto memory with `MEMORY.md`. Memory scopes. |
-| **MCP server (document scanner tools)** | MCP specification, MCP TypeScript SDK | 11 tools + 6 prompts. `@modelcontextprotocol/sdk` with `StdioServerTransport`. |
+| **MCP server (accessibility scanning tools)** | MCP specification, MCP TypeScript SDK | 16 tools. `@modelcontextprotocol/sdk` with Streamable HTTP transport + stdio fallback. `mcp-server/` directory. |
 | **Batch scanning & severity scoring** | WCAG 2.2, PDF/UA, Matterhorn Protocol | 0-100 severity score with A-F grades. Cross-document pattern detection. |
 | **VPAT/ACR compliance export** | VPAT 2.5 / ACR template | Accessibility Conformance Report generation from audit findings. |
 | **Cross-platform handoff** | Claude Code Sub-agents, VS Code Custom agents | Shared artifacts, report format compatibility between platforms. |
