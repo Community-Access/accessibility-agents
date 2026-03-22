@@ -1,4 +1,4 @@
-﻿agents/a11y-tool-builder.md
+agents/a11y-tool-builder.md
 agents/accessibility-lead.md
 agents/alt-text-headings.md
 agents/analytics.md
@@ -212,9 +212,9 @@ copilot-prompts/pdf-scan-config.prompt.md
 copilot-prompts/powerpoint-accessibility.prompt.md
 copilot-prompts/pr-author-checklist.prompt.md
 copilot-prompts/pr-comment.prompt.md
-copilot-prompts/project-status.prompt.md
 copilot-prompts/pr-report.prompt.md
 copilot-prompts/pr-review.prompt.md
+copilot-prompts/project-status.prompt.md
 copilot-prompts/python-specialist.prompt.md
 copilot-prompts/quick-document-check.prompt.md
 copilot-prompts/quick-markdown-check.prompt.md
@@ -281,8 +281,8 @@ gemini/skills/contributions-hub/SKILL.md
 gemini/skills/cross-document-analyzer/SKILL.md
 gemini/skills/cross-page-analyzer/SKILL.md
 gemini/skills/daily-briefing/SKILL.md
-gemini/skills/design-system/SKILL.md
 gemini/skills/design-system-auditor/SKILL.md
+gemini/skills/design-system/SKILL.md
 gemini/skills/document-accessibility-wizard/SKILL.md
 gemini/skills/document-csv-reporter/SKILL.md
 gemini/skills/document-inventory/SKILL.md
