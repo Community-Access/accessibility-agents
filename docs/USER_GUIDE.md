@@ -1440,6 +1440,23 @@ NVDA screen reader addon development — addon structure, manifest files, NVDA A
 
 ---
 
+### office-remediator
+
+**Team:** Document Accessibility | **Type:** Specialist
+
+Programmatic Office document remediation via python-docx, openpyxl, and python-pptx. Provides auto-fixable and manual-fix tables for Word, Excel, and PowerPoint, generates Python/PowerShell remediation scripts, and offers a 4-phase remediation process (scan, classify, auto-fix, manual guidance).
+
+**Sample prompts:**
+
+```
+@office-remediator Fix the heading structure in report.docx using python-docx
+@office-remediator Generate a remediation script for all Word docs in docs/
+@office-remediator Which issues in this spreadsheet can be auto-fixed vs need manual work?
+@office-remediator Create a PowerShell COM automation script to fix alt text in this PowerPoint
+```
+
+---
+
 ### office-scan-config
 
 **Team:** Document Accessibility | **Type:** Helper (internal)
@@ -2015,6 +2032,7 @@ Skills are **reference knowledge modules** that agents draw from automatically w
 | 22 | `legal-compliance-mapping` | Section 508, ADA, EN 301 549, EAA, AODA framework mapping, VPAT 2.5 editions |
 | 23 | `media-accessibility` | WebVTT/SRT/TTML caption formats, caption quality metrics, audio description requirements, WCAG 1.2.x mapping |
 | 24 | `testing-strategy` | Automated vs manual testing coverage, browser+AT compatibility matrix, regression patterns, acceptance criteria |
+| 25 | `office-remediation` | Office document OOXML manipulation patterns, python-docx/openpyxl/python-pptx API references, PowerShell COM automation, direct OOXML XML manipulation |
 
 </details>
 
@@ -2101,6 +2119,16 @@ Prompts are **pre-built workflows** that you can launch with a single click or c
 | `draft-release` | Draft release notes | Release management |
 | `release-prep` | Release preparation | Release management |
 | `build-template` | Build issue/PR templates | Template creation |
+| `add-collaborator` | Add a collaborator to the repository | Repo administration |
+| `address-comments` | Address PR review comments | PR workflow |
+| `issue-reply` | Reply to an issue with context | Issue communication |
+| `manage-branches` | Branch management operations | Branch operations |
+| `onboard-repo` | Onboard a new repository with labels, templates, and settings | New repo setup |
+| `pr-author-checklist` | PR author self-review checklist | PR quality |
+| `refine-issue` | Refine and improve an issue description | Issue quality |
+| `sprint-review` | Sprint review summary and metrics | Sprint management |
+| `team-dashboard` | Team activity dashboard | Team visibility |
+| `wiki-manager` | Manage wiki pages | Wiki management |
 
 ### Developer Tools Prompts
 
@@ -2123,6 +2151,14 @@ Prompts are **pre-built workflows** that you can launch with a single click or c
 | `audit-media-content` | Audit video/audio for captions and descriptions | Media content |
 | `onboard-team` | Role-specific accessibility onboarding document | Team onboarding |
 | `accessibility-dashboard` | Aggregate all audits into unified dashboard | Executive reporting |
+| `audit-document-conversion` | Compare source document against exported PDF for accessibility preservation | Document conversion |
+| `audit-native-app` | Accessibility audit for React Native, Expo, iOS, and Android apps | Mobile app audit |
+| `build-a11y-template` | Build an accessible document template with guidance | Template creation |
+| `component-library-audit` | Per-component accessibility scorecard across a component directory | Component library |
+| `document-training` | Role-specific accessibility training materials for document authors | Author training |
+| `explain-code` | Explain code with accessibility context | Code understanding |
+| `react` | React component accessibility review | React development |
+| `training-scenario` | Interactive accessibility training with quizzes and before/after comparisons | Education |
 
 ### Agent-Specific Prompts
 
@@ -2150,6 +2186,8 @@ Instructions are **rules that fire automatically on every code completion** for 
 | `powershell-terminal-ops` | All files | PowerShell-specific terminal operation best practices |
 | `data-viz-accessibility` | `*.html, *.jsx, *.tsx, *.vue, *.svelte` | Chart and visualization accessibility, SVG ARIA, data table alternatives |
 | `testing-accessibility` | `*.test.*, *.spec.*` | Accessibility testing patterns and assertions |
+| `css-accessibility` | `*.css, *.scss, *.less` | Focus visibility, motion safety (`prefers-reduced-motion`), high contrast, touch target sizing, `outline: none` prevention |
+| `document-generation` | `*.py, *.js, *.ts, *.mjs, *.cjs` | Catches document generation library imports and enforces accessibility metadata, heading structure, alt text, table headers, language settings |
 
 These instructions are the **highest-leverage accessibility enforcement** — they provide correction guidance at the point of code generation without requiring any agent to be invoked.
 
