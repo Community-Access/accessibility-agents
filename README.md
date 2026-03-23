@@ -22,14 +22,14 @@ AI coding tools generate inaccessible code by default. They forget ARIA rules, s
 
 ## The Solution
 
-**Accessibility Agents** provides sixty-five specialized agents across five teams and five platforms:
+**Accessibility Agents** provides seventy-nine specialized agents across eight teams and five platforms:
 
-- **Web Accessibility team** - agents that enforce WCAG AA standards for web code, including i18n/RTL and WCAG AAA coverage
+- **Web Accessibility team** - agents that enforce WCAG AA standards for web code, including i18n/RTL, WCAG AAA coverage, data visualization, email, media, web components, and performance accessibility
 - **Document Accessibility team** - agents for Office (DOCX, XLSX, PPTX), PDF, EPUB, and Markdown accessibility scanning and remediation
-- **GitHub Workflow team** - eleven agents that manage repositories, triage issues, review PRs, and keep your team informed
+- **GitHub Workflow team** - twenty agents that manage repositories, triage issues, review PRs, manage project boards, CI/CD workflows, security alerts, releases, notifications, and wiki pages
 - **Developer Tools team** - agents for Python, wxPython, desktop accessibility, NVDA addon development, and accessibility tool building
 - **Education & Standards** - screen reader simulation, WCAG 3.0 preview, WCAG AAA auditing
-- **Cross-cutting** - CI/CD accessibility pipelines, orchestrators, and coordinators that route work across teams
+- **Cross-cutting** - CI/CD accessibility pipelines, compliance mapping, accessibility statements, regression detection, and orchestrators that route work across teams
 
 All agents run on:
 
@@ -37,7 +37,7 @@ All agents run on:
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
 - **Codex CLI** - Stable `.codex/AGENTS.md` baseline plus optional experimental TOML-based roles for focused accessibility passes
-- **MCP Server** - HTTP-based server providing 20 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
+- **MCP Server** - HTTP-based server providing 24 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
 
 ## System Requirements
 
@@ -325,7 +325,7 @@ The following guides cover web and document accessibility features.
 |-------|---------------|
 | [Getting Started](docs/getting-started.md) | Installation for Claude Code, Copilot (VS Code and CLI), Gemini CLI, Claude Desktop, and Codex CLI |
 | [User Guide](docs/USER_GUIDE.md) | Comprehensive ecosystem guide with per-platform walkthroughs, all agents, skills, prompts, and recipes |
-| [Agent Reference](docs/agents/README.md) | All 65 agents with invocation syntax, examples, and deep dives |
+| [Agent Reference](docs/agents/README.md) | All 79 agents with invocation syntax, examples, and deep dives |
 | [MCP Tools](docs/tools/mcp-tools.md) | Static analysis tools: heading structure, link text, form labels |
 | [axe-core Integration](docs/tools/axe-core-integration.md) | Runtime scanning, agent workflow, CI/CD setup |
 | [VPAT Generation](docs/tools/vpat-generation.md) | VPAT 2.5 / ACR compliance report generation |

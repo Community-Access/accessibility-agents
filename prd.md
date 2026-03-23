@@ -55,15 +55,15 @@
 
 ## Executive Summary
 
-A11y Agent Team is an accessibility enforcement system for AI-powered coding and authoring tools. It deploys 57 specialized agents across five platforms - Claude Code (terminal), GitHub Copilot (VS Code), Gemini (Google AI Studio and IDX), Codex CLI (terminal), and Claude Desktop (app) - to ensure that web code, Office documents, PDF files, EPUB publications, and markdown documentation meet accessibility standards. The system intercepts the developer workflow at code-generation time, applying WCAG 2.2 AA standards for web content, format-specific rules for Office documents (DOCX/XLSX/PPTX), PDF/UA conformance with Matterhorn Protocol alignment for PDF files, cognitive accessibility guidelines, and assistive technology compatibility checks.
+A11y Agent Team is an accessibility enforcement system for AI-powered coding and authoring tools. It deploys 79 specialized agents across five platforms - Claude Code (terminal), GitHub Copilot (VS Code), Gemini (Google AI Studio and IDX), Codex CLI (terminal), and Claude Desktop (app) - to ensure that web code, Office documents, PDF files, EPUB publications, and markdown documentation meet accessibility standards. The system intercepts the developer workflow at code-generation time, applying WCAG 2.2 AA standards for web content, format-specific rules for Office documents (DOCX/XLSX/PPTX), PDF/UA conformance with Matterhorn Protocol alignment for PDF files, cognitive accessibility guidelines, and assistive technology compatibility checks.
 
-The project includes eleven MCP tools (zero external dependencies for document scanning), 60 custom prompts, 17 reusable skills, six workspace instruction files, agent team coordination (AGENTS.md), three CI scripts, a source citation policy with automated currency verification, automated installer/uninstaller scripts for all platforms, auto-update capability, an example project with 20+ intentional violations, and SARIF 2.1.0 output for GitHub Code Scanning integration.
+The project includes 24 MCP tools (zero external dependencies for document scanning), 116 custom prompts, 24 reusable skills, eight workspace instruction files, agent team coordination (AGENTS.md), three CI scripts, a source citation policy with automated currency verification, automated installer/uninstaller scripts for all platforms, auto-update capability, an example project with 20+ intentional violations, and SARIF 2.1.0 output for GitHub Code Scanning integration.
 
 Key capabilities added since v2.0:
 
-- **Gemini platform support** - Full agent parity via `.gemini/extensions/a11y-agents/skills/` with 57 skill files
+- **Gemini platform support** - Full agent parity via `.gemini/extensions/a11y-agents/skills/` with 79 skill files
 - **Codex CLI platform support** - Agent configuration via `.codex/AGENTS.md`
-- **Source Citation Policy** - Mandatory 6-tier authority hierarchy with inline source citations, enforced via shared-instructions.md across all 57 agents
+- **Source Citation Policy** - Mandatory 6-tier authority hierarchy with inline source citations, enforced via shared-instructions.md across all 79 agents
 - **Automated Source Currency Checks** - Weekly GitHub Actions workflow that verifies authoritative sources haven't changed, with SHA-256 fingerprinting and auto-issue creation
 - **EPUB accessibility agents** - epub-accessibility and epub-scan-config for digital publication accessibility
 - **Markdown accessibility agents** - Full markdown audit pipeline (markdown-a11y-assistant, markdown-scanner, markdown-fixer, markdown-csv-reporter) with 9 audit domains
@@ -489,7 +489,7 @@ Team coordination is defined in `.github/agents/AGENTS.md`. Six defined teams:
 
 ### Cross-Cutting Standards
 
-All 57 agents inherit behavioral rules from `.github/agents/shared-instructions.md`, which includes:
+All 79 agents inherit behavioral rules from `.github/agents/shared-instructions.md`, which includes:
 
 - **Source Citation Policy** - Mandatory inline source citations with authority hierarchy
 - **Multi-Agent Reliability** - Workflow handoff patterns, error recovery, progress announcements
@@ -1114,13 +1114,13 @@ The `generate_vpat` tool outputs a full VPAT 2.5 / ACR template:
 | word-accessibility | `.claude/agents/word-accessibility.md` |
 | wxpython-specialist | `.claude/agents/wxpython-specialist.md` |
 
-#### GitHub Copilot Agents (57 files in `.github/agents/`)
+#### GitHub Copilot Agents (79 files in `.github/agents/`)
 
-Same 57 agents as `.github/agents/{name}.agent.md` format (no YAML frontmatter).
+Same 79 agents as `.github/agents/{name}.agent.md` format (no YAML frontmatter).
 
-#### Gemini Skills (57 skill folders in `.gemini/extensions/a11y-agents/skills/`)
+#### Gemini Skills (79 skill folders in `.gemini/extensions/a11y-agents/skills/`)
 
-Same 57 agents as `.gemini/extensions/a11y-agents/skills/{name}/SKILL.md` format.
+Same 79 agents as `.gemini/extensions/a11y-agents/skills/{name}/SKILL.md` format.
 
 #### Codex CLI
 
@@ -1166,19 +1166,19 @@ Single configuration file: `.codex/AGENTS.md`
 | `update.sh` | macOS/Linux updater |
 | `update.ps1` | Windows updater |
 
-### Prompts Files (60 prompt files in `.github/prompts/`)
+### Prompts Files (116 prompt files in `.github/prompts/`)
 
-All 60 prompts listed in the Custom Prompts section above, stored as `.github/prompts/{name}.prompt.md`.
+All 116 prompts listed in the Custom Prompts section above, stored as `.github/prompts/{name}.prompt.md`.
 
-### Skills Files (17 skill folders in `.github/skills/`)
+### Skills Files (24 skill folders in `.github/skills/`)
 
-All 17 skills listed in the Reusable Skills section above, stored as `.github/skills/{name}/SKILL.md`.
+All 24 skills listed in the Reusable Skills section above, stored as `.github/skills/{name}/SKILL.md`.
 
 ### Documentation Files
 
 | Directory/File | Contents |
 |---------------|----------|
-| `docs/agents/` | 57 agent deep-dive pages + hub README |
+| `docs/agents/` | 79 agent deep-dive pages + hub README |
 | `docs/tools/` | MCP tools reference, axe-core guide, VPAT guide, Lighthouse integration, GitHub Scanner integration |
 | `docs/scanning/` | Office scanning, PDF scanning, config, custom prompts |
 | `docs/skills/` | Skill documentation |
@@ -1230,7 +1230,7 @@ The following table lists planned features by priority.
 
 Items completed since v2.0:
 
-- Gemini platform support (57 skills)
+- Gemini platform support (96 skills)
 - Codex CLI platform support (AGENTS.md)
 - Source Citation Policy and Currency Automation
 - EPUB accessibility agents
@@ -1281,14 +1281,14 @@ Items completed since v2.0:
 | EPUB accessibility agents | 2 |
 | Specialized domain agents | 5 |
 | AT and development specialists | 5 |
-| GitHub workflow agents | 11 |
-| Hidden helper sub-agents | 11 |
+| GitHub workflow agents | 20 |
+| Hidden helper sub-agents | 18 |
 | Infrastructure agents | 2 |
-| Agent file instances | ~230 (57 agents x 4 platforms + docs) |
-| Custom prompts | 60 (11 document + 6 web + 5 markdown + 32 GitHub workflow + 6 developer tools) |
-| Reusable skills | 17 |
-| Instruction files | 6 |
-| Agent teams | 6 (Document, Web, Markdown, Full, GitHub Workflow, Developer Tools) |
+| Agent file instances | ~400 (79 agents x 4 platforms + docs) |
+| Custom prompts | 116 |
+| Reusable skills | 24 |
+| Instruction files | 8 |
+| Agent teams | 8 (Document, Web, Markdown, Full, Mobile, Design System, GitHub Workflow, Developer Tools) |
 | MCP tools | 11 (7 web + 4 document) |
 | MCP prompts | 6 |
 | Office document rules | 46 (16 DOCX + 14 XLSX + 16 PPTX) |

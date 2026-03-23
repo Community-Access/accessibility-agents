@@ -251,7 +251,7 @@ Session Start
  │   └─ Inject delegation instruction
  ├─ Load Customizations
  │   ├─ 25 agents
- │   ├─ 17 skills
+ │   ├─ 24 skills
  │   └─ 3 workspace instructions
  ├─ Agent: accessibility-lead invoked
  │   ├─ Tool: readFile (component)

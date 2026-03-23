@@ -197,8 +197,8 @@ To see all installed agents at any time, type `/agents` in Claude Code.
 
 **Check that you see:**
 
-- **57 agents loaded** across all agent teams (web, document, GitHub, developer tools)
-- **17 active skills** providing domain knowledge
+- **79 agents loaded** across all agent teams (web, document, GitHub, developer tools)
+- **24 active skills** providing domain knowledge
 - **3 workspace instructions** (web-accessibility-baseline, semantic-html, aria-patterns or powershell-terminal-ops depending on platform)
 - **Hook execution** showing UserPromptSubmit, PreToolUse, and PostToolUse events during web UI tasks
 
@@ -859,7 +859,7 @@ This is for **Google Gemini CLI** (the terminal coding agent).
 
 Gemini CLI uses an extension system with skills. Each accessibility agent is packaged as a skill (`SKILL.md` with YAML frontmatter) inside the `a11y-agents` extension. The `GEMINI.md` context file provides always-on WCAG AA enforcement rules that load into every conversation, similar to how `CLAUDE.md` works for Claude Code.
 
-The extension includes 49 agent skills covering all accessibility domains plus 14 knowledge domain skills for reference data (WCAG mappings, severity scoring, help URLs).
+The extension includes 79 agent skills covering all accessibility domains plus 17 knowledge domain skills for reference data (WCAG mappings, severity scoring, help URLs).
 
 ### Prerequisites
 
@@ -937,7 +937,7 @@ Gemini will load the `GEMINI.md` context file and apply WCAG AA rules to all UI 
 
 - **gemini-extension.json** -- Extension manifest
 - **GEMINI.md** -- Always-on accessibility context with decision matrix and non-negotiable standards
-- **skills/** -- 63 skills total (49 agent skills + 14 knowledge domains)
+- **skills/** -- 96 skills total (79 agent skills + 17 knowledge domains)
 
 ### Removing
 

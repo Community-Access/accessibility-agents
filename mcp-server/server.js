@@ -105,7 +105,7 @@ if (STATELESS) {
 
 // ---- Health check ----
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", name: "a11y-agent-team", version: "3.2.0", mode: STATELESS ? "stateless" : "stateful" });
+  res.json({ status: "ok", name: "a11y-agent-team", version: "4.0.0", mode: STATELESS ? "stateless" : "stateful" });
 });
 
 app.listen(PORT, HOST, () => {

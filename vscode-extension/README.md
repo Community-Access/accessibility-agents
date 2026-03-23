@@ -4,7 +4,7 @@ An accessibility-first chat extension for GitHub Copilot. Type **`@a11y`** in Co
 
 ## Features
 
-- **65 agents total** — 47 user-invokable specialists available as slash commands, plus 18 internal helpers used behind the scenes via handoffs and orchestration
+- **79 agents total** — 61 user-invokable specialists available as slash commands, plus 18 internal helpers used behind the scenes via handoffs and orchestration
 - **Dynamic agent discovery** — drop new `.agent.md` files into your workspace and they're available instantly, no reload needed
 - **Smart routing** — slash commands for direct access, or just describe your problem and the router finds the right specialist
 - **Rich frontmatter** — agents declare tools, models, handoffs for multi-agent orchestration, and `user-invokable: false` for internal helpers

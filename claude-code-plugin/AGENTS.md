@@ -263,6 +263,12 @@ For Section 508, EN 301 549, or organizational compliance:
 - `contributions-hub` - Discussion management, community health, contributor insights, first-time contributor support
 - `template-builder` - Interactive issue/PR/workflow template wizard with YAML frontmatter generation
 - `repo-manager` - Repo infrastructure scaffolding: templates, CI/CD, labels, README, CONTRIBUTING, licenses
+- `projects-manager` - GitHub Projects v2 boards, views, custom fields, iterations via GraphQL API
+- `actions-manager` - GitHub Actions workflow runs, logs, re-runs, and CI debugging via REST API
+- `security-dashboard` - Dependabot, code scanning, secret scanning alert triage via REST API
+- `release-manager` - Releases, tags, assets, and release note generation via REST API
+- `notifications-manager` - Notification inbox management, filtering, and subscriptions via REST API
+- `wiki-manager` - Wiki page creation, editing, search, and organization via wiki git repo
 
 **Skills:**
 

@@ -345,6 +345,33 @@ At every handoff:
 
 ---
 
+## Team: CI/CD & Education
+
+Specialist agents for CI pipelines, standards education, and screen reader simulation.
+
+**Members:**
+
+- `ci-accessibility` - CI/CD accessibility pipeline setup and management (GitHub Actions, Azure DevOps, GitLab CI, CircleCI, Jenkins). Baseline management, SARIF output, PR annotations, threshold configuration.
+- `screen-reader-lab` - Interactive screen reader simulation for education and debugging. Parses HTML/JSX and produces step-by-step narration. Supports reading order, Tab/H/F key navigation modes.
+- `wcag3-preview` - WCAG 3.0 draft education and transition planning. Explains methodology changes, outcome-based conformance, APCA contrast, functional needs categories.
+- `wcag-aaa` - WCAG AAA conformance auditing. Enhanced contrast (7:1), extended audio descriptions, sign language, reading level, abbreviations, pronunciation, focus appearance.
+
+**Workflow:**
+
+1. Each agent operates independently — no orchestrator needed
+2. `ci-accessibility` integrates with `web-accessibility-wizard` and `document-accessibility-wizard` for pipeline test definitions
+3. `screen-reader-lab` can be invoked after any web audit to understand the screen reader experience of flagged issues
+4. `wcag3-preview` provides educational guidance — does not produce audit findings
+5. `wcag-aaa` extends any AA audit with AAA-level criteria
+
+**Handoffs:**
+
+- `ci-accessibility` -> `web-accessibility-wizard` for defining what to scan in CI
+- `screen-reader-lab` -> `keyboard-navigator` for keyboard-specific issues discovered during simulation
+- `wcag-aaa` -> `accessibility-lead` for integrating AAA findings into a full audit
+
+---
+
 ## Enterprise Scanning Patterns
 
 ### Large Repository Scanning

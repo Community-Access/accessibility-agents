@@ -4,7 +4,7 @@
 
 ## Agents That Use This Skill
 
-All 11 GitHub workflow agents: [github-hub](../agents/github-hub.md), [daily-briefing](../agents/daily-briefing.md), [issue-tracker](../agents/issue-tracker.md), [pr-review](../agents/pr-review.md), [analytics](../agents/analytics.md), [repo-admin](../agents/repo-admin.md), [team-manager](../agents/team-manager.md), [contributions-hub](../agents/contributions-hub.md), [insiders-a11y-tracker](../agents/insiders-a11y-tracker.md), [repo-manager](../agents/repo-manager.md), [template-builder](../agents/template-builder.md).
+All 20 GitHub workflow agents: [github-hub](../agents/github-hub.md), [nexus](../agents/nexus.md), [daily-briefing](../agents/daily-briefing.md), [issue-tracker](../agents/issue-tracker.md), [pr-review](../agents/pr-review.md), [analytics](../agents/analytics.md), [repo-admin](../agents/repo-admin.md), [team-manager](../agents/team-manager.md), [contributions-hub](../agents/contributions-hub.md), [insiders-a11y-tracker](../agents/insiders-a11y-tracker.md), [repo-manager](../agents/repo-manager.md), [template-builder](../agents/template-builder.md), [projects-manager](../agents/projects-manager.md), [actions-manager](../agents/actions-manager.md), [security-dashboard](../agents/security-dashboard.md), [release-manager](../agents/release-manager.md), [notifications-manager](../agents/notifications-manager.md), [wiki-manager](../agents/wiki-manager.md).
 
 ## Authentication
 

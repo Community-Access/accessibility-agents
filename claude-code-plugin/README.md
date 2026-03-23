@@ -1,6 +1,6 @@
 # Accessibility Agents - Claude Code Plugin
 
-WCAG AA accessibility enforcement for Claude Code. 59 specialist agents + 17 commands that activate automatically when you work on web UI code.
+WCAG AA accessibility enforcement for Claude Code. 79 specialist agents + 24 commands that activate automatically when you work on web UI code.
 
 ## How It Works
 
@@ -97,8 +97,8 @@ The installer copies agents and skills to your `.claude/` directory:
 
 ```text
 .claude/
-  agents/       # 50 agent files (auto-delegation)
-  skills/       # 17 skills (manual shortcuts)
+  agents/       # 79 agent files (auto-delegation)
+  skills/       # 24 skills (manual shortcuts)
 ```
 
 Optionally merges a CLAUDE.md snippet into your project root for rules enforcement.

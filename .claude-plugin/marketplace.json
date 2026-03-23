@@ -10,7 +10,7 @@
     {
       "name": "accessibility-agents",
       "source": "./claude-code-plugin",
-      "description": "WCAG AA accessibility enforcement for Claude Code. 59 specialist agents, 17 commands, and enforcement hooks that delegate to accessibility-lead for UI code review. Includes Playwright integration, veraPDF, PDF form converter, end-user documentation, scan config templates, example project, and three-hook enforcement gate.",
+      "description": "WCAG AA accessibility enforcement for Claude Code. 79 specialist agents, 24 commands, and enforcement hooks that delegate to accessibility-lead for UI code review. Includes Playwright integration, veraPDF, PDF form converter, end-user documentation, scan config templates, example project, and three-hook enforcement gate.",
       "version": "3.2.0",
       "author": {
         "name": "Taylor Arndt"

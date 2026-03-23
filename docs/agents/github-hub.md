@@ -178,6 +178,12 @@ GitHub Hub connects to every specialist in the GitHub Workflow team:
 | [contributions-hub](contributions-hub.md) | You want to manage discussions or contributor health |
 | [insiders-a11y-tracker](insiders-a11y-tracker.md) | You want accessibility change tracking |
 | [template-builder](template-builder.md) | You want to create issue/PR/discussion templates |
+| [projects-manager](projects-manager.md) | You want to manage GitHub Projects v2 boards, views, or iterations |
+| [actions-manager](actions-manager.md) | You want to check workflow runs, logs, re-run failed jobs, or debug CI |
+| [security-dashboard](security-dashboard.md) | You want to review Dependabot, code scanning, or secret scanning alerts |
+| [release-manager](release-manager.md) | You want to create releases, manage tags, upload assets, or generate notes |
+| [notifications-manager](notifications-manager.md) | You want to manage your notification inbox, filter, or unsubscribe |
+| [wiki-manager](wiki-manager.md) | You want to create, edit, search, or organize wiki pages |
 | [repo-manager](repo-manager.md) | You want to scaffold or set up a repository |
 
 </details>

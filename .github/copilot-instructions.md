@@ -42,6 +42,14 @@ Select these agents from the agents dropdown in Copilot Chat, or type `/agents` 
 | Desktop Accessibility Specialist | Desktop application accessibility - platform APIs (UI Automation, MSAA/IAccessible2, ATK/AT-SPI, NSAccessibility), accessible control patterns, screen reader Name/Role/Value/State, focus management, high contrast, and custom widget accessibility for Windows, macOS, and Linux desktop applications |
 | Desktop A11y Testing Coach | Desktop accessibility testing - testing with NVDA, JAWS, Narrator, VoiceOver, and Orca screen readers, Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, high contrast verification, and creating desktop accessibility test plans |
 | Accessibility Tool Builder | Building accessibility scanning tools, rule engines, document parsers, report generators, and audit automation. WCAG criterion mapping, severity scoring algorithms, CLI/GUI scanner architecture, and CI/CD integration for accessibility tooling |
+| Media Accessibility | Video and audio accessibility - captions, audio descriptions, transcripts, media player controls, WCAG 1.2.x compliance |
+| Email Accessibility | HTML email accessibility under email client rendering constraints - table-based layout, inline styles, image fallbacks, screen reader compatibility |
+| Data Visualization Accessibility | Chart, graph, and dashboard accessibility - SVG ARIA, data table alternatives, color-safe palettes, keyboard interaction |
+| Web Component Specialist | Shadow DOM and custom element accessibility - ElementInternals, cross-shadow ARIA, form-associated custom elements, focus delegation |
+| Accessibility Statement Generator | Generates W3C or EU model accessibility statements from audit results - conformance claims, known limitations, feedback mechanism |
+| Compliance Mapping | Maps audit results to legal frameworks - Section 508, EN 301 549, EAA, ADA, AODA. VPAT 2.5 generation |
+| Accessibility Regression Detector | Detects regressions by comparing audit results across commits/branches - score trends, new/fixed/regressed classification |
+| Performance Accessibility | Intersection of web performance and accessibility - lazy loading, skeleton screens, CLS, code splitting, progressive enhancement |
 
 ### Hidden Helper Sub-Agents
 
@@ -86,6 +94,11 @@ Reusable knowledge modules in `.github/skills/` that agents reference automatica
 | github-a11y-scanner | GitHub Accessibility Scanner detection, issue parsing, severity mapping, axe-core correlation, Copilot fix tracking |
 | lighthouse-scanner | Lighthouse CI accessibility audit detection, score interpretation, weight-to-severity mapping, score regression tracking |
 | python-development | Python and wxPython development patterns, packaging, testing, wxPython sizers/events/threading, cross-platform paths |
+| media-accessibility | WebVTT/SRT/TTML caption formats, caption quality metrics, audio description requirements, media player ARIA, WCAG 1.2.x mapping |
+| email-accessibility | Email client rendering constraints, table-based layout, bulletproof buttons, dark mode, MJML/Foundation patterns |
+| testing-strategy | Automated vs manual testing coverage, browser+AT compatibility matrix, regression patterns, acceptance criteria templates |
+| legal-compliance-mapping | Section 508, ADA, EN 301 549, EAA, AODA framework mapping, VPAT 2.5 editions, non-WCAG requirements |
+| data-visualization-accessibility | Chart accessibility patterns, SVG ARIA, charting library APIs (Highcharts/Chart.js/D3/Recharts), color-safe palettes |
 
 ### Agent Teams
 
@@ -96,7 +109,7 @@ Team coordination is defined in `.github/agents/AGENTS.md`. Nine defined teams:
 - **Full Audit** - combined web + document audit workflow
 - **Mobile Accessibility** - led by mobile-accessibility; invoked standalone or as handoff from accessibility-lead
 - **Design System Accessibility** - led by design-system-auditor; validates tokens before UI propagation
-- **GitHub Workflow** - led by github-hub; routes to daily-briefing, pr-review, issue-tracker, analytics, repo-admin, team-manager, contributions-hub, insiders-a11y-tracker, template-builder
+- **GitHub Workflow** - led by github-hub; routes to daily-briefing, pr-review, issue-tracker, analytics, repo-admin, team-manager, contributions-hub, insiders-a11y-tracker, template-builder, repo-manager, projects-manager, actions-manager, security-dashboard, release-manager, notifications-manager, wiki-manager
 - **Developer Tools** - led by developer-hub; routes to python-specialist, wxpython-specialist, nvda-addon-specialist, desktop-a11y-specialist, desktop-a11y-testing-coach, a11y-tool-builder, text-quality-reviewer for Python, wxPython, NVDA addons, desktop accessibility, and tool building. Cross-team handoffs to web-accessibility-wizard and document-accessibility-wizard.
 
 ### Decision Matrix
@@ -169,6 +182,16 @@ One-click workflows for desktop development, NVDA addon creation, and Python pac
 | review-text-quality | Scan web files for broken alt text, template variables in aria-labels, placeholder labels, and duplicate names |
 | scaffold-wxpython-app | Scaffold an accessible wxPython desktop application with sizers, keyboard nav, and screen reader support |
 | package-python-app | Package a Python application for distribution using PyInstaller, Nuitka, or cx_Freeze |
+
+### Custom Prompts for Cross-Cutting Workflows
+
+| Prompt | What It Does |
+|--------|-------------|
+| generate-accessibility-statement | Generate a W3C or EU model accessibility statement from audit results |
+| audit-email-template | Audit an HTML email template for accessibility under email client constraints |
+| audit-media-content | Audit video/audio media for captions, descriptions, transcripts, and player controls |
+| onboard-team | Generate role-specific accessibility onboarding document (developer, designer, QA, etc.) |
+| accessibility-dashboard | Aggregate all audit reports into a unified dashboard view with overall score and trends |
 
 ### Context Discovery
 

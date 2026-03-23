@@ -91,7 +91,7 @@ cp -r .gemini/extensions/a11y-agents/ ~/.gemini/extensions/a11y-agents/
 
 - `gemini-extension.json` -- extension manifest
 - `GEMINI.md` -- always-on accessibility context loaded into every conversation
-- `skills/` -- 49 agent skills + 14 knowledge domain skills, each as `SKILL.md` with YAML frontmatter
+- `skills/` -- 79 agent skills + 17 knowledge domain skills, each as `SKILL.md` with YAML frontmatter
 
 ## Creating Custom Agent Packages
 

@@ -53,6 +53,14 @@ Invoke these agents from the Claude Code agent picker (type `/` to browse):
 | Desktop Accessibility Specialist | Desktop application accessibility - platform APIs (UI Automation, MSAA/IAccessible2, ATK/AT-SPI, NSAccessibility), accessible control patterns, screen reader Name/Role/Value/State, focus management, high contrast, and custom widget accessibility for Windows, macOS, and Linux desktop applications |
 | Desktop A11y Testing Coach | Desktop accessibility testing - testing with NVDA, JAWS, Narrator, VoiceOver, and Orca screen readers, Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, high contrast verification, and creating desktop accessibility test plans |
 | Accessibility Tool Builder | Building accessibility scanning tools, rule engines, document parsers, report generators, and audit automation. WCAG criterion mapping, severity scoring algorithms, CLI/GUI scanner architecture, and CI/CD integration for accessibility tooling |
+| Media Accessibility | Video and audio accessibility - captions, audio descriptions, transcripts, media player controls, WCAG 1.2.x compliance |
+| Email Accessibility | HTML email accessibility under email client rendering constraints - table-based layout, inline styles, image fallbacks, screen reader compatibility |
+| Data Visualization Accessibility | Chart, graph, and dashboard accessibility - SVG ARIA, data table alternatives, color-safe palettes, keyboard interaction |
+| Web Component Specialist | Shadow DOM and custom element accessibility - ElementInternals, cross-shadow ARIA, form-associated custom elements, focus delegation |
+| Accessibility Statement Generator | Generates W3C or EU model accessibility statements from audit results - conformance claims, known limitations, feedback mechanism |
+| Compliance Mapping | Maps audit results to legal frameworks - Section 508, EN 301 549, EAA, ADA, AODA. VPAT 2.5 generation |
+| Accessibility Regression Detector | Detects regressions by comparing audit results across commits/branches - score trends, new/fixed/regressed classification |
+| Performance Accessibility | Intersection of web performance and accessibility - lazy loading, skeleton screens, CLS, code splitting, progressive enhancement |
 
 ## Hidden Helper Sub-Agents
 
@@ -96,6 +104,11 @@ The following knowledge domains are available across agent files. On Copilot the
 | GitHub A11y Scanner | GitHub Accessibility Scanner detection, issue parsing, severity mapping, axe-core correlation, Copilot fix tracking |
 | Lighthouse Scanner | Lighthouse CI accessibility audit detection, score interpretation, weight-to-severity mapping, score regression tracking |
 | Python Development | Python and wxPython development patterns, packaging, testing, wxPython sizers/events/threading, cross-platform paths |
+| Media Accessibility | WebVTT/SRT/TTML caption formats, caption quality metrics, audio description requirements, media player ARIA, WCAG 1.2.x mapping |
+| Email Accessibility | Email client rendering constraints, table-based layout, bulletproof buttons, dark mode, MJML/Foundation patterns |
+| Testing Strategy | Automated vs manual testing coverage, browser+AT compatibility matrix, regression patterns, acceptance criteria templates |
+| Legal Compliance Mapping | Section 508, ADA, EN 301 549, EAA, AODA framework mapping, VPAT 2.5 editions, non-WCAG requirements |
+| Data Visualization Accessibility | Chart accessibility patterns, SVG ARIA, charting library APIs (Highcharts/Chart.js/D3/Recharts), color-safe palettes |
 
 ## Agent Teams
 

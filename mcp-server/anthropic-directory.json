@@ -1,6 +1,6 @@
 {
   "name": "A11y Agent Team MCP Server",
-  "description": "Accessibility scanning and remediation tools for WCAG 2.2 compliance. Provides 20 tools for checking contrast, headings, links, forms, document metadata, Office/PDF scanning, Playwright-based browser testing, and audit caching.",
+  "description": "Accessibility scanning and remediation tools for WCAG 2.2 compliance. Provides 24 tools for checking contrast, headings, links, forms, document metadata, Office/PDF scanning, Playwright-based browser testing, color blindness simulation, reading level analysis, caption validation, accessibility statement generation, and audit caching.",
   "vendor": "Community-Access",
   "sourceUrl": "https://github.com/Community-Access/accessibility-agents",
   "homepage": "https://github.com/Community-Access/accessibility-agents/tree/main/mcp-server#readme",

@@ -10,12 +10,16 @@
  *
  * Tools provided:
  *   Core:      check_contrast, get_accessibility_guidelines, check_heading_structure,
- *              check_link_text, check_form_labels
+ *              check_link_text, check_form_labels, check_color_blindness,
+ *              check_reading_level
  *   Documents: scan_office_document, scan_pdf_document, extract_document_metadata,
  *              batch_scan_documents, fix_document_metadata, fix_document_headings
+ *   Media:     validate_caption_file
  *   Caching:   check_audit_cache, update_audit_cache
- *   Advanced:  run_axe_scan (Playwright), run_verapdf_scan (veraPDF CLI),
+ *   Advanced:  run_axe_scan (Playwright), run_playwright_keyboard_scan,
+ *              run_playwright_contrast_scan, run_verapdf_scan (veraPDF CLI),
  *              convert_pdf_form_to_html (pdf-lib)
+ *   Statement: generate_accessibility_statement
  *
  * Prompts:
  *   audit-page          — Structured WCAG audit instruction for a web page
@@ -105,6 +109,21 @@ function contrastRatio(hex1, hex2) {
   const l1 = relativeLuminance(hex1);
   const l2 = relativeLuminance(hex2);
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+// ---------------------------------------------------------------------------
+// Timestamp parsing (for caption validation)
+// ---------------------------------------------------------------------------
+
+/** Parse a VTT/SRT timestamp string (HH:MM:SS.mmm) into milliseconds. */
+function parseTimestamp(ts) {
+  const parts = ts.split(":");
+  const secMs = parts.pop().split(".");
+  const hours = parts.length > 1 ? parseInt(parts[0], 10) : 0;
+  const minutes = parts.length > 0 ? parseInt(parts[parts.length - 1], 10) : 0;
+  const seconds = parseInt(secMs[0], 10);
+  const ms = secMs[1] ? parseInt(secMs[1].padEnd(3, "0").slice(0, 3), 10) : 0;
+  return ((hours * 3600 + minutes * 60 + seconds) * 1000) + ms;
 }
 
 // ---------------------------------------------------------------------------
@@ -613,7 +632,7 @@ function buildPdfSarif(filePath, findings) {
     $schema: "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0.json",
     version: "2.1.0",
     runs: [{
-      tool: { driver: { name: "a11y-agent-team-pdf-scanner", version: "3.2.0" } },
+      tool: { driver: { name: "a11y-agent-team-pdf-scanner", version: "4.0.0" } },
       results: findings.map(f => ({
         ruleId: f.ruleId,
         level: f.severity === "error" ? "error" : f.severity === "warning" ? "warning" : "note",
@@ -729,7 +748,7 @@ Always use the native <dialog> element. Never build modals from <div> elements.
 export function createServer() {
   const server = new McpServer({
     name: "a11y-agent-team",
-    version: "3.2.0",
+    version: "4.0.0",
   });
 
   // ---- Tool: check_contrast ----
@@ -1328,6 +1347,346 @@ export function createServer() {
             text: `Audit cache updated: ${updated} entries written to ${basename(cachePath)}`,
           }],
         };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+      }
+    }
+  );
+
+  // =========================================================================
+  // NEW TOOLS: Color Blindness, Reading Level, Caption Validation, Statement
+  // =========================================================================
+
+  // ---- Tool: check_color_blindness ----
+  server.registerTool(
+    "check_color_blindness",
+    {
+      title: "Check Color Blindness",
+      description: "Simulate how a color pair looks under different types of color vision deficiency (protanopia, deuteranopia, tritanopia, achromatopsia). Returns simulated colors and whether distinction is maintained.",
+      inputSchema: z.object({
+        colors: z.array(z.string()).min(2).describe("Array of hex colors to compare (e.g. ['#FF0000', '#00FF00'])"),
+      }),
+    },
+    async ({ colors }) => {
+      try {
+        const parseHex = (hex) => {
+          hex = hex.replace("#", "");
+          if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+          return [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+        };
+
+        // Brettel et al. simulation matrices (simplified)
+        const matrices = {
+          protanopia:    [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]],
+          deuteranopia:  [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047414], [-0.011820, 0.042940, 0.968881]],
+          tritanopia:    [[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.303900]],
+          achromatopsia: [[0.2126, 0.7152, 0.0722], [0.2126, 0.7152, 0.0722], [0.2126, 0.7152, 0.0722]],
+        };
+
+        const simulate = (rgb, matrix) => {
+          return [
+            Math.round(Math.max(0, Math.min(255, matrix[0][0]*rgb[0] + matrix[0][1]*rgb[1] + matrix[0][2]*rgb[2]))),
+            Math.round(Math.max(0, Math.min(255, matrix[1][0]*rgb[0] + matrix[1][1]*rgb[1] + matrix[1][2]*rgb[2]))),
+            Math.round(Math.max(0, Math.min(255, matrix[2][0]*rgb[0] + matrix[2][1]*rgb[1] + matrix[2][2]*rgb[2]))),
+          ];
+        };
+
+        const toHex = (rgb) => "#" + rgb.map(c => c.toString(16).padStart(2, "0")).join("");
+
+        const deltaE = (a, b) => Math.sqrt(a.reduce((sum, v, i) => sum + (v - b[i]) ** 2, 0));
+
+        const parsed = colors.map(parseHex);
+        const results = {};
+
+        for (const [type, matrix] of Object.entries(matrices)) {
+          const simulated = parsed.map(c => simulate(c, matrix));
+          const pairs = [];
+          for (let i = 0; i < simulated.length; i++) {
+            for (let j = i + 1; j < simulated.length; j++) {
+              const de = Math.round(deltaE(simulated[i], simulated[j]) * 100) / 100;
+              pairs.push({
+                original: [colors[i], colors[j]],
+                simulated: [toHex(simulated[i]), toHex(simulated[j])],
+                deltaE: de,
+                distinguishable: de > 20,
+              });
+            }
+          }
+          results[type] = pairs;
+        }
+
+        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+      }
+    }
+  );
+
+  // ---- Tool: check_reading_level ----
+  server.registerTool(
+    "check_reading_level",
+    {
+      title: "Check Reading Level",
+      description: "Analyze text readability using Flesch-Kincaid Grade Level, Flesch Reading Ease, and Gunning Fog Index. Helps ensure content meets WCAG 3.1.5 (AAA) reading level guidance and cognitive accessibility best practices.",
+      inputSchema: z.object({
+        text: z.string().min(1).max(50000).describe("Text content to analyze"),
+      }),
+    },
+    async ({ text }) => {
+      try {
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+        const words = text.split(/\s+/).filter(w => w.replace(/[^a-zA-Z]/g, "").length > 0);
+        const syllableCount = (word) => {
+          word = word.toLowerCase().replace(/[^a-z]/g, "");
+          if (word.length <= 2) return 1;
+          word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, "");
+          word = word.replace(/^y/, "");
+          const vowels = word.match(/[aeiouy]{1,2}/g);
+          return vowels ? vowels.length : 1;
+        };
+
+        const totalSentences = sentences.length || 1;
+        const totalWords = words.length || 1;
+        const totalSyllables = words.reduce((sum, w) => sum + syllableCount(w), 0);
+        const complexWords = words.filter(w => syllableCount(w) >= 3).length;
+
+        const fleschEase = 206.835 - 1.015 * (totalWords / totalSentences) - 84.6 * (totalSyllables / totalWords);
+        const fleschKincaid = 0.39 * (totalWords / totalSentences) + 11.8 * (totalSyllables / totalWords) - 15.59;
+        const gunningFog = 0.4 * ((totalWords / totalSentences) + 100 * (complexWords / totalWords));
+
+        const round = (n) => Math.round(n * 100) / 100;
+
+        let easeLabel;
+        if (fleschEase >= 80) easeLabel = "Easy (6th grade)";
+        else if (fleschEase >= 60) easeLabel = "Standard (8th-9th grade)";
+        else if (fleschEase >= 40) easeLabel = "Moderately Difficult (10th-12th grade)";
+        else if (fleschEase >= 20) easeLabel = "Difficult (College level)";
+        else easeLabel = "Very Difficult (Graduate level)";
+
+        const wcagAAA = fleschKincaid <= 9;
+
+        const result = {
+          statistics: {
+            sentences: totalSentences,
+            words: totalWords,
+            syllables: totalSyllables,
+            complexWords,
+            avgWordsPerSentence: round(totalWords / totalSentences),
+            avgSyllablesPerWord: round(totalSyllables / totalWords),
+          },
+          scores: {
+            fleschReadingEase: { score: round(fleschEase), label: easeLabel },
+            fleschKincaidGrade: round(fleschKincaid),
+            gunningFogIndex: round(gunningFog),
+          },
+          wcag: {
+            criterion: "3.1.5 Reading Level (AAA)",
+            recommendation: "Lower secondary education level (≤ grade 9)",
+            passes: wcagAAA,
+          },
+        };
+
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+      }
+    }
+  );
+
+  // ---- Tool: validate_caption_file ----
+  server.registerTool(
+    "validate_caption_file",
+    {
+      title: "Validate Caption File",
+      description: "Validate a WebVTT or SRT caption file for syntax errors, timing overlaps, excessive caption rate, and missing speaker identification. Helps ensure media accessibility compliance (WCAG 1.2.2, 1.2.4).",
+      inputSchema: z.object({
+        filePath: z.string().describe("Absolute path to the .vtt or .srt caption file"),
+      }),
+    },
+    async ({ filePath }) => {
+      try {
+        const safePath = validateFilePath(filePath);
+        const fstat = await stat(safePath);
+        if (fstat.size > MAX_FILE_BYTES) throw new Error("File too large");
+
+        const content = await fsReadFile(safePath, "utf8");
+        const ext = extname(safePath).toLowerCase();
+        const issues = [];
+        let cueCount = 0;
+
+        if (ext === ".vtt") {
+          if (!content.trimStart().startsWith("WEBVTT")) {
+            issues.push({ severity: "critical", message: "Missing WEBVTT header" });
+          }
+
+          const cueRegex = /(\d{2}:\d{2}:\d{2}\.\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}\.\d{3})/g;
+          let match;
+          let prevEnd = 0;
+          while ((match = cueRegex.exec(content)) !== null) {
+            cueCount++;
+            const start = parseTimestamp(match[1]);
+            const end = parseTimestamp(match[2]);
+            if (end <= start) {
+              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time (${match[2]}) ≤ start time (${match[1]})`, cue: cueCount });
+            }
+            if (start < prevEnd) {
+              issues.push({ severity: "moderate", message: `Cue ${cueCount}: overlaps with previous cue`, cue: cueCount });
+            }
+            const duration = (end - start) / 1000;
+            if (duration > 0) {
+              const lineStart = content.lastIndexOf("\n", match.index) + 1;
+              const nextTimestamp = content.indexOf("-->", match.index + match[0].length);
+              const cueEnd = nextTimestamp > 0 ? content.lastIndexOf("\n\n", nextTimestamp) : content.length;
+              const cueText = content.slice(match.index + match[0].length, cueEnd > match.index ? cueEnd : content.length).trim();
+              const words = cueText.split(/\s+/).filter(w => w.length > 0 && !w.startsWith("<")).length;
+              const wps = words / duration;
+              if (wps > 3.5) {
+                issues.push({ severity: "moderate", message: `Cue ${cueCount}: caption rate ${Math.round(wps*10)/10} words/sec exceeds recommended 3.5`, cue: cueCount });
+              }
+            }
+            prevEnd = end;
+          }
+        } else if (ext === ".srt") {
+          const cueRegex = /(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})/g;
+          let match;
+          let prevEnd = 0;
+          while ((match = cueRegex.exec(content)) !== null) {
+            cueCount++;
+            const start = parseTimestamp(match[1].replace(",", "."));
+            const end = parseTimestamp(match[2].replace(",", "."));
+            if (end <= start) {
+              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time ≤ start time`, cue: cueCount });
+            }
+            if (start < prevEnd) {
+              issues.push({ severity: "moderate", message: `Cue ${cueCount}: overlaps with previous cue`, cue: cueCount });
+            }
+            prevEnd = end;
+          }
+        } else {
+          return { content: [{ type: "text", text: "Error: Unsupported file format. Use .vtt or .srt" }] };
+        }
+
+        const hasSpeakerIds = /(?:<v\s|>>|[A-Z]+:)/.test(content);
+        if (!hasSpeakerIds && cueCount > 5) {
+          issues.push({ severity: "minor", message: "No speaker identification detected. Consider adding speaker labels for multi-speaker content." });
+        }
+
+        const result = {
+          file: basename(safePath),
+          format: ext.replace(".", "").toUpperCase(),
+          cueCount,
+          issues,
+          summary: {
+            critical: issues.filter(i => i.severity === "critical").length,
+            serious: issues.filter(i => i.severity === "serious").length,
+            moderate: issues.filter(i => i.severity === "moderate").length,
+            minor: issues.filter(i => i.severity === "minor").length,
+          },
+          valid: issues.filter(i => i.severity === "critical" || i.severity === "serious").length === 0,
+        };
+
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+      }
+    }
+  );
+
+  // ---- Tool: generate_accessibility_statement ----
+  server.registerTool(
+    "generate_accessibility_statement",
+    {
+      title: "Generate Accessibility Statement",
+      description: "Generate a W3C or EU model accessibility statement from provided information. Outputs a Markdown document ready for publishing.",
+      inputSchema: z.object({
+        organization: z.string().describe("Organization name"),
+        websiteUrl: z.string().describe("Website URL covered by the statement"),
+        contactEmail: z.string().describe("Accessibility feedback contact email"),
+        conformanceLevel: z.enum(["A", "AA", "AAA"]).optional().describe("Target WCAG level (default: AA)"),
+        conformanceStatus: z.enum(["fully", "partially", "non-conformant"]).describe("Overall conformance status"),
+        format: z.enum(["w3c", "eu"]).optional().describe("Statement format: w3c (default) or eu"),
+        assessmentDate: z.string().optional().describe("Date of last assessment (ISO format)"),
+        assessmentMethod: z.string().optional().describe("How the assessment was conducted"),
+        knownLimitations: z.array(z.object({
+          description: z.string(),
+          wcag: z.string().optional(),
+          workaround: z.string().optional(),
+        })).optional().describe("Known accessibility limitations"),
+        technologies: z.array(z.string()).optional().describe("Technologies relied upon (e.g. HTML5, CSS3, WAI-ARIA)"),
+        compatibleWith: z.array(z.string()).optional().describe("Browsers and assistive technologies tested"),
+      }),
+    },
+    async ({ organization, websiteUrl, contactEmail, conformanceLevel, conformanceStatus, format, assessmentDate, assessmentMethod, knownLimitations, technologies, compatibleWith }) => {
+      try {
+        const level = conformanceLevel || "AA";
+        const fmt = format || "w3c";
+        const date = assessmentDate || new Date().toISOString().split("T")[0];
+        const method = assessmentMethod || "Self-evaluation";
+        const techs = technologies || ["HTML5", "CSS3", "JavaScript", "WAI-ARIA 1.2"];
+        const compat = compatibleWith || [];
+
+        const statusLabels = {
+          fully: "fully conformant",
+          partially: "partially conformant",
+          "non-conformant": "non-conformant",
+        };
+        const statusText = statusLabels[conformanceStatus] || conformanceStatus;
+
+        let md = `# Accessibility Statement\n\n`;
+        md += `**Organization:** ${organization}\n`;
+        md += `**Website:** ${websiteUrl}\n`;
+        md += `**Date:** ${date}\n`;
+        md += `**Standard:** WCAG 2.2 Level ${level}\n\n`;
+
+        md += `## Conformance Status\n\n`;
+        md += `This website is **${statusText}** with WCAG 2.2 Level ${level}. `;
+        if (conformanceStatus === "fully") {
+          md += `All content fully meets the standard with no known exceptions.\n\n`;
+        } else if (conformanceStatus === "partially") {
+          md += `Some content does not yet fully meet the standard. Known limitations are listed below.\n\n`;
+        } else {
+          md += `Significant portions do not yet meet the standard. Remediation is in progress.\n\n`;
+        }
+
+        if (knownLimitations && knownLimitations.length > 0) {
+          md += `## Known Limitations\n\n`;
+          md += `The following limitations are known:\n\n`;
+          for (const lim of knownLimitations) {
+            md += `- **${lim.description}**`;
+            if (lim.wcag) md += ` (WCAG ${lim.wcag})`;
+            md += `\n`;
+            if (lim.workaround) md += `  - Workaround: ${lim.workaround}\n`;
+          }
+          md += `\n`;
+        }
+
+        md += `## Assessment\n\n`;
+        md += `This website was last assessed on ${date} using the following method: ${method}.\n\n`;
+
+        md += `## Feedback\n\n`;
+        md += `If you encounter accessibility barriers on this website, please contact us:\n\n`;
+        md += `- **Email:** ${contactEmail}\n`;
+        md += `- **Response commitment:** We aim to respond within 5 business days.\n\n`;
+
+        if (compat.length > 0) {
+          md += `## Compatibility\n\n`;
+          md += `This website is designed to be compatible with:\n\n`;
+          for (const c of compat) md += `- ${c}\n`;
+          md += `\n`;
+        }
+
+        md += `## Technologies Used\n\n`;
+        for (const t of techs) md += `- ${t}\n`;
+        md += `\n`;
+
+        if (fmt === "eu") {
+          md += `## Enforcement\n\n`;
+          md += `If you are not satisfied with our response, you can file a complaint with the relevant national enforcement body.\n\n`;
+          md += `## Annual Review\n\n`;
+          md += `This accessibility statement will be reviewed and updated annually, or after significant website changes.\n`;
+        }
+
+        return { content: [{ type: "text", text: md }] };
       } catch (err) {
         return { content: [{ type: "text", text: `Error: ${err.message}` }] };
       }

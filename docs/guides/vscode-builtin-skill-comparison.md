@@ -151,9 +151,9 @@ Before release:
 
 **What Accessibility Agents Provide That VS Code Built-in Skill Doesn't:**
 
-1. **57 Specialized Agents** - Domain experts for every accessibility scenario
-2. **17 Reusable Skills** - Deep knowledge bases agents can reference
-3. **104 Slash Command Prompts** - One-click workflows for common tasks
+1. **79 Specialized Agents** - Domain experts for every accessibility scenario
+2. **24 Reusable Skills** - Deep knowledge bases agents can reference
+3. **116 Slash Command Prompts** - One-click workflows for common tasks
 4. **Multi-Platform Support** - GitHub Copilot, Claude Code, Gemini, Codex, Desktop CLI
 5. **Lifecycle Hooks** - Proactive enforcement before code is written
 6. **Orchestrator Agents** - Step-by-step guided workflows for complex audits

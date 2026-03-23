@@ -22,6 +22,12 @@ agents:
   - contributions-hub
   - template-builder
   - repo-manager
+  - projects-manager
+  - actions-manager
+  - security-dashboard
+  - release-manager
+  - notifications-manager
+  - wiki-manager
 handoffs:
   - label: Morning Briefing
     agent: daily-briefing
@@ -62,6 +68,30 @@ handoffs:
   - label: Set Up Repository
     agent: repo-manager
     prompt: The user wants to scaffold issue templates, CI workflows, contributing guides, labels, or other repo infrastructure.
+    send: true
+  - label: Project Boards
+    agent: projects-manager
+    prompt: The user wants to manage GitHub Projects v2 boards, move items, configure fields, or plan sprints.
+    send: true
+  - label: CI/CD & Actions
+    agent: actions-manager
+    prompt: The user wants to view workflow runs, read logs, re-run failed jobs, or debug CI failures.
+    send: true
+  - label: Security Alerts
+    agent: security-dashboard
+    prompt: The user wants to triage Dependabot alerts, code scanning results, or secret scanning alerts.
+    send: true
+  - label: Releases & Tags
+    agent: release-manager
+    prompt: The user wants to create releases, manage tags, upload assets, or generate release notes.
+    send: true
+  - label: Notifications
+    agent: notifications-manager
+    prompt: The user wants to manage their GitHub notification inbox, mark items read, or adjust subscriptions.
+    send: true
+  - label: Wiki Pages
+    agent: wiki-manager
+    prompt: The user wants to create, edit, search, or organize GitHub Wiki pages.
     send: true
 ---
 

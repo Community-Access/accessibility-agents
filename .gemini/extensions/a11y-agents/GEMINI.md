@@ -53,6 +53,12 @@ The following skills are available in `skills/` and provide domain-specific acce
 - **contributions-hub** - Discussions, community health metrics, first-time contributor insights.
 - **template-builder** - Guided wizard for issue/PR/discussion templates.
 - **repo-manager** - Repository scaffolding with labels, CI, CONTRIBUTING, SECURITY, issue templates.
+- **projects-manager** - GitHub Projects v2 boards, views, custom fields, and iterations.
+- **actions-manager** - GitHub Actions workflow runs, logs, re-runs, and CI debugging.
+- **security-dashboard** - Dependabot, code scanning, and secret scanning alert triage.
+- **release-manager** - Releases, tags, assets, and release note generation.
+- **notifications-manager** - Notification inbox management, filtering, and subscriptions.
+- **wiki-manager** - Wiki page creation, editing, search, and organization.
 
 ## Decision Matrix
 

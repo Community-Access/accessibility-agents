@@ -2,7 +2,7 @@
 
 > AI agent guidance for this repository. Generated for AgentRC compatibility.
 
-This repository contains 65 accessibility-focused AI agents across multiple platforms (Copilot, Claude Code, Codex, Gemini). This file provides high-level guidance for AI coding assistants working in this codebase.
+This repository contains 79 accessibility-focused AI agents across multiple platforms (Copilot, Claude Code, Codex, Gemini). This file provides high-level guidance for AI coding assistants working in this codebase.
 
 ## Repository Purpose
 
@@ -12,8 +12,8 @@ This repository contains 65 accessibility-focused AI agents across multiple plat
 
 | Path | Purpose |
 |------|---------|
-| `.github/agents/` | Copilot agent definitions (65 agents) |
-| `.github/skills/` | Copilot reusable skills (19 skills) |
+| `.github/agents/` | Copilot agent definitions (79 agents) |
+| `.github/skills/` | Copilot reusable skills (24 skills) |
 | `.github/prompts/` | One-click workflow prompts |
 | `.github/instructions/` | Always-on instruction files |
 | `.claude/agents/` | Claude Code agent definitions |
@@ -58,6 +58,16 @@ Led by `github-hub` / `nexus`, manages repository operations:
 - `analytics` - Repository health metrics
 - `repo-admin` - Collaborator and branch protection management
 - `team-manager` - Organization team membership
+- `contributions-hub` - Contributor activity tracking and recognition
+- `insiders-a11y-tracker` - VS Code Insiders accessibility regression tracking
+- `template-builder` - Issue and PR template generation
+- `repo-manager` - Repository settings, labels, and workflow management
+- `projects-manager` - GitHub Projects v2 boards, views, custom fields, and iterations
+- `actions-manager` - GitHub Actions workflow runs, logs, re-runs, and CI debugging
+- `security-dashboard` - Dependabot, code scanning, and secret scanning alert triage
+- `release-manager` - Releases, tags, assets, and release note generation
+- `notifications-manager` - Notification inbox management, filtering, and subscriptions
+- `wiki-manager` - Wiki page creation, editing, search, and organization
 
 ### Developer Tools Team
 Led by `developer-hub`, handles desktop and Python development:

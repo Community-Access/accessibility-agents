@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Multi-language support guide** (`docs/guides/multi-language-support.md`) — Architecture for translating agent instructions. Locale-suffix convention, 3-tier translation priority, BCP 47 codes, translation workflow, and contributing guide.
 - **Enterprise packaging** — Configurable enterprise configuration schema (`templates/enterprise-config.schema.json`) and example configuration (`templates/enterprise-config-example.json`). Supports custom WCAG targets, design token paths, issue tracker routing (GitHub/Jira/Azure DevOps/Linear), scanning profiles, report formats, and CI gating thresholds.
-- **Anthropic directory manifest** (`mcp-server/anthropic-directory.json`) — Directory manifest for Claude Desktop auto-distribution. Lists all 20 tools, 3 prompts, 3 resources with stdio and HTTP transport configurations.
+- **Anthropic directory manifest** (`mcp-server/anthropic-directory.json`) — Directory manifest for Claude Desktop auto-distribution. Lists all 24 tools, 3 prompts, 3 resources with stdio and HTTP transport configurations.
 - **Nexus / GitHub Hub differentiation** — Nexus is now the auto-routing orchestrator (infers intent silently); GitHub Hub is the guided/menu-driven variant (presents options and lets users choose)
 - **MCP Server Test Suite** — 52 tests covering all tools, prompts, and resources
   - Uses Node built-in test runner (`node --test`)
@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Documentation
 
-- **Comprehensive User Guide** (`docs/USER_GUIDE.md`) — Instructor-style ecosystem guide covering all 65 agents, 19 skills, 111 prompts, 6 instructions, and 20 MCP tools. Collapsible per-platform sections for GitHub Copilot, Claude Code, Gemini, Codex, and Claude Desktop. Includes team overviews, agent reference, skill catalog, prompt directory, common workflows and recipes, platform comparison, troubleshooting, and glossary.
+- **Comprehensive User Guide** (`docs/USER_GUIDE.md`) — Instructor-style ecosystem guide covering all 79 agents, 24 skills, 116 prompts, 8 instructions, and 24 MCP tools. Collapsible per-platform sections for GitHub Copilot, Claude Code, Gemini, Codex, and Claude Desktop. Includes team overviews, exhaustive agent reference with sample prompts, skill catalog, prompt directory, MCP server interaction guide, file-based workflows, common workflow recipes, platform comparison, troubleshooting, and glossary.
 
 ### Fixed
 

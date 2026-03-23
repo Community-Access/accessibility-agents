@@ -124,6 +124,18 @@
 {"path":"docs/agents/word-accessibility.md","title":"word-accessibility - Microsoft Word (DOCX) Accessibility"}
 ,
 {"path":"docs/agents/wxpython-specialist.md","title":"wxpython-specialist - wxPython GUI Expert"}
+,
+{"path":"docs/agents/projects-manager.md","title":"projects-manager - GitHub Projects v2 Boards"}
+,
+{"path":"docs/agents/actions-manager.md","title":"actions-manager - GitHub Actions Workflow Management"}
+,
+{"path":"docs/agents/security-dashboard.md","title":"security-dashboard - Security Alert Triage"}
+,
+{"path":"docs/agents/release-manager.md","title":"release-manager - GitHub Releases and Tags"}
+,
+{"path":"docs/agents/notifications-manager.md","title":"notifications-manager - Notification Inbox Management"}
+,
+{"path":"docs/agents/wiki-manager.md","title":"wiki-manager - GitHub Wiki Page Management"}
 ]},
 {"name":"Skills","id":"skills","items":[
 {"path":"docs/skills/accessibility-rules.md","title":"accessibility-rules Skill"}

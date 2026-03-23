@@ -9,8 +9,8 @@
 
 name: "accessibility-agents"
 title: "Accessibility Agents for GitHub Copilot"
-description: "59 specialized AI agents for web, document, desktop, and developer accessibility auditing. WCAG 2.2 AA compliance, automated remediation, and multi-platform support."
-version: "3.2.0"
+description: "79 specialized AI agents for web, document, desktop, and developer accessibility auditing. WCAG 2.2 AA compliance, automated remediation, and multi-platform support."
+version: "4.0.0"
 author: "Community-Access"
 license: "MIT"
 homepage: "https://github.com/Community-Access/accessibility-agents"
@@ -39,33 +39,33 @@ engines:
 
 # Plugin contents bundled for discovery and installation
 contents:
-  # Primary agent directory (57 agents for VS Code/Copilot)
+  # Primary agent directory (79 agents for VS Code/Copilot)
   agents:
     path: ".github/agents"
     description: "Orchestrator agents (accessibility-lead, web-accessibility-wizard, etc.) and specialist agents for WCAG A11y auditing across web, document, desktop, and developer accessibility domains"
-    count: 57
+    count: 79
     format: "agent.md"
     
-  # Reusable multi-platform skills (17 skills)
+  # Reusable multi-platform skills (24 skills)
   skills:
     path: ".github/skills"
     description: "Domain expertise skills for WCAG rules, severity scoring, scanning patterns, framework-specific guidance, and accessibility standards"
-    count: 17
+    count: 24
     format: "SKILL.md"
     portable: true
 
-  # Custom prompts and slash commands (104)
+  # Custom prompts and slash commands (116)
   prompts:
     path: ".github/prompts"
     description: "Task-oriented prompts for web audits, document audits, markdown audits, GitHub workflow automation, and remediation"
-    count: 104
+    count: 116
     format: "markdown"
 
   # Workspace instructions and rules
   instructions:
     path: ".github/instructions"
     description: "Global accessibility baseline rules, semantic HTML requirements, ARIA patterns, and markdown accessibility guidelines"
-    count: 5
+    count: 8
     
   # Documentation
   documentation:
@@ -105,25 +105,31 @@ features:
 # Platform support matrix
 platforms:
   - name: "GitHub Copilot (VS Code)"
-    agents: 57
-    skills: 17
-    prompts: 104
+    agents: 79
+    skills: 24
+    prompts: 116
     status: "fully-supported"
     
   - name: "Copilot CLI"
-    agents: 57
-    skills: 17
+    agents: 79
+    skills: 24
     status: "fully-supported"
 
   - name: "Claude Code (VS Code)"
-    agents: 44
-    skills: 17
+    agents: 79
+    skills: 24
     status: "community-maintained"
     note: "Simplified agent format; full compatibility"
 
+  - name: "Claude Desktop (Plugin)"
+    agents: 79
+    skills: 24
+    status: "community-maintained"
+    note: "Plugin format for Claude Desktop MCP"
+
   - name: "Google Gemini"
-    agents: 57
-    skills: 17
+    agents: 79
+    skills: 24
     status: "community-maintained"
     note: "Custom .SKILL.md format for Gemini"
 

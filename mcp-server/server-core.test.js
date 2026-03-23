@@ -363,6 +363,8 @@ describe("createServer", () => {
       "check_heading_structure",
       "check_link_text",
       "check_form_labels",
+      "check_color_blindness",
+      "check_reading_level",
     ];
     const expectedDocument = [
       "scan_office_document",
@@ -371,6 +373,12 @@ describe("createServer", () => {
       "batch_scan_documents",
       "fix_document_metadata",
       "fix_document_headings",
+    ];
+    const expectedMedia = [
+      "validate_caption_file",
+    ];
+    const expectedStatement = [
+      "generate_accessibility_statement",
     ];
     const expectedCaching = [
       "check_audit_cache",
@@ -388,6 +396,8 @@ describe("createServer", () => {
     const allExpected = [
       ...expectedCore,
       ...expectedDocument,
+      ...expectedMedia,
+      ...expectedStatement,
       ...expectedCaching,
       ...expectedPlaywright,
       ...expectedPdf,
@@ -402,6 +412,138 @@ describe("createServer", () => {
       toolCount >= allExpected.length,
       `Expected at least ${allExpected.length} tools, got ${toolCount}`
     );
+  });
+});
+
+// =========================================================================
+// check_color_blindness tool
+// =========================================================================
+
+describe("check_color_blindness tool", () => {
+  let callTool;
+  before(() => {
+    const server = createServer();
+    callTool = async (name, args) => {
+      const tool = server._registeredTools[name];
+      return tool.handler(args, {});
+    };
+  });
+
+  it("simulates color blindness for a pair of colors", async () => {
+    const result = await callTool("check_color_blindness", {
+      colors: ["#FF0000", "#00FF00"],
+    });
+    const data = JSON.parse(result.content[0].text);
+    assert.ok(data.protanopia, "Should have protanopia simulation");
+    assert.ok(data.deuteranopia, "Should have deuteranopia simulation");
+    assert.ok(data.tritanopia, "Should have tritanopia simulation");
+    assert.ok(data.achromatopsia, "Should have achromatopsia simulation");
+    assert.ok(data.protanopia[0].simulated.length === 2, "Should return simulated color pair");
+    assert.ok(typeof data.protanopia[0].deltaE === "number", "Should return deltaE");
+  });
+
+  it("handles three or more colors", async () => {
+    const result = await callTool("check_color_blindness", {
+      colors: ["#FF0000", "#00FF00", "#0000FF"],
+    });
+    const data = JSON.parse(result.content[0].text);
+    // 3 colors = 3 pairs
+    assert.strictEqual(data.protanopia.length, 3);
+  });
+});
+
+// =========================================================================
+// check_reading_level tool
+// =========================================================================
+
+describe("check_reading_level tool", () => {
+  let callTool;
+  before(() => {
+    const server = createServer();
+    callTool = async (name, args) => {
+      const tool = server._registeredTools[name];
+      return tool.handler(args, {});
+    };
+  });
+
+  it("analyzes simple text at a low reading level", async () => {
+    const result = await callTool("check_reading_level", {
+      text: "The cat sat on the mat. The dog ran in the park. It was a nice day.",
+    });
+    const data = JSON.parse(result.content[0].text);
+    assert.ok(data.scores.fleschReadingEase.score > 60, "Simple text should be easy to read");
+    assert.ok(data.scores.fleschKincaidGrade < 10, "Simple text should be low grade level");
+    assert.ok(data.statistics.words > 0, "Should count words");
+    assert.ok(data.statistics.sentences > 0, "Should count sentences");
+  });
+
+  it("returns WCAG 3.1.5 pass/fail", async () => {
+    const result = await callTool("check_reading_level", {
+      text: "Click the button to submit your form. Enter your name and email address.",
+    });
+    const data = JSON.parse(result.content[0].text);
+    assert.strictEqual(data.wcag.criterion, "3.1.5 Reading Level (AAA)");
+    assert.ok(typeof data.wcag.passes === "boolean");
+  });
+});
+
+// =========================================================================
+// generate_accessibility_statement tool
+// =========================================================================
+
+describe("generate_accessibility_statement tool", () => {
+  let callTool;
+  before(() => {
+    const server = createServer();
+    callTool = async (name, args) => {
+      const tool = server._registeredTools[name];
+      return tool.handler(args, {});
+    };
+  });
+
+  it("generates a W3C model statement", async () => {
+    const result = await callTool("generate_accessibility_statement", {
+      organization: "Test Corp",
+      websiteUrl: "https://example.com",
+      contactEmail: "a11y@example.com",
+      conformanceStatus: "partially",
+    });
+    const text = result.content[0].text;
+    assert.ok(text.includes("# Accessibility Statement"));
+    assert.ok(text.includes("Test Corp"));
+    assert.ok(text.includes("partially conformant"));
+    assert.ok(text.includes("a11y@example.com"));
+    assert.ok(!text.includes("Enforcement"), "W3C format should not include EU enforcement section");
+  });
+
+  it("generates an EU model statement with enforcement section", async () => {
+    const result = await callTool("generate_accessibility_statement", {
+      organization: "EU Org",
+      websiteUrl: "https://eu-example.com",
+      contactEmail: "contact@eu-example.com",
+      conformanceStatus: "fully",
+      format: "eu",
+    });
+    const text = result.content[0].text;
+    assert.ok(text.includes("fully conformant"));
+    assert.ok(text.includes("Enforcement"), "EU format should include enforcement section");
+    assert.ok(text.includes("Annual Review"), "EU format should include annual review");
+  });
+
+  it("includes known limitations when provided", async () => {
+    const result = await callTool("generate_accessibility_statement", {
+      organization: "Test",
+      websiteUrl: "https://example.com",
+      contactEmail: "test@example.com",
+      conformanceStatus: "partially",
+      knownLimitations: [
+        { description: "Video captions incomplete", wcag: "1.2.2", workaround: "Transcripts available" },
+      ],
+    });
+    const text = result.content[0].text;
+    assert.ok(text.includes("Video captions incomplete"));
+    assert.ok(text.includes("1.2.2"));
+    assert.ok(text.includes("Transcripts available"));
   });
 });
 

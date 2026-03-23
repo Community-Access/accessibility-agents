@@ -47,7 +47,7 @@ accessibility-agents/
   claude-code-plugin/
     .claude-plugin/
       plugin.json        # Plugin manifest (name, version, author)
-    agents/              # 50 agent .md files (plugin distribution)
+    agents/              # 79 agent .md files (plugin distribution)
     commands/            # 17 skill commands (/aria, /audit, etc.)
     hooks/
       hooks.json         # Plugin-level hooks (empty — enforcement is global)

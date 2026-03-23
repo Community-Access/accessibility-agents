@@ -267,6 +267,12 @@ For Section 508, EN 301 549, or organizational compliance:
 - `contributions-hub` - Discussion management, community health, contributor insights, first-time contributor support
 - `template-builder` - Interactive issue/PR/workflow template wizard with YAML frontmatter generation
 - `repo-manager` - Repo infrastructure scaffolding: templates, CI/CD, labels, README, CONTRIBUTING, licenses
+- `projects-manager` - GitHub Projects v2 boards, views, custom fields, iterations via GraphQL API
+- `actions-manager` - GitHub Actions workflow runs, logs, re-runs, and CI debugging via REST API
+- `security-dashboard` - Dependabot, code scanning, and secret scanning alert triage via REST API
+- `release-manager` - Releases, tags, assets, and release note generation via REST API
+- `notifications-manager` - Notification inbox management, filtering, and subscriptions via REST API
+- `wiki-manager` - Wiki page creation, editing, search, and organization via wiki git repo
 
 **Skills:**
 - `github-workflow-standards` - Auth, smart defaults, dual MD+HTML output, HTML accessibility, safety rules, parallel execution
@@ -296,6 +302,10 @@ For Section 508, EN 301 549, or organizational compliance:
 - `github-hub`/`nexus` -> any specialist via intent routing
 - `daily-briefing` -> `issue-tracker` (deep dive on issue), `pr-review` (full review), `analytics` (team metrics), `insiders-a11y-tracker` (a11y detail)
 - `issue-tracker` <-> `pr-review` (bidirectional: linked PRs/issues)
+- `projects-manager` <-> `issue-tracker` (project board items link to issues)
+- `actions-manager` <-> `pr-review` (CI status links to PRs)
+- `security-dashboard` <-> `issue-tracker` (security alerts may need triage)
+- `release-manager` <-> `pr-review` (release notes from merged PRs)
 - Any agent -> `github-hub` or `nexus` for scope changes or re-routing
 
 ---
