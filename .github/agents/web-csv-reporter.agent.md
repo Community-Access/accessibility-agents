@@ -1,7 +1,7 @@
 ---
 name: web-csv-reporter
 description: Internal helper for exporting web accessibility audit findings to CSV format. Generates structured CSV reports with severity scoring, WCAG criteria mapping, Accessibility Insights help links, and actionable remediation guidance for each finding.
-user-invokable: false
+user-invocable: false
 tools: ['read', 'search', 'edit']
 ---
 

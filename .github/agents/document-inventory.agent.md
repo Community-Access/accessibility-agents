@@ -1,7 +1,7 @@
 ---
 name: document-inventory
 description: Internal helper for document file discovery, inventory building, and metadata extraction. Scans folders for Office documents (.docx, .xlsx, .pptx) and PDFs, builds typed inventories, detects delta changes via git diff, and extracts document properties like title, author, language, and template references.
-user-invokable: false
+user-invocable: false
 tools: ['read', 'search', 'runInTerminal']
 ---
 

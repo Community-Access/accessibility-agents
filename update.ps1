@@ -355,6 +355,23 @@ if (-not $Project) {
     }
 }
 
+# ---------------------------------------------------------------------------
+# Update MCP server dependencies (if Node.js is available)
+# ---------------------------------------------------------------------------
+$McpPkg = Join-Path $CacheDir "desktop-extension\package.json"
+if ((Test-Path $McpPkg) -and (Get-Command node -ErrorAction SilentlyContinue) -and (Get-Command npm -ErrorAction SilentlyContinue)) {
+    try {
+        Push-Location (Join-Path $CacheDir "desktop-extension")
+        npm install --omit=dev --silent 2>$null | Out-Null
+        Pop-Location
+        Write-Log "MCP server dependencies updated"
+    }
+    catch {
+        Pop-Location -ErrorAction SilentlyContinue
+        Write-Log "MCP server dependency install failed (non-fatal)"
+    }
+}
+
 # Save version
 $NewHash | Out-File -FilePath $VersionFile -Encoding utf8 -NoNewline
 

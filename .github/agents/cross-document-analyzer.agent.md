@@ -1,7 +1,7 @@
 ---
 name: cross-document-analyzer
 description: Internal helper for cross-document accessibility pattern detection, severity scoring, template analysis, and remediation tracking. Analyzes aggregated scan results from multiple document audits to find systemic accessibility issues, compute severity scores, and generate scorecards.
-user-invokable: false
+user-invocable: false
 tools: ['read', 'search']
 ---
 

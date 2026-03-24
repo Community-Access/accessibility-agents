@@ -502,6 +502,16 @@ if [ "$TARGET" = "global" ] && [ -d "$HOME/.claude/hooks" ]; then
   fi
 fi
 
+# ---------------------------------------------------------------------------
+# Update MCP server dependencies (if Node.js is available)
+# ---------------------------------------------------------------------------
+MCP_PKG="$CACHE_DIR/desktop-extension/package.json"
+if [ -f "$MCP_PKG" ] && command -v node &>/dev/null && command -v npm &>/dev/null; then
+  (cd "$CACHE_DIR/desktop-extension" && npm install --omit=dev --silent 2>/dev/null) && \
+    log "MCP server dependencies updated" || \
+    log "MCP server dependency install failed (non-fatal)"
+fi
+
 # Save version
 echo "$NEW_HASH" > "$VERSION_FILE"
 

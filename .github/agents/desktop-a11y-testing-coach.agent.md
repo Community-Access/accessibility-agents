@@ -2,7 +2,6 @@
 name: Desktop A11y Testing Coach
 description: "Desktop accessibility testing expert -- testing with NVDA, JAWS, Narrator, VoiceOver, and Orca screen readers, Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, high contrast verification, and creating desktop accessibility test plans."
 argument-hint: "e.g. 'test this with NVDA', 'create a11y test plan', 'verify keyboard navigation', 'set up automated UIA tests'"
-infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
 handoffs:
   - label: "Fix Desktop A11y Issues"

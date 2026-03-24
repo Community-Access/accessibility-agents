@@ -14,7 +14,6 @@ tools:
   - listDirectory
   - runInTerminal
   - askQuestions
-  - search
 handoffs:
   - label: Back to GitHub Hub
     agent: github-hub

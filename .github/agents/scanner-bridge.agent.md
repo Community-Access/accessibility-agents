@@ -1,7 +1,7 @@
 ---
 name: scanner-bridge
 description: Internal helper that bridges GitHub Accessibility Scanner CI data with the agent ecosystem. Fetches scanner-created issues, normalizes findings, deduplicates against local scans, and tracks Copilot fix status.
-user-invokable: false
+user-invocable: false
 tools:
   - github/*
   - fetch

@@ -1,5 +1,6 @@
 ---
 name: Daily Briefing
+target: vscode
 description: "Your daily GitHub command center -- generates a comprehensive briefing (markdown + HTML) of everything needing your attention: issues, PRs, reviews, releases, discussions, reactions, and accessibility updates."
 argument-hint: "e.g. 'morning briefing', 'what happened since yesterday', 'full weekly report', 'just PRs and issues'"
 tools:

@@ -1,5 +1,6 @@
 ---
 name: PR Review
+target: vscode
 description: "Your code review command center -- pull PR diffs, before/after snapshots, developer comments, reactions, release context, and generate full review documents (markdown + HTML) in your workspace."
 argument-hint: "e.g. 'review owner/repo#15', 'show PRs waiting for my review', 'full review of this PR with action items'"
 tools:

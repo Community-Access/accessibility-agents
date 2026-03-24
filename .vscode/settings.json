@@ -10,6 +10,9 @@
 
   "chat.useNestedAgentsMdFiles": false,
 
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 500,
+
   "css.lint.important": "warning",
 
   "html.validate.scripts": true,

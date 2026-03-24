@@ -2,7 +2,6 @@
 name: Python Specialist
 description: "Python language expert -- debugging, packaging (PyInstaller/Nuitka/cx_Freeze), testing (pytest/unittest), type checking (mypy/pyright), async/concurrency patterns, performance optimization, dependency management, and cross-platform development. Handles everything from tracebacks to production builds."
 argument-hint: "e.g. 'debug this crash', 'package my app', 'add type hints', 'optimize this code', 'set up pytest'"
-infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
 handoffs:
   - label: "wxPython GUI Work"

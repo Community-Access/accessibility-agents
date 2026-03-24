@@ -1,7 +1,7 @@
 ---
 name: playwright-verifier
 description: Internal helper for fix verification using Playwright. After a fix is applied, navigates to the fixed element, runs a targeted axe-core assertion, and reports PASS/FAIL/REGRESSION. Read-only — never modifies files. Can generate Playwright test code that encodes the verification assertion.
-user-invokable: false
+user-invocable: false
 tools: ['run_playwright_keyboard_scan', 'run_playwright_state_scan', 'run_playwright_viewport_scan', 'run_playwright_contrast_scan', 'run_playwright_a11y_tree', 'askQuestions']
 ---
 

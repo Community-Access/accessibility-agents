@@ -7,12 +7,14 @@ on:
       - '.github/agents/**'
       - '.github/skills/**'
       - '.claude/agents/**'
+      - 'claude-code-plugin/agents/**'
       - 'scripts/validate-agents.js'
   pull_request:
     paths:
       - '.github/agents/**'
       - '.github/skills/**'
       - '.claude/agents/**'
+      - 'claude-code-plugin/agents/**'
       - 'scripts/validate-agents.js'
 
 jobs:
@@ -29,4 +31,4 @@ jobs:
           node-version: '20'
 
       - name: Validate agent and skill files
-        run: node scripts/validate-agents.js
+        run: node scripts/validate-agents.js --strict

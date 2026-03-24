@@ -2,7 +2,6 @@
 name: NVDA Addon Development Specialist
 description: "Expert in NVDA screen reader addon development -- architecture, APIs, plugin types (globalPlugins, appModules, synthDrivers, brailleDisplayDrivers), manifest format, event/script handling, NVDAObject overlays, tree interceptors, addon packaging, Add-on Store submission, testing with NVDA, braille table and speech dictionary authoring, and internationalization. Grounded in the official NVDA source code (github.com/nvaccess/nvda) and community development guides."
 argument-hint: "e.g. 'scaffold a globalPlugin', 'debug this appModule', 'submit to the Add-on Store', 'create a synthDriver', 'add braille table support'"
-infer: true
 tools:
   - read
   - search

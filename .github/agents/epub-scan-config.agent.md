@@ -1,7 +1,7 @@
 ---
 name: epub-scan-config
 description: Manages .a11y-epub-config.json scan configuration for ePub accessibility audits. Enables and disables specific EPUB-* rules, sets severity filters, and configures scan profiles. Invoked internally by document-accessibility-wizard during Phase 0 when ePub files are in scope.
-user-invokable: false
+user-invocable: false
 tools: ['read', 'edit', 'askQuestions']
 ---
 

@@ -5,6 +5,55 @@ All notable changes to the Accessibility Agents project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.10.0] - 2026-03-24
+
+### Added
+
+#### Enhanced Agent Validator (`scripts/validate-agents.js`)
+
+- **Official tool alias table validation** — Tool names are now validated against the official GitHub Copilot custom-agents configuration reference. Covers all canonical tools (`execute`, `read`, `edit`, `search`, `agent`, `web`, `todo`) and their documented aliases (`shell`/`bash`/`powershell` → `execute`, `grep`/`glob` → `search`, `task` → `agent`, etc.)
+- **VS Code qualified tool validation** — Validates `toolSet/toolName` patterns (`edit/createFile`, `search/codebase`, `execute/runInTerminal`, `web/fetch`, etc.) against the complete VS Code built-in tool list
+- **MCP namespace pattern validation** — Validates `<server>/*` and `<server>/<tool>` patterns, flags unknown MCP server namespaces with info-level messages
+- **Frontmatter property validation** — All YAML frontmatter keys are validated against the official schema (`name`, `description`, `tools`, `model`, `target`, `user-invocable`, `disable-model-invocation`, `handoffs`, `agents`, `hooks`, `mcp-servers`, `metadata`, `argument-hint`). Unknown properties are flagged.
+- **Deprecated property detection** — `infer:` flagged with migration guidance to `user-invocable` + `disable-model-invocation`
+- **`target` value validation** — Validates against `vscode` and `github-copilot`
+- **Boolean property validation** — Ensures `user-invocable`, `disable-model-invocation`, and `infer` are `true` or `false`
+- **Conflicting property detection** — Warns when `infer` coexists with its replacement properties
+- **Prompt body size check** — Warns when prompt body exceeds 30,000 chars (GitHub.com coding agent limit); skipped for `target: vscode` agents
+- **Duplicate tool detection** — Flags duplicate entries in tools lists
+- **Claude Code tool validation** — Validates Claude agents' tools including `MCP(...)` wrapper syntax and `GitHub` built-in tool
+- **Claude Code plugin agents** — Now scans `claude-code-plugin/agents/` in addition to `.claude/agents/`
+- **`--strict` flag** — Treats warnings as errors (exit code 1 on any warning). Used by pre-commit hook and CI.
+- **`--quiet` flag** — Suppresses warnings and info, shows only errors
+- **`--files` flag** — Validates specific files only (for pre-commit hooks), avoids scanning all 265+ files on every commit
+
+#### Pre-commit Hook
+
+- **`scripts/pre-commit`** — Git pre-commit hook that validates only staged agent/skill files before allowing commit. Runs in `--strict` mode to block commits with validation warnings. Bypass with `git commit --no-verify`.
+- **`scripts/install-hooks.js`** — Cross-platform hook installer. Backs up any existing pre-commit hook before installing. Run `node scripts/install-hooks.js` after cloning.
+
+#### CI/CD
+
+- **Strict CI validation** — `validate-agents.yml` workflow now runs with `--strict` flag
+- **Extended trigger paths** — CI workflow now triggers on `claude-code-plugin/agents/**` changes
+
+#### Installer improvements
+
+- **MCP server dependency installation** — `install.ps1` and `install.sh` now auto-install MCP server npm dependencies when Node.js is available
+- **`update.ps1` / `update.sh`** — Updated with MCP dependency handling
+
+#### Documentation
+
+- **MCP Server setup guide** — Added setup instructions, tool reference table, and troubleshooting to `docs/getting-started.md`
+
+### Fixed
+
+- **`user-invokable` → `user-invocable`** — Fixed typo in 16 agent files (property name and description text) that caused the property to be silently ignored by Copilot
+- **Removed deprecated `infer: true`** — Removed from 16 agent files. The default behavior (`user-invocable: true`, `disable-model-invocation: false`) is equivalent to `infer: true`, so no behavioral change.
+- **Duplicate `search` tool in `repo-manager`** — Removed duplicate entry from tools list
+- **Oversized prompt bodies** — Added `target: vscode` to 5 agents (`document-accessibility-wizard`, `daily-briefing`, `issue-tracker`, `pr-review`, `web-accessibility-wizard`) whose prompt bodies exceed GitHub.com's 30,000 character limit. These agents are designed for VS Code and use large inlined skill content.
+- **Broken links** — Repaired broken URLs and hardened verification (from v4.0.0 follow-up)
+
 ## [4.0.0] - 2026-03-22
 
 ### Added

@@ -733,6 +733,27 @@ if ($Choice -eq "2") {
     Install-GlobalHooks
 }
 
+# ---------------------------------------------------------------------------
+# Install MCP server dependencies (if Node.js is available)
+# The desktop-extension/ MCP server requires npm packages to function.
+# This is optional - the core agents work without it.
+# ---------------------------------------------------------------------------
+$McpPkg = Join-Path $ScriptDir "desktop-extension\package.json"
+if ((Test-Path $McpPkg) -and (Get-Command node -ErrorAction SilentlyContinue) -and (Get-Command npm -ErrorAction SilentlyContinue)) {
+    Write-Host ""
+    Write-Host "  Installing MCP server dependencies..."
+    try {
+        Push-Location (Join-Path $ScriptDir "desktop-extension")
+        npm install --omit=dev --silent 2>$null | Out-Null
+        Pop-Location
+        Write-Host "    + MCP server dependencies installed"
+    }
+    catch {
+        Pop-Location -ErrorAction SilentlyContinue
+        Write-Host "    ! MCP server dependency install failed (non-fatal)"
+    }
+}
+
 # Done
 Write-Host ""
 Write-Host "  ========================="

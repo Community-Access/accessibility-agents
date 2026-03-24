@@ -2,7 +2,6 @@
 name: Accessibility Tool Builder
 description: "Expert in building accessibility scanning tools, rule engines, document parsers, report generators, and audit automation. Designs WCAG criterion mapping, severity scoring algorithms, CLI/GUI scanner architecture, and CI/CD integration for accessibility tooling."
 argument-hint: "e.g. 'build a scanning rule engine', 'design a report generator', 'add WCAG mapping', 'create a11y CLI tool'"
-infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
 handoffs:
   - label: "Python Implementation"

@@ -197,8 +197,8 @@ To see all installed agents at any time, type `/agents` in Claude Code.
 
 **Check that you see:**
 
-- **80 agents loaded** across all agent teams (web, document, GitHub, developer tools)
-- **25 active skills** providing domain knowledge
+- **57 agents loaded** across all agent teams (web, document, GitHub, developer tools)
+- **17 active skills** providing domain knowledge
 - **3 workspace instructions** (web-accessibility-baseline, semantic-html, aria-patterns or powershell-terminal-ops depending on platform)
 - **Hook execution** showing UserPromptSubmit, PreToolUse, and PostToolUse events during web UI tasks
 
@@ -428,6 +428,37 @@ Once an agent has been picked, you can mention it by name to invoke it:
 
 The workspace instructions in `.github/copilot-instructions.md` are loaded into every Copilot Chat conversation. When you ask Copilot to build or modify UI code, it will automatically consider accessibility requirements.
 
+### MCP Server Setup (Required for MCP Tools)
+
+The workspace includes an MCP server in `.vscode/mcp.json` that provides accessibility tools (contrast checking, heading structure analysis, link text validation, form label checking, document scanning, and more) directly in Copilot Chat.
+
+**The server requires Node.js dependencies to be installed before it will load:**
+
+```bash
+cd desktop-extension
+npm install
+```
+
+This installs the `@modelcontextprotocol/sdk` and `zod` packages that the server needs. The `node_modules/` directory is gitignored, so you must run this step after every fresh clone.
+
+**Verify the server loads:**
+
+After running `npm install`, reload VS Code. The MCP server should appear in the Copilot Chat tool list. If you see an error about missing packages, re-run `npm install` in the `desktop-extension/` directory.
+
+**What the MCP server provides:**
+
+| Tool | Purpose |
+|------|---------|
+| `check_contrast` | Calculate WCAG contrast ratios between hex colors |
+| `get_accessibility_guidelines` | Get WCAG AA guidelines for specific component types |
+| `check_heading_structure` | Analyze HTML heading hierarchy |
+| `check_link_text` | Detect ambiguous link text |
+| `check_form_labels` | Validate form input label associations |
+| `generate_vpat` | Generate VPAT 2.5 conformance report |
+| `run_axe_scan` | Run axe-core against a live URL |
+| `scan_office_document` | Scan DOCX, XLSX, PPTX for accessibility issues |
+| `scan_pdf_document` | Scan PDFs for PDF/UA conformance |
+
 ### Differences from Claude Code
 
 | Feature | Claude Code | GitHub Copilot |
@@ -438,7 +469,7 @@ The workspace instructions in `.github/copilot-instructions.md` are loaded into 
 | Commit messages | N/A | `.github/copilot-commit-message-instructions.md` |
 | PR template | N/A | `.github/PULL_REQUEST_TEMPLATE.md` |
 | CI workflow | N/A | `.github/workflows/a11y-check.yml` |
-| VS Code config | N/A | `.vscode/` (extensions, settings, tasks) |
+| VS Code config | N/A | `.vscode/` (extensions, settings, tasks, MCP) |
 | Invocation | `/agent-name` or `@agent-name` | `@agent-name` |
 | Auto-activation | Invoke agents directly | Workspace instructions provide guidance |
 | Global install | `~/.claude/agents/` | VS Code user profile folder or per-project |
@@ -725,31 +756,15 @@ bash update.sh
 ### Building from Source
 
 ```bash
+npm install -g @anthropic-ai/mcpb
 git clone https://github.com/Community-Access/accessibility-agents.git
-cd accessibility-agents/mcp-server
+cd a11y-agent-team/desktop-extension
 npm install
-
-# HTTP mode (recommended)
-npm start
-# → http://127.0.0.1:3100/mcp
-
-# stdio mode (for Claude Desktop mcp.json)
-node stdio.js
+mcpb validate .
+mcpb pack . ../a11y-agent-team.mcpb
 ```
 
-Configure Claude Desktop to use the HTTP server:
-
-```json
-{
-  "mcpServers": {
-    "a11y-agent-team": {
-      "url": "http://127.0.0.1:3100/mcp"
-    }
-  }
-}
-```
-
-See [mcp-server/README.md](../mcp-server/README.md) for full setup and deployment options.
+The output file can be double-clicked to install in Claude Desktop.
 
 ---
 
@@ -859,7 +874,7 @@ This is for **Google Gemini CLI** (the terminal coding agent).
 
 Gemini CLI uses an extension system with skills. Each accessibility agent is packaged as a skill (`SKILL.md` with YAML frontmatter) inside the `a11y-agents` extension. The `GEMINI.md` context file provides always-on WCAG AA enforcement rules that load into every conversation, similar to how `CLAUDE.md` works for Claude Code.
 
-The extension includes 80 agent skills covering all accessibility domains plus 18 knowledge domain skills for reference data (WCAG mappings, severity scoring, help URLs).
+The extension includes 49 agent skills covering all accessibility domains plus 14 knowledge domain skills for reference data (WCAG mappings, severity scoring, help URLs).
 
 ### Prerequisites
 
@@ -937,7 +952,7 @@ Gemini will load the `GEMINI.md` context file and apply WCAG AA rules to all UI 
 
 - **gemini-extension.json** -- Extension manifest
 - **GEMINI.md** -- Always-on accessibility context with decision matrix and non-negotiable standards
-- **skills/** -- 98 skills total (80 agent skills + 18 knowledge domains)
+- **skills/** -- 63 skills total (49 agent skills + 14 knowledge domains)
 
 ### Removing
 

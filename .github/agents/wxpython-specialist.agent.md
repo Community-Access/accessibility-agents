@@ -2,7 +2,6 @@
 name: wxPython Specialist
 description: "wxPython GUI expert -- sizer layouts, event handling, AUI framework, custom controls, threading (wx.CallAfter/wx.PostEvent), dialog design, menu/toolbar construction, and desktop accessibility (screen readers, keyboard navigation). Covers cross-platform gotchas for Windows, macOS, and Linux."
 argument-hint: "e.g. 'fix my layout', 'build a dialog', 'add keyboard shortcuts', 'make this accessible', 'debug event handling'"
-infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
 handoffs:
   - label: "Python Deep Dive"

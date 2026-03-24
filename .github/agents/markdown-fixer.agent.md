@@ -1,7 +1,7 @@
 ---
 name: markdown-fixer
-description: Internal helper for applying accessibility fixes to markdown files. Handles auto-fixable issues (links, headings, emoji, em-dashes, tables, Mermaid replacement, ASCII diagram descriptions) and presents human-judgment fixes for approval. Invoked by markdown-a11y-assistant via agent tool - not user-invokable directly.
-user-invokable: false
+description: Internal helper for applying accessibility fixes to markdown files. Handles auto-fixable issues (links, headings, emoji, em-dashes, tables, Mermaid replacement, ASCII diagram descriptions) and presents human-judgment fixes for approval. Invoked by markdown-a11y-assistant via agent tool - not user-invocable directly.
+user-invocable: false
 tools: ['read', 'edit', 'runInTerminal', 'getTerminalOutput']
 ---
 

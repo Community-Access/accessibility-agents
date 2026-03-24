@@ -197,18 +197,6 @@ case "$choice" in
     ;;
 esac
 
-# Manifest: track which files we install so updates never touch user-created files.
-# Keep the helper global so later install paths (Copilot/Codex/Gemini) can always use it,
-# including global/plugin installs that bypass the Claude file-copy branch.
-mkdir -p "$TARGET_DIR"
-MANIFEST_FILE="$TARGET_DIR/.a11y-agent-manifest"
-touch "$MANIFEST_FILE"
-
-add_manifest_entry() {
-  local entry="$1"
-  grep -qxF "$entry" "$MANIFEST_FILE" 2>/dev/null || echo "$entry" >> "$MANIFEST_FILE"
-}
-
 # ---------------------------------------------------------------------------
 # merge_config_file src dst label
 # Appends/updates our section in a config markdown file using section markers.
@@ -348,7 +336,7 @@ if ns not in data:
             "plugins": [{
                 "name": "accessibility-agents",
                 "source": "./plugins/accessibility-agents",
-                "description": "WCAG AA accessibility enforcement with 80 agents and enforcement hooks.",
+                "description": "WCAG AA accessibility enforcement with 55 agents and enforcement hooks.",
                 "version": "1.0.0"
             }]
         }
@@ -771,6 +759,15 @@ mkdir -p "$TARGET_DIR/agents"
 if [ ${#SKILLS[@]} -gt 0 ]; then
   mkdir -p "$TARGET_DIR/skills"
 fi
+
+# Manifest: track which files we install so updates never touch user-created files
+MANIFEST_FILE="$TARGET_DIR/.a11y-agent-manifest"
+touch "$MANIFEST_FILE"
+
+add_manifest_entry() {
+  local entry="$1"
+  grep -qxF "$entry" "$MANIFEST_FILE" 2>/dev/null || echo "$entry" >> "$MANIFEST_FILE"
+}
 
 # Copy agents — skip any file that already exists (preserves user customisations)
 echo ""
@@ -1486,6 +1483,20 @@ if [ "$install_gemini" = true ] && [ -d "$GEMINI_SRC" ]; then
   echo "  Run: gemini \"Build a login form\" — accessibility skills apply automatically."
 fi
 
+# ---------------------------------------------------------------------------
+# Install MCP server dependencies (if Node.js is available)
+# The desktop-extension/ MCP server requires npm packages to function.
+# This is optional — the core agents work without it.
+# ---------------------------------------------------------------------------
+MCP_PKG="$SCRIPT_DIR/desktop-extension/package.json"
+if [ -f "$MCP_PKG" ] && command -v node &>/dev/null && command -v npm &>/dev/null; then
+  echo ""
+  echo "  Installing MCP server dependencies..."
+  (cd "$SCRIPT_DIR/desktop-extension" && npm install --omit=dev --silent 2>/dev/null) && \
+    echo "    + MCP server dependencies installed" || \
+    echo "    ! MCP server dependency install failed (non-fatal)"
+fi
+
 # Verify installation
 echo ""
 echo "  ========================="
@@ -1849,3 +1860,4 @@ echo ""
 echo "  Start Claude Code and try: \"Build a login form\""
 echo "  The accessibility-lead should activate automatically."
 echo ""
+

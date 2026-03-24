@@ -1,7 +1,7 @@
 ---
 name: office-scan-config
 description: Office document accessibility scan configuration manager. Use to create, edit, validate, or explain .a11y-office-config.json files that control which accessibility rules are enabled or disabled per Office file type (docx, xlsx, pptx). Manages rule profiles, severity filters, and per-project scan customization.
-user-invokable: false
+user-invocable: false
 tools: ['read', 'edit', 'askQuestions']
 ---
 

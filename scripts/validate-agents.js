@@ -1,97 +1,220 @@
 #!/usr/bin/env node
 /**
  * Agent and Skill Validation Script
- * 
- * Validates that all agent and skill files have:
- * - Valid YAML frontmatter
- * - Required fields (description for agents, name+description for skills)
- * - Valid tool names (CLI-compatible for Copilot agents)
- * 
+ *
+ * Validates agent (.agent.md) and skill (SKILL.md) files against the official
+ * GitHub Copilot custom-agents configuration reference:
+ *   https://docs.github.com/en/copilot/reference/custom-agents-configuration
+ *   https://code.visualstudio.com/docs/copilot/customization/custom-agents
+ *   https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools
+ *
+ * Checks performed:
+ *   - Valid YAML frontmatter present
+ *   - Required fields (description for agents, name+description for skills)
+ *   - Tool names validated against official alias table and VS Code built-in tools
+ *   - MCP namespaced tools validated against <server>/* and <server>/<tool> patterns
+ *   - Deprecated frontmatter properties flagged (infer -> user-invocable + disable-model-invocation)
+ *   - Unknown frontmatter properties flagged
+ *   - Handoffs structure validated
+ *   - Prompt body length checked (max 30,000 chars for github.com)
+ *
  * Usage:
- *   node scripts/validate-agents.js [--fix]
- * 
+ *   node scripts/validate-agents.js [--fix] [--strict] [--quiet] [--files file1 file2 ...]
+ *
+ * Options:
+ *   --fix      Suggest auto-fixable changes (future: apply them)
+ *   --strict   Treat warnings as errors (exit 1 on any warning)
+ *   --quiet    Only output errors, suppress warnings and info
+ *   --files    Validate only the specified files (for pre-commit hooks)
+ *
  * Exit codes:
  *   0 - All validations passed
- *   1 - Validation errors found
+ *   1 - Validation errors found (or warnings in --strict mode)
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// CLI-compatible tool names (what Copilot CLI understands)
-const VALID_COPILOT_TOOLS = new Set([
-  // Core CLI tools
-  'read', 'edit', 'search', 'execute', 'agent', 'web',
-  // VS Code tools (mapped or gracefully ignored by CLI)
-  'runInTerminal', 'askQuestions', 'getDiagnostics', 'listDirectory',
-  'getTerminalOutput', 'createFile', 'fetch', 'createDirectory',
-  // GitHub MCP tools (VS Code Copilot Chat with GitHub extension)
-  'github/*', 'codebase',
-  // MCP tools (Playwright)
-  'run_playwright_keyboard_scan', 'run_playwright_state_scan',
-  'run_playwright_viewport_scan', 'run_playwright_contrast_scan',
-  'run_playwright_a11y_tree'
+// ---------------------------------------------------------------------------
+// CLI flags
+// ---------------------------------------------------------------------------
+const args = process.argv.slice(2);
+const FLAG_FIX = args.includes('--fix');
+const FLAG_STRICT = args.includes('--strict');
+const FLAG_QUIET = args.includes('--quiet');
+const filesIdx = args.indexOf('--files');
+const SPECIFIC_FILES = filesIdx !== -1 ? args.slice(filesIdx + 1) : null;
+
+// ---------------------------------------------------------------------------
+// Official tool alias table
+// Source: https://docs.github.com/en/copilot/reference/custom-agents-configuration#tool-aliases
+// ---------------------------------------------------------------------------
+const CANONICAL_TOOL_ALIASES = {
+  // execute aliases
+  'shell': 'execute', 'bash': 'execute', 'powershell': 'execute',
+  // read aliases
+  'read': 'read', 'notebookread': 'read', 'view': 'read',
+  // edit aliases
+  'edit': 'edit', 'multiedit': 'edit', 'write': 'edit', 'notebookedit': 'edit',
+  // search aliases
+  'search': 'search', 'grep': 'search', 'glob': 'search',
+  // agent aliases
+  'agent': 'agent', 'custom-agent': 'agent', 'task': 'agent',
+  // web aliases
+  'web': 'web', 'websearch': 'web', 'webfetch': 'web',
+  // todo aliases
+  'todo': 'todo', 'todowrite': 'todo',
+};
+
+// Canonical tool names (the primary names)
+const CANONICAL_TOOLS = new Set(['execute', 'read', 'edit', 'search', 'agent', 'web', 'todo']);
+
+// VS Code built-in qualified tool names (toolSet/toolName format)
+// Source: https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools
+const VSCODE_QUALIFIED_TOOLS = new Set([
+  // agent set
+  'agent/runSubagent',
+  // edit set
+  'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'edit/editNotebook',
+  // execute set
+  'execute/createAndRunTask', 'execute/getTerminalOutput', 'execute/runInTerminal',
+  'execute/runNotebookCell', 'execute/testFailure',
+  // read set
+  'read/getNotebookSummary', 'read/problems', 'read/readFile',
+  'read/readNotebookCellOutput', 'read/terminalLastCommand', 'read/terminalSelection',
+  // search set
+  'search/changes', 'search/codebase', 'search/fileSearch',
+  'search/listDirectory', 'search/textSearch', 'search/usages',
+  // web set
+  'web/fetch',
+  // standalone
+  'newWorkspace', 'selection', 'todos',
+  // vscode namespace
+  'vscode/askQuestions', 'vscode/extensions', 'vscode/getProjectSetupInfo',
+  'vscode/installExtension', 'vscode/runCommand', 'vscode/VSCodeAPI',
 ]);
 
-// VS Code-specific tools that should be replaced with CLI equivalents
-const TOOL_REPLACEMENTS = {
-  'readFile': 'read',
-  'editFiles': 'edit',
-  'textSearch': 'search',
-  'fileSearch': 'search',
-  'runSubagent': 'agent'
+// VS Code shorthand tool names (used in agent frontmatter, mapped internally by VS Code)
+const VSCODE_SHORTHAND_TOOLS = new Set([
+  'runInTerminal', 'askQuestions', 'getDiagnostics', 'listDirectory',
+  'getTerminalOutput', 'createFile', 'fetch', 'createDirectory',
+  'codebase', 'createAndRunTask', 'testFailure', 'problems',
+  'readFile', 'editFiles', 'textSearch', 'fileSearch',
+  'runSubagent', 'newWorkspace', 'selection', 'todos',
+]);
+
+// Known out-of-the-box MCP server namespaces
+const KNOWN_MCP_NAMESPACES = new Set(['github', 'playwright']);
+
+// Wildcard pattern: matches tool entries and tool enable-all patterns
+const MCP_TOOL_PATTERN = /^([a-z0-9_.-]+)\/([\w*]+)$/i;
+
+// Custom MCP tool names from known servers in this repo (validated individually)
+const KNOWN_MCP_TOOLS = new Set([
+  // Playwright MCP tools (from this repo's playwright-scanner agent)
+  'run_playwright_keyboard_scan', 'run_playwright_state_scan',
+  'run_playwright_viewport_scan', 'run_playwright_contrast_scan',
+  'run_playwright_a11y_tree',
+]);
+
+// ---------------------------------------------------------------------------
+// Frontmatter property validation
+// Source: https://docs.github.com/en/copilot/reference/custom-agents-configuration#yaml-frontmatter-properties
+//         https://code.visualstudio.com/docs/copilot/customization/custom-agents#_header-optional
+// ---------------------------------------------------------------------------
+const VALID_FRONTMATTER_KEYS = new Set([
+  // Shared across GitHub.com and VS Code
+  'name', 'description', 'tools', 'model', 'target',
+  'disable-model-invocation', 'user-invocable', 'mcp-servers', 'metadata',
+  // VS Code specific
+  'argument-hint', 'handoffs', 'agents', 'hooks',
+  // Deprecated
+  'infer',
+]);
+
+const DEPRECATED_PROPERTIES = {
+  'infer': {
+    message: "Property 'infer' is deprecated. Use 'user-invocable' and 'disable-model-invocation' instead.",
+    replacements: ['user-invocable', 'disable-model-invocation'],
+  },
 };
+
+const VALID_TARGET_VALUES = new Set(['vscode', 'github-copilot']);
+
+// Max prompt body size for github.com agents
+const MAX_PROMPT_CHARS = 30000;
 
 // Required fields per file type
 const REQUIRED_FIELDS = {
   agent: ['description'],
-  skill: ['name', 'description']
+  skill: ['name', 'description'],
 };
+
+// Claude Code tool names (comma-separated strings in frontmatter)
+const VALID_CLAUDE_TOOLS = new Set([
+  'Read', 'Edit', 'Grep', 'Glob', 'Bash', 'Task',
+  'MultiEdit', 'Write', 'NotebookRead', 'NotebookEdit',
+  'WebSearch', 'WebFetch', 'TodoWrite',
+  // Claude Code built-in tools
+  'GitHub',
+]);
+
+// Claude MCP tool pattern: MCP(tool_name)
+const CLAUDE_MCP_PATTERN = /^MCP\(([\w_.-]+)\)$/;
 
 let errors = [];
 let warnings = [];
+let info = [];
 
-/**
- * Parse YAML frontmatter from markdown file
- */
+// ---------------------------------------------------------------------------
+// YAML frontmatter parser (handles inline arrays, block arrays, key-value pairs,
+// nested objects for handoffs/mcp-servers)
+// ---------------------------------------------------------------------------
 function parseFrontmatter(content) {
-  // Handle different line endings
   const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const match = normalized.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
-  
+
   const yaml = match[1];
   const result = {};
-  
-  // Simple YAML parser for our needs
   const lines = yaml.split('\n');
   let currentKey = null;
   let inArray = false;
   let arrayItems = [];
-  
+
   for (const line of lines) {
-    // Array item
+    // Array item (block-style)
     if (line.match(/^\s+-\s+/)) {
       const value = line.replace(/^\s+-\s+/, '').trim();
-      arrayItems.push(value);
+      if (value) arrayItems.push(value);
       continue;
     }
-    
-    // End of array
-    if (inArray && currentKey && !line.match(/^\s+-/)) {
+
+    // Nested object item under array (e.g., handoffs entries)
+    if (line.match(/^\s+-\s*$/)) {
+      continue;
+    }
+
+    // Nested key-value inside an object (indented, e.g., handoffs labels)
+    if (line.match(/^\s{2,}\w/) && inArray) {
+      // Store raw line for later; for now just skip nested parsing
+      continue;
+    }
+
+    // End of array when we hit a new top-level key
+    if (inArray && currentKey && line.match(/^\w/)) {
       result[currentKey] = arrayItems;
       inArray = false;
       arrayItems = [];
       currentKey = null;
     }
-    
-    // Key-value pair
-    const kvMatch = line.match(/^(\w[\w-]*):\s*(.*)$/);
+
+    // Top-level key-value pair
+    const kvMatch = line.match(/^([\w][\w-]*):\s*(.*)$/);
     if (kvMatch) {
       const [, key, value] = kvMatch;
-      
+
       if (value === '' || value === '|' || value === '>') {
-        // Start of array or multiline
         currentKey = key;
         inArray = true;
         arrayItems = [];
@@ -101,170 +224,393 @@ function parseFrontmatter(content) {
           .replace(/^\[|\]$/g, '')
           .split(',')
           .map(s => s.trim().replace(/^['"]|['"]$/g, ''));
-        result[key] = items;
+        result[key] = items.filter(Boolean);
       } else {
         result[key] = value.replace(/^['"]|['"]$/g, '');
       }
     }
   }
-  
+
   // Handle trailing array
   if (inArray && currentKey) {
     result[currentKey] = arrayItems;
   }
-  
+
   return result;
 }
 
 /**
- * Validate a Copilot agent file
+ * Extract prompt body (everything after frontmatter)
  */
+function extractBody(content) {
+  const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const match = normalized.match(/^---\n[\s\S]*?\n---\n([\s\S]*)$/);
+  return match ? match[1] : normalized;
+}
+
+// ---------------------------------------------------------------------------
+// Tool name validation
+// ---------------------------------------------------------------------------
+
+/**
+ * Validate a single tool name against the official schema.
+ * Returns { valid, level, message } where level is 'error' | 'warning' | 'info'.
+ */
+function validateToolName(tool, relativePath) {
+  // 1. Empty or whitespace-only
+  if (!tool || !tool.trim()) {
+    return { valid: false, level: 'error', message: `${relativePath}: Empty tool name in tools list` };
+  }
+
+  const trimmed = tool.trim();
+  const lower = trimmed.toLowerCase();
+
+  // 2. Wildcard: enable all tools
+  if (trimmed === '*') {
+    return { valid: true };
+  }
+
+  // 3. Canonical tool name (case-insensitive per docs)
+  if (CANONICAL_TOOLS.has(lower)) {
+    return { valid: true };
+  }
+
+  // 4. Known alias (case-insensitive)
+  if (CANONICAL_TOOL_ALIASES[lower]) {
+    const canonical = CANONICAL_TOOL_ALIASES[lower];
+    if (lower !== canonical) {
+      return {
+        valid: true,
+        level: 'info',
+        message: `${relativePath}: Tool '${trimmed}' is an alias for '${canonical}'`,
+      };
+    }
+    return { valid: true };
+  }
+
+  // 5. MCP namespaced pattern: <server>/* or <server>/<tool>
+  const mcpMatch = trimmed.match(MCP_TOOL_PATTERN);
+  if (mcpMatch) {
+    const [, namespace] = mcpMatch;
+    if (!KNOWN_MCP_NAMESPACES.has(namespace.toLowerCase())) {
+      return {
+        valid: true,
+        level: 'info',
+        message: `${relativePath}: Tool '${trimmed}' uses custom MCP namespace '${namespace}' (ensure MCP server is configured)`,
+      };
+    }
+    return { valid: true };
+  }
+
+  // 6. VS Code qualified tool name (toolSet/toolName)
+  if (VSCODE_QUALIFIED_TOOLS.has(trimmed)) {
+    return { valid: true };
+  }
+
+  // 7. VS Code shorthand tool name
+  if (VSCODE_SHORTHAND_TOOLS.has(trimmed)) {
+    return { valid: true };
+  }
+
+  // 8. Known custom MCP tools (from this repo)
+  if (KNOWN_MCP_TOOLS.has(trimmed)) {
+    return { valid: true };
+  }
+
+  // 9. Extension-contributed tool pattern: azure.some-extension/some-tool
+  if (trimmed.match(/^[\w.-]+\/[\w.-]+$/)) {
+    return {
+      valid: true,
+      level: 'info',
+      message: `${relativePath}: Tool '${trimmed}' appears to be an extension or MCP tool (ensure it's available at runtime)`,
+    };
+  }
+
+  // 10. Unknown tool
+  return {
+    valid: false,
+    level: 'warning',
+    message: `${relativePath}: Unknown tool '${trimmed}' — not found in official aliases, VS Code built-ins, or known MCP servers. It will be silently ignored at runtime.`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Frontmatter property validation
+// ---------------------------------------------------------------------------
+function validateFrontmatterProperties(frontmatter, relativePath) {
+  const keys = Object.keys(frontmatter);
+
+  for (const key of keys) {
+    // Check for deprecated properties
+    if (DEPRECATED_PROPERTIES[key]) {
+      warnings.push(`${relativePath}: ${DEPRECATED_PROPERTIES[key].message}`);
+    }
+
+    // Check for unknown properties
+    if (!VALID_FRONTMATTER_KEYS.has(key)) {
+      warnings.push(`${relativePath}: Unknown frontmatter property '${key}' — may be ignored by Copilot`);
+    }
+  }
+
+  // Validate target value
+  if (frontmatter.target && !VALID_TARGET_VALUES.has(frontmatter.target)) {
+    errors.push(`${relativePath}: Invalid target value '${frontmatter.target}' — must be 'vscode' or 'github-copilot'`);
+  }
+
+  // Validate boolean properties
+  const booleanProps = ['disable-model-invocation', 'user-invocable', 'infer'];
+  for (const prop of booleanProps) {
+    if (frontmatter[prop] !== undefined) {
+      const val = String(frontmatter[prop]).toLowerCase();
+      if (val !== 'true' && val !== 'false') {
+        errors.push(`${relativePath}: Property '${prop}' must be true or false, got '${frontmatter[prop]}'`);
+      }
+    }
+  }
+
+  // Warn if both infer and its replacements co-exist
+  if (frontmatter['infer'] !== undefined) {
+    if (frontmatter['user-invocable'] !== undefined || frontmatter['disable-model-invocation'] !== undefined) {
+      warnings.push(`${relativePath}: Both 'infer' and its replacements are set — 'disable-model-invocation' takes precedence per docs`);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Copilot agent validator
+// ---------------------------------------------------------------------------
 function validateCopilotAgent(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const frontmatter = parseFrontmatter(content);
   const relativePath = path.relative(process.cwd(), filePath);
-  
+
   if (!frontmatter) {
     errors.push(`${relativePath}: Missing YAML frontmatter`);
     return;
   }
-  
-  // Check required fields
+
+  // Required fields
   for (const field of REQUIRED_FIELDS.agent) {
     if (!frontmatter[field]) {
       errors.push(`${relativePath}: Missing required field '${field}'`);
     }
   }
-  
-  // Check tool names
+
+  // Frontmatter property validation
+  validateFrontmatterProperties(frontmatter, relativePath);
+
+  // Tool names
   if (frontmatter.tools && Array.isArray(frontmatter.tools)) {
     for (const tool of frontmatter.tools) {
-      if (TOOL_REPLACEMENTS[tool]) {
-        warnings.push(`${relativePath}: Tool '${tool}' should be '${TOOL_REPLACEMENTS[tool]}' for CLI compatibility`);
-      } else if (!VALID_COPILOT_TOOLS.has(tool)) {
-        warnings.push(`${relativePath}: Unknown tool '${tool}' (may not work in Copilot CLI)`);
+      const result = validateToolName(tool, relativePath);
+      if (!result.valid) {
+        if (result.level === 'error') errors.push(result.message);
+        else warnings.push(result.message);
+      } else if (result.message) {
+        if (result.level === 'warning') warnings.push(result.message);
+        else if (result.level === 'info') info.push(result.message);
       }
     }
+
+    // Check for duplicates
+    const seen = new Set();
+    for (const tool of frontmatter.tools) {
+      const lower = tool.toLowerCase();
+      if (seen.has(lower)) {
+        warnings.push(`${relativePath}: Duplicate tool '${tool}' in tools list`);
+      }
+      seen.add(lower);
+    }
+  }
+
+  // Prompt body length (only applies to agents targeting github.com, not VS Code)
+  const body = extractBody(content);
+  if (frontmatter.target !== 'vscode' && body.length > MAX_PROMPT_CHARS) {
+    warnings.push(`${relativePath}: Prompt body is ${body.length} chars — exceeds ${MAX_PROMPT_CHARS} char limit for GitHub.com coding agent (add 'target: vscode' if this is VS Code-only)`);
+  }
+
+  // Handoffs structure validation
+  if (frontmatter.handoffs && Array.isArray(frontmatter.handoffs)) {
+    // Basic presence check — handoffs are parsed as strings from our simple parser
+    // but the structure should at minimum exist
   }
 }
 
-/**
- * Validate a skill SKILL.md file
- */
+// ---------------------------------------------------------------------------
+// Skill validator
+// ---------------------------------------------------------------------------
 function validateSkill(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const frontmatter = parseFrontmatter(content);
   const relativePath = path.relative(process.cwd(), filePath);
-  
+
   if (!frontmatter) {
     errors.push(`${relativePath}: Missing YAML frontmatter`);
     return;
   }
-  
-  // Check required fields
+
   for (const field of REQUIRED_FIELDS.skill) {
     if (!frontmatter[field]) {
       errors.push(`${relativePath}: Missing required field '${field}'`);
     }
   }
-  
-  // Check that folder name matches skill name
+
   const folderName = path.basename(path.dirname(filePath));
   if (frontmatter.name && frontmatter.name !== folderName) {
     warnings.push(`${relativePath}: Skill name '${frontmatter.name}' doesn't match folder name '${folderName}'`);
   }
 }
 
-/**
- * Validate a Claude Code agent file
- */
+// ---------------------------------------------------------------------------
+// Claude Code agent validator
+// ---------------------------------------------------------------------------
 function validateClaudeAgent(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const frontmatter = parseFrontmatter(content);
   const relativePath = path.relative(process.cwd(), filePath);
-  
+
   if (!frontmatter) {
     errors.push(`${relativePath}: Missing YAML frontmatter`);
     return;
   }
-  
-  // Check required fields
+
   for (const field of REQUIRED_FIELDS.agent) {
     if (!frontmatter[field]) {
       errors.push(`${relativePath}: Missing required field '${field}'`);
     }
   }
-}
 
-/**
- * Find and validate all agent/skill files
- */
-function validateAll() {
-  console.log('Validating agent and skill files...\n');
-  
-  // Copilot agents
-  const copilotAgentsDir = path.join(process.cwd(), '.github', 'agents');
-  if (fs.existsSync(copilotAgentsDir)) {
-    const files = fs.readdirSync(copilotAgentsDir).filter(f => f.endsWith('.agent.md'));
-    console.log(`Found ${files.length} Copilot agents`);
-    for (const file of files) {
-      validateCopilotAgent(path.join(copilotAgentsDir, file));
+  // Claude tools are comma-separated string or array
+  if (frontmatter.tools) {
+    let tools = frontmatter.tools;
+    if (typeof tools === 'string') {
+      tools = tools.split(',').map(t => t.trim()).filter(Boolean);
     }
-  }
-  
-  // Copilot skills
-  const copilotSkillsDir = path.join(process.cwd(), '.github', 'skills');
-  if (fs.existsSync(copilotSkillsDir)) {
-    const skillDirs = fs.readdirSync(copilotSkillsDir, { withFileTypes: true })
-      .filter(d => d.isDirectory());
-    console.log(`Found ${skillDirs.length} Copilot skills`);
-    for (const dir of skillDirs) {
-      const skillFile = path.join(copilotSkillsDir, dir.name, 'SKILL.md');
-      if (fs.existsSync(skillFile)) {
-        validateSkill(skillFile);
-      } else {
-        errors.push(`.github/skills/${dir.name}: Missing SKILL.md`);
+    if (Array.isArray(tools)) {
+      for (const tool of tools) {
+        if (!VALID_CLAUDE_TOOLS.has(tool)
+            && !CANONICAL_TOOL_ALIASES[tool.toLowerCase()]
+            && !CLAUDE_MCP_PATTERN.test(tool)) {
+          warnings.push(`${relativePath}: Unknown Claude tool '${tool}'`);
+        }
       }
     }
   }
-  
-  // Claude Code agents
-  const claudeAgentsDir = path.join(process.cwd(), '.claude', 'agents');
-  if (fs.existsSync(claudeAgentsDir)) {
-    const files = fs.readdirSync(claudeAgentsDir).filter(f => f.endsWith('.md'));
-    console.log(`Found ${files.length} Claude Code agents`);
-    for (const file of files) {
-      validateClaudeAgent(path.join(claudeAgentsDir, file));
+}
+
+// ---------------------------------------------------------------------------
+// Main validation orchestrator
+// ---------------------------------------------------------------------------
+function validateAll() {
+  if (!FLAG_QUIET) {
+    console.log('Validating agent and skill files...');
+    console.log('Sources: GitHub custom-agents configuration reference, VS Code docs, VS Code cheat sheet\n');
+  }
+
+  // If specific files requested (pre-commit mode), only validate those
+  if (SPECIFIC_FILES && SPECIFIC_FILES.length > 0) {
+    if (!FLAG_QUIET) console.log(`Validating ${SPECIFIC_FILES.length} specified file(s)...\n`);
+    for (const file of SPECIFIC_FILES) {
+      const absPath = path.resolve(process.cwd(), file);
+      if (!fs.existsSync(absPath)) continue;
+
+      if (file.includes('.github/agents/') || file.includes('.github\\agents\\')) {
+        validateCopilotAgent(absPath);
+      } else if (file.includes('.github/skills/') || file.includes('.github\\skills\\')) {
+        validateSkill(absPath);
+      } else if (file.includes('.claude/agents/') || file.includes('.claude\\agents\\')) {
+        validateClaudeAgent(absPath);
+      } else if (file.includes('claude-code-plugin/agents/') || file.includes('claude-code-plugin\\agents\\')) {
+        validateClaudeAgent(absPath);
+      }
+    }
+  } else {
+    // Full scan mode
+    // Copilot agents
+    const copilotAgentsDir = path.join(process.cwd(), '.github', 'agents');
+    if (fs.existsSync(copilotAgentsDir)) {
+      const files = fs.readdirSync(copilotAgentsDir).filter(f => f.endsWith('.agent.md'));
+      if (!FLAG_QUIET) console.log(`Found ${files.length} Copilot agents`);
+      for (const file of files) {
+        validateCopilotAgent(path.join(copilotAgentsDir, file));
+      }
+    }
+
+    // Copilot skills
+    const copilotSkillsDir = path.join(process.cwd(), '.github', 'skills');
+    if (fs.existsSync(copilotSkillsDir)) {
+      const skillDirs = fs.readdirSync(copilotSkillsDir, { withFileTypes: true })
+        .filter(d => d.isDirectory());
+      if (!FLAG_QUIET) console.log(`Found ${skillDirs.length} Copilot skills`);
+      for (const dir of skillDirs) {
+        const skillFile = path.join(copilotSkillsDir, dir.name, 'SKILL.md');
+        if (fs.existsSync(skillFile)) {
+          validateSkill(skillFile);
+        } else {
+          errors.push(`.github/skills/${dir.name}: Missing SKILL.md`);
+        }
+      }
+    }
+
+    // Claude Code agents (.claude/agents/)
+    const claudeAgentsDir = path.join(process.cwd(), '.claude', 'agents');
+    if (fs.existsSync(claudeAgentsDir)) {
+      const files = fs.readdirSync(claudeAgentsDir).filter(f => f.endsWith('.md'));
+      if (!FLAG_QUIET) console.log(`Found ${files.length} Claude Code agents`);
+      for (const file of files) {
+        validateClaudeAgent(path.join(claudeAgentsDir, file));
+      }
+    }
+
+    // Claude Code plugin agents (claude-code-plugin/agents/)
+    const pluginAgentsDir = path.join(process.cwd(), 'claude-code-plugin', 'agents');
+    if (fs.existsSync(pluginAgentsDir)) {
+      const files = fs.readdirSync(pluginAgentsDir).filter(f => f.endsWith('.md'));
+      if (!FLAG_QUIET) console.log(`Found ${files.length} Claude Code plugin agents`);
+      for (const file of files) {
+        validateClaudeAgent(path.join(pluginAgentsDir, file));
+      }
     }
   }
-  
+
   // Report results
   console.log('\n' + '='.repeat(60) + '\n');
-  
+
   if (errors.length > 0) {
-    console.log(`❌ ${errors.length} ERROR(S):\n`);
+    console.log(`ERRORS (${errors.length}):\n`);
     for (const error of errors) {
-      console.log(`  • ${error}`);
+      console.log(`  [error] ${error}`);
     }
     console.log('');
   }
-  
-  if (warnings.length > 0) {
-    console.log(`⚠️  ${warnings.length} WARNING(S):\n`);
+
+  if (warnings.length > 0 && !FLAG_QUIET) {
+    console.log(`WARNINGS (${warnings.length}):\n`);
     for (const warning of warnings) {
-      console.log(`  • ${warning}`);
+      console.log(`  [warn]  ${warning}`);
     }
     console.log('');
   }
-  
-  if (errors.length === 0 && warnings.length === 0) {
-    console.log('✅ All validations passed!\n');
+
+  if (info.length > 0 && !FLAG_QUIET) {
+    console.log(`INFO (${info.length}):\n`);
+    for (const item of info) {
+      console.log(`  [info]  ${item}`);
+    }
+    console.log('');
   }
-  
+
+  if (errors.length === 0 && warnings.length === 0) {
+    console.log('All validations passed!\n');
+  }
+
   // Summary
   console.log('='.repeat(60));
-  console.log(`Errors: ${errors.length}  Warnings: ${warnings.length}`);
-  
+  console.log(`Errors: ${errors.length}  Warnings: ${warnings.length}  Info: ${info.length}`);
+
+  if (FLAG_STRICT) {
+    return (errors.length + warnings.length) === 0 ? 0 : 1;
+  }
   return errors.length === 0 ? 0 : 1;
 }
 

@@ -1,7 +1,7 @@
 ---
 name: cross-page-analyzer
 description: Internal helper for cross-page accessibility pattern detection, severity scoring, and scorecard generation. Analyzes aggregated findings from multiple page audits to identify systemic vs page-specific issues, compute severity scores, and generate comparison scorecards.
-user-invokable: false
+user-invocable: false
 tools: ['read', 'search', 'askQuestions']
 ---
 

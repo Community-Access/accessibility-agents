@@ -1,7 +1,7 @@
 ---
 name: web-issue-fixer
 description: Internal helper for applying accessibility fixes to web source code. Handles auto-fixable issues (missing alt, lang, labels, tabindex) and presents human-judgment fixes for approval. Generates framework-specific code using the detected stack.
-user-invokable: false
+user-invocable: false
 tools: ['read', 'search', 'edit', 'runInTerminal', 'askQuestions']
 ---
 

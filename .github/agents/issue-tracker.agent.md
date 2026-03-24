@@ -1,5 +1,6 @@
 ---
 name: Issue Tracker
+target: vscode
 description: "Your GitHub issue command center -- find, triage, review, and respond to issues with full markdown + HTML reports saved to your workspace. Includes reactions, release context, and discussion awareness."
 argument-hint: "e.g. 'show my issues from last week', 'triage my open issues', 'deep dive into owner/repo#42'"
 tools:

@@ -2,7 +2,6 @@
 name: Desktop Accessibility Specialist
 description: "Desktop application accessibility expert -- platform APIs (UI Automation, MSAA/IAccessible2, ATK/AT-SPI, NSAccessibility), accessible control patterns, screen reader Name/Role/Value/State, focus management, high contrast, and custom widget accessibility for Windows, macOS, and Linux desktop applications."
 argument-hint: "e.g. 'audit this control for screen readers', 'add UIA support', 'fix focus order', 'high contrast mode'"
-infer: true
 tools: ['read', 'search', 'edit', 'runInTerminal', 'createFile', 'listDirectory', 'askQuestions']
 handoffs:
   - label: "wxPython Implementation"

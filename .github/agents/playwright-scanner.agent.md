@@ -1,7 +1,7 @@
 ---
 name: playwright-scanner
 description: Internal helper for behavioral accessibility testing using Playwright. Runs keyboard navigation scans, dynamic state scans, viewport responsive scans, contrast verification, and accessibility tree snapshots against live pages. Read-only — never modifies files.
-user-invokable: false
+user-invocable: false
 tools: ['run_playwright_keyboard_scan', 'run_playwright_state_scan', 'run_playwright_viewport_scan', 'run_playwright_contrast_scan', 'run_playwright_a11y_tree', 'askQuestions']
 ---
 
