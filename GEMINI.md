@@ -84,14 +84,17 @@ When starting any accessibility audit, review, or remediation task, proactively 
 2. **Previous audit reports:** Check for existing `ACCESSIBILITY-AUDIT.md`, `WEB-ACCESSIBILITY-AUDIT.md`, `DOCUMENT-ACCESSIBILITY-AUDIT.md`, and `MARKDOWN-ACCESSIBILITY-AUDIT.md` in the workspace root. If found, note the date, overall score, and issue count. Offer comparison/delta mode.
 3. **Scan config templates:** If no config file exists, mention that pre-built profiles (strict, moderate, minimal) are available in the `templates/` directory.
 
-## VS Code 1.112 Features
+## VS Code 1.113 Features
 
-VS Code 1.112 (March 2026) enhances accessibility agent workflows:
+VS Code 1.113 (March 2026) enhances accessibility agent workflows:
 
 - **Monorepo Support:** `chat.useCustomizationsInParentRepositories` discovers agents from parent folders
-- **Agent Debugging:** `/troubleshoot` skill, JSONL export/import, Agent Flow Chart visualization
+- **Agent Debugging:** `/troubleshoot`, JSONL export/import, Agent Flow Chart, and Agent Debug Logs support for Copilot CLI and Claude agent sessions
+- **MCP Across Agent Types:** VS Code-registered MCP servers now bridge into Copilot CLI and Claude agents
+- **Chat Customizations Editor:** `Chat: Open Chat Customizations` centralizes instructions, prompts, agents, skills, MCP servers, and plugins
+- **Nested Subagents:** `chat.subagents.allowInvocationsFromSubagents` enables recursive or coordinator-worker flows when deliberately needed
 - **Image Analysis:** `chat.imageSupport.enabled` for alt-text-headings to analyze actual images
-- **Integrated Browser:** `editor-browser` debug type for zoom/reflow testing (WCAG 1.4.4, 1.4.10)
+- **Integrated Browser:** `editor-browser` debug type for zoom/reflow testing (WCAG 1.4.4, 1.4.10), plus local HTTPS with self-signed certificates
 - **Permission Levels:** Autopilot (read-only scans), Bypass Approvals (batch scanning), Default (fix-applying)
 
 ## Non-Negotiable Standards

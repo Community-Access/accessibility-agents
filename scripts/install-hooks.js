@@ -3,7 +3,7 @@
  * Install git hooks for the agents repository.
  *
  * Copies scripts/pre-commit to .git/hooks/pre-commit so that agent/skill
- * files are validated before every commit.
+ * files and staged Markdown are validated before every commit.
  *
  * Usage:
  *   node scripts/install-hooks.js
@@ -54,5 +54,5 @@ try {
 console.log('Pre-commit hook installed successfully.');
 console.log(`  ${path.relative(ROOT, TARGET)}`);
 console.log('');
-console.log('Agent and skill files will be validated before each commit.');
+console.log('Agent and skill files plus staged Markdown will be validated before each commit.');
 console.log('To bypass (not recommended): git commit --no-verify');

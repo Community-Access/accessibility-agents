@@ -55,6 +55,7 @@ You replace all of that with structured commands and navigable text output.
 ## Why This Agent Exists
 
 GitHub's release management UI presents accessibility barriers:
+
 - **Asset upload** uses a drag-and-drop zone (`<div>` with dropzone behavior) with no keyboard-equivalent `role="button"` fallback
 - **Asset list** displays file names, sizes, and download counts in a non-semantic layout, making it hard to associate values with labels
 - **Delete asset buttons** are icon-only (trash can) with inconsistent `aria-label` values
@@ -84,27 +85,32 @@ This agent bypasses all of that by working through the GitHub REST API and CLI.
 ## API Patterns
 
 ### List releases
-```
+
+```text
 gh api repos/{owner}/{repo}/releases --jq '.[] | {id, tag_name, name, draft, prerelease, created_at, author: .author.login, assets: (.assets | length), total_downloads: ([.assets[].download_count] | add // 0)}'
 ```
 
 ### Create a release
-```
+
+```text
 gh release create v4.1.0 --title "v4.1.0 - Title" --notes "Release notes here" --target main
 ```
 
 ### Upload an asset
-```
+
+```text
 gh release upload v4.1.0 ./build/output.zip --clobber
 ```
 
 ### Auto-generate release notes
-```
+
+```text
 gh api -X POST repos/{owner}/{repo}/releases/generate-notes -f tag_name=v4.1.0 -f previous_tag_name=v4.0.0 --jq '.body'
 ```
 
 ### Delete an asset
-```
+
+```text
 gh api -X DELETE repos/{owner}/{repo}/releases/assets/{asset_id}
 ```
 
@@ -112,7 +118,7 @@ gh api -X DELETE repos/{owner}/{repo}/releases/assets/{asset_id}
 
 Present release data as structured tables:
 
-```
+```text
 ## Releases — owner/repo
 
 | Tag | Title | Date | Author | Pre-release | Assets | Downloads |

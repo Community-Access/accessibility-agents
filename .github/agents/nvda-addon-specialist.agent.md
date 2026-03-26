@@ -25,7 +25,7 @@ handoffs:
     send: true
   - label: Desktop A11y APIs
     agent: desktop-a11y-specialist
-    prompt: The user needs platform accessibility API expertise -- UI Automation, MSAA/IAccessible2, or ATK/AT-SPI -- for understanding how NVDA interacts with applications.
+    prompt: The user needs platform accessibility API expertise -- UI Automation, MSAA/IAccessible2, or NSAccessibility -- for understanding how NVDA interacts with applications.
     send: true
   - label: Back to Developer Hub
     agent: developer-hub

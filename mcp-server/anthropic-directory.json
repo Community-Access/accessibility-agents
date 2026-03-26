@@ -13,7 +13,7 @@
       "args": ["-y", "@a11y-agent-team/mcp-server", "--stdio"]
     },
     "http": {
-      "url": "http://localhost:3456/mcp"
+      "url": "http://127.0.0.1:3100/mcp"
     }
   },
   "tools": [
@@ -22,19 +22,19 @@
       "description": "Calculate WCAG 2.x contrast ratio between two hex colors"
     },
     {
-      "name": "get_guidelines",
+      "name": "get_accessibility_guidelines",
       "description": "Get accessibility guidelines for a specific component type"
     },
     {
-      "name": "check_headings",
+      "name": "check_heading_structure",
       "description": "Analyze heading structure for hierarchy and skip issues"
     },
     {
-      "name": "check_links",
+      "name": "check_link_text",
       "description": "Detect ambiguous link text patterns"
     },
     {
-      "name": "check_forms",
+      "name": "check_form_labels",
       "description": "Check form inputs for accessible labels and structure"
     },
     {
@@ -46,7 +46,7 @@
       "description": "Scan PDF files for accessibility issues"
     },
     {
-      "name": "get_document_metadata",
+      "name": "extract_document_metadata",
       "description": "Extract metadata from Office documents"
     },
     {
@@ -74,27 +74,27 @@
       "description": "Run axe-core accessibility scan on a URL"
     },
     {
-      "name": "get_a11y_tree",
+      "name": "run_playwright_a11y_tree",
       "description": "Get accessibility tree from a web page"
     },
     {
-      "name": "keyboard_scan",
+      "name": "run_playwright_keyboard_scan",
       "description": "Test keyboard navigation on a web page"
     },
     {
-      "name": "contrast_scan",
+      "name": "run_playwright_contrast_scan",
       "description": "Scan page for contrast issues using Playwright"
     },
     {
-      "name": "viewport_scan",
+      "name": "run_playwright_viewport_scan",
       "description": "Test responsive layout accessibility"
     },
     {
-      "name": "verify_pdf",
+      "name": "run_verapdf_scan",
       "description": "Run veraPDF validation on a PDF"
     },
     {
-      "name": "convert_pdf_forms",
+      "name": "convert_pdf_form_to_html",
       "description": "Convert PDF form fields for accessibility"
     }
   ],

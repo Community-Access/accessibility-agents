@@ -81,6 +81,12 @@ Create `DOCUMENT-ACCESSIBILITY-AUDIT.md`:
 ```markdown
 # Document Accessibility Audit
 
+## Start Here
+
+- Put the quickest native-app fixes first.
+- Lead with Word, Excel, PowerPoint, and Adobe Acrobat Pro menu paths before any technical explanation.
+- Keep this section plain language and action oriented.
+
 **Generated:** ${date}  
 **Scope:** ${scope}  
 **Files Audited:** ${count}
@@ -146,6 +152,10 @@ Create `DOCUMENT-ACCESSIBILITY-AUDIT.md`:
 - [ ] Update document templates (if applicable)
 - [ ] Re-scan after remediation
 - [ ] Schedule regular accessibility audits
+
+## Advanced and Technical Follow-Up
+
+- Put XML, PDF/UA, scripting, CI, and batch automation details here, after the native-app steps.
 ```
 
 ### Phase 6: Offer Post-Audit Actions

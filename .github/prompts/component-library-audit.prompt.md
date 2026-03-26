@@ -57,6 +57,7 @@ For each component, produce:
 ### Phase 4: Cross-Component Analysis
 
 Identify shared patterns:
+
 - **Template-level issues** — Same issue in multiple components (fix once, fix everywhere)
 - **Design token issues** — Color or spacing tokens causing multiple failures
 - **Missing patterns** — Components that should exist but don't (skip link, live region wrapper)
@@ -64,6 +65,7 @@ Identify shared patterns:
 ### Phase 5: Report
 
 Sort by score ascending (worst components first) and write the audit report with:
+
 1. Summary table of all components with scores
 2. Per-component findings with remediation guidance
 3. Template-level issues section

@@ -33,7 +33,7 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub 
   Where-Object { $_.FullName -notmatch '(?:[\\/])(?:\.git|node_modules|__pycache__|\.vscode)(?:[\\/])' }
 ```
 
-### Bash (macOS / Linux)
+### Bash (macOS)
 
 ```bash
 # Recursive

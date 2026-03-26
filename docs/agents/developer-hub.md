@@ -23,7 +23,7 @@
 |-------|-----------|
 | [python-specialist](python-specialist.md) | Python debugging, packaging, testing, type checking, async, optimization |
 | [wxpython-specialist](wxpython-specialist.md) | wxPython GUI: sizers, events, AUI, custom controls, threading |
-| [desktop-a11y-specialist](desktop-a11y-specialist.md) | Platform accessibility APIs (UIA, MSAA, ATK, NSAccessibility) |
+| [desktop-a11y-specialist](desktop-a11y-specialist.md) | Platform accessibility APIs (UIA, MSAA, NSAccessibility) |
 | [desktop-a11y-testing-coach](desktop-a11y-testing-coach.md) | Screen reader testing, Accessibility Insights, automated UIA tests |
 | [a11y-tool-builder](a11y-tool-builder.md) | Rule engines, document parsers, report generators, CLI/GUI scanners |
 

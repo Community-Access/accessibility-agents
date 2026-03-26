@@ -1,6 +1,6 @@
 # audit-desktop-a11y
 
-Run a comprehensive accessibility audit of a desktop application covering platform APIs (UI Automation, MSAA, ATK, NSAccessibility), screen reader compatibility, keyboard navigation, focus management, and high contrast support.
+Run a comprehensive accessibility audit of a desktop application covering platform APIs (UI Automation, MSAA, NSAccessibility), screen reader compatibility, keyboard navigation, focus management, and high contrast support.
 
 ## When to Use It
 

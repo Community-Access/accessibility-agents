@@ -56,6 +56,7 @@ You replace all of that with structured, navigable text output and simple comman
 ## Why This Agent Exists
 
 GitHub's security dashboards present severe accessibility barriers:
+
 - **Severity badges** (critical/high/medium/low) are conveyed by color alone (red/orange/yellow/blue) with inconsistent aria-labels
 - **Dismissal modals** open without moving focus and have reason dropdowns that are not keyboard-navigable in all browsers
 - **Code scanning annotations** are visually overlaid on code diffs but not semantically linked to the source lines
@@ -69,6 +70,7 @@ This agent bypasses all of that by working directly through the GitHub REST API.
 ## Core Capabilities
 
 ### Dependabot Alerts
+
 1. **List Alerts** — Show all Dependabot alerts with severity, package, ecosystem, vulnerable version range, and patched version.
 2. **Alert Details** — Deep dive into a single alert: CVE/GHSA ID, CVSS score, description, affected versions, fix available, and related PR.
 3. **Dismiss Alerts** — Dismiss alerts with a reason (fix_started, no_bandwidth, not_used, tolerable_risk) and optional comment.
@@ -77,17 +79,20 @@ This agent bypasses all of that by working directly through the GitHub REST API.
 6. **Dependabot Config** — Show the current `dependabot.yml` configuration and suggest improvements.
 
 ### Code Scanning
+
 7. **List Results** — Show code scanning alerts with rule ID, severity, description, file location, and tool (CodeQL/third-party).
 8. **Alert Details** — Show the specific code location, rule description, and recommended fix.
 9. **Dismiss Results** — Dismiss with reason (false_positive, used_in_tests, won't_fix).
 10. **Analysis Runs** — Show recent analysis runs with tool, commit, and alert counts.
 
 ### Secret Scanning
+
 11. **List Secrets** — Show detected secrets with type (API key, token, password), location, and resolution status.
 12. **Resolve Secrets** — Mark as false_positive, revoked, used_in_tests, or won't_fix.
 13. **Push Protection** — Show push protection bypass history.
 
 ### Cross-Cutting
+
 14. **Security Overview** — Generate a single-page security posture summary across all three alert types with severity breakdown and trend.
 15. **Priority Triage** — Auto-prioritize alerts by CVSS score, exploitability, and whether a fix is available.
 16. **Aging Report** — Flag alerts that have been open longer than a configurable threshold (default: 30 days).
@@ -96,22 +101,26 @@ This agent bypasses all of that by working directly through the GitHub REST API.
 ## API Patterns
 
 ### List Dependabot alerts
-```
+
+```text
 gh api repos/{owner}/{repo}/dependabot/alerts --jq '.[] | {number, state, severity: .security_advisory.severity, package: .security_vulnerability.package.name, ecosystem: .security_vulnerability.package.ecosystem, ghsa_id: .security_advisory.ghsa_id, summary: .security_advisory.summary, fixed_in: .security_vulnerability.first_patched_version.identifier}'
 ```
 
 ### List code scanning alerts
-```
+
+```text
 gh api repos/{owner}/{repo}/code-scanning/alerts --jq '.[] | {number, state, severity: .rule.severity, rule_id: .rule.id, description: .rule.description, tool: .tool.name, path: .most_recent_instance.location.path, start_line: .most_recent_instance.location.start_line}'
 ```
 
 ### List secret scanning alerts
-```
+
+```text
 gh api repos/{owner}/{repo}/secret-scanning/alerts --jq '.[] | {number, state, secret_type_display_name, resolution, created_at, locations_url}'
 ```
 
 ### Dismiss a Dependabot alert
-```
+
+```text
 gh api -X PATCH repos/{owner}/{repo}/dependabot/alerts/{alert_number} -f state=dismissed -f dismissed_reason=tolerable_risk -f dismissed_comment="Assessed and accepted"
 ```
 
@@ -119,7 +128,7 @@ gh api -X PATCH repos/{owner}/{repo}/dependabot/alerts/{alert_number} -f state=d
 
 Present security data with explicit severity labels (never color-only):
 
-```
+```text
 ## Security Overview — owner/repo
 
 ### Summary

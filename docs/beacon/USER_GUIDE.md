@@ -62,7 +62,7 @@ pip install -e .
 This installs all required dependencies including:
 
 - `wxPython` - native UI framework
-- `accessible-output2` - screen reader speech output (NVDA, JAWS, SAPI, Orca)
+- `accessible-output2` - screen reader speech output (NVDA, JAWS, SAPI, VoiceOver)
 - `httpx` - HTTP client for GitHub API calls
 - `keyring` - secure token storage
 
@@ -98,7 +98,6 @@ Once you complete the wizard, it will not appear again.  To re-run it, delete th
 
 - **Windows**: `%APPDATA%\Beacon\`
 - **macOS**: `~/Library/Application Support/Beacon/`
-- **Linux**: `~/.config/Beacon/`
 
 ---
 
@@ -117,7 +116,7 @@ a third-party server.
 5. When authentication succeeds, the status bar shows *Authenticated with GitHub Copilot*.
 
 Your access token is stored in the operating system's secure credential store
-(Windows Credential Manager, macOS Keychain, or the system Secret Service on Linux).
+(Windows Credential Manager or macOS Keychain).
 
 Authentication is only required for the Copilot SDK backend.  The CLI backends
 (Claude, Gemini, gh copilot) use their own credentials configured outside Beacon.
@@ -587,7 +586,6 @@ AO2 speaks directly into whichever screen reader is active on your machine:
 |----------|-------------------------|
 | Windows  | NVDA, JAWS, SAPI (built-in), SAPI 5 |
 | macOS    | VoiceOver (via SAPI bridge) |
-| Linux    | Orca, Speech Dispatcher |
 
 ### Verbosity levels
 
@@ -681,7 +679,6 @@ Beacon stores all scan results in a local SQLite database:
 
 - **Windows**: `%APPDATA%\Beacon\history.db`
 - **macOS**: `~/Library/Application Support/Beacon/history.db`
-- **Linux**: `~/.config/Beacon/history.db`
 
 ### Viewing history
 
@@ -739,7 +736,6 @@ the tray without showing the main window.
 2. Click **Test Speech** to send a test announcement.
 3. If AO2 reports no screen reader, make sure NVDA or JAWS is running *before*
    launching Beacon.
-4. On Linux, install Speech Dispatcher: `sudo apt install speechd`
 
 ### Authentication fails
 

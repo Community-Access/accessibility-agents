@@ -1,6 +1,6 @@
 ---
 name: audit-desktop-a11y
-description: Run a desktop application accessibility audit covering platform APIs (UI Automation, MSAA, ATK, NSAccessibility), screen reader compatibility, keyboard navigation, focus management, and high contrast support.
+description: Run a desktop application accessibility audit covering platform APIs (UI Automation, MSAA, NSAccessibility), screen reader compatibility, keyboard navigation, focus management, and high contrast support.
 mode: agent
 agent: desktop-a11y-specialist
 tools:
@@ -26,9 +26,9 @@ Run a comprehensive accessibility audit of a desktop application, focusing on pl
 
 Ask the user:
 
-1. **Platform(s)** -- Windows, macOS, Linux, or cross-platform?
+1. **Platform(s)** -- Windows, macOS, or cross-platform?
 2. **UI framework** -- wxPython, Qt, GTK, WinForms, WPF, SwiftUI, UIKit, Electron, or other?
-3. **Target screen readers** -- NVDA, JAWS, Narrator, VoiceOver, Orca?
+3. **Target screen readers** -- NVDA, JAWS, Narrator, VoiceOver?
 4. **Known issues** -- Any specific accessibility problems already reported?
 
 ### Step 2: Code Review -- Accessibility API Usage
@@ -36,8 +36,8 @@ Ask the user:
 Scan the source code for:
 
 - **Name/Role/Value/State** -- Are all interactive controls exposing proper accessible names, roles, values, and states through the platform API?
-- **Custom controls** -- Do custom-drawn controls implement the accessibility interface (IAccessible, UIAutomation, NSAccessibility protocol, ATK)?
-- **Dynamic updates** -- Are state changes announced to assistive technology (PropertyChanged events, NSAccessibilityNotifications, ATK signals)?
+- **Custom controls** -- Do custom-drawn controls implement the accessibility interface (IAccessible, UIAutomation, NSAccessibility protocol)?
+- **Dynamic updates** -- Are state changes announced to assistive technology (PropertyChanged events, NSAccessibilityNotifications)?
 - **Container relationships** -- Do tree views, lists, and grids expose parent/child relationships correctly?
 
 ### Step 3: Keyboard Navigation Audit

@@ -105,6 +105,7 @@ Highcharts.chart('container', {
 ```
 
 **Highcharts built-in a11y features:**
+
 - Automatic `<table>` fallback generation
 - Keyboard navigation between data points
 - Screen reader announcements for each point
@@ -129,6 +130,7 @@ new Chart(ctx, {
 ```
 
 **Chart.js limitations:**
+
 - Canvas-based — no DOM elements for screen readers to traverse
 - Must provide `<canvas aria-label="..." role="img">` or a fallback `<table>`
 - No built-in keyboard navigation — requires custom implementation

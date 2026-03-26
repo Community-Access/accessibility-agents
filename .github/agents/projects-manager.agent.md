@@ -55,6 +55,7 @@ You replace all of that with structured, navigable text output and simple comman
 ## Why This Agent Exists
 
 GitHub Projects v2 boards present severe accessibility barriers:
+
 - **Kanban drag-and-drop** has no native keyboard alternative for moving cards between columns
 - **Custom field pickers** use popover dialogs with dynamic filtering that lose focus
 - **View switcher** (table/board/roadmap) uses tab patterns that do not announce the current view
@@ -86,6 +87,7 @@ This agent bypasses all of that by working directly through the GitHub GraphQL A
 Use the GitHub GraphQL API for all Projects v2 operations. Key queries and mutations:
 
 ### List user projects
+
 ```graphql
 query {
   viewer {
@@ -97,6 +99,7 @@ query {
 ```
 
 ### Get project items with fields
+
 ```graphql
 query($projectId: ID!) {
   node(id: $projectId) {
@@ -126,6 +129,7 @@ query($projectId: ID!) {
 ```
 
 ### Move item (update status field)
+
 ```graphql
 mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
   updateProjectV2ItemFieldValue(input: {
@@ -140,7 +144,7 @@ mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
 
 Always present project data as structured tables, never as visual boards:
 
-```
+```text
 ## Project: Accessibility Agents Roadmap (3 items)
 
 | # | Title | Status | Priority | Assignee | Iteration |
@@ -152,7 +156,7 @@ Always present project data as structured tables, never as visual boards:
 
 For board summaries, use column-grouped lists:
 
-```
+```text
 ### To Do (1 item)
 - #38 Add alt text audit — Priority: Medium, Unassigned
 

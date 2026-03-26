@@ -14,7 +14,7 @@ handoffs:
     send: true
   - label: "Desktop A11y Patterns"
     agent: desktop-a11y-specialist
-    prompt: "The user needs guidance on platform accessibility APIs (UIA, MSAA, ATK) for the scanning tool being built."
+        prompt: "The user needs guidance on platform accessibility APIs (UIA, MSAA, NSAccessibility) for the scanning tool being built."
     send: true
   - label: "Web A11y Reference"
     agent: web-accessibility-wizard

@@ -118,7 +118,7 @@ Apply via `multiReplaceStringInFile`.
 **Current Code:**
 ```tsx
 <img src="/hero-banner.jpg" />
-```
+```text
 
 **Image Analysis:** Banner image showing team collaboration in modern office
 
@@ -126,7 +126,7 @@ Apply via `multiReplaceStringInFile`.
 
 ```tsx
 <img src="/hero-banner.jpg" alt="Team collaboration in modern office" />
-```
+```text
 
 **Accept this fix?** (yes/no/edit)
 

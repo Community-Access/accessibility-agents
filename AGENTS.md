@@ -28,7 +28,9 @@ This repository contains 80 accessibility-focused AI agents across multiple plat
 ## Agent Teams
 
 ### Web Accessibility Team
+
 Led by `accessibility-lead`, coordinates specialists for comprehensive web audits:
+
 - `aria-specialist` - ARIA roles, states, properties
 - `keyboard-navigator` - Tab order, focus management
 - `contrast-master` - Color contrast, visual accessibility
@@ -42,7 +44,9 @@ Led by `accessibility-lead`, coordinates specialists for comprehensive web audit
 - `i18n-accessibility` - Internationalization, RTL, and multilingual accessibility
 
 ### Document Accessibility Team
+
 Led by `document-accessibility-wizard`, handles Office and PDF audits:
+
 - `word-accessibility` - Microsoft Word (.docx)
 - `excel-accessibility` - Microsoft Excel (.xlsx)
 - `powerpoint-accessibility` - Microsoft PowerPoint (.pptx)
@@ -52,7 +56,9 @@ Led by `document-accessibility-wizard`, handles Office and PDF audits:
 - `office-remediator` - Programmatic Office document (Word/Excel/PowerPoint) remediation
 
 ### GitHub Workflow Team
+
 Led by `github-hub` / `nexus`, manages repository operations:
+
 - `daily-briefing` - Morning overview of issues, PRs, CI status
 - `pr-review` - Code review with accessibility focus
 - `issue-tracker` - Issue triage and priority scoring
@@ -71,7 +77,9 @@ Led by `github-hub` / `nexus`, manages repository operations:
 - `wiki-manager` - Wiki page creation, editing, search, and organization
 
 ### Developer Tools Team
+
 Led by `developer-hub`, handles desktop and Python development:
+
 - `python-specialist` - Python debugging, packaging, testing
 - `wxpython-specialist` - wxPython GUI development
 - `nvda-addon-specialist` - NVDA screen reader addon development
@@ -79,7 +87,9 @@ Led by `developer-hub`, handles desktop and Python development:
 - `a11y-tool-builder` - Building accessibility scanning tools
 
 ### CI/CD & Education
+
 Specialist agents for CI pipelines, standards education, and screen reader simulation:
+
 - `ci-accessibility` - CI/CD accessibility pipeline setup and management
 - `screen-reader-lab` - Interactive screen reader simulation for education
 - `wcag3-preview` - WCAG 3.0 draft education and transition planning
@@ -90,6 +100,7 @@ Specialist agents for CI pipelines, standards education, and screen reader simul
 ### Agent File Format
 
 Copilot agents (`.github/agents/*.agent.md`):
+
 ```yaml
 ---
 name: Agent Name
@@ -102,6 +113,7 @@ Agent instructions in markdown...
 ```
 
 Claude Code agents (`.claude/agents/*.md`):
+
 ```yaml
 ---
 name: agent-name
@@ -126,6 +138,7 @@ Agent instructions in markdown...
 ### Skill File Format
 
 Skills must have `SKILL.md` with YAML frontmatter:
+
 ```yaml
 ---
 name: skill-name
@@ -140,6 +153,7 @@ Skill content in markdown...
 No build step required - agents are markdown files.
 
 **Validation:**
+
 ```bash
 # Check agent YAML frontmatter
 node scripts/validate-agents.js
@@ -149,6 +163,7 @@ npx github:microsoft/agentrc readiness
 ```
 
 **Local testing:**
+
 ```bash
 # Install to local Copilot CLI
 ./install.sh --global --cli

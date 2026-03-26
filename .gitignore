@@ -15,3 +15,5 @@ __pycache__/
 .DS_Store
 coverage/
 *.tgz
+.a11y-agent-team-*-plan.json
+.a11y-agent-team-*-summary.json

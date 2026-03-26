@@ -103,14 +103,14 @@ Choose the platform you use. Each section walks you through installation includi
 <details>
 <summary><strong>GitHub Copilot (VS Code)</strong> — Click to expand</summary>
 
-### Step 1: Prerequisites
+### GitHub Copilot Step 1: Prerequisites
 
 - VS Code (latest stable version)
 - GitHub Copilot extension installed
 - GitHub Copilot Chat extension installed
 - A Copilot subscription (Individual, Business, or Enterprise)
 
-### Step 2: Install
+### GitHub Copilot Step 2: Install
 
 **Option A — Per-project (recommended for teams):**
 
@@ -137,7 +137,7 @@ cd accessibility-agents
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-### Step 3: Verify
+### GitHub Copilot Step 3: Verify
 
 1. Open VS Code and open the Copilot Chat panel
 2. Click the **agent picker dropdown** at the top of the chat panel
@@ -146,17 +146,17 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 > **First-use note:** Custom agents appear in the dropdown picker first. They won't show in `@` autocomplete until you've selected them from the picker at least once.
 
-### Step 4: Your First Audit
+### GitHub Copilot Step 4: Your First Audit
 
 Type in Copilot Chat:
 
-```
+```text
 @accessibility-lead review the accessibility of this page
 ```
 
 Or use a one-click prompt:
 
-```
+```text
 @workspace /audit-web-page
 ```
 
@@ -175,12 +175,12 @@ Agents are invoked by selecting them from the agent picker or by mentioning `@ag
 <details>
 <summary><strong>GitHub Copilot CLI</strong> — Click to expand</summary>
 
-### Step 1: Prerequisites
+### Copilot CLI Step 1: Prerequisites
 
 - GitHub Copilot CLI installed (`npm install -g @github/copilot`)
 - An active Copilot subscription
 
-### Step 2: Install
+### Copilot CLI Step 2: Install
 
 **Global install (all projects):**
 
@@ -194,7 +194,7 @@ This copies agents to `~/.copilot/agents/` and skills to `~/.copilot/skills/`.
 
 **Per-project:** The agents work automatically from `.github/agents/` when you're in a project that has them.
 
-### Step 3: Verify
+### Copilot CLI Step 3: Verify
 
 ```bash
 # List available agents
@@ -206,7 +206,7 @@ This copies agents to `~/.copilot/agents/` and skills to `~/.copilot/skills/`.
 
 You should see all 80 agents and 25 skills.
 
-### Step 4: Your First Audit
+### Copilot CLI Step 4: Your First Audit
 
 ```bash
 # Use the accessibility lead
@@ -226,28 +226,30 @@ Use the accessibility-lead agent to review src/components/ for accessibility iss
 <details>
 <summary><strong>Claude Code (CLI)</strong> — Click to expand</summary>
 
-### Step 1: Prerequisites
+### Claude Code Step 1: Prerequisites
 
 - Claude Code CLI installed and working
 - A Claude subscription (Pro, Max, or Team)
 
-### Step 2: Install
+### Claude Code Step 2: Install
 
 **One-liner (recommended):**
 
-macOS/Linux:
+macOS:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
 ```
 
 Windows (PowerShell):
+
 ```powershell
 irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
 ```
 
 This installs 80 agents to `~/.claude/agents/` and sets up three enforcement hooks.
 
-### Step 3: Verify
+### Claude Code Step 3: Verify
 
 ```bash
 # List all agents
@@ -260,7 +262,7 @@ You should see all agents listed. Then test the enforcement system:
 2. Type any prompt — you should see "DETECTED: This is a web project"
 3. If Claude tries to edit a `.tsx` file without consulting accessibility-lead first, it gets **blocked**
 
-### Step 4: Your First Audit
+### Claude Code Step 4: Your First Audit
 
 ```bash
 /accessibility-lead full audit of the checkout flow
@@ -288,12 +290,12 @@ This means **accessibility review is mandatory** in web projects — Claude lite
 <details>
 <summary><strong>Gemini CLI</strong> — Click to expand</summary>
 
-### Step 1: Prerequisites
+### Gemini CLI Step 1: Prerequisites
 
 - Gemini CLI installed
 - A Google AI subscription
 
-### Step 2: Install
+### Gemini CLI Step 2: Install
 
 Clone the repo and ensure the `.gemini/` directory is in your project:
 
@@ -303,15 +305,16 @@ git clone https://github.com/Community-Access/accessibility-agents.git
 
 Gemini reads skills from `.gemini/extensions/a11y-agents/skills/*/SKILL.md`.
 
-### Step 3: Verify
+### Gemini CLI Step 3: Verify
 
 Gemini discovers skills from the extension directory structure. You should have 98 skills available:
+
 - 80 agent skills (one per agent)
 - 18 knowledge skills (matching 18 of the 25 Copilot skill set — the remaining 7 are inlined)
 
-### Step 4: Your First Audit
+### Gemini CLI Step 4: Your First Audit
 
-```
+```text
 Use the accessibility-lead skill to review this component for accessibility
 ```
 
@@ -324,12 +327,12 @@ Gemini doesn't have a native "agent" concept like Copilot or Claude Code. Instea
 <details>
 <summary><strong>Codex CLI</strong> — Click to expand</summary>
 
-### Step 1: Prerequisites
+### Codex CLI Step 1: Prerequisites
 
 - OpenAI Codex CLI installed
 - An OpenAI API key
 
-### Step 2: Install
+### Codex CLI Step 2: Install
 
 ```bash
 git clone https://github.com/Community-Access/accessibility-agents.git
@@ -339,7 +342,7 @@ bash install.sh --codex
 
 Codex uses role files in `.codex/` — 11 predefined roles are included.
 
-### Step 3: Available Roles
+### Codex CLI Step 3: Available Roles
 
 | Role | Purpose |
 |------|---------|
@@ -355,7 +358,7 @@ Codex uses role files in `.codex/` — 11 predefined roles are included.
 | `document-wizard` | Office/PDF accessibility |
 | `markdown-a11y` | Markdown accessibility |
 
-### Step 4: Your First Audit
+### Codex CLI Step 4: Your First Audit
 
 ```bash
 codex --role=accessibility-lead "Review this component for accessibility"
@@ -366,12 +369,12 @@ codex --role=accessibility-lead "Review this component for accessibility"
 <details>
 <summary><strong>Claude Desktop (MCP Extension)</strong> — Click to expand</summary>
 
-### Step 1: Prerequisites
+### Claude Desktop Step 1: Prerequisites
 
 - Claude Desktop app installed (latest version)
 - A Claude subscription (Pro plan or higher)
 
-### Step 2: Install the MCP Server
+### Claude Desktop Step 2: Install the MCP Server
 
 The MCP server provides 24 scanning tools that Claude Desktop can call. Configure it in your Claude Desktop settings:
 
@@ -382,7 +385,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "a11y-agents": {
+    "a11y-agent-team": {
       "command": "node",
       "args": ["/path/to/accessibility-agents/mcp-server/stdio.js"]
     }
@@ -400,21 +403,21 @@ npm install
 node server.js
 ```
 
-Then configure Claude Desktop to connect to `http://127.0.0.1:3456/mcp`.
+Then configure Claude Desktop to connect to `http://127.0.0.1:3100/mcp`.
 
-### Step 3: Available Tools
+### Claude Desktop Step 3: Available Tools
 
 Once connected, Claude Desktop has access to 24 scanning tools organized into four categories: core scanning (13 tools), Playwright browser testing (5 tools), PDF-specific tools (2 tools), and 4 additional utilities. See the [MCP Server section](#mcp-server-24-tools) for the full list.
 
-### Step 4: Your First Scan
+### Claude Desktop Step 4: Your First Scan
 
 Ask Claude:
 
-```
+```text
 Check the contrast ratio between #333333 and #ffffff
 ```
 
-```
+```text
 Scan the file report.docx for accessibility issues
 ```
 
@@ -467,7 +470,7 @@ This is the team you'll use most often. It handles everything related to web acc
 
 **Typical workflow:**
 
-```
+```text
 You: @accessibility-lead review the login page
 Lead: I'll coordinate a review. Delegating to specialists...
   -> aria-specialist: checks ARIA on the form
@@ -502,7 +505,7 @@ This team audits Office documents (Word, Excel, PowerPoint), PDFs, and ePubs for
 
 **Typical workflow:**
 
-```
+```text
 You: @document-accessibility-wizard audit all files in docs/
 Wizard: Phase 1 — Discovering files... Found 15 documents.
         Phase 2 — Scanning each document...
@@ -559,7 +562,7 @@ This team manages GitHub operations — issues, PRs, CI, releases, analytics, pr
 
 **Typical workflow with `nexus`:**
 
-```
+```text
 You: @nexus show me all open issues labeled "accessibility"
 Nexus: (routes to issue-tracker)
        Found 12 open issues with the "accessibility" label...
@@ -567,7 +570,7 @@ Nexus: (routes to issue-tracker)
 
 **Typical workflow with `github-hub`:**
 
-```
+```text
 You: @github-hub I need help with GitHub
 Hub: What would you like to do?
      1. Review pull requests
@@ -592,7 +595,7 @@ This team handles desktop application development, Python packaging, screen read
 | `python-specialist` | Python debugging, packaging, testing | Python projects |
 | `wxpython-specialist` | wxPython GUI development | Desktop GUI apps |
 | `nvda-addon-specialist` | NVDA screen reader addon creation | Building NVDA addons |
-| `desktop-a11y-specialist` | Desktop accessibility APIs (UIA, MSAA, ATK) | Desktop app accessibility |
+| `desktop-a11y-specialist` | Desktop accessibility APIs (UIA, MSAA, NSAccessibility) | Desktop app accessibility |
 | `desktop-a11y-testing-coach` | Screen reader testing for desktop apps | Desktop testing |
 | `a11y-tool-builder` | Building accessibility scanning tools | Tool development |
 | `playwright-scanner` | Playwright behavioral scanning | Automated browser testing |
@@ -648,7 +651,7 @@ Helps you build your own accessibility scanning tools — rule engines, document
 
 **Sample prompts:**
 
-```
+```text
 @a11y-tool-builder Design a rule engine that checks WCAG 2.2 AA criteria for React components
 @a11y-tool-builder Help me build a CLI scanner that checks HTML files for heading hierarchy issues
 @a11y-tool-builder Create a severity scoring algorithm for accessibility violations
@@ -667,7 +670,7 @@ The main coordinator for web accessibility. Receives your request, delegates to 
 
 **Sample prompts:**
 
-```
+```text
 @accessibility-lead Review the accessibility of src/components/LoginForm.tsx
 @accessibility-lead Full audit of the checkout flow — all pages from cart to confirmation
 @accessibility-lead What agents are available and what does each one do?
@@ -687,7 +690,7 @@ Detects accessibility regressions by comparing audit results across commits or b
 
 **Sample prompts:**
 
-```
+```text
 @accessibility-regression-detector Compare the current audit results against the baseline from last sprint
 @accessibility-regression-detector Show me what regressed between the main branch and this feature branch
 @accessibility-regression-detector Track our accessibility score trend over the last 5 audits
@@ -703,7 +706,7 @@ Generates W3C or EU model accessibility statements from audit results. Includes 
 
 **Sample prompts:**
 
-```
+```text
 @accessibility-statement Generate a W3C accessibility statement from our latest audit report
 @accessibility-statement Create an EU model accessibility statement for our public website
 @accessibility-statement Update our existing statement with the latest audit findings
@@ -719,7 +722,7 @@ Manages GitHub Actions workflow runs, logs, re-runs, and CI debugging. This agen
 
 **Sample prompts:**
 
-```
+```text
 @actions-manager Show me all failed workflow runs from the last 24 hours
 @actions-manager Get the logs for the latest CI failure on the main branch
 @actions-manager Re-run the failed jobs in workflow run #1234
@@ -742,7 +745,7 @@ Reviews images for appropriate alt text, checks SVG accessibility, validates hea
 
 **Sample prompts:**
 
-```
+```text
 @alt-text-headings Check all images in src/pages/ for missing or poor alt text
 @alt-text-headings Review the heading hierarchy of this page — are any levels skipped?
 @alt-text-headings This SVG chart needs accessibility — how should I make it accessible?
@@ -762,7 +765,7 @@ Repository health metrics — issue velocity, PR merge rates, contributor stats,
 
 **Sample prompts:**
 
-```
+```text
 @analytics Give me a health score for this repository
 @analytics What's our average PR merge time this month?
 @analytics Show me contributor activity for the last 30 days
@@ -780,7 +783,7 @@ Deep knowledge of WAI-ARIA 1.2 (and 1.3 draft). Reviews roles, states, and prope
 
 **Sample prompts:**
 
-```
+```text
 @aria-specialist Review the ARIA usage in src/components/Dropdown.tsx
 @aria-specialist Is this the correct ARIA pattern for a combobox?
 @aria-specialist I have a custom tab widget — what ARIA roles and states does it need?
@@ -800,7 +803,7 @@ Sets up CI/CD accessibility pipelines. Supports 5 phases: detection, configurati
 
 **Sample prompts:**
 
-```
+```text
 @ci-accessibility Set up axe-core scanning in our GitHub Actions pipeline
 @ci-accessibility Add accessibility gating to our PR checks — fail if critical issues are found
 @ci-accessibility Create a baseline so existing issues don't block PRs but new ones do
@@ -818,7 +821,7 @@ WCAG 2.2 cognitive success criteria (3.3.7 Redundant Entry, 3.3.8 Accessible Aut
 
 **Sample prompts:**
 
-```
+```text
 @cognitive-accessibility Review our login flow for WCAG 2.2 authentication requirements
 @cognitive-accessibility Analyze the reading level of our error messages — are they plain language?
 @cognitive-accessibility Does our multi-step form comply with the Redundant Entry criterion?
@@ -836,7 +839,7 @@ Maps audit results to legal frameworks — Section 508 (US), EN 301 549 (EU), Eu
 
 **Sample prompts:**
 
-```
+```text
 @compliance-mapping Map our audit findings to Section 508 requirements
 @compliance-mapping Generate a VPAT 2.5 Rev 508 from our latest web audit
 @compliance-mapping Which EN 301 549 clauses do our document audit findings violate?
@@ -853,7 +856,7 @@ Calculates WCAG contrast ratios. Normal text requires 4.5:1, large text requires
 
 **Sample prompts:**
 
-```
+```text
 @contrast-master Check the contrast ratio between #6B7280 and #F9FAFB
 @contrast-master Review all color pairs in our Tailwind config for WCAG AA compliance
 @contrast-master Our dark mode theme has complaints about readability — check the contrast
@@ -871,7 +874,7 @@ Tracks contributors, contribution patterns, and recognition. Useful for communit
 
 **Sample prompts:**
 
-```
+```text
 @contributions-hub Who are the most active contributors this month?
 @contributions-hub Generate a contributors report for our last release
 @contributions-hub List first-time contributors from the last 30 days
@@ -888,7 +891,7 @@ Finds patterns across multiple documents — common template issues, severity sc
 
 **Sample prompts:**
 
-```
+```text
 @cross-document-analyzer Analyze these 10 documents for common accessibility patterns
 @cross-document-analyzer What template-level issues are causing repeated findings?
 @cross-document-analyzer Score the overall accessibility maturity of our document library
@@ -904,7 +907,7 @@ Finds patterns across multiple web pages — repeated navigation issues, global 
 
 **Sample prompts:**
 
-```
+```text
 @cross-page-analyzer Compare accessibility patterns across our 5 main pages
 @cross-page-analyzer Are there site-wide issues that appear on every page?
 @cross-page-analyzer Detect navigation inconsistencies across pages
@@ -920,7 +923,7 @@ Morning overview: open issues, pending PRs, CI status, recent activity. Start yo
 
 **Sample prompts:**
 
-```
+```text
 @daily-briefing Give me my morning briefing
 @daily-briefing What needs attention today?
 @daily-briefing Show me a summary of activity since yesterday 5pm
@@ -937,7 +940,7 @@ Chart, graph, and dashboard accessibility — SVG ARIA patterns, data table alte
 
 **Sample prompts:**
 
-```
+```text
 @data-visualization-accessibility Make this D3 bar chart accessible to screen readers
 @data-visualization-accessibility What's the best way to provide a data table alternative for this pie chart?
 @data-visualization-accessibility Review our chart color palette — is it safe for color-blind users?
@@ -955,7 +958,7 @@ Validates design tokens for accessibility — color token contrast pairs, focus 
 
 **Sample prompts:**
 
-```
+```text
 @design-system-auditor Audit our Tailwind color tokens for contrast compliance
 @design-system-auditor Check if our focus ring tokens meet WCAG 2.4.13 Focus Appearance
 @design-system-auditor Validate our spacing tokens against touch target requirements
@@ -969,11 +972,11 @@ Validates design tokens for accessibility — color token contrast pairs, focus 
 
 **Team:** Developer Tools | **Type:** Specialist
 
-Desktop app accessibility via platform APIs — UI Automation (Windows), MSAA/IAccessible2, ATK/AT-SPI (Linux), NSAccessibility (macOS). Covers screen reader Name/Role/Value/State, focus management, high contrast mode, and custom widget accessibility.
+Desktop app accessibility via platform APIs — UI Automation (Windows), MSAA/IAccessible2, and NSAccessibility (macOS). Covers screen reader Name/Role/Value/State, focus management, high contrast mode, and custom widget accessibility.
 
 **Sample prompts:**
 
-```
+```text
 @desktop-a11y-specialist Make this custom WPF control accessible via UI Automation
 @desktop-a11y-specialist What UIA patterns should I implement for a custom tree view?
 @desktop-a11y-specialist Review my wxPython app for screen reader compatibility
@@ -987,11 +990,11 @@ Desktop app accessibility via platform APIs — UI Automation (Windows), MSAA/IA
 
 **Team:** Developer Tools | **Type:** Specialist
 
-Teaches desktop accessibility testing — how to test with NVDA, JAWS, Narrator, VoiceOver, and Orca. Covers Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, and high contrast verification.
+Teaches desktop accessibility testing — how to test with NVDA, JAWS, Narrator, and VoiceOver. Covers Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, and high contrast verification.
 
 **Sample prompts:**
 
-```
+```text
 @desktop-a11y-testing-coach Create a test plan for our desktop app using NVDA and Narrator
 @desktop-a11y-testing-coach How do I run Accessibility Insights for Windows on our application?
 @desktop-a11y-testing-coach Write automated UIA tests for our main window controls
@@ -1009,7 +1012,7 @@ Routes you to the right developer tools specialist — Python, wxPython, NVDA ad
 
 **Sample prompts:**
 
-```
+```text
 @developer-hub I need to package my Python app with PyInstaller
 @developer-hub Help me build an NVDA addon that announces heading levels
 @developer-hub I want to make my wxPython app accessible
@@ -1027,7 +1030,7 @@ Runs guided document audits with severity scoring (0-100, A-F grades), delta det
 
 **Sample prompts:**
 
-```
+```text
 @document-accessibility-wizard Audit the file report.docx for accessibility
 @document-accessibility-wizard Scan all documents in the docs/ folder recursively
 @document-accessibility-wizard Only scan documents that changed since the last commit
@@ -1048,7 +1051,7 @@ Exports document audit findings to CSV with Microsoft Office and Adobe PDF help 
 
 **Sample prompts:**
 
-```
+```text
 @document-csv-reporter Export the latest document audit findings to CSV
 @document-csv-reporter Include help links for each finding in the export
 ```
@@ -1063,7 +1066,7 @@ Discovers documents for auditing — recursive file search, delta detection (cha
 
 **Sample prompts:**
 
-```
+```text
 @document-inventory Show me all documents in the project directory
 @document-inventory Which documents changed since the last commit?
 @document-inventory Count how many .docx, .xlsx, .pptx, and .pdf files are in docs/
@@ -1079,7 +1082,7 @@ HTML email accessibility under email client rendering constraints — table-base
 
 **Sample prompts:**
 
-```
+```text
 @email-accessibility Audit this HTML email template for accessibility
 @email-accessibility Make this promotional email screen-reader friendly
 @email-accessibility Add proper alt text fallbacks for images in this email
@@ -1097,7 +1100,7 @@ ePub/eBook accessibility auditing — EPUB Accessibility 1.1, reading order, nav
 
 **Sample prompts:**
 
-```
+```text
 @epub-accessibility Audit this ePub file for accessibility compliance
 @epub-accessibility Check the reading order and navigation structure
 @epub-accessibility Does this ePub have proper accessibility metadata?
@@ -1121,7 +1124,7 @@ Microsoft Excel accessibility — sheet names, table headers, cell descriptions,
 
 **Sample prompts:**
 
-```
+```text
 @excel-accessibility Audit report.xlsx for accessibility issues
 @excel-accessibility Are all tables properly structured with headers?
 @excel-accessibility Check if all charts have alt text
@@ -1138,7 +1141,7 @@ Form accessibility — every input needs a visible programmatic label, error mes
 
 **Sample prompts:**
 
-```
+```text
 @forms-specialist Review the registration form in src/components/RegisterForm.tsx
 @forms-specialist Are all inputs properly labeled? Check for any label-less inputs
 @forms-specialist How should I structure error messages for this multi-step form?
@@ -1157,7 +1160,7 @@ Presents a numbered menu of GitHub operations and waits for you to choose. Route
 
 **Sample prompts:**
 
-```
+```text
 @github-hub I need help with GitHub
 @github-hub What can you help me with?
 @github-hub Show me the menu
@@ -1173,7 +1176,7 @@ Internationalization and accessibility intersection — `lang` attributes, `dir=
 
 **Sample prompts:**
 
-```
+```text
 @i18n-accessibility Check that all pages have proper lang attributes
 @i18n-accessibility This page has mixed Arabic and English content — is the bidi handling correct?
 @i18n-accessibility Review our multilingual site for WCAG 3.1.1 and 3.1.2 compliance
@@ -1190,7 +1193,7 @@ Tracks accessibility-related changes in VS Code Insiders builds — regression d
 
 **Sample prompts:**
 
-```
+```text
 @insiders-a11y-tracker What accessibility changes landed in the latest VS Code Insiders?
 @insiders-a11y-tracker Track accessibility regressions in Insiders this week
 ```
@@ -1205,7 +1208,7 @@ Issue triage, priority scoring, label management, and duplicate detection. Uses 
 
 **Sample prompts:**
 
-```
+```text
 @issue-tracker Triage the 10 most recent unlabeled issues
 @issue-tracker Score and prioritize all open bugs
 @issue-tracker Find potential duplicate issues
@@ -1223,7 +1226,7 @@ Tab order, focus management, keyboard traps, skip links, focus indicators (`outl
 
 **Sample prompts:**
 
-```
+```text
 @keyboard-navigator Check the tab order of this page — is it logical?
 @keyboard-navigator Is there a keyboard trap in this modal dialog?
 @keyboard-navigator This dropdown menu isn't accessible by keyboard — fix it
@@ -1242,7 +1245,7 @@ Bridges Lighthouse CI accessibility audit data into the agent ecosystem — scor
 
 **Sample prompts:**
 
-```
+```text
 @lighthouse-bridge Import our latest Lighthouse CI accessibility scores
 @lighthouse-bridge Track our Lighthouse accessibility score over the last 10 builds
 ```
@@ -1257,7 +1260,7 @@ Detects ambiguous link text — "click here", "read more", "learn more", "more i
 
 **Sample prompts:**
 
-```
+```text
 @link-checker Find all ambiguous link text in src/pages/
 @link-checker Check this page for any "click here" or "read more" links
 @link-checker Are all links in this navigation descriptive of their destination?
@@ -1274,7 +1277,7 @@ Dynamic content announcements — `aria-live="polite"` and `aria-live="assertive
 
 **Sample prompts:**
 
-```
+```text
 @live-region-controller This toast notification isn't announced by screen readers — fix it
 @live-region-controller What live region settings should I use for a chat message feed?
 @live-region-controller How should I announce loading and success/error states?
@@ -1292,7 +1295,7 @@ Orchestrates markdown audits across 9 domains — links, alt text, headings, tab
 
 **Sample prompts:**
 
-```
+```text
 @markdown-a11y-assistant Audit all markdown files in docs/
 @markdown-a11y-assistant Check README.md for accessibility issues
 @markdown-a11y-assistant Fix the accessibility issues found in the last audit
@@ -1333,7 +1336,7 @@ Video and audio accessibility — WebVTT/SRT/TTML captions, caption quality metr
 
 **Sample prompts:**
 
-```
+```text
 @media-accessibility Does this video have captions? Check the WebVTT file quality
 @media-accessibility What do we need for WCAG AA compliance on this video player?
 @media-accessibility Review our media player controls for keyboard accessibility
@@ -1351,7 +1354,7 @@ React Native props (`accessibilityLabel`, `accessibilityRole`, `accessibilitySta
 
 **Sample prompts:**
 
-```
+```text
 @mobile-accessibility Audit this React Native component for accessibility
 @mobile-accessibility Are all touch targets at least 44x44 points?
 @mobile-accessibility Check accessibilityLabel values on all interactive elements
@@ -1369,7 +1372,7 @@ Focus trapping in dialogs, escape-to-close behavior, focus return to the trigger
 
 **Sample prompts:**
 
-```
+```text
 @modal-specialist Review this modal dialog for proper focus management
 @modal-specialist Does focus return to the trigger button when this dialog closes?
 @modal-specialist Is focus properly trapped inside this modal?
@@ -1388,7 +1391,7 @@ Auto-routing orchestrator — infers your intent from natural language and route
 
 **Sample prompts:**
 
-```
+```text
 @nexus What PRs need my review?
 @nexus Create an issue about the broken navigation on the settings page
 @nexus Show me the CI status for this branch
@@ -1408,7 +1411,7 @@ Manages GitHub notification inbox — listing, filtering, marking as read/done, 
 
 **Sample prompts:**
 
-```
+```text
 @notifications-manager Show my unread notifications
 @notifications-manager Mark all CI notifications as read
 @notifications-manager Show notifications from the last 24 hours filtered by mentions
@@ -1430,7 +1433,7 @@ NVDA screen reader addon development — addon structure, manifest files, NVDA A
 
 **Sample prompts:**
 
-```
+```text
 @nvda-addon-specialist Scaffold a new NVDA addon that announces heading levels
 @nvda-addon-specialist How do I handle focus events in an NVDA addon?
 @nvda-addon-specialist Package my addon for distribution on the NVDA addon store
@@ -1448,7 +1451,7 @@ Programmatic Office document remediation via python-docx, openpyxl, and python-p
 
 **Sample prompts:**
 
-```
+```text
 @office-remediator Fix the heading structure in report.docx using python-docx
 @office-remediator Generate a remediation script for all Word docs in docs/
 @office-remediator Which issues in this spreadsheet can be auto-fixed vs need manual work?
@@ -1473,7 +1476,7 @@ PDF/UA conformance — tagged PDF structure, reading order, alt text for images,
 
 **Sample prompts:**
 
-```
+```text
 @pdf-accessibility Audit report.pdf for PDF/UA conformance
 @pdf-accessibility Is this PDF properly tagged for screen reader access?
 @pdf-accessibility Check the reading order of this PDF document
@@ -1491,7 +1494,7 @@ Programmatic PDF fixes — 8 auto-fixable issues via pdf-lib/qpdf/ghostscript (m
 
 **Sample prompts:**
 
-```
+```text
 @pdf-remediator Fix the metadata and language tag in this PDF
 @pdf-remediator Generate a batch fix script for all PDFs in this folder
 @pdf-remediator Which issues in this PDF can be fixed programmatically vs need Acrobat Pro?
@@ -1516,7 +1519,7 @@ The intersection of web performance and accessibility — lazy loading impacts o
 
 **Sample prompts:**
 
-```
+```text
 @performance-accessibility Our lazy-loaded images aren't accessible — how should we handle this?
 @performance-accessibility Does our skeleton screen announce loading state to screen readers?
 @performance-accessibility Check if our code splitting breaks focus management on route changes
@@ -1533,7 +1536,7 @@ Behavioral accessibility scanning via Playwright — keyboard traversal testing,
 
 **Sample prompts:**
 
-```
+```text
 @playwright-scanner Run a keyboard traversal test on http://localhost:3000/login
 @playwright-scanner Inspect the accessibility tree of our homepage
 @playwright-scanner Test viewport reflow at 320px wide for our settings page
@@ -1550,7 +1553,7 @@ Post-fix verification — re-runs targeted Playwright scans to confirm accessibi
 
 **Sample prompts:**
 
-```
+```text
 @playwright-verifier Verify that the focus trap fix works on the login modal
 @playwright-verifier Re-run the keyboard scan on the form page to confirm our fixes
 @playwright-verifier Check if the contrast fix on the nav bar passes at runtime
@@ -1566,7 +1569,7 @@ Microsoft PowerPoint accessibility — slide titles (every slide must have a uni
 
 **Sample prompts:**
 
-```
+```text
 @powerpoint-accessibility Audit presentation.pptx for accessibility
 @powerpoint-accessibility Do all slides have unique titles?
 @powerpoint-accessibility Check the reading order on each slide
@@ -1583,7 +1586,7 @@ Pull request code review with an accessibility focus — catches accessibility r
 
 **Sample prompts:**
 
-```
+```text
 @pr-review Review PR #42 for accessibility regressions
 @pr-review Check the diff in this PR for any new accessibility issues
 @pr-review Are there any WCAG violations in the files changed by this PR?
@@ -1600,7 +1603,7 @@ Manages GitHub Projects v2 boards, views, custom fields, and iterations via the 
 
 **Sample prompts:**
 
-```
+```text
 @projects-manager List all projects in this repository
 @projects-manager Show me all items in the "Sprint 5" iteration
 @projects-manager Move issue #23 to the "In Progress" column
@@ -1625,7 +1628,7 @@ Python debugging, packaging (PyInstaller, Nuitka, cx_Freeze), testing (pytest, u
 
 **Sample prompts:**
 
-```
+```text
 @python-specialist Package my Flask app with PyInstaller for Windows distribution
 @python-specialist Debug why this async function deadlocks under high load
 @python-specialist Set up pytest with coverage for my accessibility scanner project
@@ -1643,7 +1646,7 @@ Manages GitHub releases, tags, assets, and release note generation via the REST 
 
 **Sample prompts:**
 
-```
+```text
 @release-manager Draft release notes for v3.0.0 based on commits since v2.9.0
 @release-manager Create a new release tagged v3.0.0 with the generated notes
 @release-manager Upload build artifacts to the latest release
@@ -1666,7 +1669,7 @@ Repository administration — branch protection rules, collaborator management, 
 
 **Sample prompts:**
 
-```
+```text
 @repo-admin Set up branch protection requiring 2 reviews on main
 @repo-admin Add a new collaborator with write access
 @repo-admin List all branch protection rules
@@ -1683,7 +1686,7 @@ Repository-level configuration and management — settings, labels, topics, visi
 
 **Sample prompts:**
 
-```
+```text
 @repo-manager Update the repository description and topics
 @repo-manager Create labels for our accessibility triage workflow
 @repo-manager Configure repository settings for auto-merge
@@ -1708,7 +1711,7 @@ Interactive screen reader simulation — walks through how a screen reader would
 
 **Sample prompts:**
 
-```
+```text
 @screen-reader-lab Simulate how NVDA would read this login form
 @screen-reader-lab Walk through the heading navigation of this page
 @screen-reader-lab Show me the reading order of this card component
@@ -1728,7 +1731,7 @@ Manages Dependabot alerts, code scanning alerts (CodeQL), and secret scanning al
 
 **Sample prompts:**
 
-```
+```text
 @security-dashboard Show me all critical Dependabot alerts
 @security-dashboard List code scanning alerts sorted by severity
 @security-dashboard Are there any exposed secrets in this repository?
@@ -1751,7 +1754,7 @@ Data table accessibility — `<th>` elements with `scope` attributes, `<caption>
 
 **Sample prompts:**
 
-```
+```text
 @tables-data-specialist Review this data table for proper header markup
 @tables-data-specialist This table is sortable — what ARIA do I need?
 @tables-data-specialist Make this pricing comparison table accessible
@@ -1769,7 +1772,7 @@ Organization team membership management — listing team members, adding/removin
 
 **Sample prompts:**
 
-```
+```text
 @team-manager List members of the "frontend" team
 @team-manager Add @username to the "accessibility-reviewers" team
 @team-manager What teams does @username belong to?
@@ -1785,7 +1788,7 @@ Creates issue and PR templates with accessibility checklists. Generates properly
 
 **Sample prompts:**
 
-```
+```text
 @template-builder Create an issue template for accessibility bug reports
 @template-builder Build a PR template with an accessibility checklist
 @template-builder Create a feature request template that asks about accessibility impact
@@ -1802,7 +1805,7 @@ Teaches accessibility testing — screen reader testing (NVDA, JAWS, VoiceOver),
 
 **Sample prompts:**
 
-```
+```text
 @testing-coach How do I test this component with NVDA?
 @testing-coach Create a keyboard testing checklist for our checkout flow
 @testing-coach Set up axe-core as a development dependency with automated testing
@@ -1821,7 +1824,7 @@ Scans for broken alt text (template variables like `{product.name}`), template v
 
 **Sample prompts:**
 
-```
+```text
 @text-quality-reviewer Scan src/components/ for broken alt text and ARIA labels
 @text-quality-reviewer Find any template variables that leaked into accessible names
 @text-quality-reviewer Check for duplicate accessible names on interactive elements
@@ -1838,7 +1841,7 @@ AAA-level conformance — the 28 additional criteria beyond AA. Organized by WCA
 
 **Sample prompts:**
 
-```
+```text
 @wcag-aaa What would it take to reach AAA compliance for our main pages?
 @wcag-aaa Check this page against the AAA contrast requirement (7:1)
 @wcag-aaa Which AAA criteria are practical to implement on our site?
@@ -1855,7 +1858,7 @@ WCAG 2.2 explanations — what each criterion means, how to test it, common fail
 
 **Sample prompts:**
 
-```
+```text
 @wcag-guide Explain WCAG 2.4.7 Focus Visible in plain language
 @wcag-guide What changed in WCAG 2.2 compared to 2.1?
 @wcag-guide How do I test for SC 1.4.3 Contrast (Minimum)?
@@ -1873,7 +1876,7 @@ WCAG 3.0 Working Draft preview — APCA contrast algorithm, Bronze/Silver/Gold c
 
 **Sample prompts:**
 
-```
+```text
 @wcag3-preview What's different about WCAG 3.0 compared to 2.2?
 @wcag3-preview Explain the APCA contrast method and how it differs from the current algorithm
 @wcag3-preview What are Bronze, Silver, and Gold conformance levels?
@@ -1890,7 +1893,7 @@ Full guided web accessibility audit — multi-phase workflow with axe-core scann
 
 **Sample prompts:**
 
-```
+```text
 @web-accessibility-wizard Run a full audit of http://localhost:3000
 @web-accessibility-wizard Audit our 5 main pages and compare patterns across them
 @web-accessibility-wizard Re-audit and compare against our previous report
@@ -1907,7 +1910,7 @@ Shadow DOM and custom element accessibility — `ElementInternals`, cross-shadow
 
 **Sample prompts:**
 
-```
+```text
 @web-component-specialist Make this Shadow DOM component accessible to screen readers
 @web-component-specialist How do I use ElementInternals for form participation?
 @web-component-specialist My custom element needs to expose ARIA states across the shadow boundary
@@ -1932,7 +1935,7 @@ Applies fixes from web audit reports. Separates auto-fixable issues (missing alt
 
 **Sample prompts:**
 
-```
+```text
 @web-issue-fixer Apply fixes from our latest audit report
 @web-issue-fixer Show me which issues can be auto-fixed vs need human judgment
 @web-issue-fixer Fix all auto-fixable issues in src/components/
@@ -1948,7 +1951,7 @@ Manages GitHub wiki pages — creating, reading, updating, deleting, searching, 
 
 **Sample prompts:**
 
-```
+```text
 @wiki-manager List all wiki pages in this repository
 @wiki-manager Create a new wiki page called "Accessibility Guidelines"
 @wiki-manager Update the "Getting Started" wiki page with new installation instructions
@@ -1971,7 +1974,7 @@ Microsoft Word accessibility — styles (using Heading 1/2/3 styles instead of b
 
 **Sample prompts:**
 
-```
+```text
 @word-accessibility Audit report.docx for accessibility
 @word-accessibility Is this document using proper heading styles or just bold text?
 @word-accessibility Check if all images have alt text
@@ -1989,7 +1992,7 @@ wxPython GUI development — sizer layouts, event handling, AUI (Advanced User I
 
 **Sample prompts:**
 
-```
+```text
 @wxpython-specialist Scaffold an accessible wxPython app with proper sizer layout
 @wxpython-specialist My custom control needs keyboard navigation — how do I add it?
 @wxpython-specialist Fix the threading issue in my wxPython file processor
@@ -2201,6 +2204,24 @@ The MCP (Model Context Protocol) server provides **24 scanning tools** that Clau
 
 The MCP server is a standalone Node.js application that exposes accessibility scanning functionality as callable tools. When connected to Claude Desktop (or any MCP client), Claude can directly execute contrast checks, scan documents, run axe-core against live URLs, and more — without you needing to run commands manually.
 
+The MCP server requires Node.js 18 or later plus npm. The repository installers now detect missing Node.js and can offer a platform-appropriate install path before they try to install MCP dependencies.
+
+### Prerequisite Matrix
+
+| Class | Requirement | Needed For | Required? |
+|------|-------------|------------|-----------|
+| Runtime | Node.js 18+ | Running the MCP server | Yes |
+| Runtime | npm | Installing MCP server dependencies | Yes |
+| Runtime | `@modelcontextprotocol/sdk`, `zod` | Baseline MCP tool availability | Yes |
+| Client | MCP-compatible client | Calling MCP tools | Yes |
+| Optional feature | Java 11+ + `verapdf` | Deep PDF validation with `run_verapdf_scan` | No |
+| Optional feature | `playwright`, `@axe-core/playwright`, Chromium | Live browser scanning tools | No |
+| Optional feature | `pdf-lib` | PDF form conversion | No |
+| Installer-only | `git` | Clone-based install/update paths | No |
+| Installer-only | Python 3 | Some shell-installer automation and fallback smoke-test logic | No |
+
+Python is not required to use the MCP server. It is only used by some shell installer paths on macOS to automate config edits and fallback checks. On Windows, the PowerShell installer does not depend on Python.
+
 ### Installation
 
 ```bash
@@ -2235,15 +2256,44 @@ Replace `/path/to/` with the actual path to where you cloned the repository. On 
 
 ```bash
 node server.js
-# Server starts on http://127.0.0.1:3456
-# MCP endpoint: http://127.0.0.1:3456/mcp
-# Health check: http://127.0.0.1:3456/health
+# Server starts on http://127.0.0.1:3100
+# MCP endpoint: http://127.0.0.1:3100/mcp
+# Health check: http://127.0.0.1:3100/health
 ```
 
 Environment variables:
-- `PORT` — Server port (default: 3456)
-- `HOST` — Bind address (default: 127.0.0.1)
-- `MCP_STATELESS` — Stateless mode for CI/CD (default: false)
+
+- `PORT` — Server port (default: 3100)
+- `A11Y_MCP_HOST` — Bind address (default: 127.0.0.1)
+- `A11Y_MCP_STATELESS` — Stateless mode for CI/CD (default: false)
+
+### veraPDF Prerequisite Strategy
+
+The built-in `scan_pdf_document` tool works without veraPDF. Use veraPDF only when you want a deeper PDF/UA validation pass through `run_verapdf_scan`.
+
+**Windows**
+
+Install Java first if it is not already present:
+
+```bash
+winget install --exact --id EclipseAdoptium.Temurin.21.JRE
+```
+
+Then install veraPDF:
+
+```bash
+choco install verapdf
+```
+
+If Chocolatey is not part of your environment, use the manual installer from <https://docs.verapdf.org/install/>.
+
+**macOS**
+
+```bash
+brew install verapdf
+```
+
+After installing Java or veraPDF on Windows, restart your terminal or editor so the updated `PATH` is visible.
 
 ### Interacting with the MCP Server
 
@@ -2261,7 +2311,7 @@ Once the MCP server is connected to Claude Desktop, you interact with it by aski
 | "Scan report.docx for accessibility" | `scan_office_document` |
 | "Check this PDF for accessibility" | `scan_pdf_document` |
 | "Scan all documents in the reports/ folder" | `batch_scan_documents` |
-| "Run an accessibility scan on http://localhost:3000" | `run_axe_scan` |
+| "Run an accessibility scan on <http://localhost:3000>" | `run_axe_scan` |
 | "Show me the accessibility tree of this page" | `run_playwright_a11y_tree` |
 | "Test keyboard navigation on the login page" | `run_playwright_keyboard_scan` |
 
@@ -2291,7 +2341,7 @@ These tools require Playwright and a browser to be available. They test against 
 
 | Tool | Input | What It Does | Example Usage |
 |------|-------|-------------|---------------|
-| `run_axe_scan` | URL | Runs the axe-core accessibility engine against a live URL and returns all violations | "Run an axe scan on http://localhost:3000/login" |
+| `run_axe_scan` | URL | Runs the axe-core accessibility engine against a live URL and returns all violations | "Run an axe scan on <http://localhost:3000/login>" |
 | `run_playwright_a11y_tree` | URL | Captures the full accessibility tree as seen by assistive technology | "Show me the a11y tree of our homepage" |
 | `run_playwright_keyboard_scan` | URL | Tests keyboard navigation — tab order, focus indicators, keyboard traps | "Test keyboard nav on the checkout page" |
 | `run_playwright_contrast_scan` | URL | Screenshots and analyzes actual rendered colors for contrast | "Check contrast on our dark theme" |
@@ -2319,7 +2369,7 @@ The MCP server includes built-in prompts accessible from Claude Desktop's prompt
 
 Here is a complete example of how a user interacts with Claude Desktop + MCP server to audit a document:
 
-```
+```text
 User: I need to check if our annual report is accessible. The file is at C:/docs/annual-report.docx
 
 Claude: I'll scan that document for accessibility issues.
@@ -2345,7 +2395,7 @@ Here's a PowerShell script that will set the title and language...
 
 And here is an example of auditing a live web page:
 
-```
+```text
 User: Run an accessibility scan on our staging site at http://staging.example.com/login
 
 Claude: I'll run an axe-core scan against that URL.
@@ -2378,33 +2428,38 @@ Many agents work with files — reading source code, scanning documents, and app
 ### Pointing Agents to Files
 
 **Single file:**
-```
+
+```text
 @accessibility-lead Review the accessibility of src/components/LoginForm.tsx
 @document-accessibility-wizard Audit docs/report.docx
 @pdf-accessibility Check report.pdf for PDF/UA compliance
 ```
 
 **Directory (recursive):**
-```
+
+```text
 @accessibility-lead Audit all components in src/components/
 @document-accessibility-wizard Scan all documents in docs/ recursively
 @markdown-a11y-assistant Check all markdown files in the project
 ```
 
 **Specific lines or sections:**
-```
+
+```text
 @aria-specialist Check the ARIA usage on lines 45-80 of src/components/Dropdown.tsx
 @forms-specialist Review the form section starting at line 120 in RegisterPage.tsx
 ```
 
 **Currently open file (VS Code):**
-```
+
+```text
 @accessibility-lead Review the current file
 @contrast-master Check the contrast values in this file
 ```
 
 **Git diff (changed files only):**
-```
+
+```text
 @pr-review Check the files changed in this PR for accessibility regressions
 @document-accessibility-wizard Only scan documents that changed since the last commit
 ```
@@ -2429,6 +2484,7 @@ Some agents can directly edit files to apply fixes:
 - **`fix_document_metadata`** (MCP tool) — Generates PowerShell/Bash scripts for document fixes
 
 When an agent proposes fixes, it will either:
+
 1. **Auto-fix**: Apply the change directly (you'll see the edit in your editor)
 2. **Human-judgment**: Present the issue and ask you to decide (e.g., ambiguous alt text where human context is needed)
 
@@ -2436,7 +2492,7 @@ When an agent proposes fixes, it will either:
 
 The MCP tools access files by **absolute path**. When asking Claude Desktop to scan files:
 
-```
+```text
 # Correct — absolute path
 "Scan C:/Users/me/project/docs/report.docx for accessibility"
 
@@ -2455,7 +2511,7 @@ The MCP tools access files by **absolute path**. When asking Claude Desktop to s
 
 **Goal:** Comprehensive WCAG 2.2 AA audit of a web application.
 
-```
+```text
 Step 1: @web-accessibility-wizard Run a full audit of http://localhost:3000
 Step 2: Review the generated report (saved as WEB-ACCESSIBILITY-AUDIT.md)
 Step 3: @web-issue-fixer Apply fixes from the audit report
@@ -2468,7 +2524,7 @@ Or use the one-click prompt: `@workspace /audit-web-page`
 
 **Goal:** Scan all Office documents in a project for accessibility.
 
-```
+```text
 Step 1: @document-accessibility-wizard Scan all documents in docs/ recursively
 Step 2: Review the report (DOCUMENT-ACCESSIBILITY-AUDIT.md)
 Step 3: @pdf-remediator Generate fix scripts for the PDF issues
@@ -2479,7 +2535,7 @@ Step 4: @document-accessibility-wizard Re-scan to verify fixes
 
 **Goal:** Catch accessibility regressions before they merge.
 
-```
+```text
 Step 1: @pr-review Review PR #42 for accessibility regressions
 Step 2: If issues found, the agent comments on specific lines
 Step 3: Fix the flagged issues
@@ -2492,7 +2548,7 @@ For CI automation: `@ci-accessibility Set up axe-core scanning in our GitHub Act
 
 **Goal:** Start your day with a complete picture and manage work through agents.
 
-```
+```text
 Step 1: @daily-briefing Give me my morning briefing
 Step 2: @projects-manager Show me all items in the current sprint
 Step 3: @issue-tracker Triage the new issues from overnight
@@ -2505,7 +2561,7 @@ Step 6: @notifications-manager Show my unread notifications filtered by mentions
 
 **Goal:** Validate that design tokens meet accessibility requirements before they reach components.
 
-```
+```text
 Step 1: @design-system-auditor Audit our Tailwind color tokens for WCAG AA contrast
 Step 2: @design-system-auditor Check focus ring tokens for WCAG 2.4.13 visibility
 Step 3: @design-system-auditor Validate spacing tokens against touch target minimums
@@ -2516,7 +2572,7 @@ Step 4: @design-system-auditor Review motion tokens for prefers-reduced-motion s
 
 **Goal:** Audit a React Native app for mobile accessibility.
 
-```
+```text
 Step 1: @mobile-accessibility Audit all screens in src/screens/
 Step 2: Review touch target sizes (44x44pt minimum)
 Step 3: Verify accessibilityLabel values on all interactive elements
@@ -2527,7 +2583,7 @@ Step 4: @testing-coach Create a VoiceOver/TalkBack testing plan
 
 **Goal:** Build an accessible component from scratch.
 
-```
+```text
 Step 1: @accessibility-lead What accessibility requirements apply to a combobox?
 Step 2: @aria-specialist What ARIA pattern should I use?
 Step 3: Build the component following the guidance
@@ -2539,7 +2595,7 @@ Step 5: @accessibility-lead Full review of the finished component
 
 **Goal:** Ensure all project documentation is accessible.
 
-```
+```text
 Step 1: @markdown-a11y-assistant Audit all markdown files in docs/
 Step 2: Review the report — fix critical issues first
 Step 3: @markdown-fixer Apply auto-fixes for heading hierarchy and em-dashes
@@ -2551,7 +2607,7 @@ Step 5: @markdown-a11y-assistant Re-audit and compare to show progress
 
 **Goal:** Create a release with generated notes and uploaded assets.
 
-```
+```text
 Step 1: @release-manager Generate a changelog from merged PRs since v2.0.0
 Step 2: @release-manager Draft release notes for v2.1.0
 Step 3: Review and edit the generated notes
@@ -2563,7 +2619,7 @@ Step 5: @release-manager Upload build artifacts to the release
 
 **Goal:** Review and address security alerts without using the web UI.
 
-```
+```text
 Step 1: @security-dashboard Show all critical and high severity alerts
 Step 2: Review each alert — decide if it needs action or can be dismissed
 Step 3: @security-dashboard Dismiss alert #12 as "not applicable" with explanation
@@ -2575,7 +2631,7 @@ Step 5: @security-dashboard Generate a security status report
 
 **Goal:** Manage wiki pages without the web UI.
 
-```
+```text
 Step 1: @wiki-manager List all wiki pages
 Step 2: @wiki-manager Create a new page "API Reference" with initial content
 Step 3: @wiki-manager Update the "Getting Started" page with new install steps
@@ -2587,7 +2643,7 @@ Step 5: @wiki-manager Reorganize the sidebar navigation
 
 **Goal:** Manage a sprint using GitHub Projects boards.
 
-```
+```text
 Step 1: @projects-manager Create a new iteration "Sprint 7" starting Monday
 Step 2: @projects-manager Move backlog items to the new sprint
 Step 3: @projects-manager Set priority fields on each item
@@ -2645,8 +2701,8 @@ If Claude Code blocks your file edits with a "permission denied" message, it mea
 
 ### MCP Server: Connection Refused
 
-1. Verify the server is running: `curl http://127.0.0.1:3456/health`
-2. Check the port isn't in use: `netstat -an | grep 3456`
+1. Verify the server is running: `curl http://127.0.0.1:3100/health`
+2. Check the port isn't in use: `netstat -an | grep 3100`
 3. For stdio mode, verify the path in `claude_desktop_config.json` is correct
 4. Make sure `npm install` was run in the `mcp-server/` directory
 
@@ -2658,6 +2714,16 @@ The Playwright tools (`run_axe_scan`, `run_playwright_*`) need Playwright and br
 cd mcp-server
 npx playwright install chromium
 ```
+
+### MCP Server: Is Python Required?
+
+No. Python is not required for MCP runtime or scanning.
+
+- Required for MCP runtime: Node.js 18+, npm, and installed MCP dependencies
+- Optional for features: Java 11+ with `verapdf`, Playwright plus Chromium, `pdf-lib`
+- Installer helper only: Python 3 on macOS for some automatic config edits and smoke-test fallbacks
+
+If Python is not installed, the shell installer may fall back to manual instructions for a few setup steps, but the server itself still runs normally.
 
 ### Scan Configuration Not Applied
 

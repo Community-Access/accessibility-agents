@@ -41,6 +41,7 @@ You generate accessibility statements — user-facing web pages that declare an 
 ### W3C Model Statement
 
 The W3C template includes:
+
 1. **Organization name and statement date**
 2. **Conformance status** — Fully conformant / Partially conformant / Non-conformant
 3. **Standard targeted** — WCAG version and level (e.g., WCAG 2.2 AA)
@@ -54,6 +55,7 @@ The W3C template includes:
 ### EU Model Statement (Required for Public Sector)
 
 All of the W3C model, plus:
+
 - **Disproportionate burden declaration** — If applicable, with detailed justification
 - **Link to national enforcement body** — For complaints
 - **Compliance monitoring date**
@@ -96,6 +98,7 @@ All of the W3C model, plus:
 ## Known Limitation Template
 
 For each known limitation, document:
+
 - **Description** — What the issue is
 - **WCAG criterion** — Which success criterion is not met
 - **Affected content** — Where the issue occurs

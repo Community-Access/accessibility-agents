@@ -9,8 +9,15 @@
 #   bash update.sh              Update global install
 #   bash update.sh --project    Update project install in current directory
 #   bash update.sh --silent     Suppress output (for scheduled runs)
+#   bash update.sh --dry-run    Preview targets without making changes
+#   bash update.sh --vscode-stable|--vscode-insiders|--vscode-both
+#   bash update.sh --summary=path.json
 
 set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)"
+. "$SCRIPT_DIR/scripts/installer-common.sh"
+enforce_shell_runtime
 
 ORIG_DIR="$(pwd)"
 
@@ -24,12 +31,24 @@ LOG_FILE="$HOME/.claude/.a11y-agent-team-update.log"
 # Parse flags
 SILENT=false
 TARGET="global"
+DRY_RUN=false
+CHECK_MODE=false
+SUMMARY_PATH=""
+VSCODE_PROFILE_MODE="auto"
+
 for arg in "$@"; do
   case "$arg" in
     --silent) SILENT=true ;;
     --project) TARGET="project" ;;
+    --check) CHECK_MODE=true ;;
+    --dry-run) DRY_RUN=true ;;
+    --vscode-stable) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "stable") ;;
+    --vscode-insiders) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "insiders") ;;
+    --vscode-both) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "both") ;;
+    --summary=*) SUMMARY_PATH="${arg#--summary=}" ;;
   esac
 done
+
 
 log() {
   local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
@@ -144,6 +163,42 @@ if [ "$TARGET" = "project" ]; then
   INSTALL_DIR="$ORIG_DIR/.claude"
 else
   INSTALL_DIR="$HOME/.claude"
+fi
+
+SELECTED_VSCODE_PROFILES="$(select_vscode_profiles "$VSCODE_PROFILE_MODE")"
+if [ -z "$SUMMARY_PATH" ]; then
+  if [ "$DRY_RUN" = true ] || [ "$CHECK_MODE" = true ]; then
+    SUMMARY_PATH="$HOME/.a11y-agent-team-update-plan.json"
+  elif [ "$TARGET" = "project" ]; then
+    SUMMARY_PATH="$ORIG_DIR/.a11y-agent-team-update-summary.json"
+  else
+    SUMMARY_PATH="$HOME/.a11y-agent-team-update-summary.json"
+  fi
+fi
+
+BACKUP_METADATA_PATH="$(initialize_operation_state update "$([ "$TARGET" = "project" ] && printf '%s' "$ORIG_DIR" || printf '%s' "$HOME")" "$SUMMARY_PATH" "$DRY_RUN" "$CHECK_MODE" "$INSTALL_DIR" "$VERSION_FILE" "$CACHE_DIR")"
+
+if [ "$CHECK_MODE" = true ]; then
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"update\",\"dryRun\":false,\"check\":true,\"scope\":\"$TARGET\",\"installDir\":\"$(json_escape "$INSTALL_DIR")\",\"requestedOptions\":{\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"silent\":$([ "$SILENT" = true ] && echo true || echo false)},\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":[\"Check mode only. No files were changed.\"] }"
+  echo "  Summary written to $SUMMARY_PATH"
+  exit 0
+fi
+
+if [ "$DRY_RUN" = true ]; then
+  echo "  Dry run only. No files will be changed."
+  echo "  Target install directory: $INSTALL_DIR"
+  if [ "$TARGET" = "global" ]; then
+    if [ -n "$SELECTED_VSCODE_PROFILES" ]; then
+      while IFS='|' read -r key label path; do
+        [ -n "$path" ] && echo "  Would update VS Code profile: $path"
+      done <<< "$SELECTED_VSCODE_PROFILES"
+    else
+      echo "  No matching VS Code profiles detected for the requested filter."
+    fi
+  fi
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"update\",\"dryRun\":true,\"check\":false,\"scope\":\"$TARGET\",\"installDir\":\"$(json_escape "$INSTALL_DIR")\",\"requestedOptions\":{\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"silent\":$([ "$SILENT" = true ] && echo true || echo false)},\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":[] }"
+  echo "  Summary written to $SUMMARY_PATH"
+  exit 0
 fi
 
 # Check for git
@@ -392,19 +447,8 @@ if [ "$TARGET" = "global" ]; then
 
   # Push updated agents, prompts, and instructions to VS Code User profile folders.
   # VS Code 1.110+ discovers from User/prompts/. Clean any stale root copies.
-  VSCODE_PROFILES=()
-  case "$(uname -s)" in
-    Darwin)
-      VSCODE_PROFILES=("$HOME/Library/Application Support/Code/User" "$HOME/Library/Application Support/Code - Insiders/User")
-      ;;
-    Linux)
-      VSCODE_PROFILES=("$HOME/.config/Code/User" "$HOME/.config/Code - Insiders/User")
-      ;;
-    MINGW*|MSYS*|CYGWIN*)
-      [ -n "$APPDATA" ] && VSCODE_PROFILES=("$APPDATA/Code/User" "$APPDATA/Code - Insiders/User")
-      ;;
-  esac
-  for PROFILE in "${VSCODE_PROFILES[@]}"; do
+  while IFS='|' read -r profile_key profile_label PROFILE; do
+    [ -n "$PROFILE" ] || continue
     PROMPTS_DIR="$PROFILE/prompts"
     # Only update if agents were previously installed there
     HAS_AGENTS=false
@@ -438,7 +482,7 @@ if [ "$TARGET" = "global" ]; then
     done
     [ "$CLEANED" -gt 0 ] && log "Cleaned $CLEANED duplicate(s) from $PROFILE"
     log "Updated VS Code profile: $PROFILE"
-  done
+  done <<< "$SELECTED_VSCODE_PROFILES"
 fi
 
 # Update Codex assets if Codex support was previously installed
@@ -503,13 +547,25 @@ if [ "$TARGET" = "global" ] && [ -d "$HOME/.claude/hooks" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Update MCP server dependencies (if Node.js is available)
+# Update MCP server installation and dependencies (if present)
 # ---------------------------------------------------------------------------
-MCP_PKG="$CACHE_DIR/desktop-extension/package.json"
-if [ -f "$MCP_PKG" ] && command -v node &>/dev/null && command -v npm &>/dev/null; then
-  (cd "$CACHE_DIR/desktop-extension" && npm install --omit=dev --silent 2>/dev/null) && \
-    log "MCP server dependencies updated" || \
-    log "MCP server dependency install failed (non-fatal)"
+MCP_SRC_DIR="$CACHE_DIR/mcp-server"
+if [ "$TARGET" = "project" ]; then
+  MCP_DEST_DIR="$ORIG_DIR/mcp-server"
+else
+  MCP_DEST_DIR="$HOME/.a11y-agent-team/mcp-server"
+fi
+
+if [ -d "$MCP_SRC_DIR" ] && [ -d "$MCP_DEST_DIR" ]; then
+  cp -R "$MCP_SRC_DIR/." "$MCP_DEST_DIR/"
+  log "Updated MCP server files"
+  UPDATED=$((UPDATED + 1))
+
+  if [ -f "$MCP_DEST_DIR/package.json" ] && command -v node &>/dev/null && command -v npm &>/dev/null; then
+    (cd "$MCP_DEST_DIR" && npm install --omit=dev --silent 2>/dev/null) && \
+      log "MCP server dependencies updated" || \
+      log "MCP server dependency install failed (non-fatal)"
+  fi
 fi
 
 # Save version
@@ -520,3 +576,6 @@ if [ "$UPDATED" -gt 0 ]; then
 else
   log "Files already match latest version ($NEW_HASH)."
 fi
+
+write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"update\",\"dryRun\":false,\"check\":false,\"scope\":\"$TARGET\",\"installDir\":\"$(json_escape "$INSTALL_DIR")\",\"requestedOptions\":{\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"silent\":$([ "$SILENT" = true ] && echo true || echo false)},\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"updatedFiles\":$UPDATED,\"version\":\"$NEW_HASH\",\"notes\":[] }"
+log "Summary written to $SUMMARY_PATH"

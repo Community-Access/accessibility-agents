@@ -44,14 +44,14 @@ For tasks that do not involve UI code (backend logic, scripts, database work), t
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI installed and working (latest version)
 - A Claude Code subscription (Pro, Max, or Team)
-- **macOS/Linux:** bash 4.0+ (pre-installed on modern systems)
+- **macOS:** bash 3.2+ is supported, including the system-provided `/bin/bash`
 - **Windows:** PowerShell 5.1+ (pre-installed on Windows 10/11)
 
 **Version Checks:**
 
 ```bash
 claude code --version    # Should show latest stable release
-bash --version          # macOS/Linux only
+bash --version          # macOS only
 ```
 
 **How to Update:**
@@ -70,7 +70,7 @@ bash update.sh
 
 #### One-Liner (Recommended)
 
-**macOS / Linux:**
+**macOS:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
@@ -87,13 +87,13 @@ The installer downloads the repo, copies agents, installs the three enforcement 
 **Non-interactive one-liners:**
 
 ```bash
-# macOS/Linux - install globally, no prompts
+# macOS - install globally, no prompts
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash -s -- --global
 
-# macOS/Linux - install to current project, no prompts
+# macOS - install to current project, no prompts
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash -s -- --project
 
-# macOS/Linux - install globally with Copilot agents
+# macOS - install globally with Copilot agents
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash -s -- --global --copilot
 ```
 
@@ -101,7 +101,7 @@ curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agen
 
 If you prefer to clone first:
 
-**macOS / Linux:**
+**macOS:**
 
 ```bash
 git clone https://github.com/Community-Access/accessibility-agents.git
@@ -110,6 +110,8 @@ bash install.sh
 ```
 
 Pass flags to skip prompts: `--global`, `--project`, `--copilot`, `--codex`.
+
+For unattended installs and validation, the installers and uninstallers also support `--yes` / `-Yes`, `--no-auto-update` / `-NoAutoUpdate`, `--dry-run`, `--check`, and `--summary <path>` or `-SummaryPath <path>`.
 
 **Windows (PowerShell):**
 
@@ -120,6 +122,15 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
 The `--copilot` flag installs the accessibility agents for GitHub Copilot Chat. For **global** installs, this copies `.agent.md` files directly into your VS Code user profile so the agents appear in the Copilot Chat agent picker across all workspaces. For **project** installs, it copies them into the project's `.github/agents/` directory.
+
+`--dry-run` writes a plan summary without making changes. `--check` goes one step further than basic argument validation: it resolves targets, records candidate paths, and writes backup metadata while still making no filesystem changes. Both modes emit JSON summary files so you can inspect exactly what the script would touch.
+
+Each install, update, and uninstall operation now writes:
+
+- A summary JSON file with normalized fields such as `schemaVersion`, `timestampUtc`, `operation`, `dryRun`, `check`, `requestedOptions`, and `backupMetadataPath`
+- A backup metadata JSON file referenced by `backupMetadataPath`, listing the candidate paths the operation considered and which ones already existed before execution
+
+For project installs, the default summary file is written into the current repository. For global installs, the default summary file is written under your user profile root.
 
 To remove:
 
@@ -217,7 +228,6 @@ You can use both. Project-level agents override global agents with the same name
 During global installation, the installer asks if you want to enable auto-updates. When enabled, a daily scheduled job checks GitHub for new agent versions and installs them automatically.
 
 - **macOS:** Uses a LaunchAgent (`~/Library/LaunchAgents/com.community-access.a11y-agent-team-update.plist`), runs daily at 9:00 AM
-- **Linux:** Uses a cron job, runs daily at 9:00 AM
 - **Windows:** Uses Task Scheduler (`A11yAgentTeamUpdate`), runs daily at 9:00 AM
 
 Auto-updates keep both Claude Code agents (`~/.claude/agents/`) and Copilot agents in your VS Code user profile folder in sync.
@@ -226,7 +236,7 @@ Update log is saved to `~/.claude/.a11y-agent-team-update.log`.
 
 You can also run updates manually at any time:
 
-macOS/Linux:
+macOS:
 
 ```bash
 bash update.sh
@@ -239,6 +249,15 @@ powershell -File update.ps1
 ```
 
 Auto-updates are fully removed when you run the uninstaller.
+
+### Safe Validation and CI
+
+The repository includes two installer validation workflows:
+
+- `installer-dry-run.yml` exercises shell and PowerShell dry-runs and validates summary schema fields
+- `installer-integration.yml` runs real PowerShell project and global install/update/uninstall flows on Windows in disposable temp directories
+
+The PowerShell integration workflow avoids touching the runner's real profile by overriding `USERPROFILE`, `APPDATA`, and `LOCALAPPDATA` with temporary directories before running global scenarios. Use the same technique locally when you want high-confidence validation without affecting your normal Claude or VS Code setup.
 
 ### OS Notifications for Long-Running Audits (VS Code 1.110+)
 
@@ -430,20 +449,76 @@ The workspace instructions in `.github/copilot-instructions.md` are loaded into 
 
 ### MCP Server Setup (Required for MCP Tools)
 
-The workspace includes an MCP server in `.vscode/mcp.json` that provides accessibility tools (contrast checking, heading structure analysis, link text validation, form label checking, document scanning, and more) directly in Copilot Chat.
+The MCP server for document and PDF scanning lives in the top-level `mcp-server/` directory. This is the executable server that provides tools such as `scan_pdf_document` and `scan_office_document`.
 
-**The server requires Node.js dependencies to be installed before it will load:**
+**Install the MCP server dependencies first:**
+
+The MCP server needs Node.js 18 or later plus npm. If you use the repository installers, they now detect missing Node.js and offer to install it before attempting `npm install`.
+
+Manual fallback: <https://nodejs.org/en/download>
 
 ```bash
-cd desktop-extension
+cd mcp-server
 npm install
 ```
 
 This installs the `@modelcontextprotocol/sdk` and `zod` packages that the server needs. The `node_modules/` directory is gitignored, so you must run this step after every fresh clone.
 
+**Run the server locally:**
+
+```bash
+npm start
+# -> http://127.0.0.1:3100/mcp
+```
+
+**Or use stdio mode for desktop clients:**
+
+```bash
+node stdio.js
+```
+
 **Verify the server loads:**
 
-After running `npm install`, reload VS Code. The MCP server should appear in the Copilot Chat tool list. If you see an error about missing packages, re-run `npm install` in the `desktop-extension/` directory.
+After running `npm install`, connect your client to the MCP server and reload the client if needed. If you see an error about missing packages, re-run `npm install` in the `mcp-server/` directory. If `node --version` is below 18, upgrade Node.js first.
+
+**Prerequisite matrix:**
+
+| Class | Requirement | Needed For | Required? |
+|------|-------------|------------|-----------|
+| Runtime | Node.js 18+ | Running the MCP server | Yes |
+| Runtime | npm | Installing MCP server dependencies | Yes |
+| Runtime | `@modelcontextprotocol/sdk`, `zod` | Baseline MCP tool availability | Yes |
+| Client | MCP-compatible client | Calling MCP tools | Yes |
+| Optional feature | Java 11+ + `verapdf` | Deep PDF validation with `run_verapdf_scan` | No |
+| Optional feature | `playwright`, `@axe-core/playwright`, Chromium | Live browser scanning tools | No |
+| Optional feature | `pdf-lib` | PDF form conversion | No |
+| Installer-only | `git` | Clone-based install and update paths | No |
+| Installer-only | Python 3 | Some shell-installer automation and fallback smoke-test logic | No |
+
+Python is not required to use the MCP server. It is only used by some shell installer paths on macOS to automate config edits and fallback checks. On Windows, the PowerShell installer does not depend on Python.
+
+**Guided MCP setup:**
+
+The installer now walks you through MCP setup by capability profile instead of treating every optional tool the same.
+
+| Profile | What it sets up |
+|------|-------------------|
+| `Baseline scanning` | MCP server, core npm dependencies, local MCP wiring |
+| `Browser testing` | Baseline plus Playwright, axe-core, and Chromium |
+| `PDF-heavy workflow` | Baseline plus `pdf-lib` and deeper PDF validation guidance |
+| `Everything` | All supported MCP capabilities in one pass |
+| `Custom` | Lets you choose browser tools, PDF form conversion, deep PDF validation guidance, and VS Code MCP registration individually |
+
+During guided setup, the installer also warns about capability-specific prerequisites before it installs anything:
+
+- Browser testing needs Playwright, axe-core, and Chromium.
+- PDF form conversion needs `pdf-lib`.
+- Deep PDF validation needs Java 11+ and `verapdf`, but baseline PDF scanning still works without them.
+- Python is never required for MCP runtime.
+
+If you skip an optional capability, the installer leaves the MCP server usable and tells you exactly how to enable that capability later.
+
+For the shortest PDF-only path, see [mcp-server/PDF-QUICKSTART.md](../mcp-server/PDF-QUICKSTART.md).
 
 **What the MCP server provides:**
 
@@ -485,6 +560,7 @@ This is for **GitHub Copilot CLI** - the terminal-native agent interface. If you
 GitHub Copilot CLI is a standalone terminal application that runs Copilot directly in your shell. It supports custom agents via `.github/agents/*.agent.md` files and skills via `.github/skills/*/SKILL.md` folders.
 
 The accessibility agents work in Copilot CLI with these capabilities:
+
 - **Agent invocation** via `/agent` command or natural language
 - **Skill loading** for domain-specific knowledge (accessibility rules, WCAG reference)
 - **Tool access** for file reading, editing, searching, and command execution
@@ -503,7 +579,7 @@ The accessibility agents work in Copilot CLI with these capabilities:
 # npm (all platforms)
 npm install -g @github/copilot
 
-# Homebrew (macOS/Linux)
+# Homebrew (macOS)
 brew install copilot-cli
 
 # WinGet (Windows)
@@ -632,7 +708,7 @@ Copilot CLI uses standardized tool aliases. The accessibility agents include too
 
 **Agent not behaving as expected:**
 
-1. Enable debug logging: `/troubleshoot` (requires VS Code 1.112+ settings)
+1. Enable debug logging: `/troubleshoot` (requires VS Code 1.113-era Agent Debug settings for best results across local, Copilot CLI, and Claude agent sessions)
 2. Check that instructions file is being loaded: `/instructions`
 3. Verify workspace trust is granted for the project
 
@@ -758,7 +834,7 @@ bash update.sh
 ```bash
 npm install -g @anthropic-ai/mcpb
 git clone https://github.com/Community-Access/accessibility-agents.git
-cd a11y-agent-team/desktop-extension
+cd a11y-agent-team/mcp-server
 npm install
 mcpb validate .
 mcpb pack . ../a11y-agent-team.mcpb

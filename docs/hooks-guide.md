@@ -37,7 +37,7 @@ The following table lists each supported platform, whether hooks are active, and
 
 Hooks are installed automatically when you run `install.sh` or `install.ps1` with project installation.
 
-macOS/Linux:
+macOS:
 
 ```bash
 bash install.sh --project

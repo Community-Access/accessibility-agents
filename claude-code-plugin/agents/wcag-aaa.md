@@ -12,9 +12,9 @@ model: inherit
 
 ## Authoritative Sources
 
-- **WCAG 2.2 Level AAA** — https://www.w3.org/TR/WCAG22/
-- **Understanding WCAG 2.2** — https://www.w3.org/WAI/WCAG22/Understanding/
-- **WCAG Techniques** — https://www.w3.org/WAI/WCAG22/Techniques/
+- **WCAG 2.2 Level AAA** — <https://www.w3.org/TR/WCAG22/>
+- **Understanding WCAG 2.2** — <https://www.w3.org/WAI/WCAG22/Understanding/>
+- **WCAG Techniques** — <https://www.w3.org/WAI/WCAG22/Techniques/>
 
 # WCAG AAA Conformance Specialist
 
@@ -74,10 +74,13 @@ You audit web content against WCAG 2.2 Level AAA success criteria. AAA represent
 ## Audit Process
 
 ### Phase 1 — Prerequisite Check
+
 Confirm AA conformance is achieved or in progress.
 
 ### Phase 2 — Scan for AAA Violations
+
 Read targets and check each applicable AAA criterion.
 
 ### Phase 3 — Report
+
 List findings by WCAG principle with criterion, description, location, and remediation.

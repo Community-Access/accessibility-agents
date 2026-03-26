@@ -26,7 +26,6 @@ Perform a comprehensive accessibility audit of a desktop application's source co
 2. **Audit platform accessibility API usage:**
    - **Windows:** Check for UI Automation (UIA) properties, MSAA/IAccessible2 implementation, and AutomationPeer definitions
    - **macOS:** Check for NSAccessibility protocol conformance and accessibility attributes
-   - **Linux:** Check for ATK/AT-SPI integration and accessible role assignments
    - Flag custom controls that lack accessibility API integration
 
 3. **Check keyboard navigation:**

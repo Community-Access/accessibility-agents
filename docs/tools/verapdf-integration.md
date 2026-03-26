@@ -45,15 +45,23 @@ brew install verapdf
 
 ### Windows
 
+Install Java first if it is not already present:
+
+```bash
+winget install --exact --id EclipseAdoptium.Temurin.21.JRE
+```
+
+Then install veraPDF using Chocolatey if available:
+
 ```bash
 choco install verapdf
 ```
 
-### Linux
+If you do not use Chocolatey, use the manual installer from <https://docs.verapdf.org/install/>.
 
-```bash
-snap install verapdf
-```
+### Alternative Install Path
+
+Use the manual installer from <https://docs.verapdf.org/install/>.
 
 ### Manual Download
 
@@ -64,6 +72,8 @@ Download from <https://docs.verapdf.org/install/>
 ```bash
 verapdf --version
 ```
+
+On Windows, restart the terminal or editor after installing Java or veraPDF so the updated `PATH` is visible.
 
 ## Validation Flavours
 

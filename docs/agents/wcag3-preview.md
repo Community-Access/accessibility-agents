@@ -1,7 +1,7 @@
 # wcag3-preview — WCAG 3.0 Working Draft Education
 
 > Educational agent covering the WCAG 3.0 Working Draft, including the APCA contrast algorithm, new conformance model, outcome-based testing, and functional needs categories.
-
+>
 > **Draft disclaimer:** WCAG 3.0 is a W3C Working Draft and is not yet a recommendation. All content reflects the draft specification as of the latest available version. Requirements, scoring models, and terminology may change significantly before final publication. Do not use WCAG 3.0 draft criteria for compliance claims — use WCAG 2.2 for current conformance requirements.
 
 ## Features

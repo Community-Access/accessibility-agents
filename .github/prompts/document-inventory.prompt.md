@@ -63,7 +63,7 @@ Write-Host "  .pdf: $(($files | Where-Object Extension -eq '.pdf').Count)"
 Write-Host "  .epub: $(($files | Where-Object Extension -eq '.epub').Count)"
 ```
 
-**Bash (Linux/macOS):**
+**Bash (macOS):**
 
 ```bash
 find ${input:directory} -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) \

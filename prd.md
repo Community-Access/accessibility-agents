@@ -17,7 +17,7 @@
 - [System Architecture](#system-architecture)
   - [Agent Architecture](#agent-architecture)
   - [MCP Server Architecture](#mcp-server-architecture)
-  - [CI/CD Architecture](#cicd-architecture)
+  - [CI and CD Architecture](#ci-and-cd-architecture)
 - [Agent Specifications](#agent-specifications)
   - [Web Accessibility Agents (13)](#web-accessibility-agents-13)
   - [Document Accessibility Agents (7)](#document-accessibility-agents-7)
@@ -70,7 +70,7 @@ Key capabilities added since v2.0:
 - **Cognitive accessibility agent** - WCAG 2.2 cognitive guidelines, clear language, consistent navigation
 - **Design system auditor** - Component library accessibility patterns and design token analysis
 - **Mobile accessibility agent** - iOS UIAccessibility and Android TalkBack patterns
-- **Desktop accessibility agents** - Windows MSAA/UIA, macOS NSAccessibility, Linux ATK/AT-SPI patterns, plus dedicated desktop testing coach
+- **Desktop accessibility agents** - Windows MSAA/UIA, macOS NSAccessibility patterns, plus dedicated desktop testing coach
 - **AT and development specialists** - NVDA addon specialist, wxPython specialist, Python development specialist, accessibility tool builder, text quality reviewer
 - **Infrastructure agents** - nexus (cross-agent knowledge hub) and developer-hub (contributor onboarding and ecosystem coordination)
 - **CSV export reporters** - document-csv-reporter, web-csv-reporter, markdown-csv-reporter for structured finding exports
@@ -153,7 +153,7 @@ The following table describes the primary user types and how each uses the syste
 - **Agent format:** Markdown files with YAML frontmatter (`tools`, `model`, `description`) in `.claude/agents/`
 - **Activation mechanism:** Agents invoked directly via `/agent-name` or `@agent-name`
 - **Install scope:** Project-level (`.claude/`) or global (`~/.claude/`)
-- **Auto-updates:** LaunchAgent (macOS), cron (Linux), Task Scheduler (Windows) - daily at 9:00 AM
+- **Auto-updates:** LaunchAgent (macOS) and Task Scheduler (Windows) - daily at 9:00 AM
 - **Agent count:** 57
 
 ### GitHub Copilot (VS Code)
@@ -217,12 +217,18 @@ CI integration bridges include lighthouse-bridge and scanner-bridge for correlat
 
 </details>
 
-### CI/CD Architecture
+### MCP Server Architecture
+
+The MCP server architecture exposes reusable accessibility tooling over HTTP and stdio transports. The shared server core registers document, PDF, contrast, and browser-audit tools once, then serves them through `server.js` for HTTP clients and `stdio.js` for local desktop clients. Optional capabilities such as veraPDF, Playwright, and PDF form conversion stay behind runtime readiness checks so baseline scanning still works when those extra dependencies are not installed.
+
+The current installers provision the MCP server into a stable location, verify Node.js and npm, install core server dependencies, and can run a local health probe after setup so users know the transport is actually reachable.
+
+### CI and CD Architecture
 
 The following diagram shows the pull request pipeline that triggers accessibility scanning and uploads SARIF results to GitHub Code Scanning.
 
 <details>
-<summary>CI/CD architecture flowchart (text description follows)</summary>
+<summary>CI and CD architecture flowchart (text description follows)</summary>
 
 A pull_request event (opened, synchronize) triggers .github/workflows/a11y-check.yml. This runs three parallel steps: Step 1 runs a11y-lint.mjs to scan HTML, JSX, and TSX files; Step 2 runs office-a11y-scan.mjs to scan DOCX, XLSX, and PPTX files; Step 3 runs pdf-a11y-scan.mjs to scan PDF files. All three produce SARIF 2.1.0 output uploaded to GitHub Code Scanning, with error and warning annotations and exit code 1 if error-severity findings exist.
 
@@ -288,8 +294,8 @@ The following table lists all document accessibility agents with their rule coun
 | 24 | **cognitive-accessibility** | Clear language, consistent navigation, predictable UI, error prevention, reading level | WCAG 2.2 cognitive guidelines, COGA | Yes |
 | 25 | **design-system-auditor** | Component library accessibility patterns, design token contrast, theming | WCAG 2.2 AA, WAI-ARIA APG | Yes |
 | 26 | **mobile-accessibility** | Touch targets, gestures, screen reader APIs, orientation, viewport | iOS UIAccessibility, Android TalkBack | Yes |
-| 27 | **desktop-a11y-specialist** | Native desktop app accessibility, platform APIs, widget patterns | MSAA/UIA, NSAccessibility, ATK/AT-SPI | Yes |
-| 28 | **desktop-a11y-testing-coach** | Desktop accessibility testing workflows with NVDA, JAWS, VoiceOver, Orca | Testing guidance only | No (guidance only) |
+| 27 | **desktop-a11y-specialist** | Native desktop app accessibility, platform APIs, widget patterns | MSAA/UIA, NSAccessibility | Yes |
+| 28 | **desktop-a11y-testing-coach** | Desktop accessibility testing workflows with NVDA, JAWS, VoiceOver | Testing guidance only | No (guidance only) |
 
 ### AT and Development Specialists (5)
 
@@ -959,11 +965,11 @@ The `generate_vpat` tool outputs a full VPAT 2.5 / ACR template:
 
 | File | Platform | Description |
 |------|----------|-------------|
-| `install.sh` | macOS/Linux | Interactive installer (--global / --project flags) |
+| `install.sh` | macOS | Interactive installer (--global / --project flags) |
 | `install.ps1` | Windows | Interactive installer (PowerShell) |
-| `uninstall.sh` | macOS/Linux | Clean removal including auto-update jobs |
+| `uninstall.sh` | macOS | Clean removal including auto-update jobs |
 | `uninstall.ps1` | Windows | Clean removal including Task Scheduler jobs |
-| `update.sh` | macOS/Linux | Manual or auto-update (git pull + copy) |
+| `update.sh` | macOS | Manual or auto-update (git pull + copy) |
 | `update.ps1` | Windows | Manual or auto-update |
 
 ### Auto-Update Mechanisms
@@ -971,7 +977,6 @@ The `generate_vpat` tool outputs a full VPAT 2.5 / ACR template:
 | Platform | Mechanism | Schedule |
 |----------|-----------|----------|
 | macOS | LaunchAgent plist | Daily 9:00 AM |
-| Linux | Cron job | Daily 9:00 AM |
 | Windows | Task Scheduler | Daily 9:00 AM |
 
 ---
@@ -1018,7 +1023,7 @@ The `generate_vpat` tool outputs a full VPAT 2.5 / ACR template:
 - Gemini (any version with `.gemini/extensions/` support)
 - Codex CLI (any version with `.codex/AGENTS.md` support)
 - Claude Desktop 0.10.0+
-- Windows (PowerShell 5.1+), macOS, Linux
+- Windows (PowerShell 5.1+), macOS
 
 ### Security
 
@@ -1159,11 +1164,11 @@ Single configuration file: `.codex/AGENTS.md`
 
 | File | Purpose |
 |------|---------|
-| `install.sh` | macOS/Linux installer |
+| `install.sh` | macOS installer |
 | `install.ps1` | Windows installer |
-| `uninstall.sh` | macOS/Linux uninstaller |
+| `uninstall.sh` | macOS uninstaller |
 | `uninstall.ps1` | Windows uninstaller |
-| `update.sh` | macOS/Linux updater |
+| `update.sh` | macOS updater |
 | `update.ps1` | Windows updater |
 
 ### Prompts Files (134 prompt files in `.github/prompts/`)

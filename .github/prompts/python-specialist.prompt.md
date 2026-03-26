@@ -32,7 +32,7 @@ Ask the user:
    - **Nuitka** -- Compiles to C, better performance and smaller size
    - **cx_Freeze** -- Alternative with MSI/DMG installer support
 2. **Build mode** -- Single file (`--onefile`) or directory bundle (`--onedir`)?
-3. **Target platform** -- Windows, macOS, Linux, or all?
+3. **Target platform** -- Windows, macOS, or both?
 4. **GUI framework** -- wxPython, Qt, Tkinter, or console-only? (for hidden import detection)
 5. **Additional data files** -- Images, config files, templates, databases to bundle?
 6. **Application icon** -- Path to `.ico` (Windows) or `.icns` (macOS) file?
@@ -82,7 +82,7 @@ Scan the entry point and imports to identify:
 
 Provide guidance on:
 
-- How to create an installer (NSIS, Inno Setup for Windows; DMG for macOS; AppImage for Linux)
+- How to create an installer (NSIS, Inno Setup for Windows; DMG for macOS)
 - How to set up auto-update (if applicable)
 - How to handle antivirus false positives (common with PyInstaller)
 - How to code sign the executable

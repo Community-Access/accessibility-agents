@@ -42,6 +42,7 @@ Use the **document-accessibility-wizard** to:
 ## Common Conversion Losses
 
 Watch for these frequently lost features:
+
 - Tagged PDF structure (headings, lists, tables)
 - Alt text on images and charts
 - Table header row repeat

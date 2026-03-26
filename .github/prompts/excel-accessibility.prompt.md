@@ -100,7 +100,8 @@ For each issue:
 - WCAG criterion
 - Location (sheet name, cell range)
 - Current state
-- Remediation steps
+- Start Here: native Excel steps first
+- Advanced / Technical Follow-Up: optional workbook/XML or automation detail after the Excel steps
 - Priority (Critical/Serious/Moderate)
 
 ## Expected Output

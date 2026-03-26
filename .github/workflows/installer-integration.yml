@@ -1,0 +1,161 @@
+name: Installer Integration
+
+on:
+  pull_request:
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+      - 'update.sh'
+      - 'update.ps1'
+      - 'uninstall.sh'
+      - 'uninstall.ps1'
+      - 'scripts/installer-common.sh'
+      - 'scripts/Installer.Common.ps1'
+      - '.github/workflows/installer-integration.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+      - 'update.sh'
+      - 'update.ps1'
+      - 'uninstall.sh'
+      - 'uninstall.ps1'
+      - 'scripts/installer-common.sh'
+      - 'scripts/Installer.Common.ps1'
+      - '.github/workflows/installer-integration.yml'
+  workflow_dispatch:
+
+jobs:
+  powershell-project-and-global:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Project install, check, update, uninstall
+        shell: powershell
+        run: |
+          $projectRoot = Join-Path $env:RUNNER_TEMP 'a11y-project'
+          if (Test-Path $projectRoot) { Remove-Item $projectRoot -Recurse -Force }
+          New-Item -ItemType Directory -Path $projectRoot | Out-Null
+          Copy-Item -Path (Join-Path $env:GITHUB_WORKSPACE '*') -Destination $projectRoot -Recurse -Force
+          Set-Location $projectRoot
+
+          '' | .\install.ps1 -Project -NoAutoUpdate -SummaryPath .a11y-agent-team-install-summary.json
+          if (-not (Test-Path '.claude\agents')) { throw 'Project install did not create .claude\agents' }
+
+          .\install.ps1 -Project -Check -SummaryPath .a11y-agent-team-install-plan.json
+          $installCheck = Get-Content '.a11y-agent-team-install-plan.json' -Raw | ConvertFrom-Json
+          if (-not $installCheck.check) { throw 'Expected install check summary to set check=true' }
+          if ($installCheck.dryRun) { throw 'Expected install check summary to set dryRun=false' }
+          if (-not $installCheck.backupMetadataPath) { throw 'Expected install check summary to include backup metadata' }
+          if (-not (Test-Path $installCheck.backupMetadataPath)) { throw 'Install check backup metadata file missing' }
+          $installCheckBackup = Get-Content $installCheck.backupMetadataPath -Raw | ConvertFrom-Json
+          if (-not $installCheckBackup.check) { throw 'Expected install check backup metadata to set check=true' }
+          if ($installCheckBackup.dryRun) { throw 'Expected install check backup metadata to set dryRun=false' }
+
+          .\update.ps1 -Project -Check -SummaryPath .a11y-agent-team-update-plan.json
+          $updateCheck = Get-Content '.a11y-agent-team-update-plan.json' -Raw | ConvertFrom-Json
+          if (-not $updateCheck.check) { throw 'Expected update check summary to set check=true' }
+          if ($updateCheck.dryRun) { throw 'Expected update check summary to set dryRun=false' }
+          if (-not (Test-Path $updateCheck.backupMetadataPath)) { throw 'Update check backup metadata file missing' }
+          $updateCheckBackup = Get-Content $updateCheck.backupMetadataPath -Raw | ConvertFrom-Json
+          if (-not $updateCheckBackup.check) { throw 'Expected update check backup metadata to set check=true' }
+          if ($updateCheckBackup.dryRun) { throw 'Expected update check backup metadata to set dryRun=false' }
+
+          .\update.ps1 -Project -SummaryPath .a11y-agent-team-update-summary.json
+          $updateSummary = Get-Content '.a11y-agent-team-update-summary.json' -Raw | ConvertFrom-Json
+          if ($updateSummary.check) { throw 'Project update summary unexpectedly set check=true' }
+          if ($updateSummary.dryRun) { throw 'Project update summary unexpectedly set dryRun=true' }
+          if (-not $updateSummary.backupMetadataPath) { throw 'Expected update summary to include backup metadata' }
+          if (-not (Test-Path $updateSummary.backupMetadataPath)) { throw 'Update backup metadata file missing' }
+          $updateBackup = Get-Content $updateSummary.backupMetadataPath -Raw | ConvertFrom-Json
+          if ($updateBackup.check) { throw 'Project update backup unexpectedly set check=true' }
+          if ($updateBackup.dryRun) { throw 'Project update backup unexpectedly set dryRun=true' }
+
+          .\uninstall.ps1 --project --check --summary .a11y-agent-team-uninstall-plan.json
+          $uninstallCheck = Get-Content '.a11y-agent-team-uninstall-plan.json' -Raw | ConvertFrom-Json
+          if (-not $uninstallCheck.check) { throw 'Expected uninstall check summary to set check=true' }
+          if ($uninstallCheck.dryRun) { throw 'Expected uninstall check summary to set dryRun=false' }
+          if (-not (Test-Path $uninstallCheck.backupMetadataPath)) { throw 'Uninstall check backup metadata file missing' }
+          $uninstallCheckBackup = Get-Content $uninstallCheck.backupMetadataPath -Raw | ConvertFrom-Json
+          if (-not $uninstallCheckBackup.check) { throw 'Expected uninstall check backup metadata to set check=true' }
+          if ($uninstallCheckBackup.dryRun) { throw 'Expected uninstall check backup metadata to set dryRun=false' }
+
+          .\uninstall.ps1 --project --summary .a11y-agent-team-uninstall-summary.json
+          if (Test-Path '.claude\agents') { throw 'Project uninstall left .claude\agents behind' }
+          $uninstallSummary = Get-Content '.a11y-agent-team-uninstall-summary.json' -Raw | ConvertFrom-Json
+          if ($uninstallSummary.check) { throw 'Project uninstall summary unexpectedly set check=true' }
+          if ($uninstallSummary.dryRun) { throw 'Project uninstall summary unexpectedly set dryRun=true' }
+          if (-not $uninstallSummary.backupMetadataPath) { throw 'Expected uninstall summary to include backup metadata' }
+          if (-not (Test-Path $uninstallSummary.backupMetadataPath)) { throw 'Uninstall backup metadata file missing' }
+          $uninstallBackup = Get-Content $uninstallSummary.backupMetadataPath -Raw | ConvertFrom-Json
+          if ($uninstallBackup.check) { throw 'Project uninstall backup unexpectedly set check=true' }
+          if ($uninstallBackup.dryRun) { throw 'Project uninstall backup unexpectedly set dryRun=true' }
+
+      - name: Global install, check, update, uninstall in temp profile
+        shell: powershell
+        run: |
+          $globalRoot = Join-Path $env:RUNNER_TEMP 'a11y-global'
+          $userProfile = Join-Path $globalRoot 'profile'
+          $appData = Join-Path $globalRoot 'appdata\roaming'
+          $localAppData = Join-Path $globalRoot 'appdata\local'
+          foreach ($dir in @($userProfile, $appData, $localAppData)) {
+            New-Item -ItemType Directory -Path $dir -Force | Out-Null
+          }
+
+          $env:USERPROFILE = $userProfile
+          $env:APPDATA = $appData
+          $env:LOCALAPPDATA = $localAppData
+
+          Set-Location $env:GITHUB_WORKSPACE
+
+          '' | .\install.ps1 -Global -NoAutoUpdate -SummaryPath (Join-Path $globalRoot '.a11y-agent-team-install-summary.json')
+          if (-not (Test-Path (Join-Path $userProfile '.claude\agents'))) { throw 'Global install did not create temp profile agents directory' }
+
+          .\install.ps1 -Global -Check -SummaryPath (Join-Path $globalRoot '.a11y-agent-team-install-plan.json')
+          $installCheck = Get-Content (Join-Path $globalRoot '.a11y-agent-team-install-plan.json') -Raw | ConvertFrom-Json
+          if (-not $installCheck.check) { throw 'Expected global install check summary to set check=true' }
+          if ($installCheck.dryRun) { throw 'Expected global install check summary to set dryRun=false' }
+          if (-not (Test-Path $installCheck.backupMetadataPath)) { throw 'Global install check backup metadata file missing' }
+          $installCheckBackup = Get-Content $installCheck.backupMetadataPath -Raw | ConvertFrom-Json
+          if (-not $installCheckBackup.check) { throw 'Expected global install check backup metadata to set check=true' }
+          if ($installCheckBackup.dryRun) { throw 'Expected global install check backup metadata to set dryRun=false' }
+
+          .\update.ps1 -Check -SummaryPath (Join-Path $globalRoot '.a11y-agent-team-update-plan.json')
+          $updateCheck = Get-Content (Join-Path $globalRoot '.a11y-agent-team-update-plan.json') -Raw | ConvertFrom-Json
+          if (-not $updateCheck.check) { throw 'Expected global update check summary to set check=true' }
+          if ($updateCheck.dryRun) { throw 'Expected global update check summary to set dryRun=false' }
+          if (-not (Test-Path $updateCheck.backupMetadataPath)) { throw 'Global update check backup metadata file missing' }
+          $updateCheckBackup = Get-Content $updateCheck.backupMetadataPath -Raw | ConvertFrom-Json
+          if (-not $updateCheckBackup.check) { throw 'Expected global update check backup metadata to set check=true' }
+          if ($updateCheckBackup.dryRun) { throw 'Expected global update check backup metadata to set dryRun=false' }
+
+          .\update.ps1 -SummaryPath (Join-Path $globalRoot '.a11y-agent-team-update-summary.json')
+          $updateSummary = Get-Content (Join-Path $globalRoot '.a11y-agent-team-update-summary.json') -Raw | ConvertFrom-Json
+          if ($updateSummary.check) { throw 'Global update summary unexpectedly set check=true' }
+          if ($updateSummary.dryRun) { throw 'Global update summary unexpectedly set dryRun=true' }
+          if (-not (Test-Path $updateSummary.backupMetadataPath)) { throw 'Global update backup metadata file missing' }
+          $updateBackup = Get-Content $updateSummary.backupMetadataPath -Raw | ConvertFrom-Json
+          if ($updateBackup.check) { throw 'Global update backup unexpectedly set check=true' }
+          if ($updateBackup.dryRun) { throw 'Global update backup unexpectedly set dryRun=true' }
+
+          .\uninstall.ps1 --global --check --summary (Join-Path $globalRoot '.a11y-agent-team-uninstall-plan.json')
+          $uninstallCheck = Get-Content (Join-Path $globalRoot '.a11y-agent-team-uninstall-plan.json') -Raw | ConvertFrom-Json
+          if (-not $uninstallCheck.check) { throw 'Expected global uninstall check summary to set check=true' }
+          if ($uninstallCheck.dryRun) { throw 'Expected global uninstall check summary to set dryRun=false' }
+          if (-not (Test-Path $uninstallCheck.backupMetadataPath)) { throw 'Global uninstall check backup metadata file missing' }
+          $uninstallCheckBackup = Get-Content $uninstallCheck.backupMetadataPath -Raw | ConvertFrom-Json
+          if (-not $uninstallCheckBackup.check) { throw 'Expected global uninstall check backup metadata to set check=true' }
+          if ($uninstallCheckBackup.dryRun) { throw 'Expected global uninstall check backup metadata to set dryRun=false' }
+
+          .\uninstall.ps1 --global --summary (Join-Path $globalRoot '.a11y-agent-team-uninstall-summary.json')
+          if (Test-Path (Join-Path $userProfile '.claude\agents')) { throw 'Global uninstall left temp profile agents directory behind' }
+          $uninstallSummary = Get-Content (Join-Path $globalRoot '.a11y-agent-team-uninstall-summary.json') -Raw | ConvertFrom-Json
+          if ($uninstallSummary.check) { throw 'Global uninstall summary unexpectedly set check=true' }
+          if ($uninstallSummary.dryRun) { throw 'Global uninstall summary unexpectedly set dryRun=true' }
+          if (-not (Test-Path $uninstallSummary.backupMetadataPath)) { throw 'Global uninstall backup metadata file missing' }
+          $uninstallBackup = Get-Content $uninstallSummary.backupMetadataPath -Raw | ConvertFrom-Json
+          if ($uninstallBackup.check) { throw 'Global uninstall backup unexpectedly set check=true' }
+          if ($uninstallBackup.dryRun) { throw 'Global uninstall backup unexpectedly set dryRun=true' }

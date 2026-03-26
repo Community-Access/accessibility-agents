@@ -50,8 +50,8 @@ Invoke these agents from the Claude Code agent picker (type `/` to browse):
 | Developer Hub | Python, wxPython, desktop app development - routes to specialist agents, scaffolds, debugs, reviews, builds |
 | Python Specialist | Python debugging, packaging (PyInstaller/Nuitka/cx_Freeze), testing, type checking, async, optimization |
 | wxPython Specialist | wxPython GUI - sizer layouts, event handling, AUI, custom controls, threading, desktop accessibility |
-| Desktop Accessibility Specialist | Desktop application accessibility - platform APIs (UI Automation, MSAA/IAccessible2, ATK/AT-SPI, NSAccessibility), accessible control patterns, screen reader Name/Role/Value/State, focus management, high contrast, and custom widget accessibility for Windows, macOS, and Linux desktop applications |
-| Desktop A11y Testing Coach | Desktop accessibility testing - testing with NVDA, JAWS, Narrator, VoiceOver, and Orca screen readers, Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, high contrast verification, and creating desktop accessibility test plans |
+| Desktop Accessibility Specialist | Desktop application accessibility - platform APIs (UI Automation, MSAA/IAccessible2, NSAccessibility), accessible control patterns, screen reader Name/Role/Value/State, focus management, high contrast, and custom widget accessibility for Windows and macOS desktop applications |
+| Desktop A11y Testing Coach | Desktop accessibility testing - testing with NVDA, JAWS, Narrator, and VoiceOver screen readers, Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, high contrast verification, and creating desktop accessibility test plans |
 | Accessibility Tool Builder | Building accessibility scanning tools, rule engines, document parsers, report generators, and audit automation. WCAG criterion mapping, severity scoring algorithms, CLI/GUI scanner architecture, and CI/CD integration for accessibility tooling |
 | Media Accessibility | Video and audio accessibility - captions, audio descriptions, transcripts, media player controls, WCAG 1.2.x compliance |
 | Email Accessibility | HTML email accessibility under email client rendering constraints - table-based layout, inline styles, image fallbacks, screen reader compatibility |
@@ -138,7 +138,7 @@ Team coordination is defined in `.claude/agents/AGENTS.md`. Nine defined teams:
 - **WCAG questions:** Use wcag-guide to understand specific WCAG success criteria and conformance requirements.
 - **Python development:** Use developer-hub for any Python, wxPython, or desktop app task. Routes to python-specialist for language work and wxpython-specialist for GUI work.
 - **Desktop app packaging:** Use python-specialist for PyInstaller, Nuitka, cx_Freeze builds and troubleshooting.
-- **Desktop accessibility:** Use desktop-a11y-specialist for platform API implementation (UIA, MSAA, ATK, NSAccessibility), screen reader interaction, focus management, and high contrast support. Use desktop-a11y-testing-coach for screen reader testing walkthroughs and automated UIA tests.
+- **Desktop accessibility:** Use desktop-a11y-specialist for platform API implementation (UIA, MSAA, NSAccessibility), screen reader interaction, focus management, and high contrast support. Use desktop-a11y-testing-coach for screen reader testing walkthroughs and automated UIA tests.
 - **Building accessibility tools:** Use a11y-tool-builder for designing rule engines, document parsers, report generators, severity scoring, and scanner architecture.
 
 ## Context Discovery
@@ -149,9 +149,9 @@ When starting any accessibility audit, review, or remediation task, proactively 
 2. **Previous audit reports:** Check for existing `ACCESSIBILITY-AUDIT.md`, `WEB-ACCESSIBILITY-AUDIT.md`, `DOCUMENT-ACCESSIBILITY-AUDIT.md`, and `MARKDOWN-ACCESSIBILITY-AUDIT.md` in the workspace root. If found, note the date, overall score, and issue count. Offer comparison/delta mode so the user can track remediation progress.
 3. **Scan config templates:** If no config file exists and the user is starting a new audit, mention that pre-built profiles (strict, moderate, minimal) are available in the `templates/` directory.
 
-## VS Code 1.112 Features
+## VS Code 1.113 Features
 
-VS Code 1.112 (March 2026) includes several features that enhance accessibility agent workflows:
+VS Code 1.113 (March 2026) builds on the 1.112 platform improvements and adds several capabilities that directly improve accessibility agent workflows:
 
 ### Monorepo Customization Discovery
 
@@ -162,21 +162,38 @@ Enable `chat.useCustomizationsInParentRepositories` to discover accessibility ag
 - **`/troubleshoot`** - Type `/troubleshoot` in chat to analyze agent debug logs and debug why instructions/agents aren't loading
 - **Export/Import** - Save agent debug sessions as JSONL for offline analysis or team sharing
 - **Agent Flow Chart** - Visualize agent orchestration sequences
+- **CLI and Claude coverage** - Agent Debug Logs now support Copilot CLI and Claude agent sessions in addition to local sessions
 
 Enable with: `github.copilot.chat.agentDebugLog.enabled` and `github.copilot.chat.agentDebugLog.fileLogging.enabled`
+
+### MCP Across Agent Types
+
+- **MCP support in Copilot CLI and Claude agents** - MCP servers registered in VS Code are now bridged into Copilot CLI and Claude agent workflows, including workspace `mcp.json` definitions.
+
+### Chat Customizations Editor
+
+- **`Chat: Open Chat Customizations`** - Centralized UI for managing instructions, prompt files, custom agents, skills, MCP servers, and plugins across agent types.
+
+### Nested Subagents
+
+- **`chat.subagents.allowInvocationsFromSubagents`** - Enables recursive or coordinator-worker subagent patterns when deliberately needed. Keep it disabled by default unless an orchestration flow is designed for it.
 
 ### Image Analysis
 
 Enable `chat.imageSupport.enabled` to allow agents to read images natively. This enhances:
+
 - **alt-text-headings** - Analyze actual images to suggest accurate alt text
 - **contrast-master** - Analyze screenshots for visual contrast issues
 
 ### Integrated Browser
 
 The new `editor-browser` debug type allows debugging web apps without leaving VS Code. Useful for:
+
 - Testing zoom/reflow accessibility (WCAG 1.4.4, 1.4.10)
 - Visual debugging of focus management
 - Screenshot capture for accessibility analysis
+- Local HTTPS testing with self-signed certificates during development
+- Sharing a live browser page directly with agents when browser tools are enabled
 
 ### Permission Levels
 

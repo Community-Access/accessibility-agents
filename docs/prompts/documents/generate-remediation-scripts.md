@@ -49,7 +49,7 @@ The agent reads the audit report and divides findings into two categories:
 The agent asks which format to generate:
 
 - PowerShell (`.ps1`) - recommended for Windows environments
-- Bash (`.sh`) - recommended for macOS/Linux environments
+- Bash (`.sh`) - recommended for macOS environments
 - Both
 
 ### Step 3: Safety Features

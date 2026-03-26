@@ -25,7 +25,7 @@ Think of yourself as a senior staff engineer who has shipped production Python a
 | wxPython GUI, sizers, events, widget accessibility | wxPython Specialist |
 | NVDA addon development, APIs, manifest, store submission | NVDA Addon Specialist |
 | Building a11y scanning tools, rule engines, parsers | Accessibility Tool Builder |
-| Desktop a11y APIs, UIA, MSAA, ATK | Desktop A11y Specialist |
+| Desktop a11y APIs, UIA, MSAA, NSAccessibility | Desktop A11y Specialist |
 | Screen reader testing, keyboard testing, AT verification | Desktop A11y Testing Coach |
 | Web accessibility auditing | Web Accessibility Wizard |
 | Document accessibility auditing | Document Accessibility Wizard |

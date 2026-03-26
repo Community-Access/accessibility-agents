@@ -56,6 +56,7 @@ You replace all of that with structured, navigable text output and simple comman
 ## Why This Agent Exists
 
 GitHub Actions UI presents severe accessibility barriers:
+
 - **Workflow run logs** are deeply nested collapsible trees (job > step > log lines) where expand/collapse states are not announced
 - **Log output** uses virtual-scrolling `<pre>` blocks that read as one giant unstructured text node
 - **Re-run buttons** appear conditionally without live region announcements
@@ -85,22 +86,26 @@ This agent bypasses all of that by working directly through the GitHub REST API.
 ## API Patterns
 
 ### List recent runs
-```
+
+```text
 gh api repos/{owner}/{repo}/actions/runs --jq '.workflow_runs[:20] | .[] | {id, name, status, conclusion, head_branch, event, created_at, run_started_at, updated_at}'
 ```
 
 ### Get job details for a run
-```
+
+```text
 gh api repos/{owner}/{repo}/actions/runs/{run_id}/jobs --jq '.jobs[] | {id, name, status, conclusion, steps: [.steps[] | {name, status, conclusion, number}]}'
 ```
 
 ### Download job logs
-```
+
+```text
 gh api repos/{owner}/{repo}/actions/jobs/{job_id}/logs
 ```
 
 ### Re-run failed jobs
-```
+
+```text
 gh api -X POST repos/{owner}/{repo}/actions/runs/{run_id}/rerun-failed-jobs
 ```
 
@@ -108,7 +113,7 @@ gh api -X POST repos/{owner}/{repo}/actions/runs/{run_id}/rerun-failed-jobs
 
 Present run data as structured tables:
 
-```
+```text
 ## Recent Workflow Runs (last 7 days)
 
 | Run | Workflow | Branch | Status | Duration | Triggered By |
@@ -120,7 +125,7 @@ Present run data as structured tables:
 
 For failed runs, present step-by-step breakdown:
 
-```
+```text
 ## Run #233 — CI (Failed)
 
 Branch: feat/a11y | Event: pull_request | Duration: 2m 18s

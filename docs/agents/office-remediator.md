@@ -96,12 +96,12 @@
 
 ## Sample Usage
 
-```
+```text
 @office-remediator Fix the accessibility issues in quarterly-report.docx — 
 set the title, add table headers, and fix the heading levels.
 ```
 
-```
+```text
 @office-remediator My spreadsheet has generic sheet names and missing alt text 
 on charts. Generate a fix script for data-summary.xlsx.
 ```

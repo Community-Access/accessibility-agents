@@ -14,6 +14,13 @@
 #   bash install.sh --project --cli    Also install Copilot CLI agents to project
 #   bash install.sh --project --codex  Also install Codex CLI support to .codex/
 #   bash install.sh --project --gemini Also install Gemini CLI extension
+#   bash install.sh --global --vscode-stable     Target VS Code stable only for Copilot assets
+#   bash install.sh --global --vscode-insiders   Target VS Code Insiders only for Copilot assets
+#   bash install.sh --global --mcp-profile-both  Configure MCP settings in both VS Code profiles
+#   bash install.sh --yes                        Accept optional install prompts automatically
+#   bash install.sh --no-auto-update             Skip auto-update setup without prompting
+#   bash install.sh --dry-run                    Preview targets without making changes
+#   bash install.sh --summary=path.json          Write a machine-readable summary file
 #
 # One-liner:
 #   curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
@@ -46,6 +53,9 @@ if [ ! -d "$SCRIPT_DIR/claude-code-plugin/agents" ] && [ ! -d "$SCRIPT_DIR/.clau
   SCRIPT_DIR="$TMPDIR_DL/accessibility-agents"
   echo "  Downloaded."
 fi
+
+. "$SCRIPT_DIR/scripts/installer-common.sh"
+enforce_shell_runtime
 
 # Prefer claude-code-plugin/ as distribution source, fall back to .claude/agents/
 if [ -d "$SCRIPT_DIR/claude-code-plugin/agents" ]; then
@@ -80,6 +90,7 @@ fi
 
 COPILOT_AGENTS_SRC="$SCRIPT_DIR/.github/agents"
 COPILOT_CONFIG_SRC="$SCRIPT_DIR/.github"
+MCP_SERVER_SRC="$SCRIPT_DIR/mcp-server"
 
 # Auto-detect agents from source directory
 AGENTS=()
@@ -150,6 +161,14 @@ COPILOT_FLAG=false
 COPILOT_CLI_FLAG=false
 CODEX_FLAG=false
 GEMINI_FLAG=false
+DRY_RUN=false
+CHECK_MODE=false
+SUMMARY_PATH=""
+VSCODE_PROFILE_MODE="auto"
+MCP_PROFILE_MODE="auto"
+AUTO_APPROVE=false
+NO_AUTO_UPDATE=false
+
 for arg in "$@"; do
   case "$arg" in
     --global) choice="2" ;;
@@ -158,10 +177,26 @@ for arg in "$@"; do
     --cli) COPILOT_CLI_FLAG=true ;;
     --codex) CODEX_FLAG=true ;;
     --gemini) GEMINI_FLAG=true ;;
+    --yes) AUTO_APPROVE=true ;;
+    --no-auto-update) NO_AUTO_UPDATE=true ;;
+    --check) CHECK_MODE=true ;;
+    --dry-run) DRY_RUN=true ;;
+    --vscode-stable) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "stable") ;;
+    --vscode-insiders) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "insiders") ;;
+    --vscode-both) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "both") ;;
+    --mcp-profile-stable) MCP_PROFILE_MODE=$(set_profile_mode "$MCP_PROFILE_MODE" "stable") ;;
+    --mcp-profile-insiders) MCP_PROFILE_MODE=$(set_profile_mode "$MCP_PROFILE_MODE" "insiders") ;;
+    --mcp-profile-both) MCP_PROFILE_MODE=$(set_profile_mode "$MCP_PROFILE_MODE" "both") ;;
+    --summary=*) SUMMARY_PATH="${arg#--summary=}" ;;
   esac
 done
 
+
 if [ -z "$choice" ]; then
+  if ! has_tty; then
+    echo "  Error: choose either --project or --global when running non-interactively."
+    exit 1
+  fi
   echo ""
   echo "  Accessibility Agents Installer"
   echo "  Started by Taylor Arndt"
@@ -196,6 +231,71 @@ case "$choice" in
     exit 1
     ;;
 esac
+
+SELECTED_COPILOT_PROFILES="$(select_vscode_profiles "$VSCODE_PROFILE_MODE")"
+SELECTED_MCP_PROFILES="$(select_vscode_profiles "$MCP_PROFILE_MODE")"
+
+if [ -z "$SUMMARY_PATH" ]; then
+  if [ "$DRY_RUN" = true ] || [ "$CHECK_MODE" = true ]; then
+    SUMMARY_PATH="${HOME}/.a11y-agent-team-install-plan.json"
+  elif [ "$choice" = "1" ]; then
+    SUMMARY_PATH="$(pwd)/.a11y-agent-team-install-summary.json"
+  else
+    SUMMARY_PATH="$HOME/.a11y-agent-team-install-summary.json"
+  fi
+fi
+
+BACKUP_METADATA_PATH="$(initialize_operation_state install "$([ "$choice" = "1" ] && pwd || printf '%s' "$HOME")" "$SUMMARY_PATH" "$DRY_RUN" "$CHECK_MODE" "$TARGET_DIR" "$TARGET_DIR/.a11y-agent-manifest" "$TARGET_DIR/.a11y-agent-team-version")"
+
+if [ "$CHECK_MODE" = true ]; then
+  CHECK_NOTES=("Check mode only. No files were changed.")
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":true,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${CHECK_NOTES[@]}")}"
+  echo ""
+  echo "  Check mode only. No files will be changed."
+  echo "  Summary file: $SUMMARY_PATH"
+  echo "  Backup metadata: $BACKUP_METADATA_PATH"
+  [ "$DOWNLOADED" = true ] && rm -rf "$TMPDIR_DL"
+  exit 0
+fi
+
+if [ "$DRY_RUN" = true ]; then
+  DRY_RUN_NOTES=()
+  if [ "$AUTO_APPROVE" = true ]; then
+    DRY_RUN_NOTES+=("Optional prompts would be auto-approved because --yes was supplied.")
+  fi
+  if [ "$NO_AUTO_UPDATE" = true ]; then
+    DRY_RUN_NOTES+=("Auto-update setup would be skipped because --no-auto-update was supplied.")
+  fi
+  if [ "$COPILOT_FLAG" = false ] && [ "$COPILOT_CLI_FLAG" = false ] && [ "$CODEX_FLAG" = false ] && [ "$GEMINI_FLAG" = false ]; then
+    DRY_RUN_NOTES+=("Optional platforms were not selected in dry-run mode. Use --copilot, --cli, --codex, and/or --gemini to preview them explicitly.")
+  fi
+  echo ""
+  echo "  Dry run only. No files will be changed."
+  echo "  Scope: $([ "$choice" = "1" ] && echo project || echo global)"
+  echo "  Target: $TARGET_DIR"
+  if [ "$choice" = "2" ]; then
+    echo "  VS Code profiles in scope:"
+    if [ -n "$SELECTED_COPILOT_PROFILES" ]; then
+      while IFS='|' read -r key label path; do
+        [ -n "$path" ] && echo "    -> $label: $path"
+      done <<< "$SELECTED_COPILOT_PROFILES"
+    else
+      echo "    -> none detected for the requested profile filter"
+    fi
+    echo "  MCP settings targets:"
+    if [ -n "$SELECTED_MCP_PROFILES" ]; then
+      while IFS='|' read -r key label path; do
+        [ -n "$path" ] && echo "    -> $label: $path/settings.json"
+      done <<< "$SELECTED_MCP_PROFILES"
+    else
+      echo "    -> none detected for the requested profile filter"
+    fi
+  fi
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":true,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${DRY_RUN_NOTES[@]}")}"
+  echo "  Summary file: $SUMMARY_PATH"
+  [ "$DOWNLOADED" = true ] && rm -rf "$TMPDIR_DL"
+  exit 0
+fi
 
 # ---------------------------------------------------------------------------
 # merge_config_file src dst label
@@ -277,6 +377,487 @@ PYEOF
       { printf '\n%s\n' "$start"; cat "$src"; printf '%s\n' "$end"; echo; } >> "$dst"
       echo "    + $label (merged into your existing file)"
     fi
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# configure_vscode_mcp_settings settings_file server_url
+# Adds or updates the VS Code MCP server entry for a11y-agent-team.
+# ---------------------------------------------------------------------------
+configure_vscode_mcp_settings() {
+  local settings_file="$1"
+  local server_url="$2"
+
+  mkdir -p "$(dirname "$settings_file")"
+
+  if command -v python3 &>/dev/null; then
+    if A11Y_SF="$settings_file" A11Y_MCP_URL="$server_url" python3 - << 'PYEOF' 2>/dev/null
+import json, os, sys
+sf = os.environ['A11Y_SF']
+url = os.environ['A11Y_MCP_URL']
+try:
+    if os.path.exists(sf):
+        raw = open(sf, 'r', encoding='utf-8').read().strip()
+        data = json.loads(raw) if raw else {}
+    else:
+        data = {}
+except Exception:
+    sys.exit(2)
+
+mcp = data.setdefault('mcp', {})
+servers = mcp.setdefault('servers', {})
+servers['a11y-agent-team'] = {'url': url}
+
+with open(sf, 'w', encoding='utf-8') as f:
+    json.dump(data, f, indent=4)
+PYEOF
+    then
+      echo "    + MCP server configured in $settings_file"
+      return 0
+    fi
+    echo "    ! Could not safely update $settings_file"
+  else
+    echo "    ! python3 not found, so VS Code settings were not edited automatically"
+  fi
+
+  echo "      Add this manually: { \"mcp\": { \"servers\": { \"a11y-agent-team\": { \"url\": \"$server_url\" } } } }"
+  return 1
+}
+
+node_major_version() {
+  command -v node &>/dev/null || return 1
+  node -p "process.versions.node.split('.')[0]" 2>/dev/null
+}
+
+java_major_version() {
+  command -v java &>/dev/null || return 1
+  local java_line
+  java_line="$(java -version 2>&1 | head -n 1)"
+  if [[ "$java_line" =~ \"([0-9]+)\.([0-9]+) ]]; then
+    if [ "${BASH_REMATCH[1]}" = "1" ]; then
+      echo "${BASH_REMATCH[2]}"
+    else
+      echo "${BASH_REMATCH[1]}"
+    fi
+    return 0
+  fi
+  if [[ "$java_line" =~ \"([0-9]+) ]]; then
+    echo "${BASH_REMATCH[1]}"
+    return 0
+  fi
+  if [[ "$java_line" =~ ([0-9]+) ]]; then
+    echo "${BASH_REMATCH[1]}"
+    return 0
+  fi
+  return 1
+}
+
+ensure_nodejs_runtime() {
+  local node_major=""
+
+  if command -v node &>/dev/null && command -v npm &>/dev/null; then
+    node_major="$(node_major_version || true)"
+    if [ -n "$node_major" ] && [ "$node_major" -ge 18 ]; then
+      return 0
+    fi
+  fi
+
+  echo ""
+  if command -v node &>/dev/null; then
+    node_major="$(node_major_version || true)"
+    if [ -n "$node_major" ]; then
+      echo "  Detected Node.js $node_major, but the MCP server requires Node.js 18 or later."
+    else
+      echo "  Node.js is installed, but its version could not be verified."
+    fi
+  else
+    echo "  Node.js and npm were not found."
+  fi
+
+  if command -v brew &>/dev/null; then
+    if has_tty || [ "$AUTO_APPROVE" = true ]; then
+      echo "  The installer can install Node.js using Homebrew."
+      if read_yes_no "Install Node.js now?" true; then
+        brew install node || true
+      fi
+    fi
+  else
+    echo "  Automatic Node.js install is only supported by this shell installer on macOS via Homebrew."
+  fi
+
+  if command -v node &>/dev/null && command -v npm &>/dev/null; then
+    node_major="$(node_major_version || true)"
+    if [ -n "$node_major" ] && [ "$node_major" -ge 18 ]; then
+      echo "    + Node.js runtime is ready for the MCP server"
+      return 0
+    fi
+  fi
+
+  echo "  MCP setup can continue, but scanning will remain unavailable until Node.js 18+ and npm are installed."
+  echo "  Manual fallback: https://nodejs.org/en/download"
+  echo "  After installing Node.js, reopen your terminal and run:"
+  echo "    cd \"$MCP_DEST\" && npm install"
+  return 1
+}
+
+read_yes_no() {
+  local prompt="$1"
+  local default_yes="$2"
+  local reply=""
+  local suffix="[y/N]"
+
+  [ "$default_yes" = true ] && suffix="[Y/n]"
+  if [ "$AUTO_APPROVE" = true ]; then
+    return 0
+  fi
+
+  if has_tty; then
+    printf "  %s %s: " "$prompt" "$suffix"
+    read -r reply < /dev/tty
+  else
+    [ "$default_yes" = true ]
+    return
+  fi
+
+  if [ -z "$reply" ]; then
+    [ "$default_yes" = true ]
+    return
+  fi
+
+  [ "$reply" = "y" ] || [ "$reply" = "Y" ]
+}
+
+choose_mcp_capability_plan() {
+  MCP_PLAN_FOCUS="Baseline scanning"
+  MCP_PLAN_BROWSER=false
+  MCP_PLAN_PDF_FORMS=false
+  MCP_PLAN_DEEP_PDF=false
+  MCP_PLAN_CONFIGURE_VSCODE=true
+
+  if [ "$AUTO_APPROVE" = true ] || ! has_tty; then
+    return
+  fi
+
+  echo ""
+  echo "  Choose your MCP setup focus:"
+  echo ""
+  echo "  1) Baseline scanning      - document and PDF scanning only"
+  echo "  2) Browser testing        - baseline plus Playwright browser tools"
+  echo "  3) PDF-heavy workflow     - baseline plus deep PDF and form tools"
+  echo "  4) Everything             - install every MCP capability we support"
+  echo "  5) Custom                 - choose capabilities one by one"
+  echo ""
+  printf "  Choose [1/2/3/4/5]: "
+  read -r mcp_plan_choice < /dev/tty
+
+  case "$mcp_plan_choice" in
+    2)
+      MCP_PLAN_FOCUS="Browser testing"
+      MCP_PLAN_BROWSER=true
+      ;;
+    3)
+      MCP_PLAN_FOCUS="PDF-heavy workflow"
+      MCP_PLAN_PDF_FORMS=true
+      MCP_PLAN_DEEP_PDF=true
+      ;;
+    4)
+      MCP_PLAN_FOCUS="Everything"
+      MCP_PLAN_BROWSER=true
+      MCP_PLAN_PDF_FORMS=true
+      MCP_PLAN_DEEP_PDF=true
+      ;;
+    5)
+      MCP_PLAN_FOCUS="Custom"
+      read_yes_no "Enable browser-based accessibility tools now?" false && MCP_PLAN_BROWSER=true
+      read_yes_no "Enable PDF form conversion tools now?" false && MCP_PLAN_PDF_FORMS=true
+      read_yes_no "Prepare deep PDF validation tools now?" false && MCP_PLAN_DEEP_PDF=true
+      if ! read_yes_no "Configure VS Code MCP settings automatically?" true; then
+        MCP_PLAN_CONFIGURE_VSCODE=false
+      fi
+      ;;
+  esac
+}
+
+show_mcp_capability_warnings() {
+  echo ""
+  echo "  MCP capability plan: $MCP_PLAN_FOCUS"
+  echo "    - Baseline scanning installs the MCP server plus core npm dependencies"
+  if [ "$MCP_PLAN_BROWSER" = true ]; then
+    echo "    - Browser testing needs Playwright, axe-core, and Chromium"
+    echo "    - Browser scans run against live pages and can take longer to install"
+  fi
+  if [ "$MCP_PLAN_PDF_FORMS" = true ]; then
+    echo "    - PDF form conversion needs the optional pdf-lib package"
+  fi
+  if [ "$MCP_PLAN_DEEP_PDF" = true ]; then
+    echo "    - Deep PDF validation needs Java 11+ and veraPDF"
+    echo "    - Baseline PDF scanning still works even if deep validation is not ready"
+  fi
+  echo "    - Python is not required for MCP runtime"
+  echo "    - macOS is supported by this shell installer; Linux is not part of the guided installer target"
+}
+
+# ---------------------------------------------------------------------------
+# show_pdf_deep_validation_readiness
+# Prints whether Java and veraPDF are available for run_verapdf_scan.
+# ---------------------------------------------------------------------------
+show_pdf_deep_validation_readiness() {
+  local java_line=""
+  local verapdf_line=""
+  local java_ok=false
+  local verapdf_ok=false
+  local java_major=""
+
+  if command -v java &>/dev/null; then
+    java_ok=true
+    java_line="$(java -version 2>&1 | head -n 1)"
+    java_major="$(java_major_version || true)"
+  fi
+
+  if command -v verapdf &>/dev/null; then
+    verapdf_ok=true
+    verapdf_line="$(verapdf --version 2>&1 | head -n 1)"
+  fi
+
+  echo ""
+  echo "  PDF Deep Validation Readiness:"
+
+  if [ "$java_ok" = true ]; then
+    if [ -n "$java_line" ]; then
+      if [ -n "$java_major" ] && [ "$java_major" -ge 11 ]; then
+        echo "    [x] Java detected: $java_line"
+      else
+        echo "    [!] Java detected but too old: $java_line"
+      fi
+    else
+      if [ -n "$java_major" ] && [ "$java_major" -ge 11 ]; then
+        echo "    [x] Java command found"
+      else
+        echo "    [!] Java command found, but version could not be confirmed as 11+"
+      fi
+    fi
+  else
+    echo "    [ ] Java not detected"
+  fi
+
+  if [ "$verapdf_ok" = true ]; then
+    if [ -n "$verapdf_line" ]; then
+      echo "    [x] veraPDF detected: $verapdf_line"
+    else
+      echo "    [x] veraPDF command found"
+    fi
+  else
+    echo "    [ ] veraPDF not detected"
+  fi
+
+  if [ "$java_ok" = true ] && [ -n "$java_major" ] && [ "$java_major" -ge 11 ] && [ "$verapdf_ok" = true ]; then
+    echo "    READY: run_verapdf_scan should be available once the MCP server is running."
+  elif [ "$java_ok" = true ] && [ -n "$java_major" ] && [ "$java_major" -ge 11 ]; then
+    echo "    PARTIAL: Java is ready, but veraPDF still needs to be installed."
+  elif [ "$java_ok" = true ]; then
+    echo "    NOT READY: Java 11 or later is required before veraPDF can run."
+  else
+    echo "    NOT READY: scan_pdf_document will work, but run_verapdf_scan will not yet be available."
+  fi
+}
+
+mcp_health_smoke_test() {
+  local working_dir="$1"
+  local port=""
+  local log_file=""
+  local pid=""
+  local success=false
+
+  if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
+    echo "[ ] SKIPPED|Baseline MCP prerequisites are not fully installed yet."
+    return 0
+  fi
+
+  local node_major="$(node_major_version || true)"
+  if [ -z "$node_major" ] || [ "$node_major" -lt 18 ]; then
+    echo "[ ] SKIPPED|Baseline MCP prerequisites are not fully installed yet."
+    return 0
+  fi
+
+  if ! node_module_available "$working_dir" "@modelcontextprotocol/sdk" || ! node_module_available "$working_dir" "zod"; then
+    echo "[ ] SKIPPED|Baseline MCP prerequisites are not fully installed yet."
+    return 0
+  fi
+
+  port=$((4300 + RANDOM % 200))
+  log_file="$(mktemp)"
+  (
+    cd "$working_dir" && \
+    PORT="$port" A11Y_MCP_HOST=127.0.0.1 A11Y_MCP_STATELESS=1 node server.js
+  ) >"$log_file" 2>&1 &
+  pid=$!
+
+  for _ in $(seq 1 20); do
+    sleep 1
+    if command -v curl &>/dev/null; then
+      if curl -fsS "http://127.0.0.1:$port/health" 2>/dev/null | grep -q '"status":"ok"'; then
+        success=true
+        break
+      fi
+    elif command -v python3 &>/dev/null; then
+      if python3 - <<PYEOF "$port" >/dev/null 2>&1
+import json, sys, urllib.request
+port = sys.argv[1]
+with urllib.request.urlopen(f'http://127.0.0.1:{port}/health', timeout=2) as response:
+    data = json.load(response)
+    raise SystemExit(0 if data.get('status') == 'ok' else 1)
+PYEOF
+      then
+        success=true
+        break
+      fi
+    fi
+  done
+
+  if [ -n "$pid" ]; then
+    kill "$pid" 2>/dev/null || true
+    wait "$pid" 2>/dev/null || true
+  fi
+
+  if [ "$success" = true ]; then
+    rm -f "$log_file"
+    echo "[x] READY|HTTP health check passed on port $port."
+    return 0
+  fi
+
+  local detail="The temporary MCP server did not answer /health in time."
+  if [ -f "$log_file" ]; then
+    local first_line
+    first_line="$(head -n 1 "$log_file")"
+    if [ -n "$first_line" ]; then
+      detail="$first_line"
+    fi
+  fi
+  rm -f "$log_file"
+  echo "[ ] FAILED|$detail"
+}
+
+# ---------------------------------------------------------------------------
+# node_module_available working_dir module_name
+# Returns success if the Node module can be imported from the given directory.
+# ---------------------------------------------------------------------------
+node_module_available() {
+  local working_dir="$1"
+  local module_name="$2"
+
+  command -v node &>/dev/null || return 1
+  [ -n "$working_dir" ] && [ -d "$working_dir" ] || return 1
+
+  (cd "$working_dir" && node -e "import('$module_name').then(() => process.exit(0)).catch(() => process.exit(1))" >/dev/null 2>&1)
+}
+
+# ---------------------------------------------------------------------------
+# playwright_chromium_ready working_dir
+# Returns success if Playwright can resolve an installed Chromium executable.
+# ---------------------------------------------------------------------------
+playwright_chromium_ready() {
+  local working_dir="$1"
+
+  command -v node &>/dev/null || return 1
+  [ -n "$working_dir" ] && [ -d "$working_dir" ] || return 1
+
+  (cd "$working_dir" && node -e "import('playwright').then(async ({ chromium }) => { const fs = await import('node:fs'); const exe = chromium.executablePath(); process.exit(exe && fs.existsSync(exe) ? 0 : 1); }).catch(() => process.exit(1))" >/dev/null 2>&1)
+}
+
+# ---------------------------------------------------------------------------
+# show_mcp_capability_readiness working_dir
+# Prints readiness for optional MCP capabilities.
+# ---------------------------------------------------------------------------
+show_mcp_capability_readiness() {
+  local working_dir="$1"
+  local node_ready=false
+  local npm_ready=false
+  local core_ready=false
+  local python_ready=false
+  local java_ready=false
+  local verapdf_ready=false
+  local playwright_ready=false
+  local chromium_ready=false
+  local pdf_lib_ready=false
+  local node_major=""
+  local java_major=""
+  local smoke_result=""
+  local smoke_label=""
+  local smoke_detail=""
+
+  if command -v node &>/dev/null; then
+    node_major="$(node_major_version || true)"
+    if [ -n "$node_major" ] && [ "$node_major" -ge 18 ]; then
+      node_ready=true
+    fi
+  fi
+  command -v npm &>/dev/null && npm_ready=true
+  if node_module_available "$working_dir" "@modelcontextprotocol/sdk" && node_module_available "$working_dir" "zod"; then
+    core_ready=true
+  fi
+  command -v python3 &>/dev/null && python_ready=true
+  if command -v java &>/dev/null; then
+    java_major="$(java_major_version || true)"
+    if [ -n "$java_major" ] && [ "$java_major" -ge 11 ]; then
+      java_ready=true
+    fi
+  fi
+  command -v verapdf &>/dev/null && verapdf_ready=true
+  node_module_available "$working_dir" "playwright" && playwright_ready=true
+  node_module_available "$working_dir" "pdf-lib" && pdf_lib_ready=true
+  playwright_chromium_ready "$working_dir" && chromium_ready=true
+  smoke_result="$(mcp_health_smoke_test "$working_dir")"
+  smoke_label="${smoke_result%%|*}"
+  smoke_detail="${smoke_result#*|}"
+
+  echo ""
+  echo "  MCP Optional Capability Readiness:"
+  if [ -n "$node_major" ]; then
+    if [ "$node_ready" = true ]; then
+      echo "    Node.js runtime (18+):                  [x] READY (v$node_major)"
+    else
+      echo "    Node.js runtime (18+):                  [!] TOO OLD (v$node_major)"
+    fi
+  else
+    echo "    Node.js runtime (18+):                  [ ] NOT READY"
+  fi
+  echo "    npm CLI:                                $([ "$npm_ready" = true ] && echo '[x] READY' || echo '[ ] NOT READY')"
+  echo "    MCP core dependencies:                  $([ "$core_ready" = true ] && echo '[x] READY' || echo '[ ] NOT READY')"
+  echo "    Python 3 helper (installer only):       $([ "$python_ready" = true ] && echo '[x] OPTIONAL' || echo '[ ] OPTIONAL')"
+  if [ "$node_ready" = true ] && [ "$npm_ready" = true ] && [ "$core_ready" = true ]; then
+    echo "    Baseline PDF scan (scan_pdf_document):  [x] READY"
+  else
+    echo "    Baseline PDF scan (scan_pdf_document):  [ ] NOT READY"
+  fi
+  if [ -n "$java_major" ]; then
+    if [ "$java_ready" = true ]; then
+      echo "    Deep PDF validation (Java 11+):       [x] READY (v$java_major)"
+    else
+      echo "    Deep PDF validation (Java 11+):       [!] TOO OLD (v$java_major)"
+    fi
+  else
+    echo "    Deep PDF validation (Java 11+):       [ ] NOT READY"
+  fi
+  echo "    Deep PDF validation (veraPDF):        $([ "$verapdf_ready" = true ] && echo '[x] READY' || echo '[ ] NOT READY')"
+  echo "    Local MCP health smoke test:          $smoke_label"
+  echo "    Playwright package:                   $([ "$playwright_ready" = true ] && echo '[x] READY' || echo '[ ] NOT READY')"
+  echo "    Chromium browser bundle:              $([ "$chromium_ready" = true ] && echo '[x] READY' || echo '[ ] NOT READY')"
+  echo "    PDF form conversion (pdf-lib):        $([ "$pdf_lib_ready" = true ] && echo '[x] READY' || echo '[ ] NOT READY')"
+
+  if [ "$node_ready" != true ] || [ "$npm_ready" != true ] || [ "$core_ready" != true ]; then
+    echo "    Baseline scanning needs Node.js 18+, npm, and MCP server dependencies in the MCP directory."
+  fi
+  if [ "$python_ready" != true ]; then
+    echo "    Python 3 is not required for MCP runtime. Without it, some shell-installer config edits fall back to manual steps."
+  fi
+  if [ -n "$smoke_detail" ]; then
+    echo "    Smoke test detail: $smoke_detail"
+  fi
+  if [ "$playwright_ready" != true ] || [ "$chromium_ready" != true ]; then
+    echo "    Browser-based scans need Playwright plus Chromium."
+  fi
+  if [ "$pdf_lib_ready" != true ]; then
+    echo "    PDF form conversion needs pdf-lib in the MCP server directory."
   fi
 }
 
@@ -736,7 +1317,7 @@ PLUGIN_INSTALL=false
 if [ "$choice" = "2" ] && [ -n "$PLUGIN_SRC" ] && command -v python3 &>/dev/null; then
   # Global install: register as a Claude Code plugin
   INSTALL_PLUGIN=true
-  if { true < /dev/tty; } 2>/dev/null; then
+  if has_tty && [ "$AUTO_APPROVE" = false ]; then
     echo ""
     printf "  Would you like to install the Claude Code plugin? [Y/n]: "
     read -r plugin_choice < /dev/tty
@@ -830,15 +1411,10 @@ fi  # end of project/fallback install path
 if [ -n "$PLUGIN_CLAUDE_MD" ]; then
   echo ""
   MERGE_CLAUDE=false
-  if { true < /dev/tty; } 2>/dev/null; then
+  if read_yes_no "Merge CLAUDE.md rules?" false; then
     echo "  Would you like to merge accessibility rules into your project CLAUDE.md?"
     echo "  This adds the decision matrix and non-negotiable standards."
-    echo ""
-    printf "  Merge CLAUDE.md rules? [y/N]: "
-    read -r claude_choice < /dev/tty
-    if [ "$claude_choice" = "y" ] || [ "$claude_choice" = "Y" ]; then
-      MERGE_CLAUDE=true
-    fi
+    MERGE_CLAUDE=true
   fi
   if [ "$MERGE_CLAUDE" = true ]; then
     if [ "$choice" = "1" ]; then
@@ -857,16 +1433,11 @@ install_copilot=false
 
 if [ "$COPILOT_FLAG" = true ]; then
   install_copilot=true
-elif { true < /dev/tty; } 2>/dev/null; then
+elif read_yes_no "Install Copilot agents?" false; then
   echo ""
   echo "  Would you also like to install GitHub Copilot agents?"
   echo "  This adds accessibility agents for Copilot Chat in VS Code/GitHub."
-  echo ""
-  printf "  Install Copilot agents? [y/N]: "
-  read -r copilot_choice < /dev/tty
-  if [ "$copilot_choice" = "y" ] || [ "$copilot_choice" = "Y" ]; then
-    install_copilot=true
-  fi
+  install_copilot=true
 fi
 
 if [ "$install_copilot" = true ]; then
@@ -1048,50 +1619,25 @@ PYEOF
 
       # Detect installed VS Code editions
       echo ""
-      VSCODE_STABLE=""
-      VSCODE_INSIDERS=""
-      case "$(uname -s)" in
-        Darwin)
-          [ -d "$HOME/Library/Application Support/Code/User" ] && VSCODE_STABLE="$HOME/Library/Application Support/Code/User"
-          [ -d "$HOME/Library/Application Support/Code - Insiders/User" ] && VSCODE_INSIDERS="$HOME/Library/Application Support/Code - Insiders/User"
-          ;;
-        Linux)
-          [ -d "$HOME/.config/Code/User" ] && VSCODE_STABLE="$HOME/.config/Code/User"
-          [ -d "$HOME/.config/Code - Insiders/User" ] && VSCODE_INSIDERS="$HOME/.config/Code - Insiders/User"
-          ;;
-        MINGW*|MSYS*|CYGWIN*)
-          if [ -n "$APPDATA" ]; then
-            [ -d "$APPDATA/Code/User" ] && VSCODE_STABLE="$APPDATA/Code/User"
-            [ -d "$APPDATA/Code - Insiders/User" ] && VSCODE_INSIDERS="$APPDATA/Code - Insiders/User"
-          fi
-          ;;
-      esac
+      stable_selected=false
+      insiders_selected=false
+      while IFS='|' read -r key label path; do
+        [ -n "$path" ] || continue
+        [ "$key" = "stable" ] && stable_selected=true
+        [ "$key" = "insiders" ] && insiders_selected=true
+      done <<< "$SELECTED_COPILOT_PROFILES"
 
-      # If both editions are found, ask which ones to install to
-      if [ -n "$VSCODE_STABLE" ] && [ -n "$VSCODE_INSIDERS" ]; then
-        if { true < /dev/tty; } 2>/dev/null; then
-          echo "  Found both VS Code and VS Code Insiders."
-          echo ""
-          echo "  Install Copilot agents to:"
-          echo "  1) VS Code only"
-          echo "  2) VS Code Insiders only"
-          echo "  3) Both"
-          echo ""
-          printf "  Choose [1/2/3]: "
-          read -r vscode_choice < /dev/tty
-          case "$vscode_choice" in
-            1) VSCODE_INSIDERS="" ;;
-            2) VSCODE_STABLE="" ;;
-            3) ;; # keep both
-            *) ;; # default to both
-          esac
-        fi
+      if [ "$stable_selected" = true ] && [ "$insiders_selected" = true ]; then
+        echo "  Found both VS Code and VS Code Insiders."
+        echo "  Installing Copilot assets into both profiles."
       fi
 
-      [ -n "$VSCODE_STABLE" ] && copy_to_vscode_profile "$VSCODE_STABLE" "VS Code"
-      [ -n "$VSCODE_INSIDERS" ] && copy_to_vscode_profile "$VSCODE_INSIDERS" "VS Code Insiders"
+      while IFS='|' read -r key label path; do
+        [ -n "$path" ] || continue
+        copy_to_vscode_profile "$path" "$label"
+      done <<< "$SELECTED_COPILOT_PROFILES"
 
-      if [ -z "$VSCODE_STABLE" ] && [ -z "$VSCODE_INSIDERS" ]; then
+      if [ -z "$SELECTED_COPILOT_PROFILES" ]; then
         echo "  No VS Code installation found. Copilot agents stored centrally only."
         echo "  Use 'a11y-copilot-init' to copy agents into individual projects."
       fi
@@ -1222,17 +1768,12 @@ COPILOT_CLI_INSTALLED=false
 install_copilot_cli=false
 if [ "$COPILOT_CLI_FLAG" = true ]; then
   install_copilot_cli=true
-elif { true < /dev/tty; } 2>/dev/null; then
+elif read_yes_no "Install Copilot CLI agents?" false; then
   echo ""
   echo "  Would you also like to install Copilot CLI agents?"
   echo "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
   echo "  (For VS Code Copilot Chat extension, use --copilot instead)"
-  echo ""
-  printf "  Install Copilot CLI agents? [y/N]: "
-  read -r cli_choice < /dev/tty
-  if [ "$cli_choice" = "y" ] || [ "$cli_choice" = "Y" ]; then
-    install_copilot_cli=true
-  fi
+  install_copilot_cli=true
 fi
 
 if [ "$install_copilot_cli" = true ]; then
@@ -1400,17 +1941,12 @@ GEMINI_INSTALLED=false
 install_gemini=false
 if [ "$GEMINI_FLAG" = true ]; then
   install_gemini=true
-elif [ -d "$GEMINI_SRC" ] && { true < /dev/tty; } 2>/dev/null; then
+elif [ -d "$GEMINI_SRC" ] && read_yes_no "Install Gemini CLI support?" false; then
   echo ""
   echo "  Would you also like to install Gemini CLI support?"
   echo "  This installs accessibility skills as a Gemini CLI extension"
   echo "  so Gemini automatically applies WCAG AA rules to all UI code."
-  echo ""
-  printf "  Install Gemini CLI support? [y/N]: "
-  read -r gemini_choice < /dev/tty
-  if [ "$gemini_choice" = "y" ] || [ "$gemini_choice" = "Y" ]; then
-    install_gemini=true
-  fi
+  install_gemini=true
 fi
 
 if [ "$install_gemini" = true ] && [ -d "$GEMINI_SRC" ]; then
@@ -1484,17 +2020,147 @@ if [ "$install_gemini" = true ] && [ -d "$GEMINI_SRC" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Install MCP server dependencies (if Node.js is available)
-# The desktop-extension/ MCP server requires npm packages to function.
-# This is optional — the core agents work without it.
+# Guided MCP server setup
+# Copies the open-source MCP server to a stable location, installs npm
+# dependencies when available, and can configure VS Code to use it.
 # ---------------------------------------------------------------------------
-MCP_PKG="$SCRIPT_DIR/desktop-extension/package.json"
-if [ -f "$MCP_PKG" ] && command -v node &>/dev/null && command -v npm &>/dev/null; then
-  echo ""
-  echo "  Installing MCP server dependencies..."
-  (cd "$SCRIPT_DIR/desktop-extension" && npm install --omit=dev --silent 2>/dev/null) && \
-    echo "    + MCP server dependencies installed" || \
-    echo "    ! MCP server dependency install failed (non-fatal)"
+MCP_INSTALLED=false
+MCP_DEST=""
+
+if [ -d "$MCP_SERVER_SRC" ]; then
+  setup_mcp=false
+  if read_yes_no "Set up MCP server?" false; then
+    echo ""
+    echo "  Would you like to set up the MCP server for document and PDF scanning?"
+    echo "  This copies the open-source server to a stable location, can install npm"
+    echo "  dependencies, and can add the VS Code MCP entry for local use."
+    setup_mcp=true
+  fi
+
+  if [ "$setup_mcp" = true ]; then
+    if [ "$choice" = "1" ]; then
+      MCP_DEST="$(pwd)/mcp-server"
+    else
+      MCP_DEST="$HOME/.a11y-agent-team/mcp-server"
+    fi
+
+    mkdir -p "$MCP_DEST"
+    cp -R "$MCP_SERVER_SRC/." "$MCP_DEST/"
+    MCP_INSTALLED=true
+
+    echo ""
+    echo "  MCP server copied to: $MCP_DEST"
+
+    choose_mcp_capability_plan
+    show_mcp_capability_warnings
+
+    if ensure_nodejs_runtime; then
+      install_mcp_deps=true
+      if { true < /dev/tty; } 2>/dev/null; then
+        echo ""
+        echo "  Node.js and npm are available."
+        printf "  Install MCP server npm dependencies now? [Y/n]: "
+        read -r deps_choice < /dev/tty
+        if [ "$deps_choice" = "n" ] || [ "$deps_choice" = "N" ]; then
+          install_mcp_deps=false
+        fi
+      fi
+
+      if [ "$install_mcp_deps" = true ]; then
+        echo ""
+        echo "  Installing MCP server dependencies..."
+        if (cd "$MCP_DEST" && npm install --omit=dev); then
+          echo "    + MCP server dependencies installed"
+        else
+          echo "    ! npm install failed. You can retry later with:"
+          echo "      cd \"$MCP_DEST\" && npm install"
+        fi
+      fi
+
+      if [ "$MCP_PLAN_PDF_FORMS" = true ]; then
+        echo ""
+        echo "  Setting up PDF form conversion tooling..."
+        if (cd "$MCP_DEST" && npm install pdf-lib); then
+          echo "    + pdf-lib installed"
+        else
+          echo "    ! pdf-lib setup failed. You can retry later with:"
+          echo "      cd \"$MCP_DEST\""
+          echo "      npm install pdf-lib"
+        fi
+      fi
+
+      if [ "$MCP_PLAN_BROWSER" = true ]; then
+        echo ""
+        echo "  Setting up Playwright browser tooling..."
+        if (cd "$MCP_DEST" && npm install playwright @axe-core/playwright && npx playwright install chromium); then
+          echo "    + Playwright tooling and Chromium installed"
+        else
+          echo "    ! Playwright setup failed. You can retry later with:"
+          echo "      cd \"$MCP_DEST\""
+          echo "      npm install playwright @axe-core/playwright"
+          echo "      npx playwright install chromium"
+        fi
+      fi
+    else
+      echo ""
+      echo "  Node.js 18+ and npm are still not ready."
+      echo "  The MCP server was copied, but dependencies were not installed yet."
+      echo "  To enable scanning later:"
+      echo "    1. Install Node.js 18 or later"
+      echo "    2. Run: cd \"$MCP_DEST\" && npm install"
+      echo "    3. Start it with: npm start"
+    fi
+
+    configure_mcp_vscode=false
+    if [ "$MCP_PLAN_CONFIGURE_VSCODE" = true ] && { true < /dev/tty; } 2>/dev/null; then
+      echo ""
+      echo "  Would you like to configure VS Code to use the local MCP server?"
+      echo "  This adds the HTTP endpoint http://127.0.0.1:3100/mcp to settings.json."
+      echo ""
+      printf "  Configure VS Code MCP settings? [Y/n]: "
+      read -r vscode_mcp_choice < /dev/tty
+      if [ "$vscode_mcp_choice" = "" ] || [ "$vscode_mcp_choice" = "y" ] || [ "$vscode_mcp_choice" = "Y" ]; then
+        configure_mcp_vscode=true
+      fi
+    fi
+
+    if [ "$configure_mcp_vscode" = true ]; then
+      if [ "$choice" = "1" ]; then
+        configure_vscode_mcp_settings "$(pwd)/.vscode/settings.json" "http://127.0.0.1:3100/mcp"
+      else
+        if [ -z "$SELECTED_MCP_PROFILES" ]; then
+          echo "    ! No VS Code profile was found."
+          echo "      Add the MCP entry manually after VS Code is installed."
+        else
+          while IFS='|' read -r key label path; do
+            [ -n "$path" ] || continue
+            configure_vscode_mcp_settings "$path/settings.json" "http://127.0.0.1:3100/mcp"
+          done <<< "$SELECTED_MCP_PROFILES"
+        fi
+      fi
+    fi
+
+    echo ""
+    if command -v verapdf &>/dev/null; then
+      echo "  veraPDF detected."
+      echo "  Deep PDF/UA validation will be available through run_verapdf_scan."
+    elif [ "$MCP_PLAN_DEEP_PDF" != true ]; then
+      echo "  Deep PDF validation was not selected during setup."
+      echo "  Baseline PDF scanning works without it."
+      echo "  If you want it later, install Java 11+ and veraPDF."
+      echo "    Windows Java via winget: winget install --exact --id EclipseAdoptium.Temurin.21.JRE"
+      echo "    Windows veraPDF via choco: choco install verapdf"
+      echo "    macOS veraPDF via Homebrew: brew install verapdf"
+    else
+      echo "  veraPDF is not installed. That is okay."
+      echo "  Baseline PDF scanning works without it."
+      echo "  For deeper PDF/UA validation later, install Java 11+ and veraPDF:"
+      echo "    Windows Java via winget: winget install --exact --id EclipseAdoptium.Temurin.21.JRE"
+      echo "    Windows veraPDF via choco: choco install verapdf"
+      echo "    Windows veraPDF manual: https://docs.verapdf.org/install/"
+      echo "    macOS:   brew install verapdf"
+    fi
+  fi
 fi
 
 # Verify installation
@@ -1599,6 +2265,19 @@ if [ "$CODEX_INSTALLED" = true ]; then
   [ -n "$CODEX_CONFIG_DST" ] && echo "    -> $CODEX_CONFIG_DST"
   [ -n "$CODEX_ROLES_DST" ] && echo "    -> $CODEX_ROLES_DST/"
 fi
+if [ "$MCP_INSTALLED" = true ]; then
+  echo ""
+  echo "  MCP server ready at:"
+  echo "    -> $MCP_DEST"
+  echo ""
+  echo "  Start it locally with:"
+  echo "    cd \"$MCP_DEST\" && npm start"
+  echo ""
+  echo "  MCP endpoint: http://127.0.0.1:3100/mcp"
+  echo "  Health check: http://127.0.0.1:3100/health"
+  show_pdf_deep_validation_readiness
+  show_mcp_capability_readiness "$MCP_DEST"
+fi
 # Save current version hash
 if command -v git &>/dev/null && [ -d "$SCRIPT_DIR/.git" ]; then
   if [ "$PLUGIN_INSTALL" = true ]; then
@@ -1609,16 +2288,14 @@ if command -v git &>/dev/null && [ -d "$SCRIPT_DIR/.git" ]; then
   fi
 fi
 
-# Auto-update setup (global install only, interactive only)
-if [ "$choice" = "2" ] && { true < /dev/tty; } 2>/dev/null; then
+# Auto-update setup (global install only)
+AUTO_UPDATE_ENABLED=false
+if [ "$choice" = "2" ]; then
   echo ""
-  echo "  Would you like to enable auto-updates?"
-  echo "  This checks GitHub daily for new agents and improvements."
-  echo ""
-  printf "  Enable auto-updates? [y/N]: "
-  read -r auto_update < /dev/tty
-
-  if [ "$auto_update" = "y" ] || [ "$auto_update" = "Y" ]; then
+  if [ "$NO_AUTO_UPDATE" = true ]; then
+    echo "  Auto-updates skipped because --no-auto-update was supplied."
+  elif [ "$AUTO_APPROVE" = true ] || read_yes_no "Enable auto-updates?" false; then
+    echo "  This checks GitHub daily for new agents and improvements."
     UPDATE_SCRIPT="$TARGET_DIR/.a11y-agent-team-update.sh"
 
     # Write a self-contained update script
@@ -1755,9 +2432,6 @@ case "$(uname -s)" in
   Darwin)
     PROFILES=("$HOME/Library/Application Support/Code/User" "$HOME/Library/Application Support/Code - Insiders/User")
     ;;
-  Linux)
-    PROFILES=("$HOME/.config/Code/User" "$HOME/.config/Code - Insiders/User")
-    ;;
   MINGW*|MSYS*|CYGWIN*)
     [ -n "$APPDATA" ] && PROFILES=("$APPDATA/Code/User" "$APPDATA/Code - Insiders/User")
     ;;
@@ -1815,11 +2489,10 @@ PLIST
       launchctl bootout "gui/$(id -u)" "$PLIST_FILE" 2>/dev/null || true
       launchctl bootstrap "gui/$(id -u)" "$PLIST_FILE" 2>/dev/null
       echo "  Auto-updates enabled (daily at 9:00 AM via launchd)."
+      AUTO_UPDATE_ENABLED=true
     else
-      # Linux: cron job
-      CRON_CMD="0 9 * * * /bin/bash $UPDATE_SCRIPT"
-      (crontab -l 2>/dev/null | grep -v "a11y-agent-team-update"; echo "$CRON_CMD") | crontab -
-      echo "  Auto-updates enabled (daily at 9:00 AM via cron)."
+      echo "  Auto-update scheduling via the shell installer is supported on macOS only."
+      echo "  You can run update.sh manually anytime."
     fi
     echo "  Update log: ~/.claude/.a11y-agent-team-update.log"
   else
@@ -1839,6 +2512,38 @@ fi
 # Clean up temp download
 [ "$DOWNLOADED" = true ] && rm -rf "$TMPDIR_DL"
 
+INSTALL_NOTES=()
+if [ "$AUTO_APPROVE" = true ]; then
+  INSTALL_NOTES+=("Optional prompts were auto-approved with --yes.")
+fi
+if [ "$NO_AUTO_UPDATE" = true ]; then
+  INSTALL_NOTES+=("Auto-update setup was skipped with --no-auto-update.")
+fi
+if [ "$COPILOT_INSTALLED" = true ] && [ "$VSCODE_PROFILE_MODE" != "auto" ] && [ -z "$SELECTED_COPILOT_PROFILES" ]; then
+  INSTALL_NOTES+=("The requested VS Code profile filter did not match any installed profile for Copilot assets.")
+fi
+if [ "$MCP_INSTALLED" = true ] && [ "$MCP_PROFILE_MODE" != "auto" ] && [ -z "$SELECTED_MCP_PROFILES" ]; then
+  INSTALL_NOTES+=("The requested MCP profile filter did not match any installed VS Code profile.")
+fi
+
+write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}")}"
+
+echo ""
+echo "  Summary written to:"
+echo "    $SUMMARY_PATH"
+echo ""
+echo "  Verification:"
+echo "    - Re-run with --dry-run to preview profile targeting before a future change"
+if [ "$COPILOT_INSTALLED" = true ] && [ "$choice" = "2" ]; then
+  echo "    - Check VS Code prompts folders under the selected profiles"
+fi
+if [ "$MCP_INSTALLED" = true ]; then
+  echo "    - Start the MCP server and check http://127.0.0.1:3100/health"
+fi
+echo ""
+echo "  Recovery:"
+echo "    - Re-run install.sh with the same flags to repair a partial install"
+echo "    - Use uninstall.sh if you want to remove the managed files cleanly"
 echo ""
 if [ "$PLUGIN_INSTALL" = true ]; then
   echo "  Restart Claude Code for the plugin to take effect."

@@ -24,7 +24,7 @@ Use GitHub Hub when:
 
 ### GitHub Copilot (VS Code)
 
-1. Open Copilot Chat: `Ctrl+Shift+I` (Windows/Linux) or `Cmd+Shift+I` (macOS)
+1. Open Copilot Chat: `Ctrl+Shift+I` (Windows) or `Cmd+Shift+I` (macOS)
 2. Type `@github-hub` followed by your request, or just `@github-hub` alone
 3. The agent greets you, discovers your repos, and gets to work
 

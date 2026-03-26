@@ -6,6 +6,9 @@
 #   bash uninstall.sh            Interactive mode
 #   bash uninstall.sh --global   Uninstall from ~/.claude/
 #   bash uninstall.sh --project  Uninstall from .claude/ in the current directory
+#   bash uninstall.sh --dry-run  Preview targets without removing files
+#   bash uninstall.sh --vscode-stable|--vscode-insiders|--vscode-both
+#   bash uninstall.sh --summary=path.json
 #
 # One-liner:
 #   curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.sh | bash
@@ -13,14 +16,30 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)"
+. "$SCRIPT_DIR/scripts/installer-common.sh"
+enforce_shell_runtime
+
 # Parse flags
 choice=""
+DRY_RUN=false
+CHECK_MODE=false
+SUMMARY_PATH=""
+VSCODE_PROFILE_MODE="auto"
+
 for arg in "$@"; do
   case "$arg" in
     --global)  choice="2" ;;
     --project) choice="1" ;;
+    --check) CHECK_MODE=true ;;
+    --dry-run) DRY_RUN=true ;;
+    --vscode-stable) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "stable") ;;
+    --vscode-insiders) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "insiders") ;;
+    --vscode-both) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "both") ;;
+    --summary=*) SUMMARY_PATH="${arg#--summary=}" ;;
   esac
 done
+
 
 if [ -z "$choice" ]; then
   if ! { true < /dev/tty; } 2>/dev/null; then
@@ -60,6 +79,44 @@ case "$choice" in
     exit 1
     ;;
 esac
+
+SELECTED_VSCODE_PROFILES="$(select_vscode_profiles "$VSCODE_PROFILE_MODE")"
+if [ -z "$SUMMARY_PATH" ]; then
+  if [ "$DRY_RUN" = true ] || [ "$CHECK_MODE" = true ]; then
+    SUMMARY_PATH="$HOME/.a11y-agent-team-uninstall-plan.json"
+  elif [ "$choice" = "1" ]; then
+    SUMMARY_PATH="$(pwd)/.a11y-agent-team-uninstall-summary.json"
+  else
+    SUMMARY_PATH="$HOME/.a11y-agent-team-uninstall-summary.json"
+  fi
+fi
+
+BACKUP_METADATA_PATH="$(initialize_operation_state uninstall "$([ "$choice" = "1" ] && pwd || printf '%s' "$HOME")" "$SUMMARY_PATH" "$DRY_RUN" "$CHECK_MODE" "$TARGET_DIR" "$TARGET_DIR/.a11y-agent-manifest" "$TARGET_DIR/.a11y-agent-team-version")"
+
+if [ "$CHECK_MODE" = true ]; then
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"uninstall\",\"dryRun\":false,\"check\":true,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\"},\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":[\"Check mode only. No files were removed.\"] }"
+  echo "  Summary file: $SUMMARY_PATH"
+  exit 0
+fi
+
+if [ "$DRY_RUN" = true ]; then
+  echo ""
+  echo "  Dry run only. No files will be removed."
+  echo "  Scope: $([ "$choice" = "1" ] && echo project || echo global)"
+  echo "  Target: $TARGET_DIR"
+  if [ "$choice" = "2" ]; then
+    if [ -n "$SELECTED_VSCODE_PROFILES" ]; then
+      while IFS='|' read -r key label path; do
+        [ -n "$path" ] && echo "  Would clean VS Code profile: $path"
+      done <<< "$SELECTED_VSCODE_PROFILES"
+    else
+      echo "  No matching VS Code profiles detected for the requested filter."
+    fi
+  fi
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"uninstall\",\"dryRun\":true,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\"},\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":[] }"
+  echo "  Summary file: $SUMMARY_PATH"
+  exit 0
+fi
 
 # ---------------------------------------------------------------------------
 # Load manifest — if missing, build a fallback list from the repo
@@ -305,30 +362,8 @@ fi
 # 3. Remove Copilot agents — global
 # =============================================
 if [ "$choice" = "2" ]; then
-  # Detect VS Code profile directories
-  VSCODE_PROFILES=()
-  case "$(uname -s)" in
-    Darwin)
-      VSCODE_PROFILES=(
-        "$HOME/Library/Application Support/Code/User"
-        "$HOME/Library/Application Support/Code - Insiders/User"
-      )
-      ;;
-    Linux)
-      VSCODE_PROFILES=(
-        "$HOME/.config/Code/User"
-        "$HOME/.config/Code - Insiders/User"
-      )
-      ;;
-    MINGW*|MSYS*|CYGWIN*)
-      [ -n "$APPDATA" ] && VSCODE_PROFILES=(
-        "$APPDATA/Code/User"
-        "$APPDATA/Code - Insiders/User"
-      )
-      ;;
-  esac
-
-  for profile_dir in "${VSCODE_PROFILES[@]}"; do
+  while IFS='|' read -r profile_key profile_label profile_dir; do
+    [ -n "$profile_dir" ] || continue
     [ -d "$profile_dir" ] || continue
     prompts_dir="$profile_dir/prompts"
 
@@ -379,6 +414,14 @@ for key in ['.claude/agents', '.github/agents']:
 if not loc and 'chat.agentFilesLocations' in s:
     del s['chat.agentFilesLocations']
     changed = True
+servers = s.get('mcp', {}).get('servers', {})
+if 'a11y-agent-team' in servers:
+  del servers['a11y-agent-team']
+  changed = True
+  if not servers and 'servers' in s.get('mcp', {}):
+    del s['mcp']['servers']
+  if not s.get('mcp'):
+    del s['mcp']
 if changed:
     with open(sf, 'w') as f:
         json.dump(s, f, indent=4)
@@ -386,7 +429,7 @@ else:
     exit(1)
 PYEOF
     fi
-  done
+  done <<< "$SELECTED_VSCODE_PROFILES"
 
   # Remove central Copilot store
   COPILOT_CENTRAL="$HOME/.a11y-agent-team"
@@ -711,4 +754,9 @@ echo "    2. Verify agents are gone: type '@' in Copilot Chat or '/agents' in Cl
 echo ""
 echo "  If something was missed, see the manual uninstall guide:"
 echo "    https://github.com/Community-Access/accessibility-agents/blob/main/UNINSTALL.md"
+echo ""
+
+write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"uninstall\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\"},\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":[] }"
+echo "  Summary written to:"
+echo "    $SUMMARY_PATH"
 echo ""

@@ -117,7 +117,7 @@ When replacing a Mermaid block, the description comes first as primary content:
 
 ```mermaid
 [original diagram code preserved verbatim]
-```
+```text
 
 </details>
 ```

@@ -30,7 +30,7 @@ Use daily-briefing when:
 
 ### GitHub Copilot (VS Code)
 
-1. Open Copilot Chat: `Ctrl+Shift+I` (Windows/Linux) or `Cmd+Shift+I` (macOS)
+1. Open Copilot Chat: `Ctrl+Shift+I` (Windows) or `Cmd+Shift+I` (macOS)
 2. Type your request:
 
    ```text

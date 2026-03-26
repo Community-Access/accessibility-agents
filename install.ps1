@@ -8,7 +8,31 @@
 # One-liner:
 #   irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
 
+param(
+    [switch]$Project,
+    [switch]$Global,
+    [switch]$Copilot,
+    [switch]$Cli,
+    [switch]$Codex,
+    [switch]$Gemini,
+    [switch]$Yes,
+    [switch]$NoAutoUpdate,
+    [switch]$Check,
+    [switch]$DryRun,
+    [switch]$VsCodeStable,
+    [switch]$VsCodeInsiders,
+    [switch]$VsCodeBoth,
+    [switch]$McpProfileStable,
+    [switch]$McpProfileInsiders,
+    [switch]$McpProfileBoth,
+    [Alias('summary')]
+    [string]$SummaryPath
+)
+
 $ErrorActionPreference = "Stop"
+$AutoApprove = $Yes.IsPresent
+$ScriptDirForHelpers = if ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } else { (Get-Location).Path }
+. (Join-Path $ScriptDirForHelpers 'scripts\Installer.Common.ps1')
 
 # Determine source: running from repo clone or downloaded?
 $Downloaded = $false
@@ -43,6 +67,7 @@ if (-not $ScriptDir -or -not (Test-Path (Join-Path $ScriptDir ".claude\agents"))
 $AgentsSrc = Join-Path $ScriptDir ".claude\agents"
 $CopilotAgentsSrc = Join-Path $ScriptDir ".github\agents"
 $CopilotConfigSrc = Join-Path $ScriptDir ".github"
+$McpServerSrc = Join-Path $ScriptDir "mcp-server"
 
 # Auto-detect agents from source directory
 $Agents = @()
@@ -70,7 +95,24 @@ Write-Host ""
 Write-Host "  2) Global    - Install to ~\.claude\"
 Write-Host "                  (available in all your projects)"
 Write-Host ""
-$Choice = Read-Host "  Choose [1/2]"
+
+if ($Project -and $Global) {
+    Write-Host "  Error: Choose either -Project or -Global, not both."
+    exit 1
+}
+
+$Choice = if ($Project) {
+    '1'
+}
+elseif ($Global) {
+    '2'
+}
+else {
+    if (-not (Test-InteractivePrompting)) {
+        throw "Choose either -Project or -Global when running non-interactively."
+    }
+    Read-Host "  Choose [1/2]"
+}
 
 switch ($Choice) {
     "1" {
@@ -115,6 +157,578 @@ function Merge-ConfigFile {
     else {
         [IO.File]::WriteAllText($DstFile, $existing.TrimEnd() + "`n`n$block`n", [Text.Encoding]::UTF8)
         Write-Host "    + $Label (merged into your existing file)"
+    }
+}
+
+function Write-InstallSummaryFile {
+    param(
+        [string]$Path,
+        [hashtable]$Data
+    )
+    Write-A11ySummaryFile -Path $Path -Data $Data
+}
+
+function Configure-VSCodeMcpSettings {
+    param([string]$SettingsPath, [string]$Url)
+
+    $SettingsDir = Split-Path -Parent $SettingsPath
+    if (-not (Test-Path $SettingsDir)) {
+        New-Item -ItemType Directory -Force -Path $SettingsDir | Out-Null
+    }
+
+    $SettingsObject = [PSCustomObject]@{}
+    if (Test-Path $SettingsPath) {
+        try {
+            $Raw = Get-Content $SettingsPath -Raw
+            if (-not [string]::IsNullOrWhiteSpace($Raw)) {
+                $Parsed = $Raw | ConvertFrom-Json -Depth 20
+                if ($Parsed) {
+                    $SettingsObject = $Parsed
+                }
+            }
+        }
+        catch {
+            Write-Host "    ! Could not parse $SettingsPath"
+            Write-Host "      Add this manually later under mcp.servers.a11y-agent-team.url = $Url"
+            return
+        }
+    }
+
+    if ($SettingsObject.PSObject.Properties.Name -notcontains "mcp") {
+        $SettingsObject | Add-Member -NotePropertyName "mcp" -NotePropertyValue ([PSCustomObject]@{})
+    }
+
+    $McpSettings = $SettingsObject.mcp
+    if ($McpSettings.PSObject.Properties.Name -notcontains "servers") {
+        $McpSettings | Add-Member -NotePropertyName "servers" -NotePropertyValue ([PSCustomObject]@{})
+    }
+
+    $ServerSettings = $McpSettings.servers
+    if ($ServerSettings.PSObject.Properties.Name -notcontains "a11y-agent-team") {
+        $ServerSettings | Add-Member -NotePropertyName "a11y-agent-team" -NotePropertyValue ([PSCustomObject]@{})
+    }
+
+    $A11yServer = $ServerSettings.'a11y-agent-team'
+    if ($A11yServer.PSObject.Properties.Name -contains "url") {
+        $A11yServer.url = $Url
+    }
+    else {
+        $A11yServer | Add-Member -NotePropertyName "url" -NotePropertyValue $Url
+    }
+
+    $SettingsObject | ConvertTo-Json -Depth 20 | Set-Content $SettingsPath -Encoding UTF8
+    Write-Host "    + MCP server registered in $SettingsPath"
+}
+
+function Get-NodeMajorVersion {
+    $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+    if (-not $NodeCmd) {
+        return $null
+    }
+
+    try {
+        return [int](& node -p "process.versions.node.split('.')[0]" 2>$null)
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-JavaMajorVersion {
+    $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
+    if (-not $JavaCmd) {
+        return $null
+    }
+
+    try {
+        $JavaVersionLine = (& java -version 2>&1 | Select-Object -First 1)
+    }
+    catch {
+        return $null
+    }
+
+    if ($JavaVersionLine -match '"(?<major>\d+)(?:\.(?<minor>\d+))?') {
+        $Major = [int]$matches['major']
+        if ($Major -eq 1 -and $matches['minor']) {
+            return [int]$matches['minor']
+        }
+        return $Major
+    }
+
+    if ($JavaVersionLine -match '\b(?<major>\d+)\b') {
+        return [int]$matches['major']
+    }
+
+    return $null
+}
+
+function Refresh-ProcessPath {
+    $MachinePath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+    $UserPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+    $env:Path = ($MachinePath, $UserPath -join ";")
+}
+
+$VsCodeProfileMode = Get-RequestedProfileMode -Stable:$VsCodeStable -Insiders:$VsCodeInsiders -Both:$VsCodeBoth
+$McpProfileMode = Get-RequestedProfileMode -Stable:$McpProfileStable -Insiders:$McpProfileInsiders -Both:$McpProfileBoth
+$DetectedVsCodeProfiles = @(Get-VSCodeProfiles)
+$SelectedCopilotProfiles = @(Select-VSCodeProfiles -Profiles $DetectedVsCodeProfiles -Mode $VsCodeProfileMode -OnlyExisting)
+$SelectedMcpProfiles = @(Select-VSCodeProfiles -Profiles $DetectedVsCodeProfiles -Mode $McpProfileMode -OnlyExisting)
+
+if (-not $SummaryPath) {
+    $SummaryName = if ($DryRun -or $Check) { '.a11y-agent-team-install-plan.json' } else { '.a11y-agent-team-install-summary.json' }
+    $SummaryRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
+    $SummaryPath = Join-Path $SummaryRoot $SummaryName
+}
+
+$OperationRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
+$BackupMetadataPath = Initialize-A11yOperationState -Operation 'install' -Root $OperationRoot -SummaryPath $SummaryPath -DryRun $DryRun -CheckMode $Check -CandidatePaths @($TargetDir, (Join-Path $TargetDir '.a11y-agent-manifest'), (Join-Path $TargetDir '.a11y-agent-team-version'))
+
+$InstallSummary = [ordered]@{
+    schemaVersion = '1.0'
+    timestampUtc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+    operation = 'install'
+    dryRun = [bool]$DryRun
+    check = [bool]$Check
+    scope = if ($Choice -eq '1') { 'project' } else { 'global' }
+    targetDir = $TargetDir
+    requestedOptions = [ordered]@{
+        copilot = [bool]$Copilot
+        copilotCli = [bool]$Cli
+        codex = [bool]$Codex
+        gemini = [bool]$Gemini
+        autoApprove = [bool]$Yes
+        noAutoUpdate = [bool]$NoAutoUpdate
+        vscodeProfileMode = $VsCodeProfileMode
+        mcpProfileMode = $McpProfileMode
+    }
+    detectedVsCodeProfiles = @($DetectedVsCodeProfiles | ForEach-Object {
+        [ordered]@{
+            key = $_.Key
+            name = $_.Name
+            path = $_.Path
+            exists = [bool]$_.Exists
+        }
+    })
+    selectedCopilotProfiles = @($SelectedCopilotProfiles | ForEach-Object { $_.Path })
+    selectedMcpProfiles = @($SelectedMcpProfiles | ForEach-Object { $_.Path })
+    backupMetadataPath = $BackupMetadataPath
+    notes = @()
+}
+
+if ($Check) {
+    $InstallSummary.notes += 'Check mode only. No files were changed.'
+    Write-Host ''
+    Write-Host '  Check mode only. No files will be changed.'
+    Write-Host "  Scope: $($InstallSummary.scope)"
+    Write-Host "  Target: $TargetDir"
+    Write-Host "  Backup metadata: $BackupMetadataPath"
+    Write-Host "  Detected VS Code profiles: $($DetectedVsCodeProfiles.Count)"
+    Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
+    Write-Host "  Summary file: $SummaryPath"
+    exit 0
+}
+
+if ($DryRun) {
+    if (-not ($Copilot -or $Cli -or $Codex -or $Gemini)) {
+        $InstallSummary.notes += 'Optional platforms were not selected in dry-run mode. Use -Copilot, -Cli, -Codex, and/or -Gemini to preview them explicitly.'
+    }
+    Write-Host ''
+    Write-Host '  Dry run only. No files will be changed.'
+    Write-Host "  Scope: $($InstallSummary.scope)"
+    Write-Host "  Target: $TargetDir"
+    if ($Choice -eq '2') {
+        Write-Host '  VS Code profiles in scope:'
+        if ($SelectedCopilotProfiles.Count -gt 0) {
+            foreach ($Profile in $SelectedCopilotProfiles) {
+                Write-Host "    -> $($Profile.Name): $($Profile.Path)"
+            }
+        }
+        else {
+            Write-Host '    -> none detected for the requested profile filter'
+        }
+        Write-Host '  MCP settings targets:'
+        if ($SelectedMcpProfiles.Count -gt 0) {
+            foreach ($Profile in $SelectedMcpProfiles) {
+                Write-Host "    -> $($Profile.Name): $(Join-Path $Profile.Path 'settings.json')"
+            }
+        }
+        else {
+            Write-Host '    -> none detected for the requested profile filter'
+        }
+    }
+    Write-Host "  Summary file: $SummaryPath"
+    Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
+    exit 0
+}
+
+function Read-YesNo {
+    param(
+        [string]$Prompt,
+        [bool]$DefaultYes = $false
+    )
+
+    if ($AutoApprove) {
+        return $true
+    }
+
+    if (-not (Test-InteractivePrompting)) {
+        return $DefaultYes
+    }
+
+    $Suffix = if ($DefaultYes) { '[Y/n]' } else { '[y/N]' }
+    $Answer = Read-Host "  $Prompt $Suffix"
+    if ([string]::IsNullOrWhiteSpace($Answer)) {
+        return $DefaultYes
+    }
+    return ($Answer -eq 'y' -or $Answer -eq 'Y')
+}
+
+function Get-McpCapabilityPlan {
+    if ($AutoApprove -or -not (Test-InteractivePrompting)) {
+        return [PSCustomObject]@{
+            Focus = 'Baseline scanning'
+            BrowserTools = $false
+            PdfForms = $false
+            DeepPdf = $false
+            ConfigureVsCode = $true
+        }
+    }
+
+    Write-Host ""
+    Write-Host "  Choose your MCP setup focus:"
+    Write-Host ""
+    Write-Host "  1) Baseline scanning      - document and PDF scanning only"
+    Write-Host "  2) Browser testing        - baseline plus Playwright browser tools"
+    Write-Host "  3) PDF-heavy workflow     - baseline plus deep PDF and form tools"
+    Write-Host "  4) Everything             - install every MCP capability we support"
+    Write-Host "  5) Custom                 - choose capabilities one by one"
+    Write-Host ""
+
+    $Choice = Read-Host "  Choose [1/2/3/4/5]"
+    $Plan = [ordered]@{
+        Focus            = 'Baseline scanning'
+        BrowserTools     = $false
+        PdfForms         = $false
+        DeepPdf          = $false
+        ConfigureVsCode  = $true
+    }
+
+    switch ($Choice) {
+        '2' {
+            $Plan.Focus = 'Browser testing'
+            $Plan.BrowserTools = $true
+        }
+        '3' {
+            $Plan.Focus = 'PDF-heavy workflow'
+            $Plan.PdfForms = $true
+            $Plan.DeepPdf = $true
+        }
+        '4' {
+            $Plan.Focus = 'Everything'
+            $Plan.BrowserTools = $true
+            $Plan.PdfForms = $true
+            $Plan.DeepPdf = $true
+        }
+        '5' {
+            $Plan.Focus = 'Custom'
+            $Plan.BrowserTools = Read-YesNo -Prompt 'Enable browser-based accessibility tools now?' -DefaultYes:$false
+            $Plan.PdfForms = Read-YesNo -Prompt 'Enable PDF form conversion tools now?' -DefaultYes:$false
+            $Plan.DeepPdf = Read-YesNo -Prompt 'Prepare deep PDF validation tools now?' -DefaultYes:$false
+            $Plan.ConfigureVsCode = Read-YesNo -Prompt 'Configure VS Code MCP settings automatically?' -DefaultYes:$true
+        }
+    }
+
+    return [PSCustomObject]$Plan
+}
+
+function Show-McpCapabilityWarnings {
+    param([object]$Plan)
+
+    Write-Host ""
+    Write-Host "  MCP capability plan: $($Plan.Focus)"
+    Write-Host "    - Baseline scanning installs the MCP server plus core npm dependencies"
+    if ($Plan.BrowserTools) {
+        Write-Host "    - Browser testing needs Playwright, axe-core, and Chromium"
+        Write-Host "    - Browser scans run against live pages and can take longer to install"
+    }
+    if ($Plan.PdfForms) {
+        Write-Host "    - PDF form conversion needs the optional pdf-lib package"
+    }
+    if ($Plan.DeepPdf) {
+        Write-Host "    - Deep PDF validation needs Java 11+ and veraPDF"
+        Write-Host "    - Baseline PDF scanning still works even if deep validation is not ready"
+    }
+    Write-Host "    - Python is not required for MCP runtime"
+    Write-Host "    - macOS is supported by the shell installer; Linux is not part of the guided installer target"
+}
+
+function Ensure-NodeJsRuntime {
+    $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+    $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
+    $NodeMajor = Get-NodeMajorVersion
+
+    if ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18) {
+        return $true
+    }
+
+    Write-Host ""
+    if ($NodeCmd -and $NodeMajor) {
+        Write-Host "  Detected Node.js $NodeMajor, but the MCP server requires Node.js 18 or later."
+    }
+    else {
+        Write-Host "  Node.js and npm were not found."
+    }
+
+    $WingetCmd = Get-Command winget -ErrorAction SilentlyContinue
+    if ($WingetCmd) {
+        Write-Host "  The installer can install Node.js LTS with winget."
+        if (Read-YesNo -Prompt 'Install Node.js LTS now?' -DefaultYes:$true) {
+            try {
+                winget install --exact --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements
+                Refresh-ProcessPath
+            }
+            catch {
+                Write-Host "    ! Node.js installation via winget failed."
+            }
+        }
+    }
+    else {
+        Write-Host "  winget was not found, so Node.js cannot be installed automatically here."
+    }
+
+    $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+    $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
+    $NodeMajor = Get-NodeMajorVersion
+    if ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18) {
+        Write-Host "    + Node.js runtime is ready for the MCP server"
+        return $true
+    }
+
+    Write-Host "  MCP setup can continue, but scanning will remain unavailable until Node.js 18+ and npm are installed."
+    Write-Host "  Manual fallback: https://nodejs.org/en/download"
+    Write-Host "  After installing Node.js, reopen your terminal and run:"
+    Write-Host "    cd \"$McpDest\""
+    Write-Host "    npm install"
+    return $false
+}
+
+function Show-PdfDeepValidationReadiness {
+    $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
+    $VeraPdfCmd = Get-Command verapdf -ErrorAction SilentlyContinue
+    $JavaMajor = Get-JavaMajorVersion
+
+    Write-Host ""
+    Write-Host "  PDF Deep Validation Readiness:"
+
+    if ($JavaCmd) {
+        try {
+            $JavaVersion = (& java -version 2>&1 | Select-Object -First 1)
+            if ($JavaMajor -ge 11) {
+                Write-Host "    [x] Java detected: $JavaVersion"
+            }
+            else {
+                Write-Host "    [!] Java detected but too old: $JavaVersion"
+            }
+        }
+        catch {
+            if ($JavaMajor -ge 11) {
+                Write-Host "    [x] Java command found"
+            }
+            else {
+                Write-Host "    [!] Java command found, but version could not be confirmed as 11+"
+            }
+        }
+    }
+    else {
+        Write-Host "    [ ] Java not detected"
+    }
+
+    if ($VeraPdfCmd) {
+        try {
+            $VeraPdfVersion = (& verapdf --version 2>&1 | Select-Object -First 1)
+            Write-Host "    [x] veraPDF detected: $VeraPdfVersion"
+        }
+        catch {
+            Write-Host "    [x] veraPDF command found"
+        }
+    }
+    else {
+        Write-Host "    [ ] veraPDF not detected"
+    }
+
+    if ($JavaCmd -and $JavaMajor -ge 11 -and $VeraPdfCmd) {
+        Write-Host "    READY: run_verapdf_scan should be available once the MCP server is running."
+    }
+    elseif ($JavaCmd -and $JavaMajor -ge 11) {
+        Write-Host "    PARTIAL: Java is ready, but veraPDF still needs to be installed."
+    }
+    elseif ($JavaCmd) {
+        Write-Host "    NOT READY: Java 11 or later is required before veraPDF can run."
+    }
+    else {
+        Write-Host "    NOT READY: scan_pdf_document will work, but run_verapdf_scan will not yet be available."
+    }
+}
+
+function Test-McpHealthSmoke {
+    param([string]$WorkingDir)
+
+    $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+    $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
+    $NodeMajor = Get-NodeMajorVersion
+    $CoreSdkReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName '@modelcontextprotocol/sdk'
+    $CoreSchemaReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'zod'
+
+    if (-not ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18 -and $CoreSdkReady -and $CoreSchemaReady)) {
+        return [PSCustomObject]@{
+            Label  = '[ ] SKIPPED'
+            Detail = 'Baseline MCP prerequisites are not fully installed yet.'
+        }
+    }
+
+    $Port = 4300 + (Get-Random -Minimum 0 -Maximum 200)
+    $StdOut = [System.IO.Path]::GetTempFileName()
+    $StdErr = [System.IO.Path]::GetTempFileName()
+    $Process = $null
+
+    try {
+        $Command = "set PORT=$Port&& set A11Y_MCP_HOST=127.0.0.1&& set A11Y_MCP_STATELESS=1&& node server.js"
+        $Process = Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', $Command -WorkingDirectory $WorkingDir -RedirectStandardOutput $StdOut -RedirectStandardError $StdErr -WindowStyle Hidden -PassThru
+
+        for ($Attempt = 0; $Attempt -lt 20; $Attempt++) {
+            Start-Sleep -Milliseconds 500
+            try {
+                $Response = Invoke-RestMethod -Uri "http://127.0.0.1:$Port/health" -Method Get -TimeoutSec 2
+                if ($Response.status -eq 'ok') {
+                    return [PSCustomObject]@{
+                        Label  = '[x] READY'
+                        Detail = "HTTP health check passed on port $Port."
+                    }
+                }
+            }
+            catch {
+            }
+        }
+
+        $ErrorLine = ''
+        if (Test-Path $StdErr) {
+            $ErrorLine = Get-Content $StdErr -ErrorAction SilentlyContinue | Select-Object -First 1
+        }
+        if (-not $ErrorLine -and (Test-Path $StdOut)) {
+            $ErrorLine = Get-Content $StdOut -ErrorAction SilentlyContinue | Select-Object -First 1
+        }
+        if (-not $ErrorLine) {
+            $ErrorLine = 'The temporary MCP server did not answer /health in time.'
+        }
+
+        return [PSCustomObject]@{
+            Label  = '[ ] FAILED'
+            Detail = $ErrorLine
+        }
+    }
+    finally {
+        if ($Process -and -not $Process.HasExited) {
+            Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
+        }
+        Remove-Item $StdOut, $StdErr -Force -ErrorAction SilentlyContinue
+    }
+}
+
+function Test-NodeModuleAvailable {
+    param([string]$WorkingDir, [string]$ModuleName)
+
+    $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+    if (-not $NodeCmd -or -not $WorkingDir -or -not (Test-Path $WorkingDir)) {
+        return $false
+    }
+
+    try {
+        Push-Location $WorkingDir
+        node -e "import('$ModuleName').then(() => process.exit(0)).catch(() => process.exit(1))" | Out-Null
+        $Success = ($LASTEXITCODE -eq 0)
+        Pop-Location
+        return $Success
+    }
+    catch {
+        Pop-Location -ErrorAction SilentlyContinue
+        return $false
+    }
+}
+
+function Test-PlaywrightChromiumReady {
+    param([string]$WorkingDir)
+
+    $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+    if (-not $NodeCmd -or -not $WorkingDir -or -not (Test-Path $WorkingDir)) {
+        return $false
+    }
+
+    try {
+        Push-Location $WorkingDir
+        node -e "import('playwright').then(async ({ chromium }) => { const fs = await import('node:fs'); const exe = chromium.executablePath(); process.exit(exe && fs.existsSync(exe) ? 0 : 1); }).catch(() => process.exit(1))" | Out-Null
+        $Success = ($LASTEXITCODE -eq 0)
+        Pop-Location
+        return $Success
+    }
+    catch {
+        Pop-Location -ErrorAction SilentlyContinue
+        return $false
+    }
+}
+
+function Show-McpCapabilityReadiness {
+    param([string]$WorkingDir)
+
+    $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+    $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
+    $NodeMajor = Get-NodeMajorVersion
+    $JavaMajor = Get-JavaMajorVersion
+    $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
+    $VeraPdfCmd = Get-Command verapdf -ErrorAction SilentlyContinue
+    $CoreSdkReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName '@modelcontextprotocol/sdk'
+    $CoreSchemaReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'zod'
+    $PlaywrightReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'playwright'
+    $PdfLibReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'pdf-lib'
+    $ChromiumReady = Test-PlaywrightChromiumReady -WorkingDir $WorkingDir
+    $BaselineReady = ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18 -and $CoreSdkReady -and $CoreSchemaReady)
+    $SmokeTest = Test-McpHealthSmoke -WorkingDir $WorkingDir
+
+    Write-Host ""
+    Write-Host "  MCP Optional Capability Readiness:"
+    if ($NodeCmd -and $NodeMajor) {
+        Write-Host ("    Node.js runtime (18+):                  " + ($(if ($NodeMajor -ge 18) { "[x] READY (v$NodeMajor)" } else { "[!] TOO OLD (v$NodeMajor)" })))
+    }
+    else {
+        Write-Host "    Node.js runtime (18+):                  [ ] NOT READY"
+    }
+    Write-Host ("    npm CLI:                                " + ($(if ($NpmCmd) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host ("    MCP core dependencies:                  " + ($(if ($CoreSdkReady -and $CoreSchemaReady) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host "    Python 3 helper (installer only):       [~] NOT REQUIRED ON WINDOWS"
+    Write-Host ("    Baseline PDF scan (scan_pdf_document):  " + ($(if ($BaselineReady) { '[x] READY' } else { '[ ] NOT READY' })))
+    if ($JavaCmd -and $JavaMajor) {
+        Write-Host ("    Deep PDF validation (Java 11+):       " + ($(if ($JavaMajor -ge 11) { "[x] READY (v$JavaMajor)" } else { "[!] TOO OLD (v$JavaMajor)" })))
+    }
+    else {
+        Write-Host "    Deep PDF validation (Java 11+):       [ ] NOT READY"
+    }
+    Write-Host ("    Deep PDF validation (veraPDF):        " + ($(if ($VeraPdfCmd) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host ("    Local MCP health smoke test:          " + $SmokeTest.Label)
+    Write-Host ("    Playwright package:                   " + ($(if ($PlaywrightReady) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host ("    Chromium browser bundle:              " + ($(if ($ChromiumReady) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host ("    PDF form conversion (pdf-lib):        " + ($(if ($PdfLibReady) { '[x] READY' } else { '[ ] NOT READY' })))
+
+    if (-not $BaselineReady) {
+        Write-Host "    Baseline scanning needs Node.js 18+, npm, and MCP server dependencies in the MCP directory."
+    }
+    Write-Host "    Python is not required for MCP runtime on Windows."
+    if ($SmokeTest.Detail) {
+        Write-Host "    Smoke test detail: $($SmokeTest.Detail)"
+    }
+    if (-not $PlaywrightReady -or -not $ChromiumReady) {
+        Write-Host "    Browser-based scans need Playwright plus Chromium."
+    }
+    if (-not $PdfLibReady) {
+        Write-Host "    PDF form conversion needs pdf-lib in the MCP server directory."
     }
 }
 
@@ -300,14 +914,16 @@ Save-Manifest
 # Copilot agents
 $CopilotInstalled = $false
 $CopilotDestinations = @()
+$InstallCopilot = $Copilot.IsPresent
 
-Write-Host ""
-Write-Host "  Would you also like to install GitHub Copilot agents?"
-Write-Host "  This adds accessibility agents for Copilot Chat in VS Code/GitHub."
-Write-Host ""
-$CopilotChoice = Read-Host "  Install Copilot agents? [y/N]"
+if ((-not $InstallCopilot) -and (Read-YesNo -Prompt 'Install Copilot agents?' -DefaultYes:$false)) {
+    Write-Host ""
+    Write-Host "  Would you also like to install GitHub Copilot agents?"
+    Write-Host "  This adds accessibility agents for Copilot Chat in VS Code/GitHub."
+    $InstallCopilot = $true
+}
 
-if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
+if ($InstallCopilot) {
 
     if ($Choice -eq "1") {
         # Project install: put agents in .github\agents\
@@ -465,10 +1081,17 @@ if ($CopilotChoice -eq "y" -or $CopilotChoice -eq "Y") {
         }
 
         Write-Host ""
-        $VSCodeProfile = Join-Path $env:APPDATA "Code\User"
-        $VSCodeInsidersProfile = Join-Path $env:APPDATA "Code - Insiders\User"
-        Copy-ToVSCodeProfile -ProfileDir $VSCodeProfile -Label "VS Code"
-        Copy-ToVSCodeProfile -ProfileDir $VSCodeInsidersProfile -Label "VS Code Insiders"
+        $StableSelected = $SelectedCopilotProfiles | Where-Object { $_.Key -eq 'stable' }
+        $InsidersSelected = $SelectedCopilotProfiles | Where-Object { $_.Key -eq 'insiders' }
+        if ($StableSelected -and $InsidersSelected) {
+            Write-Host "  Found both VS Code and VS Code Insiders. Installing Copilot assets into both profiles."
+        }
+        foreach ($Profile in $SelectedCopilotProfiles) {
+            Copy-ToVSCodeProfile -ProfileDir $Profile.Path -Label $Profile.Name
+        }
+        if ($SelectedCopilotProfiles.Count -eq 0) {
+            Write-Host "  No matching VS Code profiles were detected for Copilot assets."
+        }
 
         # Also create a11y-copilot-init for per-project use (repos to check into git)
         $InitScript = Join-Path $CentralRoot "a11y-copilot-init.ps1"
@@ -576,15 +1199,17 @@ Write-Host "  Your existing files were preserved. Only new content was added."
 $CopilotCliInstalled = $false
 $CliAgentsDst = ""
 $CliSkillsDst = ""
+$InstallCopilotCli = $Cli.IsPresent
 
-Write-Host ""
-Write-Host "  Would you also like to install Copilot CLI agents?"
-Write-Host "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
-Write-Host "  (For VS Code Copilot Chat extension, the --copilot option above is used)"
-Write-Host ""
-$CliChoice = Read-Host "  Install Copilot CLI agents? [y/N]"
+if ((-not $InstallCopilotCli) -and (Read-YesNo -Prompt 'Install Copilot CLI agents?' -DefaultYes:$false)) {
+    Write-Host ""
+    Write-Host "  Would you also like to install Copilot CLI agents?"
+    Write-Host "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
+    Write-Host "  (For VS Code Copilot Chat extension, the --copilot option above is used)"
+    $InstallCopilotCli = $true
+}
 
-if ($CliChoice -eq "y" -or $CliChoice -eq "Y") {
+if ($InstallCopilotCli) {
     Write-Host ""
     Write-Host "  Installing Copilot CLI agents..."
 
@@ -650,16 +1275,18 @@ if ($CliChoice -eq "y" -or $CliChoice -eq "Y") {
 $GeminiSrc = Join-Path $ScriptDir ".gemini\extensions\a11y-agents"
 $GeminiInstalled = $false
 $GeminiDst = ""
+$InstallGemini = $Gemini.IsPresent
 
 if (Test-Path $GeminiSrc) {
-    Write-Host ""
-    Write-Host "  Would you also like to install Gemini CLI support?"
-    Write-Host "  This installs accessibility skills as a Gemini CLI extension"
-    Write-Host "  so Gemini automatically applies WCAG AA rules to all UI code."
-    Write-Host ""
-    $GeminiChoice = Read-Host "  Install Gemini CLI support? [y/N]"
+    if ((-not $InstallGemini) -and (Read-YesNo -Prompt 'Install Gemini CLI support?' -DefaultYes:$false)) {
+        Write-Host ""
+        Write-Host "  Would you also like to install Gemini CLI support?"
+        Write-Host "  This installs accessibility skills as a Gemini CLI extension"
+        Write-Host "  so Gemini automatically applies WCAG AA rules to all UI code."
+        $InstallGemini = $true
+    }
 
-    if ($GeminiChoice -eq "y" -or $GeminiChoice -eq "Y") {
+    if ($InstallGemini) {
         Write-Host ""
         Write-Host "  Installing Gemini CLI extension..."
 
@@ -734,23 +1361,195 @@ if ($Choice -eq "2") {
 }
 
 # ---------------------------------------------------------------------------
-# Install MCP server dependencies (if Node.js is available)
-# The desktop-extension/ MCP server requires npm packages to function.
-# This is optional - the core agents work without it.
+# Guided MCP server setup
+# Copies the open-source MCP server to a stable location, installs npm
+# dependencies when available, and can configure VS Code to use it.
 # ---------------------------------------------------------------------------
-$McpPkg = Join-Path $ScriptDir "desktop-extension\package.json"
-if ((Test-Path $McpPkg) -and (Get-Command node -ErrorAction SilentlyContinue) -and (Get-Command npm -ErrorAction SilentlyContinue)) {
+$McpInstalled = $false
+$McpDest = $null
+
+if (Test-Path $McpServerSrc) {
     Write-Host ""
-    Write-Host "  Installing MCP server dependencies..."
-    try {
-        Push-Location (Join-Path $ScriptDir "desktop-extension")
-        npm install --omit=dev --silent 2>$null | Out-Null
-        Pop-Location
-        Write-Host "    + MCP server dependencies installed"
-    }
-    catch {
-        Pop-Location -ErrorAction SilentlyContinue
-        Write-Host "    ! MCP server dependency install failed (non-fatal)"
+    Write-Host "  Would you like to set up the MCP server for document and PDF scanning?"
+    Write-Host "  This copies the open-source server to a stable location, can install npm"
+    Write-Host "  dependencies, and can add the VS Code MCP entry for local use."
+
+    if (Read-YesNo -Prompt 'Set up MCP server?' -DefaultYes:$false) {
+        if ($Choice -eq "1") {
+            $McpDest = Join-Path (Get-Location) "mcp-server"
+        }
+        else {
+            $McpDest = Join-Path $env:USERPROFILE ".a11y-agent-team\mcp-server"
+        }
+
+        New-Item -ItemType Directory -Force -Path $McpDest | Out-Null
+        $McpCopyMethod = Copy-A11yDirectoryTree -SourceDir $McpServerSrc -DestinationDir $McpDest -PreferRobocopy
+        $McpInstalled = $true
+
+        Write-Host ""
+        Write-Host "  MCP server copied to: $McpDest"
+        Write-Host "  MCP copy method: $McpCopyMethod"
+
+        $CapabilityPlan = Get-McpCapabilityPlan
+        Show-McpCapabilityWarnings -Plan $CapabilityPlan
+
+        $NodeReady = Ensure-NodeJsRuntime
+        $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
+        $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
+        $NodeMajor = Get-NodeMajorVersion
+        if ($NodeReady -and $NodeCmd -and $NpmCmd -and $NodeMajor -ge 18) {
+            Write-Host ""
+            Write-Host "  Node.js and npm are available."
+            $InstallMcpDeps = Read-YesNo -Prompt 'Install MCP server npm dependencies now?' -DefaultYes:$true
+            if ($InstallMcpDeps) {
+                Write-Host ""
+                Write-Host "  Installing MCP server dependencies..."
+                try {
+                    Push-Location $McpDest
+                    npm install --omit=dev
+                    Pop-Location
+                    Write-Host "    + MCP server dependencies installed"
+                }
+                catch {
+                    Pop-Location -ErrorAction SilentlyContinue
+                    Write-Host "    ! npm install failed. You can retry later with:"
+                    Write-Host "      cd \"$McpDest\""
+                    Write-Host "      npm install"
+                }
+            }
+
+            if ($CapabilityPlan.PdfForms) {
+                Write-Host ""
+                Write-Host "  Setting up PDF form conversion tooling..."
+                try {
+                    Push-Location $McpDest
+                    npm install pdf-lib
+                    Pop-Location
+                    Write-Host "    + pdf-lib installed"
+                }
+                catch {
+                    Pop-Location -ErrorAction SilentlyContinue
+                    Write-Host "    ! pdf-lib installation failed. You can retry later with:"
+                    Write-Host "      cd \"$McpDest\""
+                    Write-Host "      npm install pdf-lib"
+                }
+            }
+
+            if ($CapabilityPlan.BrowserTools) {
+                Write-Host ""
+                Write-Host "  Setting up Playwright browser tooling..."
+                try {
+                    Push-Location $McpDest
+                    npm install playwright @axe-core/playwright
+                    npx playwright install chromium
+                    Pop-Location
+                    Write-Host "    + Playwright tooling and Chromium installed"
+                }
+                catch {
+                    Pop-Location -ErrorAction SilentlyContinue
+                    Write-Host "    ! Playwright setup failed. You can retry later with:"
+                    Write-Host "      cd \"$McpDest\""
+                    Write-Host "      npm install playwright @axe-core/playwright"
+                    Write-Host "      npx playwright install chromium"
+                }
+            }
+        }
+        else {
+            Write-Host ""
+            Write-Host "  Node.js 18+ and npm are still not ready."
+            Write-Host "  The MCP server was copied, but dependencies were not installed yet."
+            Write-Host "  To enable scanning later:"
+            Write-Host "    1. Install Node.js 18 or later"
+            Write-Host "    2. Run: cd \"$McpDest\""
+            Write-Host "    3. Run: npm install"
+            Write-Host "    4. Start it with: npm start"
+        }
+
+        Write-Host ""
+        $ShouldConfigureVsCode = $CapabilityPlan.ConfigureVsCode
+        if (-not $ShouldConfigureVsCode) {
+            $ShouldConfigureVsCode = Read-YesNo -Prompt 'Configure VS Code to use the local MCP server?' -DefaultYes:$true
+        }
+        if ($ShouldConfigureVsCode) {
+            if ($Choice -eq "1") {
+                Configure-VSCodeMcpSettings -SettingsPath (Join-Path (Get-Location) ".vscode\settings.json") -Url "http://127.0.0.1:3100/mcp"
+            }
+            else {
+                if ($SelectedMcpProfiles.Count -eq 0) {
+                    Write-Host "    ! No matching VS Code profiles were detected for MCP configuration."
+                }
+                foreach ($Profile in $SelectedMcpProfiles) {
+                    Configure-VSCodeMcpSettings -SettingsPath (Join-Path $Profile.Path "settings.json") -Url "http://127.0.0.1:3100/mcp"
+                }
+            }
+        }
+
+        Write-Host ""
+        if (Get-Command verapdf -ErrorAction SilentlyContinue) {
+            Write-Host "  veraPDF detected."
+            Write-Host "  Deep PDF/UA validation will be available through run_verapdf_scan."
+        }
+        elseif (-not $CapabilityPlan.DeepPdf) {
+            Write-Host "  Deep PDF validation was not selected during setup."
+            Write-Host "  Baseline PDF scanning works without it."
+            Write-Host "  If you want it later, install Java 11+ and veraPDF."
+            Write-Host "    Windows Java via winget: winget install --exact --id EclipseAdoptium.Temurin.21.JRE"
+            Write-Host "    Windows veraPDF via Chocolatey: choco install verapdf"
+            Write-Host "    macOS veraPDF via Homebrew: brew install verapdf"
+        }
+        else {
+            $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
+            $JavaMajor = Get-JavaMajorVersion
+            $WingetCmd = Get-Command winget -ErrorAction SilentlyContinue
+            $ChocoCmd = Get-Command choco -ErrorAction SilentlyContinue
+
+            Write-Host "  veraPDF is not installed. That is okay."
+            Write-Host "  Baseline PDF scanning works without it."
+            Write-Host "  For deeper PDF/UA validation later, install Java 11+ and veraPDF."
+
+            if ((-not $JavaCmd -or $JavaMajor -lt 11) -and $WingetCmd) {
+                Write-Host ""
+                if (-not $JavaCmd) {
+                    Write-Host "  Java was not found, and winget is available."
+                }
+                else {
+                    Write-Host "  Java $JavaMajor was detected, but veraPDF requires Java 11 or later."
+                }
+                if (Read-YesNo -Prompt 'Install Java 21 JRE now with winget?' -DefaultYes:$false) {
+                    try {
+                        winget install --exact --id EclipseAdoptium.Temurin.21.JRE --accept-source-agreements --accept-package-agreements
+                        Write-Host "    + Java 21 JRE install requested through winget"
+                        Write-Host "    ! Restart your terminal or VS Code after install so java is added to PATH"
+                    }
+                    catch {
+                        Write-Host "    ! winget Java install failed. You can retry manually with:"
+                        Write-Host "      winget install --exact --id EclipseAdoptium.Temurin.21.JRE"
+                    }
+                }
+            }
+
+            if ($ChocoCmd) {
+                Write-Host ""
+                if (Read-YesNo -Prompt 'Install veraPDF now with Chocolatey?' -DefaultYes:$false) {
+                    try {
+                        choco install verapdf -y
+                        Write-Host "    + veraPDF install requested through Chocolatey"
+                        Write-Host "    ! Restart your terminal or VS Code after install so verapdf is added to PATH"
+                    }
+                    catch {
+                        Write-Host "    ! Chocolatey veraPDF install failed. You can retry manually with:"
+                        Write-Host "      choco install verapdf"
+                    }
+                }
+            }
+
+            Write-Host ""
+            Write-Host "  Windows options:"
+            Write-Host "    Java runtime via winget: winget install --exact --id EclipseAdoptium.Temurin.21.JRE"
+            Write-Host "    veraPDF via Chocolatey: choco install verapdf"
+            Write-Host "    veraPDF manual install: https://docs.verapdf.org/install/"
+            Write-Host "    macOS:   brew install verapdf"
+        }
     }
 }
 
@@ -797,16 +1596,30 @@ if ($GeminiInstalled) {
     Write-Host "  Gemini CLI extension installed to:"
     Write-Host "    -> $GeminiDst"
 }
+if ($McpInstalled) {
+    Write-Host ""
+    Write-Host "  MCP server ready at:"
+    Write-Host "    -> $McpDest"
+    Write-Host ""
+    Write-Host "  Start it locally with:"
+    Write-Host "    cd \"$McpDest\""
+    Write-Host "    npm start"
+    Write-Host ""
+    Write-Host "  MCP endpoint: http://127.0.0.1:3100/mcp"
+    Write-Host "  Health check: http://127.0.0.1:3100/health"
+    Show-PdfDeepValidationReadiness
+    Show-McpCapabilityReadiness -WorkingDir $McpDest
+}
 
 # Auto-update setup (global install only)
+$AutoUpdateEnabled = $false
 if ($Choice -eq "2") {
     Write-Host ""
-    Write-Host "  Would you like to enable auto-updates?"
-    Write-Host "  This checks GitHub daily for new agents and improvements."
-    Write-Host ""
-    $AutoUpdate = Read-Host "  Enable auto-updates? [y/N]"
-
-    if ($AutoUpdate -eq "y" -or $AutoUpdate -eq "Y") {
+    if ($NoAutoUpdate) {
+        Write-Host "  Auto-updates skipped because -NoAutoUpdate was supplied."
+    }
+    elseif (Read-YesNo -Prompt 'Enable auto-updates?' -DefaultYes:$false) {
+        Write-Host "  This checks GitHub daily for new agents and improvements."
         # Copy the update script
         $UpdateSrc = Join-Path $ScriptDir "update.ps1"
         $UpdateDst = Join-Path $TargetDir ".a11y-agent-team-update.ps1"
@@ -828,6 +1641,7 @@ if ($Choice -eq "2") {
         if ($?) {
             Write-Host "  Auto-updates enabled (daily at 9:00 AM via Task Scheduler)."
             Write-Host "  Update log: ~\.claude\.a11y-agent-team-update.log"
+            $AutoUpdateEnabled = $true
         }
         else {
             Write-Host "  Could not create scheduled task. You can run update.ps1 manually."
@@ -846,9 +1660,51 @@ $ScopeMarker = if ($Choice -eq "1") { "scope:project" } else { "scope:global" }
 if (-not $Manifest.Contains($ScopeMarker)) { Add-ManifestEntry $ScopeMarker }
 Save-Manifest
 
+if (($VsCodeProfileMode -ne 'auto') -and ($SelectedCopilotProfiles.Count -eq 0) -and $CopilotInstalled) {
+    $InstallSummary.notes += 'The requested VS Code profile filter did not match any installed profile for Copilot assets.'
+}
+if (($McpProfileMode -ne 'auto') -and ($SelectedMcpProfiles.Count -eq 0) -and $McpInstalled) {
+    $InstallSummary.notes += 'The requested MCP profile filter did not match any installed VS Code profile.'
+}
+
+$InstallSummary.installed = [ordered]@{
+    claude = $true
+    plugin = $false
+    copilot = [bool]$CopilotInstalled
+    copilotCli = [bool]$CopilotCliInstalled
+    gemini = [bool]$GeminiInstalled
+    mcp = [bool]$McpInstalled
+    autoUpdate = [bool]$AutoUpdateEnabled
+}
+$InstallSummary.destinations = [ordered]@{
+    claude = @($TargetDir)
+    copilot = @($CopilotDestinations)
+    copilotCli = @($CliAgentsDst, $CliSkillsDst) | Where-Object { $_ }
+    gemini = @($GeminiDst) | Where-Object { $_ }
+    mcp = @($McpDest) | Where-Object { $_ }
+}
+$InstallSummary.manifestPath = $ManifestPath
+Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
+
 # Clean up temp download
 if ($Downloaded) { Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue }
 
+Write-Host ""
+Write-Host "  Summary written to:"
+Write-Host "    $SummaryPath"
+Write-Host ""
+Write-Host "  Verification:"
+Write-Host "    - Re-run with -DryRun to preview profile targeting before a future change"
+if ($CopilotInstalled -and $Choice -eq '2') {
+    Write-Host "    - Check VS Code prompts folders under the selected profiles"
+}
+if ($McpInstalled) {
+    Write-Host "    - Start the MCP server and check http://127.0.0.1:3100/health"
+}
+Write-Host ""
+Write-Host "  Recovery:"
+Write-Host "    - Re-run install.ps1 with the same flags to repair a partial install"
+Write-Host "    - Use uninstall.ps1 if you want to remove the managed files cleanly"
 Write-Host ""
 Write-Host "  If agents stop loading, increase the character budget:"
 Write-Host "    `$env:SLASH_COMMAND_TOOL_CHAR_BUDGET = '30000'"

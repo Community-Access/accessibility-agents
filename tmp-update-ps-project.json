@@ -1,0 +1,10 @@
+{
+  "vscodeProfileMode": "insiders",
+  "selectedVsCodeProfiles": [
+    "C:\\Users\\jeffbis\\AppData\\Roaming\\Code - Insiders\\User"
+  ],
+  "dryRun": true,
+  "operation": "update",
+  "scope": "project",
+  "installDir": "D:\\code\\agents\\.claude"
+}

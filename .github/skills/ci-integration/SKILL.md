@@ -74,7 +74,7 @@ Without a baseline, every legacy violation fails CI, making adoption impossible 
 
 ### Comparison Logic
 
-```
+```text
 current_violations = run_axe_scan()
 baseline = load("axe-baseline.json")
 

@@ -162,8 +162,8 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Members:**
 - `python-specialist` - Python language expert: debugging, packaging, testing, type checking, async, optimization
 - `wxpython-specialist` - wxPython GUI expert: sizers, events, AUI, custom controls, threading, desktop accessibility
-- `desktop-a11y-specialist` - Desktop application accessibility: platform APIs (UIA, MSAA, ATK, NSAccessibility), screen reader interaction, focus management, custom widget accessibility
-- `desktop-a11y-testing-coach` - Desktop accessibility testing: NVDA, JAWS, Narrator, VoiceOver, Orca, Accessibility Insights, automated UIA testing, keyboard-only testing
+- `desktop-a11y-specialist` - Desktop application accessibility: platform APIs (UIA, MSAA, NSAccessibility), screen reader interaction, focus management, custom widget accessibility
+- `desktop-a11y-testing-coach` - Desktop accessibility testing: NVDA, JAWS, Narrator, VoiceOver, Accessibility Insights, automated UIA testing, keyboard-only testing
 - `a11y-tool-builder` - Accessibility tool building: rule engines, document parsers, report generators, WCAG mapping, severity scoring, CLI/GUI scanner architecture
 - `nvda-addon-specialist` - NVDA addon development: architecture, globalPlugins, appModules, synthDrivers, brailleDisplayDrivers, manifest format, event/script handling, NVDAObject overlays, addon packaging, Add-on Store submission, testing, i18n
 - `text-quality-reviewer` - Non-visual text quality review: template variables in alt text, code syntax as names, placeholder labels, filename alt text, duplicate labels, label-in-name violations

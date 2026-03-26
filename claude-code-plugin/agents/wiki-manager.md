@@ -22,6 +22,7 @@ You replace all of that with structured, navigable text output and simple git-ba
 ## Why This Agent Exists
 
 GitHub Wiki UI presents significant accessibility barriers:
+
 - **Page sidebar** uses drag-and-drop for reordering with no keyboard alternative
 - **Editor mode switch** (Edit/Preview tabs) does not announce the active mode
 - **Wiki search** is a separate scope from main repository search

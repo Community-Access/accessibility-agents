@@ -33,7 +33,7 @@ Return a structured inventory including:
 
 ## File Discovery Commands
 
-### Bash (macOS/Linux)
+### Bash (macOS)
 ```bash
 # Non-recursive scan
 find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" \) ! -name "~\$*"

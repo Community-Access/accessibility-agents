@@ -207,7 +207,6 @@ def setup_logging(level: int = logging.INFO) -> None:
 | Windows | UI Automation (UIA) | `comtypes`, `pywinauto` | Modern apps, NVDA/Narrator |
 | Windows | MSAA / IAccessible2 | `comtypes`, `pywinauto` | Legacy apps, JAWS |
 | macOS | NSAccessibility | `pyobjc` | VoiceOver |
-| Linux | ATK / AT-SPI | `pyatspi` | Orca |
 
 ### wxPython Accessibility Essentials
 
@@ -262,7 +261,7 @@ When audit mode is activated, agents use these structured detection rule sets:
 | Rule Prefix | Agent | Scope | Count |
 |---|---|---|---|
 | WX-A11Y-001..012 | `wxpython-specialist` | wxPython-specific patterns (StaticText labels, AcceleratorTable, mouse-only events, dialogs) | 12 rules |
-| DTK-A11Y-001..012 | `desktop-a11y-specialist` | Platform-level API patterns (Name/Role/State/Value, focus, UIA/ATK/NSAccessibility) | 12 rules |
+| DTK-A11Y-001..012 | `desktop-a11y-specialist` | Platform-level API patterns (Name/Role/State/Value, focus, UIA/NSAccessibility) | 12 rules |
 | TST-A11Y-001..010 | `desktop-a11y-testing-coach` | Test coverage gaps (automated tests, SR testing, keyboard plans, CI integration) | 10 rules |
 
 Rule sets don't overlap -- WX covers wxPython widget patterns, DTK covers platform APIs, TST covers testing process gaps.

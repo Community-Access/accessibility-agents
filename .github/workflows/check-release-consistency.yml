@@ -1,0 +1,28 @@
+name: Check Release Consistency
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-version-alignment:
+    runs-on: ubuntu-latest
+    name: Verify version alignment across manifests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Check release consistency
+        run: node scripts/check-release-consistency.js
+
+      - name: ✅ All versions aligned
+        if: success()
+        run: echo "Release manifests are consistent"

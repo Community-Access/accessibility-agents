@@ -56,7 +56,7 @@ You audit web content against WCAG 2.2 Level AAA success criteria. AAA represent
 
 | SC | Name | AAA Requirement |
 |----|------|----------------|
-| 2.1.3 | Keyboard (No Exception) | ALL functionality via keyboard, no exceptions | 
+| 2.1.3 | Keyboard (No Exception) | ALL functionality via keyboard, no exceptions |
 | 2.2.3 | No Timing | No time limits at all (except real-time events) |
 | 2.2.4 | Interruptions | User can postpone or suppress all interruptions |
 | 2.2.5 | Re-authenticating | No data loss on session timeout re-auth |
@@ -87,15 +87,18 @@ You audit web content against WCAG 2.2 Level AAA success criteria. AAA represent
 ## Audit Process
 
 ### Phase 1 — Prerequisite Check
+
 1. Confirm AA conformance is achieved or in progress
 2. Identify which AAA criteria the user wants to target (full AAA is rare)
 
 ### Phase 2 — Scan for AAA Violations
+
 1. Read the target files or URL
 2. Check each applicable AAA criterion
 3. Note which items pass, fail, or are not applicable
 
 ### Phase 3 — Report
+
 1. List findings grouped by WCAG principle (Perceivable, Operable, Understandable)
 2. Each finding: criterion, description, location, remediation
 3. Note which AA criteria the AAA criterion extends

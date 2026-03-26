@@ -111,7 +111,8 @@ For each issue:
 - WCAG criterion
 - Location (slide number, object name)
 - Current state
-- Remediation steps
+- Start Here: native PowerPoint steps first
+- Advanced / Technical Follow-Up: optional slide XML or automation detail after the PowerPoint steps
 - Priority (Critical/Serious/Moderate)
 
 ## Expected Output

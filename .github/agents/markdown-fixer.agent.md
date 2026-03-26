@@ -86,7 +86,7 @@ For each Mermaid block being replaced:
 
 ```mermaid
 [original diagram content - unchanged]
-```
+```text
 
 </details>
 ```

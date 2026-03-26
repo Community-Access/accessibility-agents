@@ -11,7 +11,7 @@ The primary distribution method. All agents, skills, and configuration are store
 **Install:**
 
 ```bash
-# macOS/Linux
+# macOS
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
 
 # Windows (PowerShell)
@@ -21,7 +21,7 @@ irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main
 **Update:**
 
 ```bash
-# macOS/Linux
+# macOS
 bash update.sh
 
 # Windows
@@ -53,7 +53,7 @@ npm run start:stdio # stdio for Claude Desktop
 ```json
 {
   "mcpServers": {
-    "a11y-agents": {
+    "a11y-agent-team": {
       "command": "node",
       "args": ["<path-to>/mcp-server/stdio.js"]
     }
@@ -61,11 +61,14 @@ npm run start:stdio # stdio for Claude Desktop
 }
 ```
 
-**What's included (16 tools):**
+**What's included (24 tools):**
 
-- Core: `check_contrast`, `get_accessibility_guidelines`, `check_heading_structure`, `check_link_text`, `check_form_labels`, `scan_office_document`, `scan_pdf_document`, `extract_document_metadata`, `batch_scan_documents`
+- Core analysis: `check_contrast`, `get_accessibility_guidelines`, `check_heading_structure`, `check_link_text`, `check_form_labels`, `check_color_blindness`, `check_reading_level`
+- Documents: `scan_office_document`, `scan_pdf_document`, `extract_document_metadata`, `batch_scan_documents`, `fix_document_metadata`, `fix_document_headings`
+- Media and reporting: `validate_caption_file`, `generate_accessibility_statement`
+- Cache helpers: `check_audit_cache`, `update_audit_cache`
 - Playwright (optional): `run_axe_scan`, `run_playwright_a11y_tree`, `run_playwright_keyboard_scan`, `run_playwright_contrast_scan`, `run_playwright_viewport_scan`
-- PDF: `run_verapdf_scan` (requires veraPDF CLI), `convert_pdf_form_to_html` (requires pdf-lib)
+- PDF extras (optional): `run_verapdf_scan` (requires veraPDF CLI), `convert_pdf_form_to_html` (requires pdf-lib)
 
 **What's NOT included:**
 

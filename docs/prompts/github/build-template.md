@@ -55,10 +55,10 @@ Agent: Let's build your fields.
   Field 1 of ? - What's the first field?
   e.g. "OS dropdown", "steps to reproduce textarea", "version input"
 
-You: OS dropdown with options: Windows, macOS, Linux, iOS, Android, Other
+You: OS dropdown with options: Windows, macOS, iOS, Android, Other
 
 Agent:  Field added: OS (dropdown)
-  Options: Windows | macOS | Linux | iOS | Android | Other
+  Options: Windows | macOS | iOS | Android | Other
 
   Next field? (or "done" to finish)
 ```
@@ -82,7 +82,6 @@ body:
       options:
         - Windows
         - macOS
-        - Linux
         - iOS
         - Android
         - Other

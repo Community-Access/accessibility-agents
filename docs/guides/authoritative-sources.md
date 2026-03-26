@@ -112,10 +112,7 @@ All accessibility rules, WCAG criteria, and remediation guidance in the agents p
   - Standard for macOS native app accessibility
   - Screen reader (VoiceOver) integration
 
-- **Linux ATK/AT-SPI** — GNOME / Linux Accessibility
-  - Link: <https://docs.gtk.org/atspi2/>
-  - Assistive Technology Service Provider Interface
-  - Screen reader (Orca) integration
+Current product scope for desktop workflows focuses Windows and macOS implementations.
 
 ### WCAG 2.2 for Desktop
 
@@ -206,11 +203,6 @@ All accessibility rules, WCAG criteria, and remediation guidance in the agents p
   - Built into macOS, iOS, iPadOS
   - For testing on Apple platforms
 
-- **Orca** — GNOME / Linux Accessibility
-  - Link: <https://help.gnome.org/users/orca/>
-  - Free screen reader for Linux
-  - For testing on Linux platforms
-
 ## Source Validation
 
 ### How Sources Are Maintained
@@ -246,7 +238,7 @@ The `verify-sources.yml` GitHub Actions workflow automatically:
 **Run manually:**
 
 ```bash
-scripts/verify-sources.sh  # Bash/Linux
+scripts/verify-sources.sh  # Bash/macOS
 scripts/verify-sources.ps1 # PowerShell/Windows
 ```
 

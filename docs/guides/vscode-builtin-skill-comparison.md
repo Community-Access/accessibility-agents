@@ -46,7 +46,7 @@ VS Code 1.110 introduced a **built-in accessibility skill** to help developers c
 | **Mobile (React Native)** | ❌ No coverage | ✅✅✅ 1 specialist agent (iOS, Android, RN/Expo patterns) |
 | **Design Systems** | ❌ No coverage | ✅✅✅ 1 specialist agent (token contrast validation) |
 | **Cognitive A11y** | ❌ No coverage | ✅✅✅ 1 specialist agent (WCAG 2.2 cognitive SC, COGA) |
-| **Desktop Apps** | ❌ No coverage | ✅✅✅ 2 specialist agents (UIA/MSAA/ATK APIs, screen reader testing) |
+| **Desktop Apps** | ❌ No coverage | ✅✅✅ 2 specialist agents (UIA/MSAA/NSAccessibility APIs, screen reader testing) |
 
 ### 2. WCAG 2.2 Conformance
 

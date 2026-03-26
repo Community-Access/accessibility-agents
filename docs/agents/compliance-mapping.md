@@ -56,12 +56,12 @@
 
 ## Sample Usage
 
-```
+```text
 @compliance-mapping Generate a VPAT 2.5 INT edition from the web audit 
 report in WEB-ACCESSIBILITY-AUDIT.md.
 ```
 
-```
+```text
 @compliance-mapping Map our document audit findings to EN 301 549 for 
 EU procurement compliance.
 ```

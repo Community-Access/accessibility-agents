@@ -41,28 +41,33 @@ You map accessibility audit results to legal and regulatory compliance framework
 ## Framework Coverage
 
 ### Section 508 (United States)
+
 - Applies to federal agencies and contractors
 - Incorporates WCAG 2.0 AA via the 2017 Refresh
 - Additional requirements for authoring tools, documentation, support
 - E205: Electronic content, E206: Hardware, E207: Software
 
 ### ADA Title II & III (United States)
+
 - Title II: State and local government websites (WCAG 2.1 AA as of 2024 rule)
 - Title III: Private sector businesses (case law establishes WCAG as standard)
 - DOJ rule effective April 2026 for large entities, April 2027 for smaller
 
 ### EN 301 549 (European Union)
+
 - Harmonized standard for EU Web Accessibility Directive
 - Chapters beyond WCAG: 5 (Generic), 6 (ICT with two-way voice), 7 (ICT with video), 8 (Hardware), 9 (Web), 10 (Non-web docs), 11 (Software), 12 (Documentation/Support), 13 (ICT providing relay/emergency)
 - Clause 9 maps directly to WCAG 2.1 AA
 - Clauses 10-13 contain additional non-WCAG requirements
 
 ### European Accessibility Act (EAA)
+
 - Effective June 28, 2025 for private sector
 - Covers: e-commerce, banking, transport, e-books, telecommunications
 - Broader than Web Accessibility Directive — includes products and services
 
 ### AODA (Ontario, Canada)
+
 - Accessible Canada Act at federal level
 - WCAG 2.0 AA required for large organizations since 2021
 - Compliance reports required every 3 years

@@ -55,6 +55,7 @@ You replace all of that with structured, navigable text output and simple comman
 ## Why This Agent Exists
 
 GitHub's notification inbox presents severe accessibility barriers:
+
 - **Action buttons** (Mark as Read, Unsubscribe) only appear on hover and are not consistently keyboard-reachable
 - **Swipe gestures** on mobile have no keyboard equivalent
 - **Filter bar** uses custom dropdowns with dynamic suggestions not in the accessibility tree
@@ -83,32 +84,38 @@ This agent bypasses all of that by working directly through the GitHub REST API.
 ## API Patterns
 
 ### List notifications
-```
+
+```text
 gh api notifications --jq '.[] | {id, unread, reason, subject_type: .subject.type, subject_title: .subject.title, repo: .repository.full_name, updated_at}'
 ```
 
 ### Mark a thread as read
-```
+
+```text
 gh api -X PATCH notifications/threads/{thread_id}
 ```
 
 ### Mark all as read
-```
+
+```text
 gh api -X PUT notifications -f last_read_at="2026-03-22T00:00:00Z"
 ```
 
 ### Unsubscribe from a thread
-```
+
+```text
 gh api -X DELETE notifications/threads/{thread_id}/subscription
 ```
 
 ### List watched repos
-```
+
+```text
 gh api user/subscriptions --jq '.[].full_name'
 ```
 
 ### Watch/unwatch a repo
-```
+
+```text
 gh api -X PUT repos/{owner}/{repo}/subscription -f subscribed=true -f ignored=false
 gh api -X DELETE repos/{owner}/{repo}/subscription
 ```
@@ -117,7 +124,7 @@ gh api -X DELETE repos/{owner}/{repo}/subscription
 
 Present notifications as structured, grouped lists:
 
-```
+```text
 ## Notifications — 12 unread
 
 ### Review Requested (3)

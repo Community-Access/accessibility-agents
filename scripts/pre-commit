@@ -1,9 +1,10 @@
 #!/bin/sh
 #
-# Pre-commit hook: validates agent and skill files before allowing commit.
+# Pre-commit hook: validates agent/skill files and staged Markdown before allowing commit.
 #
 # Checks staged .agent.md, SKILL.md, and Claude agent files against the
-# official GitHub Copilot custom-agents configuration schema.
+# official GitHub Copilot custom-agents configuration schema, and runs
+# markdownlint on staged Markdown files across the repository.
 #
 # Install: node scripts/install-hooks.js
 #          — or —  copy this file to .git/hooks/pre-commit
@@ -12,35 +13,72 @@
 
 # Find staged agent/skill files
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(agent\.md|md)$' | grep -E '(\.github/agents/|\.github/skills/|\.claude/agents/|claude-code-plugin/agents/)' || true)
+STAGED_MARKDOWN=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.md$' | grep -Ev '(^|/)(node_modules|\.git|\.history|\.claude|\.gemini)(/|$)' || true)
 
-if [ -z "$STAGED_FILES" ]; then
-  # No agent/skill files staged — nothing to validate
+if [ -z "$STAGED_FILES" ] && [ -z "$STAGED_MARKDOWN" ]; then
+  # No relevant files staged — nothing to validate
   exit 0
 fi
 
 echo ""
 echo "============================================================"
-echo "  Pre-commit: Validating agent and skill files..."
+echo "  Pre-commit: Validating staged repository content..."
 echo "============================================================"
 echo ""
 
-# Run validator on only the staged files (--strict treats warnings as errors)
-node scripts/validate-agents.js --strict --files $STAGED_FILES
-RESULT=$?
+if [ -n "$STAGED_FILES" ]; then
+  echo "  Validating agent and skill files..."
 
-if [ $RESULT -ne 0 ]; then
+  # Run validator on only the staged files (--strict treats warnings as errors)
+  node scripts/validate-agents.js --strict --files $STAGED_FILES
+  RESULT=$?
+
+  if [ $RESULT -ne 0 ]; then
+    echo ""
+    echo "============================================================"
+    echo "  COMMIT BLOCKED: Fix the agent/skill errors above before committing."
+    echo ""
+    echo "  To bypass (not recommended): git commit --no-verify"
+    echo "  To run validator manually:   node scripts/validate-agents.js"
+    echo "============================================================"
+    echo ""
+    exit 1
+  fi
+fi
+
+if [ -n "$STAGED_MARKDOWN" ]; then
   echo ""
-  echo "============================================================"
-  echo "  COMMIT BLOCKED: Fix the errors above before committing."
-  echo ""
-  echo "  To bypass (not recommended): git commit --no-verify"
-  echo "  To run validator manually:   node scripts/validate-agents.js"
-  echo "============================================================"
-  echo ""
-  exit 1
+  echo "  Linting staged Markdown files..."
+
+  if ! command -v npx >/dev/null 2>&1; then
+    echo ""
+    echo "============================================================"
+    echo "  COMMIT BLOCKED: npx is required to validate staged Markdown files."
+    echo ""
+    echo "  Install Node.js and npm, then retry the commit."
+    echo "  To bypass (not recommended): git commit --no-verify"
+    echo "============================================================"
+    echo ""
+    exit 1
+  fi
+
+  npx -y markdownlint-cli2 $STAGED_MARKDOWN
+  RESULT=$?
+
+  if [ $RESULT -ne 0 ]; then
+    echo ""
+    echo "============================================================"
+    echo "  COMMIT BLOCKED: Fix the Markdown issues above before committing."
+    echo ""
+    echo "  To bypass (not recommended): git commit --no-verify"
+    echo "  To run manually:             npx -y markdownlint-cli2 <files>"
+    echo "============================================================"
+    echo ""
+    exit 1
+  fi
 fi
 
 echo ""
-echo "  Agent validation passed — proceeding with commit."
-echo ""
+echo "  Validation passed — proceeding with commit."
+  echo ""
 exit 0

@@ -38,16 +38,19 @@ You detect accessibility regressions — issues that were previously fixed but h
 ## Detection Modes
 
 ### 1. Audit Report Comparison
+
 - Compare two `WEB-ACCESSIBILITY-AUDIT.md` or similar reports
 - Classify each issue as: New | Persistent | Fixed | Regressed
 - Calculate score delta and trend direction
 
 ### 2. Git History Analysis
+
 - Check specific files changed between commits/branches
 - Scan changed files for accessibility anti-patterns
 - Compare issue counts before and after changes
 
 ### 3. Baseline Management
+
 - Establish a baseline audit at a known-good state
 - Store baseline in `.a11y-baseline.json`
 - Flag any deviation from baseline as potential regression
@@ -74,6 +77,7 @@ You detect accessibility regressions — issues that were previously fixed but h
    - Account for element relocation (fuzzy matching on selector + rule)
 
 3. **Generate regression report:**
+
    ```markdown
    ## Accessibility Regression Report
 

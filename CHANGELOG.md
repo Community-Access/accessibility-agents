@@ -5,9 +5,76 @@ All notable changes to the Accessibility Agents project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.5.0] - 2026-03-26
+
+### Changed
+
+#### Document Accessibility Reporting And Remediation Guidance
+
+- Reworked document accessibility reporting so Word, Excel, PowerPoint, and PDF outputs now start with native-tool remediation guidance before deeper technical implementation detail.
+- Updated the guided document audit orchestration across Copilot, Claude Code, and Claude Code plugin so reports consistently prioritize platform-native fixes using Microsoft Office and Adobe Acrobat Pro workflows.
+- Updated document specialist agents for Word, Excel, PowerPoint, and PDF so each report now distinguishes:
+  - fundamental fixes using native product UI
+  - deeper technical or programmatic remediation follow-up
+- Updated document CSV/reporting surfaces so exported remediation guidance follows the same native-tool-first ordering.
+- Updated document prompt flows so generated guidance and reports lead with practical remediation in the target authoring tool rather than starting with low-level implementation detail.
+
+#### Installer, Updater, and Uninstaller Experience
+
+- Expanded installer behavior to support VS Code Stable and VS Code Insiders side-by-side, including explicit targeting for one profile, the other profile, or both.
+- Added matching profile-targeting behavior for MCP configuration paths so Copilot assets and MCP settings stay aligned across VS Code profile selection.
+- Added `--yes` / `-Yes` and `--no-auto-update` / `-NoAutoUpdate` for non-interactive and CI-friendly install flows.
+- Added machine-readable summary output for install, update, and uninstall flows, with predictable per-operation summary/plan locations for project and global scope.
+- Added shared installer helper modules for shell and PowerShell to reduce drift across install, update, and uninstall logic.
+- Added `check` mode and backup metadata generation across installer operations so scripts can resolve targets and emit rollback-planning metadata without making changes.
+- Normalized summary and plan JSON output to include `schemaVersion`, `timestampUtc`, `operation`, `dryRun`, `check`, `requestedOptions`, and `backupMetadataPath`.
+- PowerShell install and update now accept both `-SummaryPath` and `--summary` for summary output.
+- PowerShell uninstall now accepts `-SummaryPath`, `--summary <path>`, and `--summary=...`, including compatibility handling for absolute Windows paths that PowerShell splits across `$args`.
+
+#### CI, Safety, And Validation
+
+- Added macOS system Bash coverage using `/bin/bash` to lock in compatibility with the Bash 3.2 runtime shipped by macOS.
+- Added a macOS shell integration-style workflow path that runs project install, check, update-check, uninstall-check, and uninstall in a disposable temp directory.
+- Expanded Windows PowerShell integration checks to assert both summary files and referenced backup metadata files for install, update, and uninstall across project and global scopes.
+- Dry-run CI now validates `check` / `dryRun` consistency in both top-level summaries and backup metadata files.
+- Added safer temp-root validation patterns for PowerShell project and global flows by redirecting `USERPROFILE`, `APPDATA`, and `LOCALAPPDATA` during testing.
+
+#### MCP Installation Performance
+
+- Added a dedicated PowerShell directory-copy helper for bulk installer copies.
+- Limited `robocopy` usage to the MCP server recursive copy path only, with fallback to `Copy-Item` when `robocopy` is unavailable.
+- Excluded top-level `.git` and `node_modules` directories from MCP tree copies to avoid unnecessary payload growth.
+- Benchmarked the MCP copy path before introducing copy-engine changes, keeping the optimization narrowly scoped to the only materially expensive recursive copy in the installer flow.
+
+#### Documentation
+
+- Expanded installer and setup documentation to cover new non-interactive flags, summary/plan files, backup metadata, safe validation patterns, and VS Code profile targeting behavior.
+- Updated uninstall documentation to reflect the supported PowerShell summary-path syntax and the safest form for absolute Windows paths.
+- Updated release documentation to include the broader installer/refactor/validation work completed in this cycle.
+- Refreshed active VS Code guidance to reflect 1.113 changes that matter to this repo, including MCP bridging into Copilot CLI and Claude agents, the Chat Customizations editor, nested subagents, broader Agent Debug Log coverage, and integrated-browser HTTPS testing guidance.
+- Updated broader user-facing documentation so README and marketplace messaging now call out VS Code 1.113 explicitly as the current GitHub Copilot baseline for this repo.
+- Refreshed additional setup and specialist guidance to align 1.112-era image-analysis, integrated-browser, and troubleshooting references with the current 1.113 workflow.
+
+#### Agent Orchestration
+
+- Added explicit subagent allowlisting to `Accessibility Lead` so 1.113-era delegation stays constrained to the intended specialist set.
+- Documented the repo's 1.113 subagent stance more clearly: explicit coordinator-worker delegation is preferred, while nested subagents remain disabled by default unless a workflow is intentionally designed for recursion.
+
+### Fixed
+
+- Fixed document accessibility feedback ordering so native remediation guidance appears first instead of being buried behind technical detail.
+- Fixed reporting consistency across document wizard, document CSV reporter, and the Word/Excel/PowerPoint/PDF specialist agents and prompts.
+- Fixed VS Code profile handling so Copilot and MCP-related installation flows can target Stable and Insiders predictably when both are present.
+- Fixed PowerShell operation-state initialization failures introduced during the installer refactor.
+- Fixed PowerShell boolean argument passing for backup metadata initialization in install, update, and uninstall.
+- Fixed PowerShell uninstall summary override behavior where `--summary=C:\path\file.json` could be truncated to the drive letter.
+- Fixed docs that overstated macOS shell requirements; installer guidance now reflects Bash 3.2 compatibility on macOS.
+- Aligned installer and uninstall documentation with the actual supported summary-path syntax and machine-readable output behavior.
+- Fixed CI coverage gaps so helper-module changes and shell/runtime-specific installer regressions are now part of automated validation.
+
 ## [4.10.0] - 2026-03-24
 
-### Added
+### CLI And Modernization Additions
 
 #### Enhanced Agent Validator (`scripts/validate-agents.js`)
 
@@ -220,7 +287,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Desktop Extension** - Previous `desktop-extension/` folder and `.vscode/mcp.json` replaced by `mcp-server/`
 
-### Added
+### GitHub Copilot CLI Additions
 
 #### GitHub Copilot CLI Support
 
@@ -305,7 +372,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Autopilot, Bypass Approvals, Default modes
   - Recommendations for read-only vs. fix-applying workflows
 
-### Changed
+#### Additional VS Code 1.112 Updates
 
 - Updated `insiders-a11y-tracker` agents (Copilot + Claude Code) with VS Code 1.112 features section
 - Added VS Code 1.112 features overview to CLAUDE.md, .github/copilot-instructions.md, and GEMINI.md
@@ -466,7 +533,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `.github/hooks/scripts/` - 5 Python hook scripts (session-start, detect-web-project, enforce-edit-gate, mark-reviewed, session-end)
   - `.github/hooks/hooks-consolidated.json` - VS Code hook configuration (6 events)
   - `.claude/hooks/hooks-consolidated.json` - Claude Code hook configuration with matchers
-  - Hook scripts work identically on Windows, macOS, Linux (Python 3.8+)
+  - Hook scripts work identically on Windows and macOS (Python 3.8+)
 
 - **Hook Capabilities**
   - Session Start: Platform detection, context injection, welcome message
@@ -619,7 +686,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Community-Access/accessibility-agents/compare/v4.0.0...HEAD
 [4.0.0]: https://github.com/Community-Access/accessibility-agents/compare/v3.2.0...v4.0.0
 [3.2.0]: https://github.com/Community-Access/accessibility-agents/compare/v3.0.0...v3.2.0
 [3.0.0]: https://github.com/Community-Access/accessibility-agents/compare/v2.5...v3.0.0

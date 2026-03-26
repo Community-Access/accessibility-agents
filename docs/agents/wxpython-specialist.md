@@ -1,6 +1,6 @@
 # wxpython-specialist - wxPython GUI Expert
 
-> wxPython GUI expert -- sizer layouts, event handling, AUI framework, custom controls, threading (wx.CallAfter/wx.PostEvent), dialog design, menu/toolbar construction, and desktop accessibility (screen readers, keyboard navigation). Covers cross-platform gotchas for Windows, macOS, and Linux.
+> wxPython GUI expert -- sizer layouts, event handling, AUI framework, custom controls, threading (wx.CallAfter/wx.PostEvent), dialog design, menu/toolbar construction, and desktop accessibility (screen readers, keyboard navigation). Covers cross-platform gotchas for Windows and macOS.
 
 ## When to Use It
 

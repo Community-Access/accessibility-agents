@@ -109,7 +109,6 @@ body:
         - macOS Sequoia (15)
         - macOS Sonoma (14)
         - macOS Ventura (13)
-        - Ubuntu / Linux
         - iOS
         - Android
         - Other

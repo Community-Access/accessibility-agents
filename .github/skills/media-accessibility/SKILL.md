@@ -27,7 +27,7 @@ Reference data for video, audio, and streaming media accessibility. Used by `med
 
 ### WebVTT (Web Video Text Tracks)
 
-```
+```text
 WEBVTT
 
 00:00:01.000 --> 00:00:04.000
@@ -41,6 +41,7 @@ Today we'll cover caption best practices.
 ```
 
 **Key rules:**
+
 - File must start with `WEBVTT` header
 - Timestamps: `HH:MM:SS.mmm --> HH:MM:SS.mmm`
 - Speaker identification: `<v Speaker Name>Text`
@@ -50,7 +51,7 @@ Today we'll cover caption best practices.
 
 ### SRT (SubRip Text)
 
-```
+```text
 1
 00:00:01,000 --> 00:00:04,000
 Welcome to the accessibility course.
@@ -61,6 +62,7 @@ Today we'll cover caption best practices.
 ```
 
 **Key rules:**
+
 - Sequential numbering starting at 1
 - Timestamps use comma for milliseconds (not period)
 - Blank line between entries
@@ -91,12 +93,14 @@ Today we'll cover caption best practices.
 Audio description narrates visual information during pauses in dialogue.
 
 **Requirements:**
+
 - Describe: actions, scene changes, on-screen text, facial expressions relevant to plot
 - Don't describe: obvious audio cues, subjective interpretations
 - Timing: fit into natural pauses; for extended descriptions (1.2.7), video pauses automatically
 - Voice: distinct from program audio, clear and neutral
 
 **HTML implementation:**
+
 ```html
 <video controls>
   <source src="video.mp4" type="video/mp4">
@@ -110,6 +114,7 @@ Audio description narrates visual information during pauses in dialogue.
 ### Minimum Controls
 
 Every media player must have keyboard-accessible controls for:
+
 - Play/Pause (`role="button"`, `aria-label="Play"` / `aria-label="Pause"`)
 - Volume (`role="slider"`, `aria-label="Volume"`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`)
 - Seek/Progress (`role="slider"`, `aria-label="Seek"`, `aria-valuetext="2 minutes 30 seconds"`)

@@ -38,7 +38,7 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurs
   Where-Object { $_.FullName -notmatch '(?:[\\/])(?:\.git|node_modules|__pycache__|\.vscode)(?:[\\/])' }
 ```
 
-### macOS/Linux (Bash)
+### macOS (Bash)
 
 ```bash
 # Non-recursive scan

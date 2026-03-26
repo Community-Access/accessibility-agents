@@ -43,11 +43,10 @@ Decision frameworks for accessibility testing — when to use automated tools vs
 |--------------|---------|-----|
 | Narrator | Edge | Windows |
 | JAWS | Edge | Windows |
-| Orca | Firefox | Linux |
 
 ## Testing Decision Tree
 
-```
+```text
 Is it a new component or page?
 ├── Yes → Full test coverage (automated + manual)
 │   ├── Run axe-core / Lighthouse scan
@@ -81,7 +80,7 @@ Is it a new component or page?
 
 ### For User Stories
 
-```
+```text
 Given [context],
 When [action by keyboard/mouse/screen reader],
 Then [accessible outcome]:

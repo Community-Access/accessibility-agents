@@ -102,7 +102,7 @@ Find Mermaid diagrams:
 ```mermaid
 graph TD
   A --> B
-```
+```text
 ````
 
 Find ASCII diagrams (boxes, arrows)

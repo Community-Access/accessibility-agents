@@ -31,7 +31,7 @@ handoffs:
     send: true
   - label: Desktop A11y APIs
     agent: desktop-a11y-specialist
-    prompt: The user needs platform accessibility API expertise -- UI Automation, MSAA, ATK/AT-SPI, NSAccessibility, screen reader Name/Role/Value/State, focus management, or custom widget accessibility.
+    prompt: The user needs platform accessibility API expertise -- UI Automation, MSAA, NSAccessibility, screen reader Name/Role/Value/State, focus management, or custom widget accessibility.
     send: true
   - label: Desktop A11y Testing
     agent: desktop-a11y-testing-coach
@@ -153,7 +153,7 @@ If the developer's message already contains an intent (e.g., "fix this crash"), 
 | "deploy", "CI", "GitHub Actions", "release" | CI/CD | Configure pipelines and release workflows |
 | "type hints", "mypy", "pyright", "types" | Type checking | Route to `@python-specialist` |
 | "async", "threading", "concurrent", "multiprocessing" | Concurrency | Route to `@python-specialist` |
-| "screen reader", "UIA", "MSAA", "ATK", "NSAccessibility" | Desktop a11y | Route to `@desktop-a11y-specialist` |
+| "screen reader", "UIA", "MSAA", "NSAccessibility" | Desktop a11y | Route to `@desktop-a11y-specialist` |
 | "custom skill", "create skill", "extend agents", "custom rule" | Agent extensibility | Guide to custom skills workflow |
 | "NVDA", "JAWS", "Narrator", "VoiceOver", "Accessibility Insights" | A11y testing | Route to `@desktop-a11y-testing-coach` |
 | "NVDA addon", "globalPlugin", "appModule", "synthDriver", "brailleDisplayDriver" | NVDA addon dev | Route to `@nvda-addon-specialist` |

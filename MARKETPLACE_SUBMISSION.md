@@ -10,6 +10,8 @@
 
 Accessibility Agents is a VS Code plugin bundling **80 specialized agents**, **25 reusable skills**, **134 custom prompts**, and **9 workspace instructions** for WCAG 2.2 AA compliance auditing across web, document, and developer accessibility domains.
 
+For current marketplace messaging, reference **VS Code 1.113** explicitly rather than 1.112. The most relevant platform features for this plugin are the Chat Customizations editor, MCP bridging across local/Copilot CLI/Claude agents, broader Agent Debug Log coverage, and integrated-browser improvements for testing.
+
 **Key Stats:**
 
 - ✅ 170+ files across 3 platforms (Copilot, Claude Code, Gemini)
@@ -178,12 +180,12 @@ git push origin main
 Available in VS Code Extensions marketplace or via script installation:
 
 ```bash
-# macOS / Linux
+# macOS
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
 
 # Windows (PowerShell)
 irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
-```
+```text
 
 ### Key Features
 
@@ -265,12 +267,12 @@ All agents cite authoritative sources (W3C WCAG, ARIA, vendor documentation) and
 ## Installation
 
 ```bash
-# macOS / Linux
+# macOS
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
 
 # Windows (PowerShell)
 irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
-```
+```text
 
 Or install from VS Code Extensions marketplace (coming soon #370).
 
@@ -400,32 +402,34 @@ Then create release notes on GitHub:
 - ✅ **9 Instructions** — 2 new always-on instructions (CSS accessibility, testing accessibility, document generation)
 - ✅ **24 MCP Tools** — 4 new tools for document metadata, headings, and audit caching
 - ✅ **Copilot CLI Support** — `--cli` installer flag for global agent access
-- ✅ **VS Code 1.112 Features** — Monorepo discovery, agent debugging, image analysis, integrated browser testing
+- ✅ **VS Code 1.113 Features** — Chat Customizations editor, MCP bridging into Copilot CLI and Claude agents, broader agent-debug coverage, image analysis, and integrated browser testing
 - ✅ **CI Hardening** — All GitHub Actions bumped to latest major versions
 
 ## Installation
 
 ### VS Code Extensions Marketplace
-1. Press `Ctrl+Shift+X` (Windows/Linux) or `Cmd+Shift+X` (Mac)
+1. Press `Ctrl+Shift+X` (Windows) or `Cmd+Shift+X` (Mac)
 2. Search "accessibility-agents"
 3. Click "Install"
 
 ### Script Installation (Alternative)
-**macOS / Linux**
+**macOS**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
-```
+```text
 
 **Windows (PowerShell)**
+
 ```powershell
 irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
-```
+```text
 
 ## Key Improvements in v4.0.0
 
 - **21 new agents** across web, document, CI/CD, developer tools, and GitHub workflow teams
 - **Copilot CLI compatibility** — All agent tool names normalized for CLI-compatible use
 - **AgentRC modernization** — AGENTS.md, dependabot.yml, validate-agents.js, CI validation workflow
+- **VS Code 1.113 readiness** — Chat Customizations editor guidance, MCP parity across agent types, and updated debugging guidance
 - **Playwright + WCAG 2.2 enhancements** — Modern scanning patterns, violation fingerprinting, WCAG 2.2 tag support
 - **Server-based MCP server** — HTTP/SSE transport replaces stdio-only desktop extension, 52-test suite
 - **Comprehensive User Guide** — 2,700-line guide covering all 80 agents, 25 skills, 134 prompts
@@ -472,7 +476,7 @@ Check periodically:
 # Validate YAML syntax
 $yaml = Get-Content plugin.yaml -Raw
 [yaml]::ConvertFromYaml($yaml)  # Should return object with no errors
-```
+```text
 
 Or use an online validator: <https://www.yamllint.com/>
 
@@ -505,7 +509,7 @@ Or use an online validator: <https://www.yamllint.com/>
 # Verify file location
 ls -Path plugin.yaml
 # Should output: plugin.yaml (3 KB) in root directory, not in subdirectory
-```
+```text
 
 ---
 

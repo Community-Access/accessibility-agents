@@ -12,7 +12,7 @@
 
 **Cause:** Python not installed or not in PATH
 
-**Solution (macOS / Linux):**
+**Solution (macOS):**
 
 ```bash
 # Check if Python is installed
@@ -48,12 +48,12 @@ winget install Python.Python.3.11
 
 **Symptoms:**
 
-- macOS/Linux: "Permission denied: '.github/hooks/scripts/session-start.py'"
+- macOS: "Permission denied: '.github/hooks/scripts/session-start.py'"
 - Hook fails to execute
 
 **Cause:** Hook scripts not marked as executable
 
-**Solution (macOS / Linux):**
+**Solution (macOS):**
 
 ```bash
 chmod +x .github/hooks/scripts/*.py
@@ -178,7 +178,7 @@ echo ".github/.a11y-reviewed" >> .gitignore
 **Symptoms:**
 
 - Windows: Hook fails with "No such file or directory"
-- macOS/Linux: Hook can't find scripts
+- macOS: Hook can't find scripts
 
 **Cause:** Forward slash vs backslash path separators
 

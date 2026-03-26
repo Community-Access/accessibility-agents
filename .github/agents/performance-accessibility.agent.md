@@ -40,6 +40,7 @@ You audit the intersection of web performance optimization and accessibility. Pe
 ## Core Audit Areas
 
 ### 1. Lazy Loading
+
 - Images: `loading="lazy"` must preserve `alt` text
 - `<img>` placeholder should be appropriately sized to prevent CLS
 - Lazy-loaded content must be announced to screen readers when it arrives
@@ -47,6 +48,7 @@ You audit the intersection of web performance optimization and accessibility. Pe
 - Off-screen content: ensure it's still accessible when focused via keyboard
 
 ### 2. Skeleton Screens
+
 - Skeleton elements should have `aria-hidden="true"` (decorative placeholders)
 - OR use `aria-busy="true"` on the container being loaded
 - When content loads, `aria-busy="false"` and live region announces completion
@@ -66,6 +68,7 @@ You audit the intersection of web performance optimization and accessibility. Pe
 ```
 
 ### 3. Cumulative Layout Shift (CLS)
+
 - CLS displaces content that screen magnifier users are reading
 - Reserve space for async content (images, ads, embeds)
 - Use `aspect-ratio` or explicit `width`/`height` on media
@@ -73,6 +76,7 @@ You audit the intersection of web performance optimization and accessibility. Pe
 - Avoid inserting content that pushes down existing focused elements
 
 ### 4. Code Splitting & Route-Based Loading
+
 - Route transitions must announce the new page/section
 - Loading indicators must be perceivable (live region or focus management)
 - Error states for failed chunk loads must be announced
@@ -86,18 +90,21 @@ You audit the intersection of web performance optimization and accessibility. Pe
 ```
 
 ### 5. Progressive Enhancement
+
 - Core content and functionality must work without JavaScript
 - Enhanced features should degrade gracefully
 - Server-side rendering (SSR) provides accessible initial state
 - Client hydration must not break existing accessibility tree
 
 ### 6. Animation & Motion Performance
+
 - `prefers-reduced-motion` must disable or reduce animations
 - CSS animations preferred over JS animations (better perf + a11y)
 - `will-change` property should not affect element visibility
 - Parallax scrolling must be disableable and not cause vestibular issues
 
 ### 7. Resource Loading Priorities
+
 - Critical accessibility resources (skip links, focus styles) must load first
 - Font loading: use `font-display: swap` — avoid invisible text (FOIT)
 - Above-the-fold content should be immediately accessible
@@ -117,7 +124,7 @@ You audit the intersection of web performance optimization and accessibility. Pe
 
 ## Output Format
 
-```
+```text
 ## Performance-Accessibility Audit
 
 **Application:** [name/URL]

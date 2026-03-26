@@ -58,7 +58,7 @@
 
 ## Sample Usage
 
-```
+```text
 @pdf-remediator Fix the accessibility issues in report.pdf — set the title, 
 add language, and guide me through fixing the table structure.
 ```

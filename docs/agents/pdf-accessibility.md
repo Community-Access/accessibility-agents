@@ -75,6 +75,19 @@
 
 **Via document-accessibility-wizard:** For bulk PDF audits or mixed-format collections, the wizard handles PDF scanning alongside Office document scanning.
 
+## Requirements
+
+PDF scanning does not work from the agent file alone. The actual scan is executed by the MCP server in `mcp-server/`.
+
+| Setup | PDF scanning works? | Notes |
+|-------|---------------------|-------|
+| Prompt files only | No | Prompt text does not provide scanning tools |
+| Agent file only | No | The agent describes the workflow but does not execute scans by itself |
+| Agent file + MCP server | Yes | Baseline `scan_pdf_document` scan |
+| Agent file + MCP server + veraPDF | Yes | Baseline scan plus deeper PDF/UA validation |
+
+For the shortest working setup, see [../../mcp-server/PDF-QUICKSTART.md](../../mcp-server/PDF-QUICKSTART.md).
+
 ## Step-by-Step: What a Scan Session Looks Like
 
 **You say:**
@@ -86,6 +99,8 @@
 **What the agent does:**
 
 1. **Reads the PDF** using the `scan_pdf_document` MCP tool, which parses the PDF's structure tree, metadata dictionary, content streams, and form definitions.
+
+   If the MCP server is not configured, the agent can still explain PDF accessibility requirements, but it cannot execute the scan.
 
 2. **Runs all applicable rules from the three layers.** The order matters:
    - PDFQ rules run first (pipeline quality - is this a scanned image PDF? Is it encrypted in a way that blocks AT?)
@@ -135,6 +150,15 @@ PDFQ.SCAN.001 triggers when a PDF consists primarily of scanned images with no s
 
 PDF remediation is more involved than Office document remediation because PDFs are a presentation format, not an authoring format. The best practice is to fix accessibility issues in the source document (Word, InDesign, PowerPoint) and re-export. Retrofitting a complex PDF in Acrobat Pro is time-consuming and error-prone. Use pdf-accessibility to identify issues; use the source document agents to fix them at the root.
 
+### veraPDF As A Second Pass
+
+The built-in `scan_pdf_document` tool is the baseline scanner. If you need deeper PDF/UA validation, add veraPDF and run `run_verapdf_scan` through the MCP server.
+
+- Baseline scan: fast, no external dependency
+- veraPDF scan: slower, deeper, requires Java and the `verapdf` CLI
+
+veraPDF is optional. It should be presented as deeper validation, not as a prerequisite for basic PDF scanning.
+
 ## Connections
 
 | Connect to | When |
@@ -143,3 +167,4 @@ PDF remediation is more involved than Office document remediation because PDFs a
 | [pdf-scan-config](pdf-scan-config.md) | To configure rule layers - e.g., run PDFUA only (skip PDFBP best practices) for a procurement baseline |
 | [word-accessibility](word-accessibility.md) | When the PDF was generated from Word - fix issues at the source before re-exporting |
 | [powerpoint-accessibility](powerpoint-accessibility.md) | When the PDF was generated from PowerPoint - same source-first remediation approach |
+| [../../mcp-server/PDF-QUICKSTART.md](../../mcp-server/PDF-QUICKSTART.md) | For the shortest local setup that actually enables scanning |

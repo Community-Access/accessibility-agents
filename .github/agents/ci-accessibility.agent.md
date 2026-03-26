@@ -65,6 +65,7 @@ You are a CI/CD accessibility specialist. You help teams set up, maintain, and t
 ## Phase 2 — Configure Pipeline
 
 Ask the user about:
+
 1. **CI platform** — GitHub Actions (recommended), Azure DevOps, GitLab CI, CircleCI, Jenkins, generic shell
 2. **Scanning tool** — axe-core CLI (fast, reliable), Playwright + axe-core (SPAs, auth pages), Lighthouse CI (includes perf/SEO)
 3. **Gating strategy:**
@@ -82,6 +83,7 @@ Ask the user about:
 ## Phase 3 — Generate Configuration
 
 Generate the appropriate CI config with:
+
 - axe-core scan targeting WCAG 2.2 AA tags (`wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa`)
 - HTML file discovery from PR changed files
 - Baseline comparison when baseline file exists

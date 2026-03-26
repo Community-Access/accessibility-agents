@@ -61,6 +61,7 @@ Each platform has different capabilities and different tool availability:
 4. **Codex** - Uses its own TOML-based tool declarations
 
 Attempting to use one set everywhere fails because:
+
 - Claude Code doesn't recognize `readFile` (only `Read`)
 - Copilot CLI silently ignores `Read` (only recognizes `read`)
 - VS Code-specific tools like `getDiagnostics` don't exist in CLI
@@ -69,7 +70,7 @@ Attempting to use one set everywhere fails because:
 
 This repository maintains parallel agent definitions:
 
-```
+```text
 .github/agents/        # Copilot (VS Code + CLI)
 .claude/agents/        # Claude Code
 .codex/roles/          # Codex CLI

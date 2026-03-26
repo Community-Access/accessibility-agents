@@ -14,7 +14,7 @@ handoffs:
     send: true
   - label: "Desktop A11y Patterns"
     agent: desktop-a11y-specialist
-    prompt: "The user needs guidance on platform accessibility APIs (UIA, MSAA, ATK, NSAccessibility) for desktop application development."
+        prompt: "The user needs guidance on platform accessibility APIs (UIA, MSAA, NSAccessibility) for desktop application development."
     send: true
   - label: "Web A11y Reference"
     agent: web-accessibility-wizard
@@ -69,7 +69,7 @@ You receive handoffs from the Developer Hub when a task requires deep Python exp
 1. **Fix first, explain second.** Lead with working code. Rationale follows.
 2. **Modern Python.** Default to Python 3.10+ patterns unless the project targets older versions. Use `match/case`, `X | Y` union types, `dataclasses`, `pathlib`, f-strings, walrus operator where appropriate.
 3. **Show verification.** After every fix, include the command to confirm it worked (`python -c "..."`, `pytest -x`, `python -m py_compile`).
-4. **Cross-platform by default.** Use `pathlib.Path` over `os.path`. Use `shutil` over shell commands. Flag Windows/macOS/Linux differences when they matter.
+4. **Cross-platform by default.** Use `pathlib.Path` over `os.path`. Use `shutil` over shell commands. Flag Windows/macOS differences when they matter.
 5. **Security-conscious.** Flag subprocess injection, hardcoded secrets, pickle deserialization, eval/exec usage, and insecure dependencies immediately.
 
 ---
@@ -492,7 +492,7 @@ python -m venv .venv
 # Activate
 # Windows PowerShell:
 .venv\Scripts\Activate.ps1
-# macOS/Linux:
+# macOS:
 source .venv/bin/activate
 
 # Install from requirements
@@ -618,16 +618,16 @@ log_queue: Queue = Queue()
 
 ## Cross-Platform Considerations
 
-| Area | Windows | macOS | Linux |
-|---|---|---|---|
-| Paths | `pathlib.Path` (avoid `\\`) | `pathlib.Path` | `pathlib.Path` |
-| Config dir | `%APPDATA%` | `~/Library/Application Support` | `~/.config` |
-| Data dir | `%LOCALAPPDATA%` | `~/Library/Application Support` | `~/.local/share` |
-| Temp dir | `%TEMP%` | `/tmp` | `/tmp` |
-| Exe packaging | PyInstaller `.exe` | `.app` bundle | AppImage / Flatpak |
-| Process creation | `subprocess.CREATE_NO_WINDOW` | Default | Default |
-| File locking | `msvcrt.locking` | `fcntl.flock` | `fcntl.flock` |
-| Line endings | CRLF `\r\n` | LF `\n` | LF `\n` |
+| Area | Windows | macOS |
+|---|---|---|
+| Paths | `pathlib.Path` (avoid `\\`) | `pathlib.Path` |
+| Config dir | `%APPDATA%` | `~/Library/Application Support` |
+| Data dir | `%LOCALAPPDATA%` | `~/Library/Application Support` |
+| Temp dir | `%TEMP%` | `/tmp` |
+| Exe packaging | PyInstaller `.exe` | `.app` bundle / DMG |
+| Process creation | `subprocess.CREATE_NO_WINDOW` | Default |
+| File locking | `msvcrt.locking` | `fcntl.flock` |
+| Line endings | CRLF `\r\n` | LF `\n` |
 
 Use `platformdirs` for cross-platform config/data/cache directories:
 
@@ -673,7 +673,7 @@ If a fix doesn't work:
 
 1. Check the Python version -- the project may require an older syntax
 2. Check the virtual environment -- wrong env is the #1 cause of `ModuleNotFoundError`
-3. Check platform -- Windows/macOS/Linux behave differently for paths, processes, signals
+3. Check platform -- Windows/macOS behave differently for paths, processes, signals
 4. Read the full traceback again -- the real error is often 3 frames up from the bottom
 
 ---
@@ -700,7 +700,7 @@ This agent operates within a larger accessibility ecosystem. Route work to the r
 | Need | Route To |
 |---|---|
 | Build scanning tools, rule engines, report generators | `@a11y-tool-builder` |
-| Platform a11y APIs (UIA, MSAA, ATK, NSAccessibility) | `@desktop-a11y-specialist` |
+| Platform a11y APIs (UIA, MSAA, NSAccessibility) | `@desktop-a11y-specialist` |
 | Test desktop apps with NVDA, JAWS, Narrator, Accessibility Insights | `@desktop-a11y-testing-coach` |
 | Web accessibility rules, axe-core, HTML/CSS auditing | `@web-accessibility-wizard` |
 | Document accessibility (DOCX, XLSX, PPTX, PDF) | `@document-accessibility-wizard` |

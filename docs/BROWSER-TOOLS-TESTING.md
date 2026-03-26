@@ -8,7 +8,7 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 
 **Scope:**
 
-- Test on Windows, macOS, Linux
+- Test on Windows and macOS
 - Test with VS Code 1.110+
 - Test browser tool availability (enabled/disabled)
 - Test all 5 usage patterns (fix verification, visual verification, interaction testing, failure handling, graceful degradation)
@@ -33,7 +33,7 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 
 **Optional:**
 
-- Multiple OSes for cross-platform testing (Windows, macOS, Linux)
+- Multiple machines for Windows and macOS testing
 - Different frameworks (React, Vue, vanilla HTML)
 
 ### 2.2 VS Code Configuration
@@ -41,7 +41,7 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 **Option A: Enable browser tools globally**
 
 ```json
-// File: ~/.config/Code/user/settings.json (macOS/Linux)
+// File: ~/Library/Application Support/Code/User/settings.json (macOS)
 // or: %APPDATA%\Code\User\settings.json (Windows)
 {
   "workbench.browser.enableChatTools": true
@@ -684,13 +684,13 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 - ✓ Screenshot capture < 2 seconds
 - ✓ Full 5-fix cycle completes within 30 seconds total
 - ✓ No hangs or timeouts
-- ✓ Performance is consistent across OSes
+- ✓ Performance is consistent across supported OSes
 
 ---
 
 ## 14. OS-Specific Testing
 
-**Goal:** Verify browser tools work on Windows, macOS, and Linux.
+**Goal:** Verify browser tools work on Windows and macOS.
 
 ### Windows Testing
 
@@ -712,19 +712,9 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 4. Verify file paths use forward slashes ✓
 5. Result: ✓/✗
 
-### Linux Testing
-
-**Environment:** VS Code on Ubuntu 22.04 LTS
-
-1. Enable browser tools in settings ✓
-2. Run Test 2 (Fix Verification) ✓
-3. Check screenshot directory permissions ✓
-4. Verify browser context works in headless environment ✓
-5. Result: ✓/✗
-
 ### Pass Criteria
 
-- ✓ Browser tools work on all three OSes
+- ✓ Browser tools work on both supported OSes
 - ✓ File paths are handled correctly per OS
 - ✓ Permissions don't block screenshot creation
 - ✓ Timestamps are consistent across timezones
@@ -737,7 +727,7 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 **Tester:** [Name]  
 **Date:** [YYYY-MM-DD]  
 **Duration:** [X hours]  
-**OS:** [Windows / macOS / Linux]  
+**OS:** [Windows / macOS]  
 **VS Code Version:** [e.g., 1.110 (March 2026)]
 
 | Test # | Description | Result | Notes |
@@ -807,7 +797,6 @@ After release, continuous tests to run:
 - [x] Results summary template created
 - [ ] Actual testing performed on Windows
 - [ ] Actual testing performed on macOS
-- [ ] Actual testing performed on Linux
 - [ ] All tests passed
 - [ ] Screenshots reviewed for quality
 - [ ] Performance baselines recorded

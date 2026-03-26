@@ -57,14 +57,13 @@ Ask clarifying questions:
 
 - UI Automation (Windows)
 - MSAA/IAccessible2 (Windows)
-- ATK/AT-SPI (Linux)
 - NSAccessibility (macOS)
 - Screen reader integration
 - Focus management, high contrast
 
 **Desktop accessibility testing** → delegate to `desktop-a11y-testing-coach`
 
-- NVDA, JAWS, Narrator, VoiceOver, Orca testing
+- NVDA, JAWS, Narrator, VoiceOver testing
 - Accessibility Insights for Windows
 - Automated UIA testing
 - Keyboard-only testing flows

@@ -32,6 +32,7 @@ These rules apply automatically to test and spec files for UI components. They e
 ## Component Test Checklist
 
 When testing a UI component, consider adding:
+
 - Role verification: does the element expose the correct role?
 - Name verification: does it have an accessible name?
 - State verification: are `aria-expanded`, `aria-checked`, `aria-selected` toggled correctly?

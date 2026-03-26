@@ -1,6 +1,6 @@
 # Agent Debug Panel Guide
 
-> **Updated for VS Code 1.112:** The Agent Debug panel now includes the `/troubleshoot` skill, JSONL export/import, and Agent Flow Chart visualization. This guide covers the original features from 1.110 plus all new capabilities.
+> **Updated for VS Code 1.113:** The Agent Debug panel includes `/troubleshoot`, export/import, Agent Flow Chart visualization, and support for Copilot CLI and Claude agent sessions in addition to local sessions.
 
 ## Authoritative References
 
@@ -10,6 +10,7 @@ References:
 
 - VS Code release notes: `https://code.visualstudio.com/updates`
 - VS Code 1.112 Release Notes: `https://code.visualstudio.com/updates/v1_112`
+- VS Code 1.113 Release Notes: `https://code.visualstudio.com/updates/v1_113`
 - VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/overview`
 - Agent Debug Logs docs: `https://code.visualstudio.com/docs/copilot/chat/chat-debug-view`
 - GitHub Copilot docs: `https://docs.github.com/copilot`
@@ -53,7 +54,7 @@ Visual hierarchy showing:
 
 **Method 1: Command Palette**
 
-1. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
+1. Press `Ctrl+Shift+P` (Windows) or `Cmd+Shift+P` (Mac)
 2. Type "Developer: Open Agent Debug Panel"
 3. Press Enter
 
@@ -286,9 +287,10 @@ The Agent Debug panel is in **preview** as of VS Code 1.110. Share feedback:
 - [VS Code GitHub Issues](https://github.com/microsoft/vscode/issues)
 - [Accessibility Agents Discussions](https://github.com/Community-Access/accessibility-agents/discussions)
 
-## Limitations (Current Release)
+## Current State
 
-- **Local sessions only** - Background and Claude agent sessions not yet supported
+- **Preview feature** - The Agent Debug Log panel remains in preview
+- **Broader session coverage** - Support now extends beyond local sessions to Copilot CLI and Claude agent sessions
 - ~~**No log persistence** - Logs clear when VS Code restarts~~ (Fixed in 1.112 with export/import)
 - ~~**No export** - Cannot save logs for sharing or offline analysis~~ (Fixed in 1.112)
 
@@ -322,6 +324,33 @@ The `/troubleshoot` skill reads the JSONL debug log files and provides insights 
 - Why instructions or skills did not load
 - What contributed to slow response times
 - Whether network connectivity problems occurred
+
+## New in VS Code 1.113
+
+### Copilot CLI and Claude Agent Session Support
+
+The Agent Debug panel now supports Copilot CLI and Claude agent sessions in addition to local sessions.
+
+This matters for Accessibility Agents because you can now debug:
+
+- why a CLI or Claude session did not load workspace instructions
+- whether MCP tools were available across agent types
+- how subagent orchestration behaved outside the local editor workflow
+
+### Summary View and Cross-Surface Troubleshooting
+
+The Summary view is now more useful as a cross-surface troubleshooting entry point:
+
+- inspect total tool calls, duration, token usage, and errors
+- jump from the summary into the Agent Flow Chart
+- attach debug events back into chat for follow-up analysis
+
+### Practical Debug Workflow for This Repo
+
+1. Enable Agent Debug Logs.
+2. Reproduce the problem in the relevant surface: local, Copilot CLI, or Claude agent.
+3. Open the Agent Debug panel and check discovery events for instructions, agents, skills, hooks, and MCP tools.
+4. If needed, attach debug events to chat or use `/troubleshoot` to ask why a customization was skipped.
 
 ### Export and Import Debug Sessions
 

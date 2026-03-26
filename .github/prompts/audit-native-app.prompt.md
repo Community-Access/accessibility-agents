@@ -23,6 +23,7 @@ Run a comprehensive accessibility audit on a mobile/native application.
 ### Step 1: Detect Platform
 
 Scan the project to determine:
+
 - **React Native / Expo** — look for `react-native` in package.json, `app.json`/`app.config.js`
 - **iOS (UIKit/SwiftUI)** — look for `.xcodeproj`, `.swift`, `.storyboard` files
 - **Android (Jetpack Compose / Views)** — look for `build.gradle`, `.kt`, `.java` files
@@ -30,6 +31,7 @@ Scan the project to determine:
 ### Step 2: Run Platform-Specific Audit
 
 **React Native / Expo:**
+
 - Check `accessible={true}` on interactive elements
 - Verify `accessibilityLabel` — present, non-redundant, no "button" suffix
 - Verify `accessibilityRole` — correct role for element type
@@ -41,11 +43,13 @@ Scan the project to determine:
 - Verify focus order in scrollable lists (FlatList/SectionList)
 
 **iOS:**
+
 - Check `isAccessibilityElement`, `accessibilityLabel`, `accessibilityTraits`
 - Verify Dynamic Type support
 - Check VoiceOver navigation order
 
 **Android:**
+
 - Check `contentDescription`, `semantics {}` modifiers
 - Verify touch target sizes (48x48dp minimum)
 - Check TalkBack navigation
@@ -53,6 +57,7 @@ Scan the project to determine:
 ### Step 3: Report
 
 Generate findings with:
+
 - Platform and framework version
 - Per-screen or per-component findings
 - Severity scoring (Critical/Serious/Moderate/Minor)

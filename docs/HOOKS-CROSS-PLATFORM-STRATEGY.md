@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This document presents a comprehensive strategy for implementing lifecycle hooks across multiple agent platforms (GitHub Copilot, Claude Code, Gemini) and operating systems (Windows, macOS, Linux). Based on authoritative documentation from VS Code 1.110 (February 2026) and Claude Code platform references, this plan addresses specific compatibility challenges that caused previous implementation failures.
+This document presents a comprehensive strategy for implementing lifecycle hooks across multiple agent platforms (GitHub Copilot, Claude Code, Gemini) and operating systems (Windows and macOS). Based on authoritative documentation from VS Code 1.110 (February 2026) and Claude Code platform references, this plan addresses specific compatibility challenges that caused previous implementation failures.
 
 **Key Findings:**
 
@@ -163,7 +163,7 @@ Define hooks for **both** events with identical logic:
 1. **File structure:** VS Code allows separate `.json` files per hook event; Claude Code uses centralized `settings.json`
 2. **Matcher field:** Claude Code supports `"matcher": "Edit|Write"` to filter by tool name; **VS Code ignores matchers** (documented in FAQ)
 3. **Environment variables:** Claude Code `${CLAUDE_PLUGIN_ROOT}`; VS Code has no equivalent
-4. **OS commands:** VS Code uses `windows`, `osx`, `linux` properties; Claude Code uses `powershell`, `bash` properties
+4. **OS commands:** VS Code uses OS-specific command properties; Claude Code uses `powershell` and `bash` properties
 
 **Solution:**
 
@@ -210,12 +210,12 @@ INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.filePath // .tool_input.file_path')
 ```
 
-### Issue 4: Shell Script Portability (Windows vs macOS/Linux)
+### Issue 4: Shell Script Portability (Windows vs macOS)
 
 **Problem:**
 
 - Bash scripts (`.sh`) do not run natively on Windows (requires Git Bash, WSL, or Cygwin)
-- PowerShell scripts (`.ps1`) do not run natively on macOS/Linux
+- PowerShell scripts (`.ps1`) do not run natively on macOS
 - Current Claude Code hooks use bash exclusively (lines 430-680 of install.sh)
 - Current implementation has **zero Windows native support**
 
@@ -253,7 +253,7 @@ Users on Windows cannot use Claude Code hooks without installing Git Bash or WSL
 }
 ```
 
-Python scripts run identically on Windows, macOS, and Linux without modification.
+Python scripts keep the implementation portable across the supported Windows and macOS environments.
 
 ### Issue 5: Blocking Capability Differences
 
@@ -357,7 +357,7 @@ Python scripts run identically on Windows, macOS, and Linux without modification
 
 **File:** `.github/hooks/scripts/enforce-edit-gate.py`  
 **Purpose:** Block UI file edits until accessibility review completed  
-**Platform Support:** Windows, macOS, Linux, VS Code, Claude Code
+**Platform Support:** Windows, macOS, VS Code, Claude Code
 
 ```python
 #!/usr/bin/env python3
@@ -546,7 +546,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 
 - Run each script standalone with sample JSON input
 - Verify output format matches VS Code/Claude Code expectations
-- Test on Windows (PowerShell), macOS (Terminal), Linux (Bash)
+- Test on Windows (PowerShell) and macOS (Terminal)
 
 ### Phase 2: Create Hook Configuration Templates (1 hour)
 
@@ -573,7 +573,7 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 
 **Testing:**
 
-- Test install.sh on macOS and Linux
+- Test install.sh on macOS
 - Test install.ps1 on Windows (PowerShell 5.1 and 7.x)
 - Verify hooks work after installation
 
@@ -585,10 +585,8 @@ format and handle the `activate_skill` tool as the accessibility-lead completion
 |----------|----|--------------------|-----------------|
 | VS Code 1.110 | Windows | SessionStart, PreToolUse, Stop | All hooks fire correctly |
 | VS Code 1.110 | macOS | SessionStart, PreToolUse, Stop | All hooks fire correctly |
-| VS Code 1.110 | Linux | SessionStart, PreToolUse, Stop | All hooks fire correctly |
 | Claude Code | Windows | SessionStart, PreToolUse, SessionEnd | All hooks fire correctly |
 | Claude Code | macOS | SessionStart, PreToolUse, SessionEnd | All hooks fire correctly |
-| Claude Code | Linux | SessionStart, PreToolUse, SessionEnd | All hooks fire correctly |
 | Gemini CLI | Windows | TBD | Determine hook support |
 | Gemini CLI | macOS | TBD | Determine hook support |
 
@@ -804,7 +802,7 @@ test -f ~/.claude/hooks/scripts/enforce-edit-gate.py
 ### Technical Metrics
 
 - **Hook Reliability:** 99%+ successful hook executions (no crashes, timeouts, or JSON parse errors)
-- **Cross-Platform Parity:** All 7 core hooks work identically on Windows, macOS, Linux
+- **Cross-Platform Parity:** All 7 core hooks work identically on Windows and macOS
 - **Platform Coverage:** Hooks work on VS Code (confirmed), Claude Code (confirmed), Gemini CLI (confirmed)
 - **Installation Success Rate:** 95%+ successful installations (Python dependency satisfied)
 

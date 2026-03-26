@@ -237,7 +237,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 |------|----------|
 | wxPython GUI / sizers / events | `wxpython-specialist` |
 | Screen reader testing (NVDA, JAWS) | `desktop-a11y-testing-coach` |
-| Platform a11y APIs (UIA, MSAA, ATK) | `desktop-a11y-specialist` |
+| Platform a11y APIs (UIA, MSAA, NSAccessibility) | `desktop-a11y-specialist` |
 | Build a11y scanner / rule engine | `a11y-tool-builder` |
 | Web accessibility audit | `web-accessibility-wizard` |
 | Document accessibility audit | `document-accessibility-wizard` |

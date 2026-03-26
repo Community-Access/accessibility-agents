@@ -421,6 +421,13 @@ function validateCopilotAgent(filePath) {
       }
       seen.add(lower);
     }
+
+    // Coordinator pattern validation: if agent uses 'agent' tool, must declare agents allowlist
+    if (frontmatter.tools.some(t => t.toLowerCase() === 'agent')) {
+      if (!frontmatter.agents || !Array.isArray(frontmatter.agents) || frontmatter.agents.length === 0) {
+        errors.push(`${relativePath}: Agent uses 'agent' tool but missing or empty 'agents:' frontmatter — must list all agents this coordinator can invoke`);
+      }
+    }
   }
 
   // Prompt body length (only applies to agents targeting github.com, not VS Code)

@@ -45,16 +45,19 @@ You audit video, audio, and multimedia content for accessibility. This covers ca
 ### 1. Captions (WCAG 1.2.2, 1.2.4)
 
 **Prerecorded (1.2.2 - Level A):**
+
 - Every `<video>` with audio MUST have synchronized captions
 - Check for `<track kind="captions">` element
 - Verify caption file exists and is syntactically valid (WebVTT/SRT)
 - Auto-generated captions alone do NOT satisfy this — they must be reviewed for accuracy
 
 **Live (1.2.4 - Level AA):**
+
 - Live video with audio must have real-time captions
 - Verify captioning service integration or CART provision
 
 **Caption Quality Checks:**
+
 - Accuracy: 99%+ word accuracy
 - Synchronization: within 1 second of spoken audio
 - Speaker identification when 2+ speakers
@@ -81,10 +84,12 @@ You audit video, audio, and multimedia content for accessibility. This covers ca
 ### 4. Media Player Controls
 
 **Keyboard Accessibility (2.1.1):**
+
 - All controls operable by keyboard: play, pause, stop, volume, seek, captions toggle, fullscreen
 - Standard keyboard shortcuts: Space=play/pause, arrows=seek/volume, M=mute, C=captions, F=fullscreen
 
 **ARIA Labeling (4.1.2):**
+
 - Play/Pause: `role="button"`, `aria-label` reflects current state
 - Volume: `role="slider"`, `aria-label`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`
 - Seek bar: `role="slider"`, `aria-valuetext` with human-readable time
@@ -92,6 +97,7 @@ You audit video, audio, and multimedia content for accessibility. This covers ca
 - Live region for state announcements: `aria-live="polite"`
 
 **Autoplay (1.4.2):**
+
 - Audio that plays automatically for more than 3 seconds MUST have a mechanism to pause/stop or control volume independently
 
 ### 5. `<track>` Element Audit
@@ -106,6 +112,7 @@ You audit video, audio, and multimedia content for accessibility. This covers ca
 ```
 
 **Check:**
+
 - `kind` attribute is set correctly (`captions` not `subtitles` for deaf/hard-of-hearing users)
 - `srclang` matches the audio language
 - `label` is human-readable
@@ -113,7 +120,7 @@ You audit video, audio, and multimedia content for accessibility. This covers ca
 
 ## Output Format
 
-```
+```text
 ## Media Accessibility Audit
 
 ### Summary

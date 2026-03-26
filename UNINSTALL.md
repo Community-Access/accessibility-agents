@@ -12,13 +12,22 @@ Before going manual, try the automated uninstaller first:
 irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.ps1 | iex
 ```
 
-**macOS / Linux:**
+**macOS:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.sh | bash
 ```
 
 If that did not fully clean up, follow the manual steps below for each platform you installed.
+
+The automated scripts also write a summary or plan file by default:
+
+- Project scope: `.a11y-agent-team-uninstall-summary.json` or `.a11y-agent-team-uninstall-plan.json`
+- Global scope: the same file names under your home directory
+
+Use `--summary=...` on shell scripts to change that location.
+
+For PowerShell uninstall, use `-SummaryPath <path>`, `--summary <path>`, or `--summary=...`. The spaced form is the safest option for absolute Windows paths such as `C:\temp\uninstall-summary.json`.
 
 ---
 
@@ -137,7 +146,7 @@ Remove-Item .github\prompts -Recurse -Force -ErrorAction SilentlyContinue
 Global Copilot agents are stored in two places:
 
 1. **Central store:** `~/.a11y-agent-team/`
-2. **VS Code profile:** Inside your VS Code `User/prompts/` folder
+2. **VS Code profiles:** Inside each detected VS Code `User/prompts/` folder for stable and/or insiders
 
 #### Remove the central store
 
@@ -159,7 +168,6 @@ Find your VS Code User folder:
 |----|----------------|------------------|
 | Windows | `%APPDATA%\Code\User\` | `%APPDATA%\Code - Insiders\User\` |
 | macOS | `~/Library/Application Support/Code/User/` | `~/Library/Application Support/Code - Insiders/User/` |
-| Linux | `~/.config/Code/User/` | `~/.config/Code - Insiders/User/` |
 
 In each profile folder:
 
@@ -203,7 +211,7 @@ The installer may have added `chat.agentFilesLocations` to your VS Code settings
 
 #### Remove the `a11y-copilot-init` command
 
-If you installed globally on macOS/Linux, the installer added `a11y-copilot-init` to your PATH. Remove these lines from your `~/.zshrc` or `~/.bashrc`:
+If you installed globally on macOS, the installer added `a11y-copilot-init` to your PATH. Remove these lines from your `~/.zshrc` or `~/.bashrc`:
 
 ```bash
 # Accessibility Agents - Copilot init command
@@ -303,18 +311,6 @@ Remove-Item "$env:USERPROFILE\.claude\.a11y-agent-team-repo" -Recurse -Force -Er
 # Remove the LaunchAgent
 launchctl bootout "gui/$(id -u)" ~/Library/LaunchAgents/com.community-access.accessibility-agents-update.plist 2>/dev/null
 rm -f ~/Library/LaunchAgents/com.community-access.accessibility-agents-update.plist
-
-# Remove update files
-rm -f ~/.claude/.a11y-agent-team-update.sh
-rm -f ~/.claude/.a11y-agent-team-update.log
-rm -rf ~/.claude/.a11y-agent-team-repo
-```
-
-### Linux
-
-```bash
-# Remove the cron job
-crontab -l 2>/dev/null | grep -v "a11y-agent-team-update" | crontab -
 
 # Remove update files
 rm -f ~/.claude/.a11y-agent-team-update.sh

@@ -26,7 +26,7 @@ Email HTML operates under severe constraints compared to web browsers:
 | `<button>` element | Rendered | Rendered | Rendered | Rendered | Rendered |
 | `tabindex` | Stripped | Stripped | Supported | Stripped | Stripped |
 
-### Key Constraint: Outlook Desktop uses the Word rendering engine, not a browser engine.
+### Key Constraint: Outlook Desktop uses the Word rendering engine, not a browser engine
 
 ## Accessible Email Patterns
 
@@ -43,6 +43,7 @@ Email HTML operates under severe constraints compared to web browsers:
 ```
 
 **Rules:**
+
 - ALL layout tables MUST have `role="presentation"` to prevent screen readers from announcing table semantics
 - Data tables (actual tabular data) should NOT have `role="presentation"` — they need proper `<th>`, `scope`, and `<caption>`
 - Use `cellspacing="0" cellpadding="0" border="0"` on layout tables
@@ -54,6 +55,7 @@ Email HTML operates under severe constraints compared to web browsers:
 ```
 
 **Rules:**
+
 - Every `<img>` must have `alt` attribute
 - Decorative images: `alt=""` (empty, not omitted)
 - Set explicit `width` and `height` — prevents layout shifts when images are blocked
@@ -70,6 +72,7 @@ Email HTML operates under severe constraints compared to web browsers:
 ```
 
 **Rules:**
+
 - Link text must be descriptive (no "click here" or "read more")
 - Always use `text-decoration: underline` — color alone can't distinguish links (WCAG 1.4.1)
 - Include `style` attributes directly on `<a>` tags — some clients strip `<style>` blocks
@@ -120,6 +123,7 @@ Email HTML operates under severe constraints compared to web browsers:
 ```
 
 **Rules:**
+
 - Test contrast ratios in both light and dark modes
 - Some clients invert colors automatically — use `data-ogsb="ignore"` for Outlook.com to prevent unwanted inversions
 - Transparent PNGs work well in both modes; JPGs with white backgrounds look broken in dark mode

@@ -11,10 +11,19 @@
 
 param(
     [switch]$Project,
-    [switch]$Silent
+    [switch]$Silent,
+    [switch]$Check,
+    [switch]$DryRun,
+    [switch]$VsCodeStable,
+    [switch]$VsCodeInsiders,
+    [switch]$VsCodeBoth,
+    [Alias('summary')]
+    [string]$SummaryPath
 )
 
 $ErrorActionPreference = "Stop"
+$ScriptDir = if ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } else { (Get-Location).Path }
+. (Join-Path $ScriptDir 'scripts\Installer.Common.ps1')
 
 $RepoUrl = "https://github.com/Community-Access/accessibility-agents.git"
 $CacheDir = Join-Path $env:USERPROFILE ".claude\.a11y-agent-team-repo"
@@ -33,11 +42,74 @@ function Write-Log {
     }
 }
 
+function Write-UpdateSummaryFile {
+    param([string]$Path, [hashtable]$Data)
+    Write-A11ySummaryFile -Path $Path -Data $Data
+}
+
 if ($Project) {
     $InstallDir = Join-Path (Get-Location) ".claude"
 }
 else {
     $InstallDir = Join-Path $env:USERPROFILE ".claude"
+}
+
+$VsCodeProfileMode = Get-RequestedProfileMode -Stable:$VsCodeStable -Insiders:$VsCodeInsiders -Both:$VsCodeBoth
+$DetectedVsCodeProfiles = @(Get-VSCodeProfiles)
+$SelectedVsCodeProfiles = @(Select-VSCodeProfiles -Profiles $DetectedVsCodeProfiles -Mode $VsCodeProfileMode)
+if (-not $SummaryPath) {
+    $SummaryName = if ($DryRun -or $Check) { '.a11y-agent-team-update-plan.json' } else { '.a11y-agent-team-update-summary.json' }
+    $SummaryRoot = if ($Project) { (Get-Location).Path } else { $env:USERPROFILE }
+    $SummaryPath = Join-Path $SummaryRoot $SummaryName
+}
+
+$OperationRoot = if ($Project) { (Get-Location).Path } else { $env:USERPROFILE }
+$BackupMetadataPath = Initialize-A11yOperationState -Operation 'update' -Root $OperationRoot -SummaryPath $SummaryPath -DryRun $DryRun -CheckMode $Check -CandidatePaths @($InstallDir, $VersionFile, $CacheDir)
+
+$UpdateSummary = [ordered]@{
+    schemaVersion = '1.0'
+    timestampUtc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+    operation = 'update'
+    dryRun = [bool]$DryRun
+    check = [bool]$Check
+    scope = if ($Project) { 'project' } else { 'global' }
+    installDir = $InstallDir
+    vscodeProfileMode = $VsCodeProfileMode
+    requestedOptions = [ordered]@{
+        silent = [bool]$Silent
+        vscodeProfileMode = $VsCodeProfileMode
+    }
+    selectedVsCodeProfiles = @($SelectedVsCodeProfiles | ForEach-Object { $_.Path })
+    backupMetadataPath = $BackupMetadataPath
+    notes = @()
+}
+
+if ($Check) {
+    $UpdateSummary.notes += 'Check mode only. No files were changed.'
+    Write-Host "  Check mode only. No files will be changed."
+    Write-Host "  Target install directory: $InstallDir"
+    Write-Host "  Backup metadata: $BackupMetadataPath"
+    Write-UpdateSummaryFile -Path $SummaryPath -Data $UpdateSummary
+    Write-Host "  Summary written to $SummaryPath"
+    exit 0
+}
+
+if ($DryRun) {
+    Write-Host "  Dry run only. No files will be changed."
+    Write-Host "  Target install directory: $InstallDir"
+    if (-not $Project) {
+        if ($SelectedVsCodeProfiles.Count -gt 0) {
+            foreach ($Profile in $SelectedVsCodeProfiles) {
+                Write-Host "  Would update VS Code profile: $($Profile.Path)"
+            }
+        }
+        else {
+            Write-Host "  No matching VS Code profiles detected for the requested filter."
+        }
+    }
+    Write-UpdateSummaryFile -Path $SummaryPath -Data $UpdateSummary
+    Write-Host "  Summary written to $SummaryPath"
+    exit 0
 }
 
 # Check for git
@@ -283,11 +355,8 @@ if (-not $Project) {
     # Push agents, prompts, and instructions to VS Code User/prompts/ only.
     # Previous versions also wrote to User/ root, causing duplicates in the
     # agent list. This update cleans up those stale root copies automatically.
-    $VSCodeProfiles = @(
-        (Join-Path $env:APPDATA "Code\User"),
-        (Join-Path $env:APPDATA "Code - Insiders\User")
-    )
-    foreach ($ProfileDir in $VSCodeProfiles) {
+    foreach ($Profile in $SelectedVsCodeProfiles) {
+        $ProfileDir = $Profile.Path
         $PromptsDir = Join-Path $ProfileDir "prompts"
         # Only update if agents were previously installed
         $HasAgents = (Get-ChildItem -Path $ProfileDir -Filter "*.agent.md" -ErrorAction SilentlyContinue).Count -gt 0
@@ -356,19 +425,33 @@ if (-not $Project) {
 }
 
 # ---------------------------------------------------------------------------
-# Update MCP server dependencies (if Node.js is available)
+# Update MCP server installation and dependencies (if present)
 # ---------------------------------------------------------------------------
-$McpPkg = Join-Path $CacheDir "desktop-extension\package.json"
-if ((Test-Path $McpPkg) -and (Get-Command node -ErrorAction SilentlyContinue) -and (Get-Command npm -ErrorAction SilentlyContinue)) {
-    try {
-        Push-Location (Join-Path $CacheDir "desktop-extension")
-        npm install --omit=dev --silent 2>$null | Out-Null
-        Pop-Location
-        Write-Log "MCP server dependencies updated"
-    }
-    catch {
-        Pop-Location -ErrorAction SilentlyContinue
-        Write-Log "MCP server dependency install failed (non-fatal)"
+$McpSrcDir = Join-Path $CacheDir "mcp-server"
+$McpDestDir = if ($Project) {
+    Join-Path (Get-Location) "mcp-server"
+}
+else {
+    Join-Path $env:USERPROFILE ".a11y-agent-team\mcp-server"
+}
+
+if ((Test-Path $McpSrcDir) -and (Test-Path $McpDestDir)) {
+    $McpCopyMethod = Copy-A11yDirectoryTree -SourceDir $McpSrcDir -DestinationDir $McpDestDir -PreferRobocopy
+    Write-Log "Updated MCP server files via $McpCopyMethod"
+    $Updated++
+
+    $McpPkg = Join-Path $McpDestDir "package.json"
+    if ((Test-Path $McpPkg) -and (Get-Command node -ErrorAction SilentlyContinue) -and (Get-Command npm -ErrorAction SilentlyContinue)) {
+        try {
+            Push-Location $McpDestDir
+            npm install --omit=dev --silent 2>$null | Out-Null
+            Pop-Location
+            Write-Log "MCP server dependencies updated"
+        }
+        catch {
+            Pop-Location -ErrorAction SilentlyContinue
+            Write-Log "MCP server dependency install failed (non-fatal)"
+        }
     }
 }
 
@@ -381,3 +464,9 @@ if ($Updated -gt 0) {
 else {
     Write-Log "Files already match latest version ($NewHash)."
 }
+
+$UpdateSummary.updatedFiles = $Updated
+$UpdateSummary.version = $NewHash
+$UpdateSummary.logFile = $LogFile
+Write-UpdateSummaryFile -Path $SummaryPath -Data $UpdateSummary
+Write-Log "Summary written to $SummaryPath"

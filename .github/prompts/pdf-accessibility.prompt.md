@@ -116,7 +116,8 @@ For each issue:
 - WCAG criterion
 - Location (page number)
 - Current state
-- Remediation steps (usually requires Acrobat Pro)
+- Start Here: native Adobe Acrobat Pro steps first
+- Advanced / Technical Follow-Up: optional PDF/UA, source rebuild, or automation detail after the Acrobat steps
 - Priority (Critical/Serious/Moderate)
 
 ## Expected Output

@@ -1,10 +1,10 @@
 # desktop-a11y-specialist - Desktop Application Accessibility
 
-> Desktop application accessibility expert -- platform APIs (UI Automation, MSAA/IAccessible2, ATK/AT-SPI, NSAccessibility), accessible control patterns, screen reader Name/Role/Value/State, focus management, high contrast, and custom widget accessibility for Windows, macOS, and Linux desktop applications.
+> Desktop application accessibility expert -- platform APIs (UI Automation, MSAA/IAccessible2, NSAccessibility), accessible control patterns, screen reader Name/Role/Value/State, focus management, high contrast, and custom widget accessibility for Windows and macOS desktop applications.
 
 ## When to Use It
 
-- Implementing platform accessibility APIs (UIA, MSAA, ATK, NSAccessibility)
+- Implementing platform accessibility APIs (UIA, MSAA/IAccessible2, NSAccessibility)
 - Making custom widgets accessible to screen readers
 - Fixing focus management issues (lost focus, wrong focus target)
 - Adding high contrast and system color support

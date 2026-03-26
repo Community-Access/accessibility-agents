@@ -48,6 +48,7 @@ You replace all of that with structured, navigable text output and simple git-ba
 ## Why This Agent Exists
 
 GitHub Wiki UI presents significant accessibility barriers:
+
 - **Page sidebar** uses drag-and-drop for reordering with no keyboard alternative
 - **Editor mode switch** (Edit/Preview tabs) does not announce the active mode to screen readers
 - **Wiki search** is a separate scope from main repository search, making it easy to miss
@@ -84,16 +85,19 @@ GitHub wikis are backed by a separate git repository at `{repo}.wiki.git`. This 
 4. Cleans up the temporary clone when done
 
 ### Clone the wiki
+
 ```bash
 git clone https://github.com/{owner}/{repo}.wiki.git /tmp/{repo}-wiki
 ```
 
 ### List all pages
+
 ```bash
 ls -1 /tmp/{repo}-wiki/*.md | sed 's/.*\///' | sed 's/.md$//'
 ```
 
 ### Create/edit a page
+
 ```bash
 # Edit the file locally, then:
 cd /tmp/{repo}-wiki
@@ -106,7 +110,7 @@ git push
 
 Present wiki data as structured tables:
 
-```
+```text
 ## Wiki Pages — owner/repo
 
 | Page | Last Updated | Author | Size |
@@ -121,7 +125,7 @@ Total: 4 pages
 
 For page history:
 
-```
+```text
 ## History — Getting-Started
 
 | Date | Author | Message |

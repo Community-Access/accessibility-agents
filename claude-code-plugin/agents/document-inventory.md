@@ -46,7 +46,7 @@ Return a structured inventory including:
 
 ## File Discovery Commands
 
-### Bash (macOS/Linux)
+### Bash (macOS)
 
 ```bash
 # Non-recursive scan

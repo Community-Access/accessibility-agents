@@ -44,8 +44,8 @@ That's it. The Accessibility Lead agent responds by default. Use a slash command
 
 | Command | What it covers |
 |---------|---------------|
-| `/desktop-a11y-specialist` | Platform APIs — UI Automation, MSAA, ATK, NSAccessibility |
-| `/desktop-a11y-testing-coach` | Testing with NVDA, JAWS, Narrator, VoiceOver, Orca |
+| `/desktop-a11y-specialist` | Platform APIs — UI Automation, MSAA/IAccessible2, NSAccessibility |
+| `/desktop-a11y-testing-coach` | Testing with NVDA, JAWS, Narrator, and VoiceOver |
 
 ### Document & Markdown Accessibility
 

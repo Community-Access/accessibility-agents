@@ -1,0 +1,11 @@
+{
+  "targetDir": "D:\\code\\agents\\.claude",
+  "selectedVsCodeProfiles": [
+    "C:\\Users\\jeffbis\\AppData\\Roaming\\Code\\User",
+    "C:\\Users\\jeffbis\\AppData\\Roaming\\Code - Insiders\\User"
+  ],
+  "dryRun": true,
+  "operation": "uninstall",
+  "vscodeProfileMode": "auto",
+  "scope": "project"
+}

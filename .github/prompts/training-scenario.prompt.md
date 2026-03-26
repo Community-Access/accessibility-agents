@@ -41,6 +41,7 @@ Ask the user which mode they'd like:
 ### Step 2: Choose a UI Pattern
 
 If applicable, ask which pattern to focus on:
+
 - Login form
 - Navigation bar with dropdown
 - Modal dialog
@@ -59,6 +60,7 @@ Generate the content in the selected mode for the selected pattern. Keep it prac
 ### Step 4: Follow-Up
 
 Offer:
+
 - Try another mode or pattern
 - Run a real audit on the user's project
 - Set up automated accessibility testing

@@ -1509,7 +1509,7 @@ Write the VPAT to `ACCESSIBILITY-VPAT.md` (or the user's chosen path).
 
 If the user selects **Generate batch remediation scripts**, ask which format using askQuestions:
 
-- **Bash** - `.sh` script for macOS/Linux environments
+- **Bash** - `.sh` script for macOS environments
 - **PowerShell** - `.ps1` script for Windows environments
 - **Both** - generate both versions
 

@@ -6,7 +6,7 @@ Create a comprehensive desktop accessibility test plan with screen reader test c
 
 - You completed a desktop accessibility audit and need to verify the findings
 - You are setting up QA processes for a desktop application
-- You need screen reader test cases for NVDA, JAWS, Narrator, VoiceOver, or Orca
+- You need screen reader test cases for NVDA, JAWS, Narrator, or VoiceOver
 - You want automated UIA tests to catch regressions in CI
 
 ## How to Launch It

@@ -59,6 +59,7 @@ The Voluntary Product Accessibility Template (VPAT) maps to three standards:
 | VPAT 2.5 INT | Section 508 + EN 301 549 + WCAG 2.x |
 
 **Conformance levels in VPAT:**
+
 - Supports — fully meets the criterion
 - Partially Supports — some functionality meets, some does not
 - Does Not Support — majority of functionality does not meet
@@ -78,6 +79,7 @@ The Voluntary Product Accessibility Template (VPAT) maps to three standards:
 ### EU Model (Required for Public Sector)
 
 All of the above, plus:
+
 - Disproportionate burden declaration (if applicable, with justification)
 - Link to national enforcement body
 - Annual review requirement

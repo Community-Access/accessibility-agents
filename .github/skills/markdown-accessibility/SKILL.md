@@ -162,7 +162,7 @@ Flag for human review: `sequenceDiagram`, `classDiagram`, `erDiagram`, `stateDia
 
 ```mermaid
 [original diagram source - unchanged]
-```
+```text
 
 </details>
 ```
@@ -315,7 +315,7 @@ Wrapping template:
 
 ```mermaid
 [original diagram source]
-```
+```text
 
 </details>
 ```

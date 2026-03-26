@@ -1,0 +1,40 @@
+name: MCP Prerequisite Consistency
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/getting-started.md'
+      - 'docs/USER_GUIDE.md'
+      - 'mcp-server/README.md'
+      - 'mcp-server/PDF-QUICKSTART.md'
+      - 'install.sh'
+      - 'install.ps1'
+      - 'scripts/check-mcp-prerequisites.js'
+      - '.github/workflows/mcp-prerequisite-consistency.yml'
+  pull_request:
+    paths:
+      - 'docs/getting-started.md'
+      - 'docs/USER_GUIDE.md'
+      - 'mcp-server/README.md'
+      - 'mcp-server/PDF-QUICKSTART.md'
+      - 'install.sh'
+      - 'install.ps1'
+      - 'scripts/check-mcp-prerequisites.js'
+      - '.github/workflows/mcp-prerequisite-consistency.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Check MCP prerequisite consistency
+        run: node scripts/check-mcp-prerequisites.js

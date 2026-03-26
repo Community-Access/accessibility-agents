@@ -207,7 +207,6 @@ def setup_logging(level: int = logging.INFO) -> None:
 | Windows | UI Automation | `comtypes` + `UIAutomationCore` |
 | Windows | MSAA/IAccessible2 | `pyia2`, `comtypes` |
 | macOS | NSAccessibility | `pyobjc-framework-Cocoa` |
-| Linux | ATK/AT-SPI | `pyatspi2` (via GObject) |
 
 ### wxPython Accessibility
 

@@ -1,0 +1,16 @@
+{
+  "completed": true,
+  "schemaVersion": "1.0",
+  "operation": "uninstall",
+  "dryRun": false,
+  "requestedOptions": {
+    "vscodeProfileMode": "auto"
+  },
+  "timestampUtc": "2026-03-26T20:19:39Z",
+  "backupMetadataPath": "C:\\Users\\jeffbis\\AppData\\Local\\Temp\\a11y-matrix-0ec59307e8a545ec996190dc2b493ad5\\profile\\.a11y-agent-team-uninstall-backup.json",
+  "targetDir": "C:\\Users\\jeffbis\\AppData\\Local\\Temp\\a11y-matrix-0ec59307e8a545ec996190dc2b493ad5\\profile\\.claude",
+  "selectedVsCodeProfiles": [],
+  "notes": [],
+  "vscodeProfileMode": "auto",
+  "scope": "global"
+}

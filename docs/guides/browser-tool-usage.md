@@ -317,7 +317,7 @@ Browser verification results are included in audit reports:
 **Fix Applied:**
 ```tsx
 <img src="/logo.png" alt="Company logo" />
-```
+```text
 
 **Verification:** ✅ PASS
 

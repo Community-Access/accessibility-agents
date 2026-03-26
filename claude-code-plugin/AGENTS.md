@@ -45,9 +45,11 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 - `document-csv-reporter` - Exports document audit findings to CSV with Microsoft Office and Adobe PDF help links
 
 **Members (PDF Remediation):**
+
 - `pdf-remediator` - Programmatic and manual PDF remediation via pdf-lib/qpdf/ghostscript and Adobe Acrobat Pro
 
 **Members (Office Remediation):**
+
 - `office-remediator` - Programmatic Office document (Word/Excel/PowerPoint) remediation via python-docx/openpyxl/python-pptx
 
 **Members (ePub):**
@@ -178,15 +180,17 @@ This file defines coordinated multi-agent workflows for enterprise accessibility
 **Lead:** `developer-hub`
 
 **Members:**
+
 - `python-specialist` - Python language expert: debugging, packaging, testing, type checking, async, optimization
 - `wxpython-specialist` - wxPython GUI expert: sizers, events, AUI, custom controls, threading, desktop accessibility
-- `desktop-a11y-specialist` - Desktop application accessibility: platform APIs (UIA, MSAA, ATK, NSAccessibility), screen reader interaction, focus management
-- `desktop-a11y-testing-coach` - Desktop accessibility testing: NVDA, JAWS, Narrator, VoiceOver, Orca, Accessibility Insights
+- `desktop-a11y-specialist` - Desktop application accessibility: platform APIs (UIA, MSAA, NSAccessibility), screen reader interaction, focus management
+- `desktop-a11y-testing-coach` - Desktop accessibility testing: NVDA, JAWS, Narrator, VoiceOver, Accessibility Insights
 - `a11y-tool-builder` - Accessibility tool building: rule engines, document parsers, report generators
 - `nvda-addon-specialist` - NVDA addon development: architecture, globalPlugins, appModules, manifest format, addon packaging
 - `text-quality-reviewer` - Non-visual text quality review: template variables in alt text, placeholder labels, duplicate labels
 
 **Workflow:**
+
 1. `developer-hub` receives the user request and classifies intent
 2. Routes to appropriate specialist based on domain
 3. Cross-team handoffs to `web-accessibility-wizard` or `document-accessibility-wizard` as needed

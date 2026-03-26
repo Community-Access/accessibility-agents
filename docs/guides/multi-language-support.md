@@ -6,7 +6,7 @@ Guide for translating A11y Agent Team instructions and documentation into langua
 
 Agent files use a locale-suffix convention. The English original is the canonical version; translations are suffixed copies:
 
-```
+```text
 .github/agents/
   accessibility-lead.agent.md          ← English (canonical)
   accessibility-lead.agent.es.md       ← Spanish

@@ -740,7 +740,7 @@ When the user wants to fix a specific file, hand off with full context:
 
 If the user selects **Generate batch remediation scripts**, ask which format:
 - **PowerShell** - `.ps1` script for Windows environments
-- **Bash** - `.sh` script for macOS/Linux environments
+- **Bash** - `.sh` script for macOS environments
 - **Both** - generate both versions
 
 Generate scripts that automate fixable issues:

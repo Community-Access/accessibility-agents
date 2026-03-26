@@ -25,7 +25,7 @@ The agents are framework-agnostic by default. If you work with React, Vue, Svelt
 
 ### Fix installer or update scripts
 
-The install, update, and uninstall scripts support macOS, Linux, and Windows. Bug fixes and improvements are welcome, especially for edge cases on systems we have not tested.
+The install, update, and uninstall scripts support macOS and Windows. Bug fixes and improvements are welcome, especially for edge cases on systems we have not tested.
 
 ### Improve documentation
 

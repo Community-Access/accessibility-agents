@@ -125,7 +125,7 @@ When the developer shares a traceback:
 | Need | Route To |
 |------|----------|
 | wxPython GUI | `wxpython-specialist` |
-| Desktop a11y APIs (UIA, MSAA, ATK) | `desktop-a11y-specialist` |
+| Desktop a11y APIs (UIA, MSAA, NSAccessibility) | `desktop-a11y-specialist` |
 | Screen reader testing | `desktop-a11y-testing-coach` |
 | Build a11y scanner / rule engine | `a11y-tool-builder` |
 | Web accessibility audit | `web-accessibility-wizard` |

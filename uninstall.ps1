@@ -8,12 +8,59 @@
 #   powershell -File uninstall.ps1 --global       Uninstall from ~\.claude\
 
 $ErrorActionPreference = "Stop"
+$ScriptDir = if ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } else { (Get-Location).Path }
+. (Join-Path $ScriptDir 'scripts\Installer.Common.ps1')
+
+$Check = $false
+function Write-UninstallSummaryFile {
+    param([string]$Path, [hashtable]$Data)
+    Write-A11ySummaryFile -Path $Path -Data $Data
+}
 
 # Parse CLI flags
 $Choice = ""
-foreach ($arg in $args) {
+$DryRun = $false
+$VsCodeStable = $false
+$VsCodeInsiders = $false
+$VsCodeBoth = $false
+$SummaryPath = $null
+$PendingSummaryPath = $false
+for ($index = 0; $index -lt $args.Count; $index++) {
+    $arg = $args[$index]
+
+    if ($PendingSummaryPath) {
+        $SummaryPath = $arg
+        $PendingSummaryPath = $false
+        continue
+    }
+
+    if (($arg -eq '-SummaryPath') -or ($arg -eq '-summary') -or ($arg -eq '-summaryPath')) {
+        $PendingSummaryPath = $true
+        continue
+    }
+
     if ($arg -eq "--global")  { $Choice = "2" }
     if ($arg -eq "--project") { $Choice = "1" }
+    if ($arg -eq "--check") { $Check = $true }
+    if ($arg -eq "--dry-run") { $DryRun = $true }
+    if ($arg -eq "--vscode-stable") { $VsCodeStable = $true }
+    if ($arg -eq "--vscode-insiders") { $VsCodeInsiders = $true }
+    if ($arg -eq "--vscode-both") { $VsCodeBoth = $true }
+    if ($arg -eq "--summary") {
+        $PendingSummaryPath = $true
+        continue
+    }
+    if (($arg -like "--summary=*") -or ($arg -like "-SummaryPath=*") -or ($arg -like "-summary=*") -or ($arg -like "-summaryPath=*")) {
+        $SummaryPath = ($arg -replace '^(--summary=|-SummaryPath=|-summary=|-summaryPath=)', '')
+        if ($SummaryPath -match '^[A-Za-z]$' -and ($index + 1) -lt $args.Count -and $args[$index + 1] -like '\*') {
+            $SummaryPath = "${SummaryPath}:$($args[$index + 1])"
+            $index++
+        }
+    }
+}
+
+if ($PendingSummaryPath) {
+    throw 'Missing value after --summary.'
 }
 
 if (-not $Choice) {
@@ -46,6 +93,66 @@ switch ($Choice) {
         Write-Host "  Invalid choice. Exiting."
         exit 1
     }
+}
+
+$VsCodeProfileMode = Get-RequestedProfileMode -Stable:$VsCodeStable -Insiders:$VsCodeInsiders -Both:$VsCodeBoth
+$SelectedVsCodeProfiles = @(Select-VSCodeProfiles -Profiles (Get-VSCodeProfiles) -Mode $VsCodeProfileMode)
+if (-not $SummaryPath) {
+    $SummaryName = if ($DryRun -or $Check) { '.a11y-agent-team-uninstall-plan.json' } else { '.a11y-agent-team-uninstall-summary.json' }
+    $SummaryRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
+    $SummaryPath = Join-Path $SummaryRoot $SummaryName
+}
+
+$OperationRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
+$BackupMetadataPath = Initialize-A11yOperationState -Operation 'uninstall' -Root $OperationRoot -SummaryPath $SummaryPath -DryRun $DryRun -CheckMode $Check -CandidatePaths @($TargetDir, (Join-Path $TargetDir '.a11y-agent-manifest'), (Join-Path $TargetDir '.a11y-agent-team-version'))
+
+$UninstallSummary = [ordered]@{
+    schemaVersion = '1.0'
+    timestampUtc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+    operation = 'uninstall'
+    dryRun = [bool]$DryRun
+    check = [bool]$Check
+    scope = if ($Choice -eq '1') { 'project' } else { 'global' }
+    targetDir = $TargetDir
+    vscodeProfileMode = $VsCodeProfileMode
+    requestedOptions = [ordered]@{
+        vscodeProfileMode = $VsCodeProfileMode
+    }
+    selectedVsCodeProfiles = @($SelectedVsCodeProfiles | ForEach-Object { $_.Path })
+    backupMetadataPath = $BackupMetadataPath
+    notes = @()
+}
+
+if ($Check) {
+    $UninstallSummary.notes += 'Check mode only. No files were removed.'
+    Write-Host ''
+    Write-Host '  Check mode only. No files will be removed.'
+    Write-Host "  Scope: $($UninstallSummary.scope)"
+    Write-Host "  Target: $TargetDir"
+    Write-Host "  Backup metadata: $BackupMetadataPath"
+    Write-UninstallSummaryFile -Path $SummaryPath -Data $UninstallSummary
+    Write-Host "  Summary file: $SummaryPath"
+    exit 0
+}
+
+if ($DryRun) {
+    Write-Host ''
+    Write-Host '  Dry run only. No files will be removed.'
+    Write-Host "  Scope: $($UninstallSummary.scope)"
+    Write-Host "  Target: $TargetDir"
+    if ($Choice -eq '2') {
+        if ($SelectedVsCodeProfiles.Count -gt 0) {
+            foreach ($Profile in $SelectedVsCodeProfiles) {
+                Write-Host "  Would clean VS Code profile: $($Profile.Path)"
+            }
+        }
+        else {
+            Write-Host '  No matching VS Code profiles detected for the requested filter.'
+        }
+    }
+    Write-UninstallSummaryFile -Path $SummaryPath -Data $UninstallSummary
+    Write-Host "  Summary file: $SummaryPath"
+    exit 0
 }
 
 # ---------------------------------------------------------------------------
@@ -233,11 +340,8 @@ if ($Choice -eq "1" -and $ProjectDir) {
 # 3. Remove Copilot agents — global
 # =============================================
 if ($Choice -eq "2") {
-    $VSCodeProfiles = @(
-        (Join-Path $env:APPDATA "Code\User"),
-        (Join-Path $env:APPDATA "Code - Insiders\User")
-    )
-    foreach ($ProfileDir in $VSCodeProfiles) {
+    foreach ($Profile in $SelectedVsCodeProfiles) {
+        $ProfileDir = $Profile.Path
         if (-not (Test-Path $ProfileDir)) { continue }
         $PromptsDir = Join-Path $ProfileDir "prompts"
 
@@ -273,9 +377,9 @@ if ($Choice -eq "2") {
         if (Test-Path $SettingsFile) {
             try {
                 $Settings = Get-Content $SettingsFile -Raw | ConvertFrom-Json
+                $Changed = $false
                 if ($Settings.PSObject.Properties.Name -contains 'chat.agentFilesLocations') {
                     $Locations = $Settings.'chat.agentFilesLocations'
-                    $Changed = $false
                     foreach ($Key in @('.claude/agents', '.github/agents')) {
                         if ($Locations.PSObject.Properties.Name -contains $Key) {
                             $Locations.PSObject.Properties.Remove($Key)
@@ -284,11 +388,30 @@ if ($Choice -eq "2") {
                     }
                     if (($Locations.PSObject.Properties | Measure-Object).Count -eq 0) {
                         $Settings.PSObject.Properties.Remove('chat.agentFilesLocations')
+                        $Changed = $true
                     }
-                    if ($Changed) {
-                        $Settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsFile -Encoding UTF8
-                        Write-Host "    - Restored VS Code settings"
+                }
+
+                if ($Settings.PSObject.Properties.Name -contains 'mcp') {
+                    $Mcp = $Settings.mcp
+                    if ($Mcp -and $Mcp.PSObject.Properties.Name -contains 'servers') {
+                        $Servers = $Mcp.servers
+                        if ($Servers -and $Servers.PSObject.Properties.Name -contains 'a11y-agent-team') {
+                            $Servers.PSObject.Properties.Remove('a11y-agent-team')
+                            $Changed = $true
+                            if (($Servers.PSObject.Properties | Measure-Object).Count -eq 0) {
+                                $Mcp.PSObject.Properties.Remove('servers')
+                            }
+                            if (($Mcp.PSObject.Properties | Measure-Object).Count -eq 0) {
+                                $Settings.PSObject.Properties.Remove('mcp')
+                            }
+                        }
                     }
+                }
+
+                if ($Changed) {
+                    $Settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsFile -Encoding UTF8
+                    Write-Host "    - Restored VS Code settings"
                 }
             } catch {
                 Write-Host "    ! Could not update settings.json (edit manually if needed)"
@@ -534,4 +657,10 @@ Write-Host "    2. Verify agents are gone: type '@' in Copilot Chat or '/agents'
 Write-Host ""
 Write-Host "  If something was missed, see the manual uninstall guide:"
 Write-Host "    https://github.com/Community-Access/accessibility-agents/blob/main/UNINSTALL.md"
+Write-Host ""
+
+$UninstallSummary.completed = $true
+Write-UninstallSummaryFile -Path $SummaryPath -Data $UninstallSummary
+Write-Host "  Summary written to:"
+Write-Host "    $SummaryPath"
 Write-Host ""

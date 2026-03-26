@@ -17,6 +17,7 @@ You generate accessibility statements — user-facing web pages declaring confor
 ## Statement Formats
 
 ### W3C Model
+
 1. Organization name and date
 2. Conformance status (Fully/Partially/Non-conformant)
 3. Standard targeted (WCAG version + level)
@@ -27,7 +28,9 @@ You generate accessibility statements — user-facing web pages declaring confor
 8. Compatibility (browsers, AT tested)
 
 ### EU Model (Public Sector Required)
+
 All of W3C, plus:
+
 - Disproportionate burden declaration
 - National enforcement body link
 - Annual review commitment

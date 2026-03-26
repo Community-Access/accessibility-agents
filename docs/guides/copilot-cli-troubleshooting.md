@@ -104,7 +104,7 @@ Agent files must be UTF-8 encoded. Windows users: ensure your editor saves as UT
 
 Each skill must be a folder containing `SKILL.md`:
 
-```
+```text
 .github/skills/
 ├── accessibility-rules/
 │   └── SKILL.md
@@ -177,6 +177,7 @@ This shows where CLI is looking for skills and which ones are loaded.
 **Cause:** CLI needs approval for certain tools (edit, execute).
 
 **Solution:** When prompted, choose:
+
 - `1. Yes` - approve this use
 - `2. Yes, and approve for session` - approve all uses of this tool in current session
 
@@ -199,6 +200,7 @@ This shows where CLI is looking for skills and which ones are loaded.
 This shows which instruction files are being loaded.
 
 **Expected files:**
+
 - `.github/copilot-instructions.md`
 - Any `.github/instructions/**/*.instructions.md` files
 
@@ -225,6 +227,7 @@ Instructions are limited to 8,000 characters. Very large files may be truncated.
 ### Slow agent responses
 
 **Possible causes:**
+
 - Large instruction files
 - Many skills loaded
 - Complex agent prompts
@@ -242,6 +245,7 @@ Instructions are limited to 8,000 characters. Very large files may be truncated.
 ```
 
 This shows token consumption. High usage may indicate:
+
 - Too many files included in context
 - Overly detailed agent instructions
 - Skills loading unnecessary content
@@ -327,7 +331,7 @@ $HOME + "\.copilot\agents"
 # Should show: C:\Users\YourName\.copilot\agents
 ```
 
-### macOS/Linux
+### macOS
 
 **Permissions:**
 Agent files should be readable:
@@ -349,6 +353,7 @@ If issues persist:
 3. Open an issue in the [accessibility-agents repo](https://github.com/Community-Access/accessibility-agents/issues)
 
 When reporting issues, include:
+
 - CLI version (`copilot --version`)
 - OS and version
 - Output of `/agent` and `/skills list`

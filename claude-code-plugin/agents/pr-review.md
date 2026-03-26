@@ -229,7 +229,7 @@ Format:
        |    22 |+  }
     17 |    23 |   return decoded;
     18 |    24 | }
-```
+```text
 ````
 
 **Dual line number rules:**
@@ -252,7 +252,7 @@ For complex changes, add **intent annotations** between hunks -- short explanati
        |    43 |+  const timeout = config.timeout ?? DEFAULT_TIMEOUT;
        |    44 |+  const retries = config.retries ?? 3;
     44 |    45 |   const client = createClient({ timeout });
-```
+```text
 
 > **Intent:** Replaced hardcoded timeout with a configurable value. Added retry support. The `??` nullish coalescing ensures backwards compatibility if config fields are missing.
 
@@ -264,7 +264,7 @@ For complex changes, add **intent annotations** between hunks -- short explanati
        |    54 |+      { attempts: retries, backoff: 'exponential' }
        |    55 |+    );
     52 |    56 |     return result.data;
-```
+```text
 ````
 
 **When to add intent annotations:**
@@ -311,7 +311,7 @@ For files with significant structural changes (not just config/formatting), show
 44 |   if (!decoded) return null;
 45 |   return decoded as User;
 46 | }
-```
+```text
 
 </details>
 
@@ -341,7 +341,7 @@ For files with significant structural changes (not just config/formatting), show
 59 |
 60 |   return { user: decoded as User, expiresAt: decoded.exp };
 61 | }
-```
+```text
 
 </details>
 
@@ -452,7 +452,7 @@ For files with significant structural changes (not just config/formatting), show
 40 | {original code line}
 41 | {original code line}
 42 | {original code line}
-```
+```text
 
 </details>
 
@@ -463,7 +463,7 @@ For files with significant structural changes (not just config/formatting), show
 40 | {modified code line}
 41 | {modified code line}
 42 | {modified code line}
-```
+```text
 
 </details>
 
@@ -475,7 +475,7 @@ For files with significant structural changes (not just config/formatting), show
        |    41 |+ {added line}
        |    42 |+ {added line}
     42 |    43 | {context line}
-```
+```text
 
 > **Intent:** {what the developer was doing and why}
 
@@ -1162,7 +1162,7 @@ Narrate every step of the asset pull. Never mention tool names:
 ```text
 
 For delta detection (reviewing a PR that was already reviewed):
-```
+```text
 
  Loading previous review for PR #{N}...
  Comparing against current diff...
@@ -1183,7 +1183,7 @@ Every finding in the review document must include a confidence level:
 | **Low** | Possible concern; flag for human judgment, not blocking |
 
 Format in the review table:
-```
+```text
 
 | File | Finding | Severity | Confidence |
 |------|---------|----------|------------|
@@ -1206,7 +1206,7 @@ When a previous review document exists for this PR:
 |  Regressed | Was resolved in a previous round; has reappeared |
 
 Show a delta summary at the top of the review:
-```
+```text
 
 ## Changes Since Last Review
 

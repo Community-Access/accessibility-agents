@@ -107,7 +107,8 @@ For each issue:
 - WCAG criterion
 - Location in document (page, paragraph)
 - Current state
-- Remediation steps
+- Start Here: native Word steps first
+- Advanced / Technical Follow-Up: optional XML or automation detail after the Word steps
 - Priority (Critical/Serious/Moderate)
 
 ## Expected Output

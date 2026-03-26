@@ -26,7 +26,7 @@ CRITICAL: {description}
 **Suggested fix:**
 ```suggestion
 {code}
-```
+```text
 
 ```text
 

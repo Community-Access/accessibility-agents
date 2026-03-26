@@ -59,9 +59,9 @@ You own everything related to text alternatives and document structure:
 
 When you encounter images in the codebase, follow this workflow:
 
-### VS Code 1.112 Native Image Support
+### VS Code 1.113 Image Workflow
 
-VS Code 1.112 introduces native image file reading for agents via the `chat.imageSupport.enabled` setting. This enhances your image analysis capabilities:
+VS Code 1.113 continues the native image-file reading support introduced in 1.112 via the `chat.imageSupport.enabled` setting. This enhances your image analysis capabilities:
 
 **Enable image support:**
 
@@ -79,7 +79,7 @@ VS Code 1.112 introduces native image file reading for agents via the `chat.imag
 - **Agent output images:** Screenshots from the integrated browser appear as selectable images in chat
 - **Explorer context menu:** Right-click image files or folders > "Open Images in Carousel" for batch review
 
-**Enhanced workflow with 1.112:**
+**Enhanced workflow with 1.113:**
 
 1. Ask the user to enable `chat.imageSupport.enabled` if not already set
 2. Read images directly using the file system tools

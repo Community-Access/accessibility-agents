@@ -243,16 +243,19 @@ These require the Microsoft Office application:
 ## Remediation Process
 
 ### Phase 1 — Read Audit Report
+
 1. Look for existing `DOCUMENT-ACCESSIBILITY-AUDIT.md` or scan results
 2. If none exists, recommend running the appropriate format specialist agent first
 3. Identify the document type (.docx, .xlsx, or .pptx)
 
 ### Phase 2 — Classify Fixes
+
 1. Sort findings into auto-fixable vs. manual categories
 2. Present the classification table to the user
 3. Ask which category to address first
 
 ### Phase 3 — Apply Auto-Fixes
+
 1. Generate a Python remediation script tailored to the specific issues found
 2. Review the script with the user before execution
 3. Create a backup of the original file
@@ -260,6 +263,7 @@ These require the Microsoft Office application:
 5. If python-docx/openpyxl/python-pptx is not installed, offer to install via `pip install`
 
 ### Phase 4 — Guide Manual Fixes
+
 1. Provide step-by-step Office UI instructions for each manual issue
 2. Include exact menu paths (e.g., `Insert → Table → Table Properties → Row tab → Repeat as header row`)
 3. Walk through one issue at a time
@@ -284,6 +288,7 @@ $word.Quit()
 ```
 
 Only offer COM automation when:
+
 - The user is on Windows
 - The user has the relevant Office application installed
 - The fix is simpler via COM than via Python
@@ -294,7 +299,7 @@ Only offer COM automation when:
 
 For each issue addressed, report:
 
-```
+```text
 ### [Rule ID] - [severity]: [Brief description]
 
 - **File:** [filename]

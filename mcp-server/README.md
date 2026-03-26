@@ -1,6 +1,21 @@
 # A11y Agent Team — MCP Server
 
-Server-based MCP (Model Context Protocol) server that provides accessibility scanning tools over HTTP. Works with Claude Desktop, VS Code Copilot, and any MCP-compatible client.
+Server-based MCP (Model Context Protocol) server that provides accessibility scanning tools over HTTP or stdio. Works with Claude Desktop, VS Code Copilot, and any MCP-compatible client.
+
+In this repository, the MCP server lives in the top-level `mcp-server/` directory. The main entry points are `server.js` (HTTP) and `stdio.js` (stdio).
+
+## What Works Out Of The Box
+
+The MCP server is the executable part of PDF scanning. The PDF agent and prompt files tell the model when to scan; this server provides the actual `scan_pdf_document` tool.
+
+| What you install | What you get | PDF scanning works? |
+|------------------|--------------|---------------------|
+| Prompt files only | Reusable prompt text | No |
+| Agent files only | PDF scanning instructions in chat | No |
+| Agent files + MCP server | Working `scan_pdf_document` tool | Yes |
+| Agent files + MCP server + veraPDF | Baseline scan + deep PDF/UA validation | Yes |
+
+If you only copy prompt files or agent files into a prompts or agents folder, PDF scanning will not run until a client is configured to talk to this MCP server.
 
 ## Architecture
 
@@ -15,17 +30,56 @@ Both modes share the same tool implementations via `server-core.js`.
 
 ## Quick Start
 
+Before you start, make sure `node --version` reports Node.js 18 or later and that `npm` is available.
+
+If Node.js is missing, the repository installers can now offer to install it:
+
+- Windows PowerShell installer uses `winget` when available
+- macOS shell installer uses Homebrew when available
+
+Manual fallback: <https://nodejs.org/en/download>
+
 ```bash
 cd mcp-server
 npm install
 
 # HTTP mode (default)
 npm start
-# → http://127.0.0.1:3100/mcp
+# -> http://127.0.0.1:3100/mcp
 
-# stdio mode (for Claude Desktop)
+# stdio mode (local desktop clients)
 node stdio.js
 ```
+
+For a PDF-only walkthrough, see [PDF-QUICKSTART.md](PDF-QUICKSTART.md).
+
+## Prerequisite Matrix
+
+| Class | Requirement | Needed For | Required? |
+|------|-------------|------------|-----------|
+| Runtime | Node.js 18+ | Running the MCP server | Yes |
+| Runtime | npm | Installing MCP server dependencies | Yes |
+| Runtime | `@modelcontextprotocol/sdk`, `zod` | Core MCP tool registration and execution | Yes |
+| Client | MCP-compatible client | Calling the server tools | Yes |
+| Optional feature | Java 11+ + `verapdf` | Deep PDF validation with `run_verapdf_scan` | No |
+| Optional feature | `playwright`, `@axe-core/playwright`, Chromium | Browser-based scanning tools | No |
+| Optional feature | `pdf-lib` | `convert_pdf_form_to_html` | No |
+| Installer-only | `git` | Cloning during install/update flows | No |
+| Installer-only | Python 3 | Some shell installer automation and smoke-test fallback paths | No |
+
+Python is not required to run the MCP server. It is only used by the shell installer for a few automatic config updates and as a fallback helper in some install-time checks.
+
+## Local Vs Shared Server
+
+You can run this MCP server either locally on your own machine or as a shared HTTP service.
+
+| Mode | Where it runs | Best for |
+|------|---------------|----------|
+| Local stdio | Your machine, started by the client | Claude Desktop and local-only use |
+| Local HTTP | Your machine on `127.0.0.1` | VS Code Copilot, local testing, debugging |
+| Shared HTTP | A server or container | Team use, CI/CD, remote clients |
+
+For most users, start locally first. The default HTTP binding is `127.0.0.1`, so it is not exposed to the network unless you deliberately change the host.
 
 ## Configuration
 
@@ -83,6 +137,31 @@ node stdio.js
 }
 ```
 
+## PDF-Only Quick Start
+
+If your immediate goal is only PDF accessibility scanning, this is the smallest working path:
+
+1. Install Node.js 18 or later.
+2. Open this folder: `mcp-server/`
+3. Run `npm install`
+4. Start the server with `npm start`
+5. Point your MCP client at `http://127.0.0.1:3100/mcp`
+6. Install or copy the PDF agent file if you want the guided PDF workflow in chat
+
+Minimum files for the MCP side:
+
+- `package.json`
+- `server.js`
+- `server-core.js`
+- `stdio.js`
+- `tools/`
+
+If you also want the chat workflow layer, add:
+
+- `.github/agents/pdf-accessibility.agent.md`
+- `.github/agents/pdf-scan-config.agent.md`
+- `templates/pdf-config-moderate.json` copied to your project as `.a11y-pdf-config.json` (optional)
+
 ## Available Tools
 
 ### Core Tools
@@ -138,6 +217,79 @@ npm install pdf-lib
 # veraPDF (external CLI)
 # Download from https://verapdf.org/software/
 ```
+
+## Actionable veraPDF Setup
+
+veraPDF is optional. The built-in `scan_pdf_document` tool works without it. Install veraPDF when you need deeper PDF/UA validation than the built-in heuristic scan provides.
+
+### What veraPDF is for
+
+- Validate PDF/UA conformance more deeply than the built-in scanner
+- Confirm structure and metadata issues against a dedicated PDF validator
+- Use as a second pass after baseline scanning
+
+### What veraPDF is not for
+
+- It is not required for baseline PDF scanning
+- It is not the primary remediation workflow in this repository
+- Do not assume `verapdf --fix` is part of the supported workflow here
+
+### Install veraPDF
+
+veraPDF requires Java 11 or later.
+
+**Windows**
+
+Install Java first if it is not already present:
+
+```bash
+winget install --exact --id EclipseAdoptium.Temurin.21.JRE
+```
+
+Then install veraPDF using Chocolatey if available:
+
+```bash
+choco install verapdf
+```
+
+If Chocolatey is not part of your environment, use the manual installer from <https://docs.verapdf.org/install/>.
+
+**macOS**
+
+```bash
+brew install verapdf
+```
+
+**Manual download**
+
+Download from <https://docs.verapdf.org/install/> and make sure `verapdf` is available on your `PATH`.
+
+### Verify veraPDF
+
+```bash
+verapdf --version
+```
+
+On Windows, restart your terminal or editor after installing Java or veraPDF so the updated `PATH` is picked up.
+
+### Use veraPDF directly
+
+```bash
+verapdf --flavour ua1 --format text path/to/file.pdf
+```
+
+### Use veraPDF through this MCP server
+
+Once the server is running and veraPDF is installed on the same machine, an MCP client can call `run_verapdf_scan`.
+
+Example natural-language requests:
+
+- `Run a deep PDF/UA scan on report.pdf using veraPDF`
+- `Validate brochure.pdf with veraPDF and summarize the failures`
+
+The tool will return installation guidance if `verapdf` is not installed.
+
+For more background, see [../docs/tools/verapdf-integration.md](../docs/tools/verapdf-integration.md).
 
 ## Health Check
 

@@ -73,7 +73,7 @@ Think of yourself as a senior staff engineer who has shipped production Python a
 | "deploy", "CI", "GitHub Actions" | Configure pipelines |
 | "type hints", "mypy", "pyright" | Route to `python-specialist` |
 | "async", "threading", "concurrent" | Route to `python-specialist` |
-| "screen reader", "UIA", "MSAA", "ATK", "NSAccessibility" | Route to `desktop-a11y-specialist` |
+| "screen reader", "UIA", "MSAA", "NSAccessibility" | Route to `desktop-a11y-specialist` |
 | "test with NVDA", "JAWS", "Narrator", "Accessibility Insights" | Route to `desktop-a11y-testing-coach` |
 | "NVDA addon", "globalPlugin", "appModule", "synthDriver" | Route to `nvda-addon-specialist` |
 | "NVDA manifest", "addon packaging", "Add-on Store", "NVDAObject" | Route to `nvda-addon-specialist` |

@@ -34,7 +34,7 @@ When enabled, VS Code walks up the folder hierarchy from each workspace folder u
 
 ### Example Monorepo Structure
 
-```
+```text
 my-monorepo/                       # repo root (has .git folder)
 ├── .github/
 │   ├── copilot-instructions.md    # ✅ Discovered
@@ -53,12 +53,14 @@ my-monorepo/                       # repo root (has .git folder)
 ```
 
 If you open `packages/frontend/` in VS Code with the setting enabled, you get:
+
 - The frontend package's local customizations
 - ALL parent repo customizations (instructions, agents, prompts, skills)
 
 ### Requirements
 
 For parent discovery to work:
+
 1. Your workspace folder must NOT be a git repository root itself
 2. A parent folder must contain a `.git` folder
 3. The parent repository must be trusted (VS Code prompts for trust)
@@ -67,7 +69,7 @@ For parent discovery to work:
 
 Place shared accessibility agent configurations at the repo root:
 
-```
+```text
 my-monorepo/
 ├── .github/
 │   ├── agents/                    # Shared across all packages

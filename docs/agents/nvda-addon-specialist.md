@@ -20,7 +20,7 @@
 - Does not build wxPython GUI layouts (routes to wxpython-specialist)
 - Does not perform screen reader testing (routes to desktop-a11y-testing-coach)
 - Does not handle web or document accessibility auditing
-- Does not implement platform accessibility APIs directly (routes to desktop-a11y-specialist for UIA, MSAA, ATK)
+- Does not implement platform accessibility APIs directly (routes to desktop-a11y-specialist for UIA, MSAA, NSAccessibility)
 
 ## Accessibility Audit Mode
 

@@ -103,16 +103,19 @@ You audit web content for internationalization-related accessibility issues. Thi
 ## Audit Process
 
 ### Phase 1 — Detect Languages
+
 1. Read source files and identify all languages present
 2. Check `<html lang>` correctness
 3. Find inline content that may need `lang` attributes
 
 ### Phase 2 — Check Direction
+
 1. Verify `dir` on `<html>` for RTL languages
 2. Find mixed-direction content without proper isolation
 3. Check CSS for physical vs. logical properties
 
 ### Phase 3 — Report Findings
+
 1. Missing or incorrect `lang` attributes
 2. Missing `dir` attributes on RTL content
 3. Bidirectional text without isolation

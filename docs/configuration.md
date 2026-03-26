@@ -4,7 +4,7 @@
 
 If you have many agents or skills installed, you may hit Claude Code's description character limit (defaults to 15,000 characters). Agents will silently stop loading. Increase the budget:
 
-**macOS/Linux:**
+**macOS (Terminal):**
 
 ```bash
 export SLASH_COMMAND_TOOL_CHAR_BUDGET=30000
@@ -133,6 +133,77 @@ This allows:
 - alt-text-headings to analyze actual images and compare against alt text
 - contrast-master to analyze screenshots for visual contrast issues
 - Batch image review via the carousel view
+
+## Chat Customizations Editor (VS Code 1.113+)
+
+Use the new centralized editor to manage project and profile-level AI customizations from one place:
+
+- Run `Chat: Open Chat Customizations`
+- Use the agent-type picker to switch between local agents, Copilot CLI, and Claude agent customizations
+- Create or edit instructions, prompt files, custom agents, and skills with built-in validation
+- Manage MCP servers and agent plugins from the same UI
+
+This is now the fastest way to verify whether Accessibility Agents customizations are being discovered across agent types.
+
+## MCP Across Agent Types (VS Code 1.113+)
+
+VS Code 1.113 bridges registered MCP servers into Copilot CLI and Claude agents.
+
+Practical impact for this repo:
+
+- Workspace `.vscode/mcp.json` servers can now carry across local, Copilot CLI, and Claude agent workflows
+- User-profile MCP servers configured in VS Code can be reused in CLI and Claude sessions
+- Troubleshooting missing tools should now check both MCP server state and the active agent type
+
+If you rely on local MCP servers, keep these points in mind:
+
+- Use workspace `mcp.json` when the server should travel with the repo
+- Use profile MCP configuration when the server is personal to your machine or account
+- Sandboxing is currently macOS/Linux only, not Windows
+
+## Nested Subagents (VS Code 1.113+)
+
+VS Code 1.113 adds optional nested subagent support:
+
+```json
+{
+  "chat.subagents.allowInvocationsFromSubagents": true
+}
+```
+
+This is an official VS Code capability. It is not a requirement for this repo.
+
+For Accessibility Agents, the tradeoff is:
+
+- **Reward:** nested subagents can help with intentionally designed divide-and-conquer or coordinator-worker workflows.
+- **Risk:** they can also increase wrong-agent selection, duplicate findings, latency, token usage, and debugging complexity.
+
+Repo recommendation:
+
+- Prefer explicit coordinator-worker delegation with a single top-level orchestrator.
+- Use allowlisted subagents where possible.
+- Leave nested subagents disabled by default unless a workflow is intentionally designed for recursion.
+
+In practice, bounded subagents are a net positive for this repo. Open-ended recursive delegation is not.
+
+## Integrated Browser Updates (VS Code 1.113+)
+
+The integrated browser picked up several workflow improvements that matter for accessibility testing:
+
+- Self-signed certificate trust for local HTTPS development
+- Better browser tab management via quick-open and close-all commands
+- Built-in browser tools that can share an active page with an agent when enabled
+
+Relevant settings:
+
+```json
+{
+  "workbench.browser.enableChatTools": true,
+  "workbench.browser.openLocalhostLinks": true
+}
+```
+
+Use browser tools carefully. Shared pages expose your current browser session to the agent until you revoke access.
 
 ## Troubleshooting
 

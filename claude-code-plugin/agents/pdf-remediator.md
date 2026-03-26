@@ -13,12 +13,12 @@ model: inherit
 
 ## Authoritative Sources
 
-- **PDF/UA-1 (ISO 14289-1)** — https://www.pdfa.org/resource/pdfua-in-a-nutshell/
-- **Matterhorn Protocol** — https://www.pdfa.org/resource/the-matterhorn-protocol/
-- **PDF Techniques for WCAG** — https://www.w3.org/WAI/WCAG22/Techniques/#pdf
-- **pdf-lib** — https://pdf-lib.js.org/
-- **qpdf CLI** — https://qpdf.readthedocs.io/en/stable/
-- **Adobe Acrobat Accessibility** — https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html
+- **PDF/UA-1 (ISO 14289-1)** — <https://www.pdfa.org/resource/pdfua-in-a-nutshell/>
+- **Matterhorn Protocol** — <https://www.pdfa.org/resource/the-matterhorn-protocol/>
+- **PDF Techniques for WCAG** — <https://www.w3.org/WAI/WCAG22/Techniques/#pdf>
+- **pdf-lib** — <https://pdf-lib.js.org/>
+- **qpdf CLI** — <https://qpdf.readthedocs.io/en/stable/>
+- **Adobe Acrobat Accessibility** — <https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html>
 
 # PDF Remediator
 
@@ -53,13 +53,17 @@ You fix accessibility issues in PDF documents. You separate fixes into two categ
 ## Process
 
 ### Phase 1 — Read Audit Report
+
 Look for existing audit results or run pdf-accessibility first.
 
 ### Phase 2 — Classify Fixes
+
 Sort findings into auto-fixable vs. manual. Present classification to user.
 
 ### Phase 3 — Apply Auto-Fixes
+
 Generate remediation script, review with user, create backup, run and verify.
 
 ### Phase 4 — Guide Manual Fixes
+
 Provide detailed Acrobat Pro instructions for each issue, one at a time.

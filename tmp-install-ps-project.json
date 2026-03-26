@@ -1,0 +1,36 @@
+{
+  "dryRun": true,
+  "detectedVsCodeProfiles": [
+    {
+      "key": "stable",
+      "name": "VS Code",
+      "path": "C:\\Users\\jeffbis\\AppData\\Roaming\\Code\\User",
+      "exists": true
+    },
+    {
+      "key": "insiders",
+      "name": "VS Code Insiders",
+      "path": "C:\\Users\\jeffbis\\AppData\\Roaming\\Code - Insiders\\User",
+      "exists": true
+    }
+  ],
+  "options": {
+    "copilot": true,
+    "copilotCli": true,
+    "codex": false,
+    "gemini": true,
+    "vscodeProfileMode": "both",
+    "mcpProfileMode": "stable"
+  },
+  "scope": "project",
+  "notes": [],
+  "selectedCopilotProfiles": [
+    "C:\\Users\\jeffbis\\AppData\\Roaming\\Code\\User",
+    "C:\\Users\\jeffbis\\AppData\\Roaming\\Code - Insiders\\User"
+  ],
+  "operation": "install",
+  "selectedMcpProfiles": [
+    "C:\\Users\\jeffbis\\AppData\\Roaming\\Code\\User"
+  ],
+  "targetDir": "D:\\code\\agents\\.claude"
+}

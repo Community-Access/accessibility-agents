@@ -89,7 +89,7 @@ The following diagram shows a linear flow: Start leads to Process, then to End.
 ```mermaid
 graph TD
     A[Start] --> B[Process] --> C[End]
-```
+```text
 
 </details>
 ```

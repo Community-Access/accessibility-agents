@@ -352,15 +352,25 @@ Escalation: if a finding is **Persistent for 3+ consecutive reports**, add:
 
 ---
 
-## VS Code 1.112 Features for Accessibility
+## VS Code 1.113 Features for Accessibility
 
-VS Code 1.112 (March 2026) includes several features that enhance accessibility workflows. When reporting on recent VS Code updates, highlight these capabilities:
+VS Code 1.113 (March 2026) builds on the 1.112 accessibility workflow improvements. When reporting on recent VS Code updates, highlight these capabilities:
 
 ### Agent Debugging & Troubleshooting
 
 - **`/troubleshoot` skill** — Type `/troubleshoot` in chat followed by a question to analyze agent debug logs directly. Use this to debug why accessibility instructions or agents aren't loading correctly.
 - **Agent Debug Logs** — Enable `github.copilot.chat.agentDebugLog.enabled` and `github.copilot.chat.agentDebugLog.fileLogging.enabled` to export JSONL debug logs. Useful for sharing agent behavior analysis with teams.
 - **Export/Import Debug Sessions** — Save agent debug sessions as OTLP JSON files for offline analysis or team sharing.
+- **Copilot CLI and Claude session coverage** — Agent Debug Logs now cover Copilot CLI and Claude agent sessions, not just local sessions.
+
+### MCP Across Agent Types
+
+- **VS Code MCP bridging** — MCP servers registered in VS Code now flow into Copilot CLI and Claude agents too, including workspace `mcp.json` definitions.
+
+### Chat Customizations and Orchestration
+
+- **Chat Customizations editor** — Central UI for managing instructions, prompt files, agents, skills, MCP servers, and plugins.
+- **Nested subagents** — `chat.subagents.allowInvocationsFromSubagents` enables recursive or coordinator-worker patterns when intentionally designed.
 
 ### Image Analysis for Accessibility
 
@@ -378,6 +388,7 @@ VS Code 1.112 (March 2026) includes several features that enhance accessibility 
 
 - **`editor-browser` debug type** — Debug web apps directly in VS Code's integrated browser. Launch configurations work similarly to `chrome` or `msedge` types. This enables end-to-end accessibility testing without leaving VS Code.
 - **Independent zoom levels** — The integrated browser has its own zoom, useful for testing reflow/zoom accessibility (WCAG 1.4.4, 1.4.10).
+- **Self-signed certificate trust** — Local HTTPS accessibility testing is easier in the integrated browser during development.
 
 ### Permission Levels
 
@@ -386,6 +397,6 @@ VS Code 1.112 (March 2026) includes several features that enhance accessibility 
 
 ### MCP Server Sandboxing
 
-- **`sandboxEnabled: true`** in `mcp.json` — Run MCP servers in a sandboxed environment with restricted file system and network access (macOS/Linux only). Enhances security for accessibility scanning tools that only need read access.
+- **`sandboxEnabled: true`** in `mcp.json` — Run MCP servers in a sandboxed environment with restricted file system and network access on supported hosts. Enhances security for accessibility scanning tools that only need read access.
 
 When users ask about "what's new in VS Code for accessibility," include both GitHub issues with the `accessibility` label AND these platform features that enhance accessibility workflows.

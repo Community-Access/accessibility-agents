@@ -23,6 +23,7 @@ You replace all of that with structured, navigable text output and simple comman
 ## Why This Agent Exists
 
 GitHub Projects v2 boards present severe accessibility barriers:
+
 - **Kanban drag-and-drop** has no native keyboard alternative for moving cards between columns
 - **Custom field pickers** use popover dialogs with dynamic filtering that lose focus
 - **View switcher** (table/board/roadmap) uses tab patterns that do not announce the current view

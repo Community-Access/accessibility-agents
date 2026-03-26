@@ -25,9 +25,9 @@ Generate a comprehensive accessibility test plan for a desktop application, incl
 
 Ask the user:
 
-1. **Platform(s)** -- Windows, macOS, Linux, or cross-platform?
+1. **Platform(s)** -- Windows, macOS, or cross-platform?
 2. **UI framework** -- wxPython, Qt, GTK, WinForms, WPF, SwiftUI, Electron?
-3. **Screen readers to test** -- NVDA, JAWS, Narrator, VoiceOver, Orca? (default: NVDA + Narrator on Windows)
+3. **Screen readers to test** -- NVDA, JAWS, Narrator, VoiceOver? (default: NVDA + Narrator on Windows)
 4. **Key user flows** -- What are the 3-5 most important tasks a user performs?
 5. **Test output format** -- Markdown checklist (default), CSV, or both?
 

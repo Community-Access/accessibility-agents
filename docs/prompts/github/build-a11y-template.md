@@ -37,7 +37,7 @@ With a target repo:
 | Issue Type | Dropdown | Screen Reader / Keyboard / Visual / Audio / Cognitive / Other |
 | Screen Reader | Dropdown | NVDA + Firefox, JAWS + Chrome, VoiceOver + Safari, Narrator + Edge, None, Other |
 | Browser | Dropdown | Chrome, Firefox, Safari, Edge, Other |
-| OS | Dropdown | Windows, macOS, iOS, Android, Linux |
+| OS | Dropdown | Windows, macOS, iOS, Android |
 | Component / Page | Input | Where the issue occurs |
 | Expected Behavior | Textarea | What should happen |
 | Actual Behavior | Textarea | What actually happens |

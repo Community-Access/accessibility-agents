@@ -11,7 +11,7 @@ The primary distribution method. All agents, skills, and configuration are store
 **Install:**
 
 ```bash
-# macOS/Linux
+# macOS
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
 
 # Windows (PowerShell)
@@ -21,7 +21,7 @@ irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main
 **Update:**
 
 ```bash
-# macOS/Linux
+# macOS
 bash update.sh
 
 # Windows
@@ -136,6 +136,26 @@ Create a focused package with only the agents you need:
   document-scanning/SKILL.md
   report-generation/SKILL.md
 ```
+
+**PDF-only package:**
+
+```text
+.github/agents/
+  pdf-accessibility.agent.md
+  pdf-scan-config.agent.md
+templates/
+  pdf-config-moderate.json
+mcp-server/
+  package.json
+  README.md
+  PDF-QUICKSTART.md
+  server.js
+  server-core.js
+  stdio.js
+  tools/
+```
+
+This is the smallest package in this repository that provides both the guided PDF chat workflow and the open-source scanning implementation.
 
 ### Custom Agent Extensions
 

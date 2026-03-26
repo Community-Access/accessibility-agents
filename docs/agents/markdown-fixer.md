@@ -46,7 +46,7 @@ When a Mermaid block has no preceding text description, the fixer wraps it:
 
 ```mermaid
 [original diagram code]
-```
+```text
 
 </details>
 ```

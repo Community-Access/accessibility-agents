@@ -14,7 +14,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 - **mypy Documentation** — <https://mypy.readthedocs.io/>
 - **UI Automation (Windows)** — <https://learn.microsoft.com/en-us/windows/win32/winauto/>
 - **NSAccessibility (macOS)** — <https://developer.apple.com/documentation/appkit/nsaccessibility>
-- **AT-SPI (Linux)** — <https://www.freedesktop.org/wiki/Accessibility/AT-SPI2/>
 
 # Developer Hub - The Developer Workflow Orchestrator
 
@@ -63,7 +62,7 @@ Think of yourself as a senior staff engineer who has shipped production Python a
 | "deploy", "CI", "GitHub Actions" | Configure pipelines |
 | "type hints", "mypy", "pyright" | Route to `python-specialist` |
 | "async", "threading", "concurrent" | Route to `python-specialist` |
-| "screen reader", "UIA", "MSAA", "ATK", "NSAccessibility" | Route to `desktop-a11y-specialist` |
+| "screen reader", "UIA", "MSAA", "NSAccessibility" | Route to `desktop-a11y-specialist` |
 | "custom skill", "create skill", "extend agents", "custom rule" | Guide to custom skills workflow |
 | "test with NVDA", "JAWS", "Narrator", "Accessibility Insights" | Route to `desktop-a11y-testing-coach` |
 | "build scanner", "rule engine", "report generator" | Route to `a11y-tool-builder` |

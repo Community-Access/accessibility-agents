@@ -86,7 +86,7 @@ For each human-judgment fix:
 **Current:**
 ```markdown
 For more info, [click here](https://example.com).
-```
+```text
 
 **Context:** Paragraph about API documentation
 
@@ -94,7 +94,7 @@ For more info, [click here](https://example.com).
 
 ```markdown
 For more info, [view the API documentation](https://example.com).
-```
+```text
 
 **Accept this fix?** (yes/no/edit)
 

@@ -55,7 +55,7 @@ Copy-Item templates\epub-config-moderate.json .a11y-epub-config.json
 ```
 
 ```bash
-# macOS / Linux
+# macOS
 cp templates/epub-config-moderate.json .a11y-epub-config.json
 ```
 

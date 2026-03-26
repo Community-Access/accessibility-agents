@@ -47,7 +47,7 @@ All agents run on:
 
 **For GitHub Copilot (VS Code):**
 
-- **VS Code:** Latest stable release ([Download](https://code.visualstudio.com/))
+- **VS Code:** Latest stable release and/or VS Code Insiders ([Download](https://code.visualstudio.com/))
 - **GitHub Copilot Extension:** Latest version from VS Code Marketplace
 - **GitHub Copilot Chat Extension:** Latest version from VS Code Marketplace
 - **Node.js:** v18.0.0 or higher (for CLI tools like axe-core)
@@ -65,7 +65,6 @@ All agents run on:
 **Operating Systems:**
 
 - **macOS:** 10.15 (Catalina) or later
-- **Linux:** Ubuntu 20.04+, Fedora 35+, or equivalent with bash 4.0+
 - **Windows:** Windows 10/11 with PowerShell 5.1+ (pre-installed)
 
 ### Why Version Currency Matters
@@ -125,6 +124,24 @@ npm list -g --depth=0            # Global npm packages
 
 Accessibility Agents are tested against the **latest stable releases** of all supported platforms. While older versions may work, we cannot guarantee compatibility or support issues arising from outdated tooling. If you encounter unexpected behavior, update all tools before reporting issues.
 
+### VS Code 1.113 Highlights
+
+VS Code 1.113 is currently the most relevant baseline for GitHub Copilot users of this repo. The release added several changes that improve Accessibility Agents workflows directly:
+
+- **MCP across agent types** - MCP servers configured in VS Code now bridge into Copilot CLI and Claude agents, which makes this repo's MCP guidance more consistent across local, CLI, and Claude workflows.
+- **Chat Customizations editor** - `Chat: Open Chat Customizations` gives you one place to inspect and manage instructions, prompt files, agents, skills, MCP servers, and plugins.
+- **Broader Agent Debug coverage** - Agent Debug Logs now cover Copilot CLI and Claude agent sessions in addition to local sessions.
+- **Integrated browser improvements** - local HTTPS testing with self-signed certificates is easier, and browser tab management is better for accessibility testing workflows.
+- **Nested subagents** - VS Code now supports nested subagent delegation. For this repo, that is treated as an optional platform capability, not a default architecture choice. We favor explicit coordinator-worker flows and keep nested subagents disabled by default.
+
+Subagent stance for this repo:
+
+- **Reward:** bounded subagents improve specialization, parallel analysis, and audit structure.
+- **Risk:** unrestricted or nested subagents can increase duplicate findings, wrong-agent selection, token cost, and debugging complexity.
+- **Recommendation:** use explicit, allowlisted specialist delegation; avoid recursive subagent chains unless a workflow is intentionally designed for them.
+
+For official details, see the VS Code 1.113 release notes: `https://code.visualstudio.com/updates/v1_113`.
+
 ### Authoritative Sources and Currency
 
 This project bases platform-specific guidance on official vendor documentation and release notes, not secondary summaries.
@@ -144,6 +161,25 @@ Attribution policy:
 - When settings keys are documented, link to the official settings/docs page where possible.
 
 ## Optional Customization
+
+### VS Code 1.113 Workflow Tips
+
+If you are using Accessibility Agents in VS Code 1.113, these settings and commands are the most useful starting point:
+
+```json
+{
+  "chat.useCustomizationsInParentRepositories": true,
+  "github.copilot.chat.agentDebugLog.enabled": true,
+  "github.copilot.chat.agentDebugLog.fileLogging.enabled": true,
+  "chat.imageSupport.enabled": true
+}
+```
+
+- Run `Chat: Open Chat Customizations` to inspect loaded instructions, agents, skills, MCP servers, and plugins.
+- Use `/troubleshoot` when a customization is not loading or an expected tool is missing.
+- Keep `chat.subagents.allowInvocationsFromSubagents` disabled unless you are intentionally experimenting with recursive orchestration patterns.
+
+That last point is a repo recommendation, not a VS Code limitation.
 
 ### Custom Thinking Phrases (VS Code 1.110+)
 
@@ -192,11 +228,13 @@ Have a great accessibility-themed thinking phrase? Submit a PR to add it to our 
 
 ### One-liner install
 
-**macOS / Linux:**
+**macOS:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
 ```
+
+The shell installer requires a real `bash` environment. On Windows, use PowerShell by default; use the shell installer only from Git Bash, WSL, or another environment that provides `bash`.
 
 **Windows (PowerShell):**
 
@@ -204,11 +242,25 @@ curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agen
 irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
 ```
 
+If both VS Code and VS Code Insiders are installed, the installer copies Copilot assets into both profiles automatically.
+
+Non-interactive install examples:
+
+```bash
+bash install.sh --project --copilot --yes --no-auto-update --dry-run
+```
+
+```powershell
+.\install.ps1 -Project -Copilot -Yes -NoAutoUpdate -DryRun
+```
+
+Each install, update, and uninstall command now writes a machine-readable summary or plan file by default. PowerShell scripts accept both `-SummaryPath ...` and `--summary ...`; `uninstall.ps1` also accepts `--summary=...` for compatibility. Shell scripts continue to use `--summary=...`.
+
 See the full [Getting Started Guide](docs/getting-started.md) for all installation options, manual setup, global vs project install, auto-updates, and platform-specific details.
 
 ### One-liner uninstall
 
-**macOS / Linux:**
+**macOS:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.sh | bash
@@ -290,8 +342,8 @@ The following agents support Python, wxPython, desktop accessibility, NVDA addon
 | **developer-hub** | Orchestrator. Routes development tasks to the right specialist from plain English. |
 | **python-specialist** | Python debugging, packaging (PyInstaller/Nuitka/cx_Freeze), testing, type checking, async, optimization. |
 | **wxpython-specialist** | wxPython GUI — sizer layouts, event handling, AUI, custom controls, threading, desktop accessibility. |
-| **desktop-a11y-specialist** | Platform accessibility APIs (UI Automation, MSAA, ATK, NSAccessibility), screen reader Name/Role/Value/State, focus management. |
-| **desktop-a11y-testing-coach** | Screen reader testing with NVDA, JAWS, Narrator, VoiceOver, Orca. Automated UIA testing, keyboard-only testing flows. |
+| **desktop-a11y-specialist** | Platform accessibility APIs (UI Automation, MSAA/IAccessible2, NSAccessibility), screen reader Name/Role/Value/State, focus management. |
+| **desktop-a11y-testing-coach** | Screen reader testing with NVDA, JAWS, Narrator, and VoiceOver. Automated UIA testing, keyboard-only testing flows. |
 | **a11y-tool-builder** | Build accessibility scanning tools, rule engines, document parsers, report generators, and audit automation. |
 | **nvda-addon-specialist** | NVDA screen reader addon development — globalPlugins, appModules, synthDrivers, braille tables, Add-on Store submission, grounded in official NVDA source. |
 
@@ -336,6 +388,8 @@ The following guides cover web and document accessibility features.
 | [Markdown Accessibility](docs/prompts/README.md#markdown-accessibility-prompts) | Four prompts for markdown auditing, quick checks, fix mode, and audit comparison |
 | [Configuration](docs/configuration.md) | Character budget, troubleshooting |
 | [Architecture](docs/architecture.md) | Project structure, why agents over skills/MCP, design philosophy |
+| [Subagent Architecture](docs/subagent-architecture.md) | Coordinator-worker patterns, delegation rules, allowlist validation, nested subagent policy |
+| [Troubleshooting](docs/troubleshooting.md) | MCP server issues, agent configuration, performance, platform-specific debugging |
 
 ### GitHub Workflow Docs
 
@@ -378,7 +432,7 @@ The following guides cover advanced configuration, cross-platform handoff, and d
 - CSV export with help documentation links for web and document audit findings
 - Common framework pitfalls (React conditional rendering, Tailwind contrast failures)
 - NVDA screen reader addon development (globalPlugins, appModules, synthDrivers, braille tables, Add-on Store submission)
-- Desktop application accessibility (UI Automation, MSAA/IAccessible2, ATK/AT-SPI, NSAccessibility)
+- Desktop application accessibility (UI Automation, MSAA/IAccessible2, NSAccessibility)
 
 ## Source Citation Policy
 

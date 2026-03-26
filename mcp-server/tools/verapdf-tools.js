@@ -44,7 +44,7 @@ export function registerVeraPdfTools(server) {
         return {
           content: [{
             type: "text",
-            text: "veraPDF is not installed or not on PATH.\n\nInstall from: https://verapdf.org/software/\nThen ensure `verapdf` is available in your terminal.",
+            text: "veraPDF is not installed or not on PATH.\n\nBaseline PDF scanning still works with `scan_pdf_document`. For deeper PDF/UA validation through `run_verapdf_scan`, install Java 11+ and veraPDF.\n\nWindows:\n  Java:    winget install --exact --id EclipseAdoptium.Temurin.21.JRE\n  veraPDF: choco install verapdf\n  Manual:  https://docs.verapdf.org/install/\n\nmacOS:\n  brew install verapdf\n\nLinux:\n  snap install verapdf\n\nAfter installation, restart your terminal or editor so `verapdf` is on PATH.",
           }],
         };
       }

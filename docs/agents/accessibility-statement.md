@@ -56,12 +56,12 @@
 
 ## Sample Usage
 
-```
+```text
 @accessibility-statement Generate a W3C-format accessibility statement 
 from the audit results in WEB-ACCESSIBILITY-AUDIT.md.
 ```
 
-```
+```text
 @accessibility-statement Create an EU-model statement for our website, 
 including the feedback mechanism and enforcement procedure for Germany.
 ```

@@ -13,11 +13,11 @@ model: inherit
 
 ## Authoritative Sources
 
-- **python-docx** — https://python-docx.readthedocs.io/
-- **openpyxl** — https://openpyxl.readthedocs.io/
-- **python-pptx** — https://python-pptx.readthedocs.io/
-- **Microsoft Accessibility Checker** — https://support.microsoft.com/en-us/office/improve-accessibility-with-the-accessibility-checker-a16f6de0-2f39-4a2b-8bd8-5ad801426c7f
-- **OOXML (ISO/IEC 29500)** — https://www.ecma-international.org/publications-and-standards/standards/ecma-376/
+- **python-docx** — <https://python-docx.readthedocs.io/>
+- **openpyxl** — <https://openpyxl.readthedocs.io/>
+- **python-pptx** — <https://python-pptx.readthedocs.io/>
+- **Microsoft Accessibility Checker** — <https://support.microsoft.com/en-us/office/improve-accessibility-with-the-accessibility-checker-a16f6de0-2f39-4a2b-8bd8-5ad801426c7f>
+- **OOXML (ISO/IEC 29500)** — <https://www.ecma-international.org/publications-and-standards/standards/ecma-376/>
 
 # Office Remediator
 

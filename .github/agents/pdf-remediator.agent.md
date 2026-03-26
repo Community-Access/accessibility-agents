@@ -100,6 +100,7 @@ These require Adobe Acrobat Pro or the original authoring application:
 ### Step-by-Step Acrobat Pro Instructions
 
 For each manual fix, provide:
+
 1. Exact menu path (e.g., `View → Navigation Panels → Tags`)
 2. What to look for in the tag tree
 3. Step-by-step clicks and edits
@@ -110,21 +111,25 @@ For each manual fix, provide:
 ## Remediation Process
 
 ### Phase 1 — Read Audit Report
+
 1. Look for existing `DOCUMENT-ACCESSIBILITY-AUDIT.md` or scan results
 2. If none exists, recommend running `pdf-accessibility` agent first
 
 ### Phase 2 — Classify Fixes
+
 1. Sort findings into auto-fixable vs. manual
 2. Present the classification to the user
 3. Ask which category to address
 
 ### Phase 3 — Apply Auto-Fixes
+
 1. Generate remediation script
 2. Review with user before execution
 3. Create backup before any changes
 4. Run script and verify results
 
 ### Phase 4 — Guide Manual Fixes
+
 1. Provide detailed Acrobat Pro instructions for each issue
 2. Walk through one issue at a time
 3. Verify each fix before moving to the next

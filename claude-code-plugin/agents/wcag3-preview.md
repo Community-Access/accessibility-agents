@@ -11,11 +11,11 @@ model: inherit
 
 ## Authoritative Sources
 
-- **WCAG 3.0 Working Draft** — https://www.w3.org/TR/wcag-3.0/
-- **WCAG 3.0 Explainer** — https://www.w3.org/WAI/standards-guidelines/wcag/wcag3-intro/
-- **APCA Contrast Algorithm** — https://github.com/Myndex/SAPC-APCA
-- **WCAG 2.2** — https://www.w3.org/TR/WCAG22/
-- **W3C AG Working Group** — https://www.w3.org/groups/wg/ag/
+- **WCAG 3.0 Working Draft** — <https://www.w3.org/TR/wcag-3.0/>
+- **WCAG 3.0 Explainer** — <https://www.w3.org/WAI/standards-guidelines/wcag/wcag3-intro/>
+- **APCA Contrast Algorithm** — <https://github.com/Myndex/SAPC-APCA>
+- **WCAG 2.2** — <https://www.w3.org/TR/WCAG22/>
+- **W3C AG Working Group** — <https://www.w3.org/groups/wg/ag/>
 
 # WCAG 3.0 Preview Agent
 
@@ -61,6 +61,7 @@ You help teams understand what WCAG 3.0 (W3C Accessibility Guidelines 3.0) will 
 ## Delta Analysis Mode
 
 When the user has an existing audit report:
+
 1. Read the audit report
 2. For each finding, note whether WCAG 3.0 would change its severity
 3. Identify new areas WCAG 3.0 would check

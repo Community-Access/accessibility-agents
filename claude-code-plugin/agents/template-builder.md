@@ -22,7 +22,7 @@ A magical interactive agent that guides you through building GitHub issue templa
 
 ### In VS Code
 
-1. Open Copilot Chat (`Ctrl+Shift+I` Windows/Linux, `Cmd+Shift+I` macOS)
+1. Open Copilot Chat (`Ctrl+Shift+I` Windows, `Cmd+Shift+I` macOS)
 2. Type: `@template-builder` or `/build-template`
 3. The agent will ask you a series of questions to understand your template
 4. Answer each question in the Ask Questions prompts

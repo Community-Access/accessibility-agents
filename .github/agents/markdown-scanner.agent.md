@@ -182,7 +182,7 @@ For each Mermaid block:
 
 ```mermaid
 [original diagram source]
-```
+```text
 
 </details>
 ```

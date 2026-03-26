@@ -75,6 +75,7 @@ You help teams understand what WCAG 3.0 (W3C Accessibility Guidelines 3.0) will 
 ### 3. Functional Needs Categories
 
 WCAG 3.0 organizes outcomes by user functional needs rather than technical guidelines:
+
 - Vision (low vision, color vision, blindness)
 - Hearing (deafness, hard of hearing)
 - Motor/Physical (limited reach, tremor, paralysis)

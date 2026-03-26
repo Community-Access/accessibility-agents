@@ -1,10 +1,10 @@
 # desktop-a11y-testing-coach - Desktop Accessibility Testing
 
-> Desktop accessibility testing expert -- testing with NVDA, JAWS, Narrator, VoiceOver, and Orca screen readers, Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, high contrast verification, and creating desktop accessibility test plans.
+> Desktop accessibility testing expert -- testing with NVDA, JAWS, Narrator, and VoiceOver screen readers, Accessibility Insights for Windows, automated UIA testing, keyboard-only testing flows, high contrast verification, and creating desktop accessibility test plans.
 
 ## When to Use It
 
-- Learning screen reader commands for desktop app testing (NVDA, JAWS, Narrator, VoiceOver, Orca)
+- Learning screen reader commands for desktop app testing (NVDA, JAWS, Narrator, VoiceOver)
 - Creating a desktop accessibility test plan
 - Setting up automated UIA testing with pywinauto or comtypes
 - Verifying keyboard navigation and focus management
@@ -38,7 +38,6 @@ When asked to audit test coverage, the agent uses 10 structured detection rules 
 - JAWS commands and behavioral differences (Windows, commercial)
 - Narrator commands for quick smoke tests (Windows, built-in)
 - VoiceOver commands (macOS, built-in)
-- Orca commands (Linux/GNOME)
 - Accessibility Insights for Windows: Live Inspect, FastPass, Assessment
 - Automated UIA testing with pywinauto and comtypes
 - Keyboard testing phases: Tab navigation, control interaction, focus management
