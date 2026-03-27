@@ -100,11 +100,6 @@ jobs:
             if ($data.schemaVersion -ne '1.0') { throw "Unexpected schemaVersion in $path" }
             if (-not $data.dryRun) { throw "Expected dryRun=true in $path" }
             if ($data.check) { throw "Expected check=false in $path" }
-                  - name: Validate shell script syntax
-                    run: |
-                      /bin/bash -n ./install.sh
-                      /bin/bash -n ./update.sh
-                      /bin/bash -n ./uninstall.sh
             if (-not $data.timestampUtc) { throw "Missing timestampUtc in $path" }
             if (-not $data.requestedOptions) { throw "Missing requestedOptions in $path" }
             if (-not $data.backupMetadataPath) { throw "Missing backupMetadataPath in $path" }
@@ -112,6 +107,19 @@ jobs:
             $backup = Get-Content $data.backupMetadataPath -Raw | ConvertFrom-Json
             if (-not $backup.dryRun) { throw "Expected backup dryRun=true for $path" }
             if ($backup.check) { throw "Expected backup check=false for $path" }
+          }
+
+      - name: Validate PowerShell script syntax
+        shell: powershell
+        run: |
+          $scripts = @('install.ps1', 'update.ps1', 'uninstall.ps1', 'scripts\Installer.Common.ps1')
+          foreach ($script in $scripts) {
+            try {
+              [ScriptBlock]::Create((Get-Content $script -Raw)) | Out-Null
+              Write-Host "✓ $script syntax valid"
+            } catch {
+              throw "Syntax error in ${script}: $_"
+            }
           }
 
   macos-system-bash-integration:
@@ -145,12 +153,6 @@ jobs:
           /bin/bash "$GITHUB_WORKSPACE/install.sh" --project --check --summary=.a11y-agent-team-install-plan.json
           /bin/bash "$GITHUB_WORKSPACE/update.sh" --project --check --summary=.a11y-agent-team-update-plan.json
           /bin/bash "$GITHUB_WORKSPACE/uninstall.sh" --project --check --summary=.a11y-agent-team-uninstall-plan.json
-                  - name: Validate PowerShell script syntax
-                    shell: powershell
-                    run: |
-                      [ScriptBlock]::Create((Get-Content .\install.ps1 -Raw)) | Out-Null
-                      [ScriptBlock]::Create((Get-Content .\update.ps1 -Raw)) | Out-Null
-                      [ScriptBlock]::Create((Get-Content .\uninstall.ps1 -Raw)) | Out-Null
 
           python3 - <<'PY'
           import json
