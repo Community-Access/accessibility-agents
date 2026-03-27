@@ -541,16 +541,19 @@ choose_mcp_capability_plan() {
   echo ""
   echo "  Choose your MCP setup focus:"
   echo ""
-  echo "  1) Baseline scanning      - document and PDF scanning only"
-  echo "  2) Browser testing        - baseline plus Playwright browser tools"
-  echo "  3) PDF-heavy workflow     - baseline plus deep PDF and form tools"
-  echo "  4) Everything             - install every MCP capability we support"
-  echo "  5) Custom                 - choose capabilities one by one"
+  echo "  1) Baseline scanning"
+  echo "  2) Browser testing"
+  echo "  3) PDF-heavy workflow"
+  echo "  4) Everything"
+  echo "  5) Custom"
   echo ""
   printf "  Choose [1/2/3/4/5]: "
   read -r mcp_plan_choice < /dev/tty
 
   case "$mcp_plan_choice" in
+    1)
+      MCP_PLAN_FOCUS="Baseline scanning"
+      ;;
     2)
       MCP_PLAN_FOCUS="Browser testing"
       MCP_PLAN_BROWSER=true
@@ -568,12 +571,13 @@ choose_mcp_capability_plan() {
       ;;
     5)
       MCP_PLAN_FOCUS="Custom"
-      read_yes_no "Enable browser-based accessibility tools now?" false && MCP_PLAN_BROWSER=true
-      read_yes_no "Enable PDF form conversion tools now?" false && MCP_PLAN_PDF_FORMS=true
-      read_yes_no "Prepare deep PDF validation tools now?" false && MCP_PLAN_DEEP_PDF=true
-      if ! read_yes_no "Configure VS Code MCP settings automatically?" true; then
-        MCP_PLAN_CONFIGURE_VSCODE=false
-      fi
+      read_yes_no "Enable browser tools?" false && MCP_PLAN_BROWSER=true
+      read_yes_no "Enable PDF form tools?" false && MCP_PLAN_PDF_FORMS=true
+      read_yes_no "Enable deep PDF validation?" false && MCP_PLAN_DEEP_PDF=true
+      read_yes_no "Configure VS Code MCP?" true && MCP_PLAN_CONFIGURE_VSCODE=true
+      ;;
+    *)
+      MCP_PLAN_FOCUS="Baseline scanning"
       ;;
   esac
 }
