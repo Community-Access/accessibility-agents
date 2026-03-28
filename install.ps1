@@ -15,6 +15,9 @@ param(
     [switch]$Cli,
     [switch]$Codex,
     [switch]$Gemini,
+    [ValidateSet('developer','reviewer','author','full','custom')]
+    [string]$Role,
+    [string]$Config,
     [switch]$Yes,
     [switch]$NoAutoUpdate,
     [switch]$Check,
@@ -33,6 +36,23 @@ $ErrorActionPreference = "Stop"
 $AutoApprove = $Yes.IsPresent
 $ScriptDirForHelpers = if ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } else { (Get-Location).Path }
 . (Join-Path $ScriptDirForHelpers 'scripts\Installer.Common.ps1')
+
+# ---------------------------------------------------------------------------
+# Team config file support (-Config path.json)
+# Reads role, scope, and platform preferences from a shared JSON file.
+# ---------------------------------------------------------------------------
+if ($Config) {
+    if (-not (Test-Path $Config)) {
+        Write-Host "  Error: Config file not found: $Config"
+        exit 1
+    }
+    $TeamConfig = Get-Content -Path $Config -Raw | ConvertFrom-Json
+    if ($TeamConfig.scope -eq 'project') { $Project = $true }
+    elseif ($TeamConfig.scope -eq 'global') { $Global = $true }
+    if ($TeamConfig.role) { $Role = $TeamConfig.role }
+    if ($null -ne $TeamConfig.autoUpdate -and $TeamConfig.autoUpdate -eq $false) { $NoAutoUpdate = $true }
+    if ($TeamConfig.yes -eq $true) { $AutoApprove = $true }
+}
 
 # Determine source: running from repo clone or downloaded?
 $Downloaded = $false
@@ -111,6 +131,10 @@ if ($Project -and $Global) {
     exit 1
 }
 
+# Smart default: if inside a git repo, default to project (1); otherwise global (2)
+$InGitRepo = Test-Path (Join-Path (Get-Location) '.git')
+$ScopeDefault = if ($InGitRepo) { '1' } else { '2' }
+
 $Choice = if ($Project) {
     '1'
 }
@@ -121,7 +145,9 @@ else {
     if (-not (Test-InteractivePrompting)) {
         throw "Choose either -Project or -Global when running non-interactively."
     }
-    Read-Host "  Choose [1/2]"
+    $ScopePromptHint = if ($ScopeDefault -eq '1') { '[1*/2]' } else { '[1/2*]' }
+    $ScopeInput = Read-Host "  Choose $ScopePromptHint"
+    if ([string]::IsNullOrWhiteSpace($ScopeInput)) { $ScopeDefault } else { $ScopeInput }
 }
 
 switch ($Choice) {
@@ -161,11 +187,22 @@ if (-not $HasAnyPlatformFlag) {
 $RoleChoice = if ($HasAnyPlatformFlag) {
     'flags'
 }
+elseif ($Role) {
+    # -Role param provided: map to choice number and skip wizard
+    switch ($Role) {
+        'developer' { '1' }
+        'reviewer'  { '2' }
+        'author'    { '3' }
+        'full'      { '4' }
+        'custom'    { '5' }
+    }
+}
 elseif ($AutoApprove -or (-not (Test-InteractivePrompting))) {
     '4'
 }
 else {
-    Read-Host "  Choose [1-5]"
+    $RoleInput = Read-Host "  Choose [1-5, default: 4]"
+    if ([string]::IsNullOrWhiteSpace($RoleInput)) { '4' } else { $RoleInput }
 }
 
 switch ($RoleChoice) {
@@ -1679,6 +1716,46 @@ if ($McpInstalled) {
     Write-Host "  Health check: http://127.0.0.1:3100/health"
     Show-PdfDeepValidationReadiness
     Show-McpCapabilityReadiness -WorkingDir $McpDest
+}
+
+# ---------------------------------------------------------------------------
+# Post-install health check
+# ---------------------------------------------------------------------------
+$HealthTotal = $Agents.Count
+$HealthFound = ($Agents | Where-Object { Test-Path (Join-Path $TargetDir "agents\$_") }).Count
+$HealthOk = $HealthFound -eq $HealthTotal
+Write-Host ""
+if ($HealthOk) {
+    Write-Host "  Health check: $HealthFound/$HealthTotal agent files installed [PASS]"
+} else {
+    Write-Host "  Health check: $HealthFound/$HealthTotal agent files installed [WARN]"
+    Write-Host "    Re-run the installer to repair missing files."
+}
+
+# ---------------------------------------------------------------------------
+# Getting Started tips (role-tailored)
+# ---------------------------------------------------------------------------
+Write-Host ""
+Write-Host "  Getting started:"
+switch -Wildcard ($RoleName) {
+    'Developer*' {
+        Write-Host "    - In Copilot Chat, try: @accessibility-lead review this component"
+        Write-Host "    - In Claude Code, try: Build a login form"
+        Write-Host "    - Run a quick scan: npx @axe-core/cli http://localhost:3000"
+    }
+    'Reviewer*' {
+        Write-Host "    - In Copilot Chat, try: @web-accessibility-wizard audit this page"
+        Write-Host "    - In Claude Code, try: Run an accessibility audit of src/"
+    }
+    'Content*' {
+        Write-Host "    - In Claude Code, try: Audit my markdown files for accessibility"
+        Write-Host "    - For documents, try: @document-accessibility-wizard scan this folder"
+    }
+    default {
+        Write-Host "    - In Copilot Chat, try: @accessibility-lead review this component"
+        Write-Host "    - In Claude Code, try: Build a login form"
+        Write-Host "    - For audits, try: @web-accessibility-wizard audit this page"
+    }
 }
 
 # Auto-update setup (global install only)

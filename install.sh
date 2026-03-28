@@ -168,6 +168,8 @@ VSCODE_PROFILE_MODE="auto"
 MCP_PROFILE_MODE="auto"
 AUTO_APPROVE=false
 NO_AUTO_UPDATE=false
+ROLE_ARG=""
+CONFIG_ARG=""
 
 for arg in "$@"; do
   case "$arg" in
@@ -188,8 +190,34 @@ for arg in "$@"; do
     --mcp-profile-insiders) MCP_PROFILE_MODE=$(set_profile_mode "$MCP_PROFILE_MODE" "insiders") ;;
     --mcp-profile-both) MCP_PROFILE_MODE=$(set_profile_mode "$MCP_PROFILE_MODE" "both") ;;
     --summary=*) SUMMARY_PATH="${arg#--summary=}" ;;
+    --role=*) ROLE_ARG="${arg#--role=}" ;;
+    --config=*) CONFIG_ARG="${arg#--config=}" ;;
   esac
 done
+
+# ---------------------------------------------------------------------------
+# Team config file support (--config=path.json)
+# ---------------------------------------------------------------------------
+if [ -n "$CONFIG_ARG" ]; then
+  if [ ! -f "$CONFIG_ARG" ]; then
+    echo "  Error: Config file not found: $CONFIG_ARG"
+    exit 1
+  fi
+  # Parse JSON config using python3 (widely available)
+  if command -v python3 &>/dev/null; then
+    _cfg_scope=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('scope',''))" "$CONFIG_ARG" 2>/dev/null)
+    _cfg_role=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('role',''))" "$CONFIG_ARG" 2>/dev/null)
+    _cfg_auto_update=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(str(d.get('autoUpdate','')).lower())" "$CONFIG_ARG" 2>/dev/null)
+    _cfg_yes=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(str(d.get('yes','')).lower())" "$CONFIG_ARG" 2>/dev/null)
+    [ "$_cfg_scope" = "project" ] && choice="1"
+    [ "$_cfg_scope" = "global" ] && choice="2"
+    [ -n "$_cfg_role" ] && [ "$_cfg_role" != "" ] && ROLE_ARG="$_cfg_role"
+    [ "$_cfg_auto_update" = "false" ] && NO_AUTO_UPDATE=true
+    [ "$_cfg_yes" = "true" ] && AUTO_APPROVE=true
+  else
+    echo "  Warning: python3 not found, cannot parse config file. Ignoring --config."
+  fi
+fi
 
 
 if [ -z "$choice" ]; then
@@ -213,8 +241,16 @@ if [ -z "$choice" ]; then
   echo "  2) Global    - Install to ~/.claude/"
   echo "                  (available in all your projects)"
   echo ""
-  printf "  Choose [1/2]: "
+  # Smart default: if inside a git repo, default to project (1); otherwise global (2)
+  if [ -d ".git" ]; then
+    scope_default="1"
+    printf "  Choose [1*/2]: "
+  else
+    scope_default="2"
+    printf "  Choose [1/2*]: "
+  fi
   read -r choice < /dev/tty
+  [ -z "$choice" ] && choice="$scope_default"
 fi
 
 case "$choice" in
@@ -254,6 +290,36 @@ if [ "$COPILOT_FLAG" = true ] || [ "$COPILOT_CLI_FLAG" = true ] || [ "$CODEX_FLA
   if [ "$HAS_NODE" = true ]; then
     ROLE_MCP=true
   fi
+elif [ -n "$ROLE_ARG" ]; then
+  # --role flag provided: map to role and skip wizard
+  case "$ROLE_ARG" in
+    developer) get_role_platforms "developer" ; ROLE_NAME="Developer" ;;
+    reviewer)  get_role_platforms "reviewer"  ; ROLE_NAME="Reviewer" ;;
+    author)    get_role_platforms "author"    ; ROLE_NAME="Content author" ;;
+    full)      get_role_platforms "full"      ; ROLE_NAME="Full install" ;;
+    custom)    ROLE_NAME="Custom"
+      # Custom via flag still needs interactive prompts or defaults to none
+      if has_tty; then
+        printf "  Install Copilot agents? [y/N]: "
+        read -r yn < /dev/tty
+        [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_COPILOT=true
+        printf "  Install Copilot CLI agents? [y/N]: "
+        read -r yn < /dev/tty
+        [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_COPILOT_CLI=true
+        printf "  Install Codex CLI support? [y/N]: "
+        read -r yn < /dev/tty
+        [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_CODEX_CLI=true
+        printf "  Install Gemini CLI support? [y/N]: "
+        read -r yn < /dev/tty
+        [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_GEMINI_CLI=true
+        printf "  Set up MCP server? [y/N]: "
+        read -r yn < /dev/tty
+        [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_MCP=true
+      fi
+      ;;
+    *) echo "  Warning: Unknown role '$ROLE_ARG', defaulting to full."
+       get_role_platforms "full" ; ROLE_NAME="Full install" ;;
+  esac
 elif has_tty && [ "$AUTO_APPROVE" != true ]; then
   echo ""
   echo "  Step 2 of 3 -- What best describes your role?"
@@ -264,8 +330,9 @@ elif has_tty && [ "$AUTO_APPROVE" != true ]; then
   echo "  4) Full install   - Everything your system supports"
   echo "  5) Custom         - Choose each platform individually"
   echo ""
-  printf "  Choose [1-5]: "
+  printf "  Choose [1-5, default: 4]: "
   read -r role_choice < /dev/tty
+  [ -z "$role_choice" ] && role_choice="4"
   case "$role_choice" in
     1) get_role_platforms "developer" ; ROLE_NAME="Developer" ;;
     2) get_role_platforms "reviewer"  ; ROLE_NAME="Reviewer" ;;
@@ -2340,6 +2407,49 @@ if [ "$MCP_INSTALLED" = true ]; then
   show_pdf_deep_validation_readiness
   show_mcp_capability_readiness "$MCP_DEST"
 fi
+
+# ---------------------------------------------------------------------------
+# Post-install health check
+# ---------------------------------------------------------------------------
+health_total=${#AGENTS[@]}
+health_found=0
+for agent in "${AGENTS[@]}"; do
+  [ -f "$TARGET_DIR/agents/$agent" ] && health_found=$((health_found + 1))
+done
+echo ""
+if [ "$health_found" -eq "$health_total" ]; then
+  echo "  Health check: $health_found/$health_total agent files installed [PASS]"
+else
+  echo "  Health check: $health_found/$health_total agent files installed [WARN]"
+  echo "    Re-run the installer to repair missing files."
+fi
+
+# ---------------------------------------------------------------------------
+# Getting Started tips (role-tailored)
+# ---------------------------------------------------------------------------
+echo ""
+echo "  Getting started:"
+case "$ROLE_NAME" in
+  Developer*)
+    echo "    - In Copilot Chat, try: @accessibility-lead review this component"
+    echo "    - In Claude Code, try: Build a login form"
+    echo "    - Run a quick scan: npx @axe-core/cli http://localhost:3000"
+    ;;
+  Reviewer*)
+    echo "    - In Copilot Chat, try: @web-accessibility-wizard audit this page"
+    echo "    - In Claude Code, try: Run an accessibility audit of src/"
+    ;;
+  Content*)
+    echo "    - In Claude Code, try: Audit my markdown files for accessibility"
+    echo "    - For documents, try: @document-accessibility-wizard scan this folder"
+    ;;
+  *)
+    echo "    - In Copilot Chat, try: @accessibility-lead review this component"
+    echo "    - In Claude Code, try: Build a login form"
+    echo "    - For audits, try: @web-accessibility-wizard audit this page"
+    ;;
+esac
+
 # Save current version hash
 if command -v git &>/dev/null && [ -d "$SCRIPT_DIR/.git" ]; then
   if [ "$PLUGIN_INSTALL" = true ]; then
