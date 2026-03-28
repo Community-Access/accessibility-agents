@@ -218,6 +218,7 @@ detect_installed_tools() {
 
 show_detected_tools() {
   echo "  Detected tools:"
+  found_any=false
   for pair in \
     "VS Code|$HAS_VSCODE_STABLE" \
     "VS Code Insiders|$HAS_VSCODE_INSIDERS" \
@@ -232,11 +233,13 @@ show_detected_tools() {
     label="${pair%%|*}"
     found="${pair##*|}"
     if [ "$found" = true ]; then
-      echo "    [x] $label"
-    else
-      echo "    [ ] $label"
+      echo "    - $label"
+      found_any=true
     fi
   done
+  if [ "$found_any" = false ]; then
+    echo "    (none detected)"
+  fi
   echo ""
 }
 

@@ -214,23 +214,23 @@ function Show-DetectedTools {
     param([hashtable]$Tools)
 
     Write-Host "  Detected tools:"
-    $Items = @(
-        @("VS Code",         $Tools.VSCode.Stable)
-        @("VS Code Insiders", $Tools.VSCode.Insiders)
-        @("Node.js",         $Tools.Node.Available)
-        @("Claude Code",     $Tools.ClaudeCode.Available)
-        @("Copilot CLI",     $Tools.CopilotCli.Available)
-        @("Codex CLI",       $Tools.CodexCli.Available)
-        @("Gemini CLI",      $Tools.GeminiCli.Available)
-        @("Python 3",        $Tools.Python3.Available)
-        @("Java",            $Tools.Java.Available)
-        @("veraPDF",         $Tools.VeraPdf.Available)
-    )
-    foreach ($Item in $Items) {
-        $Label = $Item[0]
-        $Found = $Item[1]
-        $Mark = if ($Found) { "[x]" } else { "[ ]" }
-        Write-Host "    $Mark $Label"
+    $Found = @()
+    if ($Tools.VSCode.Stable)      { $Found += "VS Code" }
+    if ($Tools.VSCode.Insiders)    { $Found += "VS Code Insiders" }
+    if ($Tools.Node.Available)     { $Found += "Node.js" }
+    if ($Tools.ClaudeCode.Available) { $Found += "Claude Code" }
+    if ($Tools.CopilotCli.Available) { $Found += "Copilot CLI" }
+    if ($Tools.CodexCli.Available) { $Found += "Codex CLI" }
+    if ($Tools.GeminiCli.Available) { $Found += "Gemini CLI" }
+    if ($Tools.Python3.Available)  { $Found += "Python 3" }
+    if ($Tools.Java.Available)     { $Found += "Java" }
+    if ($Tools.VeraPdf.Available)  { $Found += "veraPDF" }
+    if ($Found.Count -eq 0) {
+        Write-Host "    (none detected)"
+    } else {
+        foreach ($Name in $Found) {
+            Write-Host "    - $Name"
+        }
     }
     Write-Host ""
 }
