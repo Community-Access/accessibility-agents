@@ -157,3 +157,128 @@ initialize_operation_state() {
   write_backup_metadata "$backup_path" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"$operation\",\"dryRun\":$(json_bool "$dry_run"),\"check\":$(json_bool "$check_mode"),\"summaryPath\":\"$(json_escape "$summary_path")\",\"candidatePaths\":$candidates,\"existingPaths\":$existing,\"note\":\"$(json_escape "$notes")\"}"
   printf '%s' "$backup_path"
 }
+
+# ---------------------------------------------------------------------------
+# detect_installed_tools
+# Sets global HAS_* variables for the wizard to use when mapping roles.
+# ---------------------------------------------------------------------------
+detect_installed_tools() {
+  HAS_NODE=false
+  NODE_VERSION=""
+  if command -v node &>/dev/null; then
+    HAS_NODE=true
+    NODE_VERSION="$(node --version 2>/dev/null | sed 's/^v//')"
+  fi
+
+  HAS_NPM=false
+  command -v npm &>/dev/null && HAS_NPM=true
+
+  HAS_GIT=false
+  command -v git &>/dev/null && HAS_GIT=true
+
+  HAS_JAVA=false
+  if command -v java &>/dev/null; then
+    HAS_JAVA=true
+  fi
+
+  HAS_VERAPDF=false
+  command -v verapdf &>/dev/null && HAS_VERAPDF=true
+
+  HAS_PYTHON3=false
+  if command -v python3 &>/dev/null; then
+    HAS_PYTHON3=true
+  elif command -v python &>/dev/null; then
+    HAS_PYTHON3=true
+  fi
+
+  HAS_VSCODE_STABLE=false
+  HAS_VSCODE_INSIDERS=false
+  while IFS='|' read -r key label path; do
+    [ -n "$path" ] || continue
+    if [ -d "$path" ]; then
+      case "$key" in
+        stable) HAS_VSCODE_STABLE=true ;;
+        insiders) HAS_VSCODE_INSIDERS=true ;;
+      esac
+    fi
+  done < <(get_vscode_profiles)
+
+  HAS_CLAUDE=false
+  command -v claude &>/dev/null && HAS_CLAUDE=true
+
+  HAS_COPILOT_CLI=false
+  [ -d "$HOME/.copilot" ] && HAS_COPILOT_CLI=true
+
+  HAS_CODEX_CLI=false
+  [ -d "$HOME/.codex" ] && HAS_CODEX_CLI=true
+
+  HAS_GEMINI_CLI=false
+  command -v gemini &>/dev/null && HAS_GEMINI_CLI=true
+}
+
+show_detected_tools() {
+  echo "  Detected tools:"
+  for pair in \
+    "VS Code|$HAS_VSCODE_STABLE" \
+    "VS Code Insiders|$HAS_VSCODE_INSIDERS" \
+    "Node.js|$HAS_NODE" \
+    "Claude Code|$HAS_CLAUDE" \
+    "Copilot CLI|$HAS_COPILOT_CLI" \
+    "Codex CLI|$HAS_CODEX_CLI" \
+    "Gemini CLI|$HAS_GEMINI_CLI" \
+    "Python 3|$HAS_PYTHON3" \
+    "Java|$HAS_JAVA" \
+    "veraPDF|$HAS_VERAPDF"; do
+    label="${pair%%|*}"
+    found="${pair##*|}"
+    if [ "$found" = true ]; then
+      echo "    [x] $label"
+    else
+      echo "    [ ] $label"
+    fi
+  done
+  echo ""
+}
+
+get_role_platforms() {
+  # Usage: get_role_platforms <role>
+  # Sets ROLE_CLAUDE, ROLE_COPILOT, ROLE_COPILOT_CLI, ROLE_CODEX_CLI,
+  # ROLE_GEMINI_CLI, ROLE_MCP based on role and detected tools.
+  local role="$1"
+
+  ROLE_CLAUDE=true
+  ROLE_COPILOT=false
+  ROLE_COPILOT_CLI=false
+  ROLE_CODEX_CLI=false
+  ROLE_GEMINI_CLI=false
+  ROLE_MCP=false
+
+  local has_vscode=false
+  { [ "$HAS_VSCODE_STABLE" = true ] || [ "$HAS_VSCODE_INSIDERS" = true ]; } && has_vscode=true
+
+  case "$role" in
+    developer)
+      ROLE_COPILOT=$has_vscode
+      ROLE_COPILOT_CLI=$HAS_COPILOT_CLI
+      ROLE_CODEX_CLI=$HAS_CODEX_CLI
+      ROLE_MCP=$HAS_NODE
+      ;;
+    reviewer)
+      ROLE_COPILOT=$has_vscode
+      ROLE_MCP=$HAS_NODE
+      ;;
+    author)
+      ROLE_MCP=$HAS_NODE
+      ;;
+    full)
+      ROLE_COPILOT=$has_vscode
+      ROLE_COPILOT_CLI=$HAS_COPILOT_CLI
+      ROLE_CODEX_CLI=$HAS_CODEX_CLI
+      ROLE_GEMINI_CLI=$HAS_GEMINI_CLI
+      ROLE_MCP=$HAS_NODE
+      ;;
+    custom)
+      ROLE_CLAUDE=false
+      ;;
+  esac
+}

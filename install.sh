@@ -202,7 +202,10 @@ if [ -z "$choice" ]; then
   echo "  Built by Community Access"
   echo "  ================================"
   echo ""
-  echo "  Where would you like to install?"
+  detect_installed_tools
+  show_detected_tools
+  echo ""
+  echo "  Step 1 of 3 -- Where should agents be installed?"
   echo ""
   echo "  1) Project   - Install to .claude/ in the current directory"
   echo "                  (recommended, check into version control)"
@@ -231,6 +234,93 @@ case "$choice" in
     exit 1
     ;;
 esac
+
+# ---- Step 2 of 3: What is your role? ----
+ROLE_NAME=""
+ROLE_COPILOT=false
+ROLE_COPILOT_CLI=false
+ROLE_CODEX_CLI=false
+ROLE_GEMINI_CLI=false
+ROLE_MCP=false
+
+if [ "$COPILOT_FLAG" = true ] || [ "$COPILOT_CLI_FLAG" = true ] || [ "$CODEX_FLAG" = true ] || [ "$GEMINI_FLAG" = true ]; then
+  # CLI flags provided -- skip role wizard
+  ROLE_NAME="flags"
+  ROLE_COPILOT=$COPILOT_FLAG
+  ROLE_COPILOT_CLI=$COPILOT_CLI_FLAG
+  ROLE_CODEX_CLI=$CODEX_FLAG
+  ROLE_GEMINI_CLI=$GEMINI_FLAG
+  # MCP when Node.js detected
+  if [ "$HAS_NODE" = true ]; then
+    ROLE_MCP=true
+  fi
+elif has_tty && [ "$AUTO_APPROVE" != true ]; then
+  echo ""
+  echo "  Step 2 of 3 -- What best describes your role?"
+  echo ""
+  echo "  1) Developer      - Claude Code, Copilot, Copilot CLI, Codex, and MCP server"
+  echo "  2) Reviewer       - Claude Code, Copilot, and MCP server"
+  echo "  3) Content author - Claude Code and MCP server"
+  echo "  4) Full install   - Everything your system supports"
+  echo "  5) Custom         - Choose each platform individually"
+  echo ""
+  printf "  Choose [1-5]: "
+  read -r role_choice < /dev/tty
+  case "$role_choice" in
+    1) get_role_platforms "developer" ; ROLE_NAME="Developer" ;;
+    2) get_role_platforms "reviewer"  ; ROLE_NAME="Reviewer" ;;
+    3) get_role_platforms "author"    ; ROLE_NAME="Content author" ;;
+    4) get_role_platforms "full"      ; ROLE_NAME="Full install" ;;
+    5)
+      ROLE_NAME="Custom"
+      printf "  Install Copilot agents? [y/N]: "
+      read -r yn < /dev/tty
+      [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_COPILOT=true
+      printf "  Install Copilot CLI agents? [y/N]: "
+      read -r yn < /dev/tty
+      [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_COPILOT_CLI=true
+      printf "  Install Codex CLI support? [y/N]: "
+      read -r yn < /dev/tty
+      [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_CODEX_CLI=true
+      printf "  Install Gemini CLI support? [y/N]: "
+      read -r yn < /dev/tty
+      [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_GEMINI_CLI=true
+      printf "  Set up MCP server? [y/N]: "
+      read -r yn < /dev/tty
+      [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_MCP=true
+      ;;
+    *) get_role_platforms "full" ; ROLE_NAME="Full install" ;;
+  esac
+else
+  # Non-interactive or --yes: default to Full
+  get_role_platforms "full"
+  ROLE_NAME="Full install"
+fi
+
+# ---- Step 3 of 3: Confirm ----
+if has_tty && [ "$AUTO_APPROVE" != true ] && [ "$ROLE_NAME" != "flags" ]; then
+  echo ""
+  echo "  Step 3 of 3 -- Confirm your selections"
+  echo ""
+  echo "  Role:  $ROLE_NAME"
+  echo "  Scope: $([ "$choice" = "1" ] && echo 'Project' || echo 'Global')"
+  echo ""
+  echo "  The following will be installed:"
+  echo "    [x] Claude Code agents (always included)"
+  [ "$ROLE_COPILOT" = true ]     && echo "    [x] Copilot agents"        || echo "    [ ] Copilot agents"
+  [ "$ROLE_COPILOT_CLI" = true ] && echo "    [x] Copilot CLI agents"    || echo "    [ ] Copilot CLI agents"
+  [ "$ROLE_CODEX_CLI" = true ]   && echo "    [x] Codex CLI support"     || echo "    [ ] Codex CLI support"
+  [ "$ROLE_GEMINI_CLI" = true ]  && echo "    [x] Gemini CLI extension"  || echo "    [ ] Gemini CLI extension"
+  [ "$ROLE_MCP" = true ]         && echo "    [x] MCP server"            || echo "    [ ] MCP server"
+  echo ""
+  printf "  Continue? [Y/n]: "
+  read -r yn < /dev/tty
+  if [ "$yn" = "n" ] || [ "$yn" = "N" ]; then
+    echo "  Installation cancelled."
+    [ "$DOWNLOADED" = true ] && rm -rf "$TMPDIR_DL"
+    exit 0
+  fi
+fi
 
 SELECTED_COPILOT_PROFILES="$(select_vscode_profiles "$VSCODE_PROFILE_MODE")"
 SELECTED_MCP_PROFILES="$(select_vscode_profiles "$MCP_PROFILE_MODE")"
@@ -1435,12 +1525,7 @@ COPILOT_INSTALLED=false
 COPILOT_DESTINATIONS=()
 install_copilot=false
 
-if [ "$COPILOT_FLAG" = true ]; then
-  install_copilot=true
-elif read_yes_no "Install Copilot agents?" false; then
-  echo ""
-  echo "  Would you also like to install GitHub Copilot agents?"
-  echo "  This adds accessibility agents for Copilot Chat in VS Code/GitHub."
+if [ "$COPILOT_FLAG" = true ] || [ "$ROLE_COPILOT" = true ]; then
   install_copilot=true
 fi
 
@@ -1770,13 +1855,7 @@ fi
 COPILOT_CLI_INSTALLED=false
 
 install_copilot_cli=false
-if [ "$COPILOT_CLI_FLAG" = true ]; then
-  install_copilot_cli=true
-elif read_yes_no "Install Copilot CLI agents?" false; then
-  echo ""
-  echo "  Would you also like to install Copilot CLI agents?"
-  echo "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
-  echo "  (For VS Code Copilot Chat extension, use --copilot instead)"
+if [ "$COPILOT_CLI_FLAG" = true ] || [ "$ROLE_COPILOT_CLI" = true ]; then
   install_copilot_cli=true
 fi
 
@@ -1872,19 +1951,8 @@ CODEX_ROLES_SRC="$SCRIPT_DIR/.codex/roles"
 CODEX_INSTALLED=false
 
 install_codex=false
-if [ "$CODEX_FLAG" = true ]; then
+if [ "$CODEX_FLAG" = true ] || [ "$ROLE_CODEX_CLI" = true ]; then
   install_codex=true
-elif { [ -f "$CODEX_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; } && { true < /dev/tty; } 2>/dev/null; then
-  echo ""
-  echo "  Would you also like to install Codex CLI support?"
-  echo "  This installs the stable AGENTS.md baseline plus experimental"
-  echo "  TOML-based Codex roles under .codex/config.toml and .codex/roles/."
-  echo ""
-  printf "  Install Codex CLI support? [y/N]: "
-  read -r codex_choice < /dev/tty
-  if [ "$codex_choice" = "y" ] || [ "$codex_choice" = "Y" ]; then
-    install_codex=true
-  fi
 fi
 
 if [ "$install_codex" = true ] && { [ -f "$CODEX_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; }; then
@@ -1943,13 +2011,7 @@ GEMINI_SRC="$SCRIPT_DIR/.gemini/extensions/a11y-agents"
 GEMINI_INSTALLED=false
 
 install_gemini=false
-if [ "$GEMINI_FLAG" = true ]; then
-  install_gemini=true
-elif [ -d "$GEMINI_SRC" ] && read_yes_no "Install Gemini CLI support?" false; then
-  echo ""
-  echo "  Would you also like to install Gemini CLI support?"
-  echo "  This installs accessibility skills as a Gemini CLI extension"
-  echo "  so Gemini automatically applies WCAG AA rules to all UI code."
+if [ "$GEMINI_FLAG" = true ] || [ "$ROLE_GEMINI_CLI" = true ]; then
   install_gemini=true
 fi
 
@@ -2033,11 +2095,7 @@ MCP_DEST=""
 
 if [ -d "$MCP_SERVER_SRC" ]; then
   setup_mcp=false
-  if read_yes_no "Set up MCP server?" false; then
-    echo ""
-    echo "  Would you like to set up the MCP server for document and PDF scanning?"
-    echo "  This copies the open-source server to a stable location, can install npm"
-    echo "  dependencies, and can add the VS Code MCP entry for local use."
+  if [ "$ROLE_MCP" = true ]; then
     setup_mcp=true
   fi
 
@@ -2460,7 +2518,13 @@ UPDATESCRIPT
     if [ "$(uname)" = "Darwin" ]; then
       # macOS: LaunchAgent
       PLIST_DIR="$HOME/Library/LaunchAgents"
-      PLIST_FILE="$PLIST_DIR/com.community-access.a11y-agent-team-update.plist"
+      # Backward compatibility: unload old-named LaunchAgent if present
+      OLD_PLIST="$PLIST_DIR/com.community-access.a11y-agent-team-update.plist"
+      if [ -f "$OLD_PLIST" ]; then
+        launchctl bootout "gui/$(id -u)" "$OLD_PLIST" 2>/dev/null || true
+        rm -f "$OLD_PLIST"
+      fi
+      PLIST_FILE="$PLIST_DIR/com.community-access.accessibility-agents-update.plist"
       mkdir -p "$PLIST_DIR"
       cat > "$PLIST_FILE" << PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -2468,7 +2532,7 @@ UPDATESCRIPT
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.community-access.a11y-agent-team-update</string>
+  <string>com.community-access.accessibility-agents-update</string>
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
@@ -2530,7 +2594,7 @@ if [ "$MCP_INSTALLED" = true ] && [ "$MCP_PROFILE_MODE" != "auto" ] && [ -z "$SE
   INSTALL_NOTES+=("The requested MCP profile filter did not match any installed VS Code profile.")
 fi
 
-write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}")}"
+write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"role\":\"$(json_escape "$ROLE_NAME")\",\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}")}"
 
 echo ""
 echo "  Summary written to:"

@@ -1,4 +1,4 @@
-# A11y Agent Team Uninstaller (Windows PowerShell)
+# Accessibility Agents Uninstaller (Windows PowerShell)
 # Built by Community Access - https://community-access.org
 #
 # Usage:
@@ -65,8 +65,8 @@ if ($PendingSummaryPath) {
 
 if (-not $Choice) {
     Write-Host ""
-    Write-Host "  A11y Agent Team Uninstaller"
-    Write-Host "  ==========================="
+    Write-Host "  Accessibility Agents Uninstaller"
+    Write-Host "  ================================="
     Write-Host ""
     Write-Host "  Where would you like to uninstall from?"
     Write-Host ""
@@ -602,11 +602,12 @@ if ($Choice -eq "2") {
     Write-Host ""
     Write-Host "  Removing auto-update..."
 
-    $TaskName = "A11yAgentTeamUpdate"
-    $Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-    if ($Task) {
-        Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
-        Write-Host "    - Scheduled task removed"
+    foreach ($TaskName in @('AccessibilityAgentsUpdate', 'A11yAgentTeamUpdate')) {
+        $Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+        if ($Task) {
+            Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
+            Write-Host "    - Scheduled task '$TaskName' removed"
+        }
     }
 
     foreach ($File in @(".a11y-agent-team-update.ps1", ".a11y-agent-team-version", ".a11y-agent-team-update.log", ".accessibility-agents-update.ps1", ".accessibility-agents-version", ".accessibility-agents-update.log")) {

@@ -1,4 +1,4 @@
-# A11y Agent Team - Update Script (Windows PowerShell)
+# Accessibility Agents - Update Script (Windows PowerShell)
 # Built by Community Access - https://community-access.org
 #
 # Checks for updates from GitHub and installs them.

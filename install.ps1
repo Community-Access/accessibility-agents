@@ -1,4 +1,4 @@
-# A11y Agent Team Installer (Windows PowerShell)
+# Accessibility Agents Installer (Windows PowerShell)
 # Built by Community Access - https://community-access.org
 #
 # NOTE: Keep this file ASCII-only. Windows PowerShell 5.1 reads .ps1 files
@@ -48,7 +48,7 @@ if (-not $ScriptDir -or -not (Test-Path (Join-Path $ScriptDir ".claude\agents"))
     $Downloaded = $true
     $TmpDir = Join-Path $env:TEMP "a11y-agent-team-install-$(Get-Random)"
     Write-Host ""
-    Write-Host "  Downloading A11y Agent Team..."
+    Write-Host "  Downloading Accessibility Agents..."
 
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
         Write-Host "  Error: git is required. Install git and try again."
@@ -77,23 +77,33 @@ if (Test-Path $AgentsSrc) {
 
 if ($Agents.Count -eq 0) {
     Write-Host "  Error: No agents found in $AgentsSrc"
-    Write-Host "  Make sure you are running this script from the a11y-agent-team directory."
+    Write-Host "  Make sure you are running this script from the accessibility-agents directory."
     if ($Downloaded) { Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue }
     exit 1
 }
 
 Write-Host ""
-Write-Host "  A11y Agent Team Installer"
+Write-Host "  Accessibility Agents Installer"
 Write-Host "  Built by Community Access"
-Write-Host "  ========================="
+Write-Host "  ================================"
 Write-Host ""
-Write-Host "  Where would you like to install?"
+
+# ---------------------------------------------------------------------------
+# Auto-detect installed tools before any prompts
+# ---------------------------------------------------------------------------
+$DetectedTools = Detect-InstalledTools
+Show-DetectedTools -Tools $DetectedTools
+
+# ---------------------------------------------------------------------------
+# Step 1 of 3: Scope
+# ---------------------------------------------------------------------------
+Write-Host "  Step 1 of 3 -- Where should agents be installed?"
 Write-Host ""
-Write-Host "  1) Project   - Install to .claude\ in the current directory"
-Write-Host "                  (recommended, check into version control)"
+Write-Host "  1) This project  - Adds agents to the current directory"
+Write-Host "                     (recommended for team use)"
 Write-Host ""
-Write-Host "  2) Global    - Install to ~\.claude\"
-Write-Host "                  (available in all your projects)"
+Write-Host "  2) All projects  - Installs to your home directory"
+Write-Host "                     (available everywhere)"
 Write-Host ""
 
 if ($Project -and $Global) {
@@ -128,6 +138,96 @@ switch ($Choice) {
     default {
         Write-Host "  Invalid choice. Exiting."
         exit 1
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Step 2 of 3: Role
+# ---------------------------------------------------------------------------
+$HasAnyPlatformFlag = $Copilot.IsPresent -or $Cli.IsPresent -or $Codex.IsPresent -or $Gemini.IsPresent
+
+if (-not $HasAnyPlatformFlag) {
+    Write-Host ""
+    Write-Host "  Step 2 of 3 -- What best describes your role?"
+    Write-Host ""
+    Write-Host "  1) Developer      - Full toolkit: Claude, Copilot, CLI agents, MCP server"
+    Write-Host "  2) Reviewer       - Audit tools: Claude, Copilot, MCP server"
+    Write-Host "  3) Content author - Document scanning: Claude, MCP server"
+    Write-Host "  4) Full install   - Everything your system supports"
+    Write-Host "  5) Custom         - Choose each platform individually"
+    Write-Host ""
+}
+
+$RoleChoice = if ($HasAnyPlatformFlag) {
+    'flags'
+}
+elseif ($AutoApprove -or (-not (Test-InteractivePrompting))) {
+    '4'
+}
+else {
+    Read-Host "  Choose [1-5]"
+}
+
+switch ($RoleChoice) {
+    '1' { $Platforms = Get-RoleBasedPlatforms -Role 'developer' -Tools $DetectedTools; $RoleName = 'Developer' }
+    '2' { $Platforms = Get-RoleBasedPlatforms -Role 'reviewer'  -Tools $DetectedTools; $RoleName = 'Reviewer' }
+    '3' { $Platforms = Get-RoleBasedPlatforms -Role 'author'    -Tools $DetectedTools; $RoleName = 'Content author' }
+    '4' { $Platforms = Get-RoleBasedPlatforms -Role 'full'      -Tools $DetectedTools; $RoleName = 'Full install' }
+    '5' {
+        $Platforms = Get-RoleBasedPlatforms -Role 'custom' -Tools $DetectedTools
+        $RoleName = 'Custom'
+        Write-Host ""
+        Write-Host "  Choose which platforms to install:"
+        $r = Read-Host "    Copilot agents (VS Code)? [y/N]"
+        if ($r -match '^[Yy]') { $Platforms.Copilot = $true }
+        $r = Read-Host "    Copilot CLI agents? [y/N]"
+        if ($r -match '^[Yy]') { $Platforms.CopilotCli = $true }
+        $r = Read-Host "    Gemini CLI extension? [y/N]"
+        if ($r -match '^[Yy]') { $Platforms.GeminiCli = $true }
+        $r = Read-Host "    MCP server (document/PDF scanning)? [y/N]"
+        if ($r -match '^[Yy]') { $Platforms.Mcp = $true }
+    }
+    'flags' {
+        $Platforms = @{
+            Claude     = $true
+            Copilot    = $Copilot.IsPresent
+            CopilotCli = $Cli.IsPresent
+            CodexCli   = $Codex.IsPresent
+            GeminiCli  = $Gemini.IsPresent
+            Mcp        = $false
+        }
+        $RoleName = 'Custom (from flags)'
+    }
+    default {
+        Write-Host "  Invalid choice. Defaulting to full install."
+        $Platforms = Get-RoleBasedPlatforms -Role 'full' -Tools $DetectedTools
+        $RoleName = 'Full install'
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Step 3 of 3: Confirm
+# ---------------------------------------------------------------------------
+$ScopeLabel = if ($Choice -eq '1') { 'This project' } else { 'All projects (global)' }
+Write-Host ""
+Write-Host "  Step 3 of 3 -- Review and confirm"
+Write-Host ""
+Write-Host "  Role:  $RoleName"
+Write-Host "  Scope: $ScopeLabel"
+Write-Host ""
+Write-Host "  What will be installed:"
+Write-Host "    [x] Claude Code agents (always included)"
+if ($Platforms.Copilot)    { Write-Host "    [x] Copilot agents for VS Code" }
+if ($Platforms.CopilotCli) { Write-Host "    [x] Copilot CLI agents" }
+if ($Platforms.GeminiCli)  { Write-Host "    [x] Gemini CLI extension" }
+if ($Platforms.Mcp)        { Write-Host "    [x] MCP server (document and PDF scanning)" }
+Write-Host ""
+
+if ((-not $AutoApprove) -and (Test-InteractivePrompting)) {
+    $confirm = Read-Host "  Continue? [Y/n]"
+    if ($confirm -match '^[Nn]') {
+        Write-Host "  Installation cancelled."
+        exit 0
     }
 }
 
@@ -292,6 +392,7 @@ $InstallSummary = [ordered]@{
     scope = if ($Choice -eq '1') { 'project' } else { 'global' }
     targetDir = $TargetDir
     requestedOptions = [ordered]@{
+        role = $RoleName
         copilot = [bool]$Copilot
         copilotCli = [bool]$Cli
         codex = [bool]$Codex
@@ -905,14 +1006,7 @@ Save-Manifest
 # Copilot agents
 $CopilotInstalled = $false
 $CopilotDestinations = @()
-$InstallCopilot = $Copilot.IsPresent
-
-if ((-not $InstallCopilot) -and (Read-YesNo -Prompt 'Install Copilot agents?' -DefaultYes:$false)) {
-    Write-Host ""
-    Write-Host "  Would you also like to install GitHub Copilot agents?"
-    Write-Host "  This adds accessibility agents for Copilot Chat in VS Code/GitHub."
-    $InstallCopilot = $true
-}
+$InstallCopilot = $Copilot.IsPresent -or $Platforms.Copilot
 
 if ($InstallCopilot) {
 
@@ -1190,15 +1284,7 @@ Write-Host "  Your existing files were preserved. Only new content was added."
 $CopilotCliInstalled = $false
 $CliAgentsDst = ""
 $CliSkillsDst = ""
-$InstallCopilotCli = $Cli.IsPresent
-
-if ((-not $InstallCopilotCli) -and (Read-YesNo -Prompt 'Install Copilot CLI agents?' -DefaultYes:$false)) {
-    Write-Host ""
-    Write-Host "  Would you also like to install Copilot CLI agents?"
-    Write-Host "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
-    Write-Host "  (For VS Code Copilot Chat extension, the --copilot option above is used)"
-    $InstallCopilotCli = $true
-}
+$InstallCopilotCli = $Cli.IsPresent -or $Platforms.CopilotCli
 
 if ($InstallCopilotCli) {
     Write-Host ""
@@ -1266,17 +1352,9 @@ if ($InstallCopilotCli) {
 $GeminiSrc = Join-Path $ScriptDir ".gemini\extensions\a11y-agents"
 $GeminiInstalled = $false
 $GeminiDst = ""
-$InstallGemini = $Gemini.IsPresent
+$InstallGemini = $Gemini.IsPresent -or $Platforms.GeminiCli
 
 if (Test-Path $GeminiSrc) {
-    if ((-not $InstallGemini) -and (Read-YesNo -Prompt 'Install Gemini CLI support?' -DefaultYes:$false)) {
-        Write-Host ""
-        Write-Host "  Would you also like to install Gemini CLI support?"
-        Write-Host "  This installs accessibility skills as a Gemini CLI extension"
-        Write-Host "  so Gemini automatically applies WCAG AA rules to all UI code."
-        $InstallGemini = $true
-    }
-
     if ($InstallGemini) {
         Write-Host ""
         Write-Host "  Installing Gemini CLI extension..."
@@ -1360,12 +1438,7 @@ $McpInstalled = $false
 $McpDest = $null
 
 if (Test-Path $McpServerSrc) {
-    Write-Host ""
-    Write-Host "  Would you like to set up the MCP server for document and PDF scanning?"
-    Write-Host "  This copies the open-source server to a stable location, can install npm"
-    Write-Host "  dependencies, and can add the VS Code MCP entry for local use."
-
-    if (Read-YesNo -Prompt 'Set up MCP server?' -DefaultYes:$false) {
+    if ($Platforms.Mcp) {
         if ($Choice -eq "1") {
             $McpDest = Join-Path (Get-Location) "mcp-server"
         }
@@ -1625,15 +1698,16 @@ if ($Choice -eq "2") {
         }
 
         # Create a scheduled task that runs daily at 9:00 AM
-        $TaskName = "A11yAgentTeamUpdate"
+        $TaskName = "AccessibilityAgentsUpdate"
         $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy RemoteSigned -WindowStyle Hidden -File `"$UpdateDst`" -Silent"
         $Trigger = New-ScheduledTaskTrigger -Daily -At "9:00AM"
         $Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -DontStopOnIdleEnd
 
-        # Remove existing task if present
+        # Remove existing task if present (both old and new names)
+        Unregister-ScheduledTask -TaskName "A11yAgentTeamUpdate" -Confirm:$false -ErrorAction SilentlyContinue
         Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
 
-        Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "Auto-update A11y Agent Team for Claude Code" -ErrorAction SilentlyContinue | Out-Null
+        Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "Auto-update Accessibility Agents for Claude Code" -ErrorAction SilentlyContinue | Out-Null
 
         if ($?) {
             Write-Host "  Auto-updates enabled (daily at 9:00 AM via Task Scheduler)."

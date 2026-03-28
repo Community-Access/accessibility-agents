@@ -1,5 +1,5 @@
 #!/bin/bash
-# A11y Agent Team - Update Script
+# Accessibility Agents - Update Script
 # Built by Community Access - https://community-access.org
 #
 # Checks for updates from GitHub and installs them.
