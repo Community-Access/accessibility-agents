@@ -9,40 +9,95 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Guided MCP Server Installation
+
+- **Interactive Capability Planner** -- The installer now detects Node.js and presents a guided setup menu with five profiles: Baseline scanning, Browser testing (Playwright + axe-core), PDF-heavy workflow (pdf-lib), Everything, and Custom.
+- **Automatic dependency management** -- Node.js 18+ detection and installation via `winget` (Windows) or `brew` (macOS); npm dependencies installed automatically; Playwright and Chromium downloaded when browser testing is selected; Java 21 JRE and veraPDF offered for deep PDF/UA validation.
+- **VS Code settings auto-configuration** -- MCP server entry automatically merged into `settings.json` for both Stable and Insiders editions. No manual JSON editing required.
+- **Health check and readiness dashboard** -- Post-install verification starts the MCP server on a test port, hits `/health`, and displays a full readiness report showing which capabilities are ready, missing, or partially configured.
+
+#### Completely Rebuilt Installation Tooling
+
+- **New shared installer libraries** -- `scripts/Installer.Common.ps1` and `scripts/installer-common.sh` provide consistent cross-platform behavior for VS Code profile detection, JSON summary writing, directory operations, and backup metadata.
+- **16 new CLI flags** across install/update/uninstall scripts: `--dry-run`, `--check`, `--yes`, `--vscode-stable`, `--vscode-insiders`, `--vscode-both`, `--summary=path`, `--copilot`, `--cli`, `--codex`, `--gemini`, `--no-auto-update`, `--mcp-profile-stable`, `--mcp-profile-insiders`, `--mcp-profile-both`.
+- **Machine-readable output** -- Every operation writes a structured JSON summary file (`.a11y-agent-team-install-summary.json`, `-update-summary.json`, or `-uninstall-summary.json`) for CI pipeline consumption.
+- **Clean uninstallation** -- Uninstaller now removes MCP server entries from VS Code `settings.json` automatically, including cleanup of empty `mcp.servers` objects.
+
 #### New Documentation
 
-- **`docs/subagent-architecture.md`** — Comprehensive guide covering VS Code 1.113 agent orchestrator patterns, delegation rules, coordinator-worker architecture, explicit allowlisting validation, nested subagent policy (disabled by default), framework integration (Chat Customizations, Agent Debug Log, MCP compatibility), integration patterns for different platforms (Copilot, Claude Code, Copilot CLI, Codex), and troubleshooting guide for orchestration issues.
-- **`docs/troubleshooting.md`** — Detailed troubleshooting guide covering MCP server issues (List Servers command, trust prompts, workspace vs profile configuration, version checking), agent configuration problems (agent picker, frontmatter syntax validation errors, coordinator allowlist validation), platform-specific debugging (Windows/macOS/Linux), performance optimization, and common accessibility workflow issues.
+- **`docs/subagent-architecture.md`** -- VS Code 1.113 agent orchestrator patterns, delegation rules, coordinator-worker architecture, allowlist validation, nested subagent policy, and platform integration patterns.
+- **`docs/troubleshooting.md`** -- MCP server connection issues, trust prompts, workspace vs. profile configuration, agent picker problems, frontmatter validation, and platform-specific debugging.
+- **`docs/beacon/USER_GUIDE.md`** -- Full telemetry and beacon system documentation.
+- **`mcp-server/PDF-QUICKSTART.md`** -- Six-step minimal-path guide from zero to working PDF accessibility scan.
 
-#### New Validation & CI Tools
+#### New Validation and CI Tools
 
-- **Coordinator allowlist validation rule** — Added to `scripts/validate-agents.js`: agents using the 'agent' tool must now declare an explicit `agents:` frontmatter field listing which specialist agents they can invoke. This prevents unintended delegation and enforces the explicit coordinator-worker pattern.
-- **`scripts/check-release-consistency.js`** — New CLI tool that verifies version alignment across all release manifests (CHANGELOG.md, plugin.yaml, mcp-server/package.json, gemini-extension.json). Returns zero exit code if all versions match, nonzero if drift detected. Used for pre-release validation and CI checks.
-- **`.github/workflows/check-release-consistency.yml`** — GitHub Actions workflow that automatically runs `check-release-consistency.js` on every push to main and pull request to main, catching version drift before merge.
+- **Coordinator allowlist validation rule** -- Added to `scripts/validate-agents.js`: coordinator agents must declare an explicit `agents:` frontmatter field listing which specialist agents they can invoke. Enforced at commit time.
+- **`scripts/check-release-consistency.js`** -- Verifies version alignment across CHANGELOG.md, plugin.yaml, mcp-server/package.json, and gemini-extension.json. Returns nonzero on drift.
+- **4 new CI workflows** -- `installer-dry-run.yml` (validates dry-runs), `installer-integration.yml` (real install/update/uninstall cycles on Windows CI), `check-release-consistency.yml` (catches version drift), `mcp-prerequisite-consistency.yml` (validates MCP prerequisite documentation accuracy).
 
 ### Changed
 
-#### Documentation & Messaging
+#### Document Audit Reports Now Speak Plain Language
 
-- Updated README.md with links to new `docs/subagent-architecture.md` and `docs/troubleshooting.md` in the documentation table for improved discoverability.
-- Refreshed `manifest.json` timestamp to 2026-03-26 to reflect release date.
-- Enhanced marketplace and setup guidance with explicit VS Code 1.113 baseline call-outs, including MCP server bridging to Copilot CLI and Claude agents, Chat Customizations editor support, nested subagent defaults, and Agent Debug Log enhancements.
+- **Native-tool-first remediation standard** -- All document agents (word-accessibility, excel-accessibility, powerpoint-accessibility, pdf-accessibility, document-csv-reporter) restructured to present findings in three parts: Start Here (native app ribbon/menu path), Why It Matters (plain language impact), Advanced (XML/scripting for power users).
+- **document-accessibility-wizard** -- New Remediation Writing Standard section, new Start Here and Native App Action Plan sections in report template.
+- **document-csv-reporter** -- CSV `fix_suggestion` column now leads with native-app action in the first sentence.
+
+#### 96 Agent Definitions Updated Across 3 Platforms
+
+- Synchronized all agent changes across Copilot (`.github/agents/`), Claude Code (`.claude/agents/`), and Claude Code plugin (`claude-code-plugin/agents/`).
+- All coordinator agents now declare explicit `agents:` allowlists in YAML frontmatter for auditable delegation.
+- Approximately 40 agent files received markdown rendering fixes: blank lines before lists, language-tagged code fences, trailing newline normalization.
+
+#### Platform Focus: Windows and macOS
+
+- Removed Linux desktop accessibility references across agent suite, installers, and documentation. Affects desktop-a11y-specialist, desktop-a11y-testing-coach, testing-coach, screen-reader-lab, python-specialist, wxpython-specialist, and all installer scripts.
+- Agents, installers, and documentation now explicitly target Windows and macOS. Linux users can still use the agents for web and document accessibility.
+
+#### MCP Server Documentation Overhaul
+
+- **MCP README rewritten** -- "What Works Out of the Box" capability matrix, 9-row prerequisite matrix, local vs. shared server comparison, actionable veraPDF setup with platform-specific install commands, verification examples.
+- **New PDF Quick Start guide** -- Standalone 6-step path to PDF scanning without the full agent suite.
+
+#### VS Code 1.113 Alignment
+
+- MCP servers now bridge automatically to Copilot CLI and Claude agent sessions (configure once, works everywhere).
+- Chat Customizations editor support documented.
+- Agent Debug Logs now cover Copilot CLI and Claude agent sessions.
+- Nested subagent controls documented with clear guidance (disabled by default).
+- Integrated browser (`editor-browser`) with self-signed certificate support for local HTTPS testing.
+
+#### Documentation and Messaging
+
+- Updated README.md with links to new subagent-architecture.md and troubleshooting.md.
+- Refreshed `manifest.json` timestamp to 2026-03-26.
+- Enhanced marketplace and setup guidance with explicit VS Code 1.113 baseline call-outs.
+- Updated User Guide with platform-prefixed section headings, prerequisite matrix, corrected MCP port (3100), and veraPDF strategy section.
+- Updated Getting Started with new installer flags, JSON summary schema, CI validation workflows, and Safe Validation section.
+- Updated Configuration with four new VS Code 1.113 sections.
 
 #### Version Consistency
 
-- Corrected `CHANGELOG.md` version entry from `## [4.50]` to `## [4.5.0]` to follow semantic versioning (X.Y.Z format, not X.YZ).
-- Updated all platform manifest versions (mcp-server/package.json, plugin.yaml, gemini-extension.json) from v4.0.0 to v4.5.0 for consistency.
+- Corrected version entry from `## [4.50]` to `## [4.5.0]` for semantic versioning compliance.
+- Updated all platform manifest versions (mcp-server/package.json, plugin.yaml, gemini-extension.json) from v4.0.0 to v4.5.0.
 
-#### Agent Orchestration & Validation
+#### Agent Orchestration and Validation
 
-- Enhanced `scripts/validate-agents.js` with new coordinator allowlist validation rule that flags agents using the 'agent' tool without an `agents:` frontmatter field, ensuring explicit delegation constraints per 1.113 best practices.
-- Reorganized reference documentation: moved AGENTS.md and code-review-standards.md from `.github/agents/` to `.github/` root directory to clarify that these are reference documents, not agent definitions.
+- Enhanced `scripts/validate-agents.js` with coordinator allowlist validation rule.
+- Reorganized reference documentation: moved AGENTS.md and code-review-standards.md from `.github/agents/` to `.github/` root to clarify they are reference docs, not agent definitions.
 
 ### Fixed
 
-- Fixed version drift across release manifests by implementing version consistency validation and automated CI checking to catch misalignment at the point of commit/push.
-- Fixed agent validation to enforce coordinator allowlist pattern, preventing unintended nested subagent invocations that could exceed 1.113 depth limits.
-- Fixed agent directory organization by moving non-agent reference documents (AGENTS.md, code-review-standards.md) out of the agents directory, reducing validator false positives and improving clarity.
+- Fixed version drift across release manifests with automated consistency validation and CI checking.
+- Fixed agent validation to enforce coordinator allowlist pattern, preventing unintended nested subagent invocations.
+- Fixed agent directory organization by moving non-agent reference documents out of the agents directory.
+- Fixed CI installer pipeline reliability:
+  - Removed UTF-8 BOM bytes from bash scripts to prevent shell parser failures.
+  - Re-normalized line endings with updated `.gitattributes`.
+  - Replaced `robocopy` with `Copy-Item` in Windows CI to eliminate exit code 9 failures.
+  - Corrected bash syntax issues in installer flow control.
+  - Removed malformed embedded YAML step fragments from workflow definitions.
 
 ## [4.10.0] - 2026-03-24
 

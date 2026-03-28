@@ -4,6 +4,14 @@
 
 This repository contains 80 accessibility-focused AI agents across multiple platforms (Copilot, Claude Code, Codex, Gemini). This file provides high-level guidance for AI coding assistants working in this codebase.
 
+## Repository Writing Policy: No Emoji
+
+Repository-wide hard rule: do not add emoji characters in generated, edited, or reviewed content.
+
+- Applies to release notes, changelog entries, docs, prompts, instructions, agent files, issue/PR text, and chat-generated copy intended for repository publication.
+- Replace emoji with plain text labels.
+- If existing content contains emoji and you are touching that content, remove emoji as part of the update.
+
 ## Repository Purpose
 
 **A11y Agent Team** is a collection of accessibility-focused AI agents that enforce WCAG 2.2 AA standards across web, document, and mobile development. The agents work together as specialized teams to catch accessibility issues that LLMs typically miss during code generation.

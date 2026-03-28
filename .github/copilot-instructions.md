@@ -2,6 +2,14 @@
 
 This workspace enforces WCAG AA accessibility standards for all web UI code.
 
+### Repository Writing Policy: No Emoji
+
+Repository-wide hard rule: do not add emoji characters in generated, edited, or reviewed content.
+
+- Applies to release notes, changelog entries, docs, prompts, instructions, agent files, issue/PR text, and chat-generated copy intended for repository publication.
+- Replace emoji with plain text labels.
+- If existing content contains emoji and you are touching that content, remove emoji as part of the update.
+
 ### Mandatory Accessibility Check
 
 Before writing or modifying any web UI code - including HTML, JSX, CSS, React components, Tailwind classes, web pages, forms, modals, or any user-facing web content - you MUST:

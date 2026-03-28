@@ -5,6 +5,13 @@ applyTo: "**/*.md"
 
 # Markdown Accessibility Review Guidelines
 
+## Repository Hard Rule: No Emoji
+
+- Emoji characters are prohibited in repository markdown content.
+- Always remove emoji from headings, bullets, prose, tables, callouts, and summaries.
+- Do not translate emoji to parenthesized terms; remove emoji and keep plain-text meaning.
+- This rule applies to release notes, changelog entries, docs, prompts, instructions, and generated markdown output.
+
 When reviewing or generating markdown files, check for all of the following accessibility issues. Flag violations and suggest fixes with clear explanations of the accessibility impact. These rules extend GitHub's [5 tips for making your GitHub profile page accessible](https://github.blog/developer-skills/github/5-tips-for-making-your-github-profile-page-accessible/) with table, diagram, typographic, and anchor-link rules.
 
 **For guided interactive audits**, use the `markdown-a11y-assistant` agent which orchestrates `markdown-scanner` and `markdown-fixer` sub-agents with parallel scanning and a full review gate.
@@ -57,19 +64,13 @@ The following table lists agents with their role and supported platform.
 
 Screen readers read full emoji names aloud ("face with stuck-out tongue and squinting eyes"). Emoji as bullets break list semantics.
 
-Default behavior (remove-decorative mode):
+Required behavior:
 
-- Flag consecutive emoji sequences (2 or more in a row) - auto-fix by removing.
-- Flag emoji used as the first character of a list item - auto-fix by removing and keeping the text.
-- Flag emoji in headings - auto-fix by removing.
-- Flag single inline emoji that conveys meaning not in surrounding text - suggest removal or word replacement.
-- When removing meaning-bearing emoji, preserve the meaning in text.
+- Flag any emoji occurrence and remove it.
+- Preserve meaning in plain text where needed.
+- Never keep emoji in final markdown output.
 
-**Translate mode** (when user requests English translations instead of removal):
-
-- Replace each emoji with its parenthesized English equivalent: `🚀` -> `(Launch)`, `✅` -> `(Done)`, `⚠️` -> `(Warning)`, `💡` -> `(Tip)`, `🔧` -> `(Configuration)`.
-- For unknown emoji, flag for human review.
-- Default mode is removal, not translation. Only translate when the user explicitly requests it.
+Translate mode is disabled in this repository. Emoji must be removed, not translated.
 
 ## 6. Mermaid and ASCII Diagrams (WCAG 1.1.1 / 1.3.1)
 
