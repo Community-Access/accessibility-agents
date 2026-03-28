@@ -332,6 +332,23 @@ You can also run with `--dry-run` first to see what would change before committi
 
 ---
 
+## Bug Fixes
+
+### install.ps1: One-Liner Pipeline Fix
+
+Fixed a critical issue where the `irm | iex` one-liner installation command failed with `Install-MCP is not recognized` errors. When npm or npx produced stdout during dependency installation, the output leaked into the PowerShell pipeline, breaking function resolution for downstream commands.
+
+**What changed:**
+- All four npm/npx calls in `install.ps1` now suppress stdout with `2>&1 | Out-Null`
+- Each call checks `$LASTEXITCODE` and throws on failure for proper try/catch integration
+- The `irm | iex` pipeline now works reliably without stdout interference
+
+**Who is affected:** Anyone installing via the one-liner `irm https://raw.githubusercontent.com/.../install.ps1 | iex`. Direct `.\install.ps1` execution was not affected.
+
+See [Issue #93](https://github.com/Community-Access/accessibility-agents/issues/93) for details.
+
+---
+
 ## Validation
 
 - All 80 agents pass validation including the new coordinator allowlist rule

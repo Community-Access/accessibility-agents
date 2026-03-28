@@ -98,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Replaced `robocopy` with `Copy-Item` in Windows CI to eliminate exit code 9 failures.
   - Corrected bash syntax issues in installer flow control.
   - Removed malformed embedded YAML step fragments from workflow definitions.
+- Fixed `install.ps1` npm/npx stdout leakage that caused the `irm | iex` one-liner pipeline to fail with "Install-MCP is not recognized" errors. All four npm/npx calls now suppress stdout with `2>&1 | Out-Null` and use explicit `$LASTEXITCODE` checks with `throw` for proper try/catch integration ([#93](https://github.com/Community-Access/accessibility-agents/issues/93)).
 
 ## [4.10.0] - 2026-03-24
 
