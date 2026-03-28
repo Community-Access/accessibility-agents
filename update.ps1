@@ -125,7 +125,7 @@ catch {
 $GitDir = Join-Path $CacheDir ".git"
 if (Test-Path $GitDir) {
     Set-Location $CacheDir
-    git fetch origin main --quiet 2>$null
+    git fetch origin main --quiet 2>&1 | Out-Null
     $LocalHash = git rev-parse HEAD 2>$null
     $RemoteHash = git rev-parse origin/main 2>$null
 
@@ -134,14 +134,14 @@ if (Test-Path $GitDir) {
         exit 0
     }
 
-    git reset --hard origin/main --quiet 2>$null
+    git reset --hard origin/main --quiet 2>&1 | Out-Null
     Write-Log "Pulled latest changes."
 }
 else {
     Write-Log "Downloading a11y-agent-team..."
     $ParentDir = Split-Path $CacheDir -Parent
     New-Item -ItemType Directory -Force -Path $ParentDir | Out-Null
-    git clone --quiet $RepoUrl $CacheDir 2>$null
+    git clone --quiet $RepoUrl $CacheDir 2>&1 | Out-Null
     Write-Log "Repository cloned."
 }
 

@@ -55,7 +55,7 @@ if (-not $ScriptDir -or -not (Test-Path (Join-Path $ScriptDir ".claude\agents"))
         exit 1
     }
 
-    git clone --quiet https://github.com/Community-Access/accessibility-agents.git $TmpDir 2>$null
+    git clone --quiet https://github.com/Community-Access/accessibility-agents.git $TmpDir 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "  Error: git clone failed. Check your network connection and try again."
         exit 1
@@ -484,7 +484,8 @@ function Ensure-NodeJsRuntime {
         Write-Host "  The installer can install Node.js LTS with winget."
         if (Read-YesNo -Prompt 'Install Node.js LTS now?' -DefaultYes:$true) {
             try {
-                winget install --exact --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements
+                winget install --exact --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements 2>&1 | Out-Null
+                if ($LASTEXITCODE -ne 0) { throw "winget install failed with exit code $LASTEXITCODE" }
                 Refresh-ProcessPath
             }
             catch {
@@ -1521,7 +1522,8 @@ if (Test-Path $McpServerSrc) {
                 }
                 if (Read-YesNo -Prompt 'Install Java 21 JRE now with winget?' -DefaultYes:$false) {
                     try {
-                        winget install --exact --id EclipseAdoptium.Temurin.21.JRE --accept-source-agreements --accept-package-agreements
+                        winget install --exact --id EclipseAdoptium.Temurin.21.JRE --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
+                        if ($LASTEXITCODE -ne 0) { throw "winget install failed with exit code $LASTEXITCODE" }
                         Write-Host "    + Java 21 JRE install requested through winget"
                         Write-Host "    ! Restart your terminal or VS Code after install so java is added to PATH"
                     }
@@ -1536,7 +1538,8 @@ if (Test-Path $McpServerSrc) {
                 Write-Host ""
                 if (Read-YesNo -Prompt 'Install veraPDF now with Chocolatey?' -DefaultYes:$false) {
                     try {
-                        choco install verapdf -y
+                        choco install verapdf -y 2>&1 | Out-Null
+                        if ($LASTEXITCODE -ne 0) { throw "choco install failed with exit code $LASTEXITCODE" }
                         Write-Host "    + veraPDF install requested through Chocolatey"
                         Write-Host "    ! Restart your terminal or VS Code after install so verapdf is added to PATH"
                     }

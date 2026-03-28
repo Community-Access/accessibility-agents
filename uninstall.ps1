@@ -170,7 +170,7 @@ if (Test-Path $ManifestFile) {
     $FallbackUsed = $true
     $TmpRepo = Join-Path ([IO.Path]::GetTempPath()) "a11y-agent-uninstall-$(Get-Random)"
     try {
-        & git clone --quiet --depth 1 https://github.com/Community-Access/accessibility-agents.git $TmpRepo 2>$null
+        & git clone --quiet --depth 1 https://github.com/Community-Access/accessibility-agents.git $TmpRepo 2>&1 | Out-Null
         if (Test-Path $TmpRepo) {
             $RepoAgents = Get-ChildItem -Path (Join-Path $TmpRepo ".claude\agents") -Filter "*.md" -ErrorAction SilentlyContinue
             foreach ($f in $RepoAgents) { $ManifestEntries += "agents/$($f.Name)" }
@@ -621,7 +621,60 @@ if ($Choice -eq "2") {
 }
 
 # =============================================
-# 9. Clean up manifest and empty directories
+# 9. Remove MCP server
+# =============================================
+$McpRemoved = $false
+if ($Choice -eq "1" -and $ProjectDir) {
+    $McpDir = Join-Path $ProjectDir "mcp-server"
+    if (Test-Path $McpDir) {
+        Write-Host ""
+        Write-Host "  Removing MCP server..."
+        Remove-Item -Path $McpDir -Recurse -Force
+        Write-Host "    - $McpDir"
+        $McpRemoved = $true
+    }
+    # Clean project .vscode/settings.json MCP entry
+    $VsCodeSettings = Join-Path $ProjectDir ".vscode\settings.json"
+    if (Test-Path $VsCodeSettings) {
+        try {
+            $Settings = Get-Content $VsCodeSettings -Raw | ConvertFrom-Json
+            if ($Settings.PSObject.Properties.Name -contains 'mcp') {
+                $Mcp = $Settings.mcp
+                if ($Mcp -and $Mcp.PSObject.Properties.Name -contains 'servers') {
+                    $Servers = $Mcp.servers
+                    if ($Servers -and $Servers.PSObject.Properties.Name -contains 'a11y-agent-team') {
+                        $Servers.PSObject.Properties.Remove('a11y-agent-team')
+                        if (($Servers.PSObject.Properties | Measure-Object).Count -eq 0) {
+                            $Mcp.PSObject.Properties.Remove('servers')
+                        }
+                        if (($Mcp.PSObject.Properties | Measure-Object).Count -eq 0) {
+                            $Settings.PSObject.Properties.Remove('mcp')
+                        }
+                        $Settings | ConvertTo-Json -Depth 10 | Set-Content $VsCodeSettings -Encoding UTF8
+                        Write-Host "    - Removed MCP entry from .vscode/settings.json"
+                    }
+                }
+            }
+        } catch {
+            Write-Host "    ! Could not update .vscode/settings.json (edit manually if needed)"
+        }
+    }
+} elseif ($Choice -eq "2") {
+    # Global MCP server is inside ~/.a11y-agent-team/ which is already removed
+    # by the global store cleanup in section 3, but confirm it is gone
+    $McpDir = Join-Path $env:USERPROFILE ".a11y-agent-team\mcp-server"
+    if (Test-Path $McpDir) {
+        Write-Host ""
+        Write-Host "  Removing MCP server..."
+        Remove-Item -Path $McpDir -Recurse -Force
+        Write-Host "    - $McpDir"
+        $McpRemoved = $true
+    }
+    # VS Code settings.json MCP entry is already cleaned in section 3
+}
+
+# =============================================
+# 10. Clean up manifest and empty directories
 # =============================================
 if (Test-Path $ManifestFile) { Remove-Item -Path $ManifestFile -Force }
 $VersionFile = Join-Path $TargetDir ".a11y-agent-team-version"
@@ -650,6 +703,7 @@ if ($Choice -eq "1") {
     Write-Host "    - Enforcement hooks (3 hooks)"
 }
 if ($GeminiRemoved) { Write-Host "    - Gemini CLI extension" }
+if ($McpRemoved) { Write-Host "    - MCP server (directory and VS Code settings)" }
 Write-Host ""
 Write-Host "  Next steps:"
 Write-Host "    1. Restart Claude Code, VS Code, and any open terminals"
