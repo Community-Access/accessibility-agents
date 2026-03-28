@@ -29,13 +29,105 @@ param(
     [switch]$McpProfileInsiders,
     [switch]$McpProfileBoth,
     [Alias('summary')]
-    [string]$SummaryPath
+    [string]$SummaryPath,
+    [switch]$Help,
+    [switch]$Force,
+    [switch]$Quiet,
+    [switch]$Version
 )
 
 $ErrorActionPreference = "Stop"
 $AutoApprove = $Yes.IsPresent
 $ScriptDirForHelpers = if ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } else { (Get-Location).Path }
 . (Join-Path $ScriptDirForHelpers 'scripts\Installer.Common.ps1')
+
+# ---------------------------------------------------------------------------
+# -Help: print usage and exit
+# ---------------------------------------------------------------------------
+if ($Help) {
+    Write-Host ""
+    Write-Host "  Accessibility Agents Installer (Windows PowerShell)"
+    Write-Host "  Built by Community Access - https://community-access.org"
+    Write-Host ""
+    Write-Host "  Usage:"
+    Write-Host "    .\install.ps1                         Interactive (wizard)"
+    Write-Host "    .\install.ps1 -Global                 Install to ~/.claude/"
+    Write-Host "    .\install.ps1 -Project                Install to .claude/ in current dir"
+    Write-Host "    .\install.ps1 -Global -Copilot        Also install Copilot agents"
+    Write-Host "    .\install.ps1 -Global -Cli            Also install Copilot CLI agents"
+    Write-Host ""
+    Write-Host "  Flags:"
+    Write-Host "    -Project              Install to project scope (.claude/)"
+    Write-Host "    -Global               Install to user scope (~/.claude/)"
+    Write-Host "    -Copilot              Install Copilot agents to VS Code"
+    Write-Host "    -Cli                  Install Copilot CLI agents"
+    Write-Host "    -Codex                Install Codex CLI support"
+    Write-Host "    -Gemini               Install Gemini CLI extension"
+    Write-Host "    -Role <role>          developer, reviewer, author, full, custom"
+    Write-Host "    -Config <path>        Path to team config JSON file"
+    Write-Host "    -Yes                  Accept all prompts (non-interactive)"
+    Write-Host "    -NoAutoUpdate         Skip auto-update setup"
+    Write-Host "    -Check                Check mode (dry run + report)"
+    Write-Host "    -DryRun               Preview actions without making changes"
+    Write-Host "    -Force                Overwrite existing agent/skill files"
+    Write-Host "    -Quiet                Suppress banner and informational output"
+    Write-Host "    -Version              Print version and exit"
+    Write-Host "    -Help                 Show this help and exit"
+    Write-Host "    -VsCodeStable         Target VS Code Stable only"
+    Write-Host "    -VsCodeInsiders       Target VS Code Insiders only"
+    Write-Host "    -VsCodeBoth           Target both VS Code editions"
+    Write-Host "    -McpProfileStable     MCP in VS Code Stable only"
+    Write-Host "    -McpProfileInsiders   MCP in VS Code Insiders only"
+    Write-Host "    -McpProfileBoth       MCP in both VS Code editions"
+    Write-Host "    -SummaryPath <path>   Write JSON summary file"
+    Write-Host ""
+    Write-Host "  One-liner:"
+    Write-Host "    irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex"
+    Write-Host ""
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+# -Version: print version and exit
+# ---------------------------------------------------------------------------
+if ($Version) {
+    $VerHash = ''
+    $VerTag = ''
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $VDir = if ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } else { $null }
+        if ($VDir -and (Test-Path (Join-Path $VDir '.git'))) {
+            $VerHash = & git -C $VDir rev-parse --short HEAD 2>$null
+            $VerTag = & git -C $VDir describe --tags --abbrev=0 2>$null
+        }
+    }
+    if ($VerTag) { Write-Host "  Accessibility Agents $VerTag ($VerHash)" }
+    elseif ($VerHash) { Write-Host "  Accessibility Agents ($VerHash)" }
+    else { Write-Host "  Accessibility Agents (version unknown)" }
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+# Elapsed time tracking
+# ---------------------------------------------------------------------------
+$Stopwatch = [Diagnostics.Stopwatch]::StartNew()
+
+# ---------------------------------------------------------------------------
+# PowerShell version check
+# ---------------------------------------------------------------------------
+$PsMajor = $PSVersionTable.PSVersion.Major
+$PsMinor = $PSVersionTable.PSVersion.Minor
+if ($PsMajor -lt 5 -or ($PsMajor -eq 5 -and $PsMinor -lt 1)) {
+    Write-Host ""
+    Write-Host "  Error: PowerShell 5.1 or later is required (detected $PsMajor.$PsMinor)."
+    Write-Host "  Upgrade to PowerShell 7+ from https://aka.ms/powershell"
+    exit 1
+}
+if ($PsMajor -lt 7) {
+    Write-Host ""
+    Write-Host "  Note: Running on Windows PowerShell $PsMajor.$PsMinor."
+    Write-Host "  PowerShell 7+ is recommended for best compatibility."
+    Write-Host "  Upgrade: https://aka.ms/powershell"
+}
 
 # ---------------------------------------------------------------------------
 # Team config file support (-Config path.json)
@@ -52,6 +144,14 @@ if ($Config) {
     if ($TeamConfig.role) { $Role = $TeamConfig.role }
     if ($null -ne $TeamConfig.autoUpdate -and $TeamConfig.autoUpdate -eq $false) { $NoAutoUpdate = $true }
     if ($TeamConfig.yes -eq $true) { $AutoApprove = $true }
+
+    # Validate config keys -- warn about unrecognised entries
+    $KnownConfigKeys = @('scope', 'role', 'autoUpdate', 'yes')
+    $TeamConfig.PSObject.Properties.Name | ForEach-Object {
+        if ($_ -notin $KnownConfigKeys) {
+            Write-Host "  Warning: Unknown config key '$_' in $Config (ignored)"
+        }
+    }
 }
 
 # Determine source: running from repo clone or downloaded?
@@ -102,11 +202,13 @@ if ($Agents.Count -eq 0) {
     exit 1
 }
 
-Write-Host ""
-Write-Host "  Accessibility Agents Installer"
-Write-Host "  Built by Community Access"
-Write-Host "  ================================"
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "  Accessibility Agents Installer"
+    Write-Host "  Built by Community Access"
+    Write-Host "  ================================"
+    Write-Host ""
+}
 
 # ---------------------------------------------------------------------------
 # Auto-detect installed tools before any prompts
@@ -164,6 +266,27 @@ switch ($Choice) {
     default {
         Write-Host "  Invalid choice. Exiting."
         exit 1
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Idempotent re-install guard
+# ---------------------------------------------------------------------------
+$SourceHash = ''
+if (Get-Command git -ErrorAction SilentlyContinue) {
+    if ($ScriptDir -and (Test-Path (Join-Path $ScriptDir '.git'))) {
+        $SourceHash = & git -C $ScriptDir rev-parse --short HEAD 2>$null
+    }
+}
+$InstalledVersionFile = Join-Path $TargetDir '.a11y-agent-team-version'
+if ($SourceHash -and (Test-Path $InstalledVersionFile) -and -not $Force) {
+    $InstalledHash = (Get-Content $InstalledVersionFile -Raw).Trim()
+    if ($InstalledHash -eq $SourceHash) {
+        Write-Host ""
+        Write-Host "  Already up to date ($SourceHash). Use -Force to reinstall."
+        if ($Downloaded) { Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue }
+        $Stopwatch.Stop()
+        exit 0
     }
 }
 
@@ -1023,18 +1146,18 @@ foreach ($Agent in $Agents) {
     $Src = Join-Path $AgentsSrc $Agent
     $Dst = Join-Path $TargetDir "agents\$Agent"
     $Name = $Agent -replace '\.md$', ''
-    if (Test-Path $Dst) {
+    if ((Test-Path $Dst) -and -not $Force) {
         Write-Host "    ~ $Name (skipped - already exists)"
         $SkippedAgents++
     }
     else {
-        Copy-Item -Path $Src -Destination $Dst
+        Copy-Item -Path $Src -Destination $Dst -Force
         Add-ManifestEntry "agents/$Agent"
         Write-Host "    + $Name"
     }
 }
 if ($SkippedAgents -gt 0) {
-    Write-Host "      $SkippedAgents agent(s) skipped. Use -Force flag or delete them first to reinstall."
+    Write-Host "      $SkippedAgents agent(s) skipped. Use -Force to overwrite."
 }
 
 # Save manifest (will be updated again as more platforms are installed)
@@ -1072,11 +1195,11 @@ if ($InstallCopilot) {
             foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -File) {
                 $DstPath = Join-Path $CopilotDst $File.Name
                 $DisplayName = $File.BaseName -replace '\.agent$', ''
-                if (Test-Path $DstPath) {
+                if ((Test-Path $DstPath) -and -not $Force) {
                     Write-Host "    ~ $DisplayName (skipped - already exists)"
                 }
                 else {
-                    Copy-Item -Path $File.FullName -Destination $DstPath
+                    Copy-Item -Path $File.FullName -Destination $DstPath -Force
                     Add-ManifestEntry "copilot-agents/$($File.Name)"
                     Write-Host "    + $DisplayName"
                 }
@@ -1101,8 +1224,8 @@ if ($InstallCopilot) {
                     $Rel = $File.FullName.Substring($SrcSubDir.Length).TrimStart('\\')
                     $Dst = Join-Path $DstSubDir $Rel
                     New-Item -ItemType Directory -Force -Path (Split-Path $Dst) | Out-Null
-                    if (Test-Path $Dst) { $Skipped++ } else {
-                        Copy-Item $File.FullName $Dst
+                    if ((Test-Path $Dst) -and -not $Force) { $Skipped++ } else {
+                        Copy-Item $File.FullName $Dst -Force
                         $RelEntry = $Rel.Replace('\\', '/')
                         Add-ManifestEntry "copilot-$SubDir/$RelEntry"
                         $Added++
@@ -1758,6 +1881,11 @@ switch -Wildcard ($RoleName) {
     }
 }
 
+# Save installed version hash for idempotent guard
+if ($SourceHash) {
+    $SourceHash | Set-Content (Join-Path $TargetDir '.a11y-agent-team-version') -NoNewline
+}
+
 # Auto-update setup (global install only)
 $AutoUpdateEnabled = $false
 if ($Choice -eq "2") {
@@ -1832,6 +1960,12 @@ $InstallSummary.destinations = [ordered]@{
     mcp = @($McpDest) | Where-Object { $_ }
 }
 $InstallSummary.manifestPath = $ManifestPath
+if ($SourceHash) { $InstallSummary.version = $SourceHash }
+$Stopwatch.Stop()
+$InstallSummary.elapsedSeconds = [math]::Round($Stopwatch.Elapsed.TotalSeconds, 1)
+if ($null -ne $HealthTotal) {
+    $InstallSummary.healthCheck = [ordered]@{ total = $HealthTotal; found = $HealthFound; passed = $HealthOk }
+}
 Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
 
 # Clean up temp download
@@ -1856,6 +1990,8 @@ Write-Host "    - Use uninstall.ps1 if you want to remove the managed files clea
 Write-Host ""
 Write-Host "  If agents stop loading, increase the character budget:"
 Write-Host "    `$env:SLASH_COMMAND_TOOL_CHAR_BUDGET = '30000'"
+Write-Host ""
+Write-Host "  Completed in $([math]::Round($Stopwatch.Elapsed.TotalSeconds, 1))s"
 Write-Host ""
 Write-Host "  To uninstall, run:"
 Write-Host "    irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.ps1 | iex"

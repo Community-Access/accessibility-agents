@@ -17,10 +17,17 @@
 #   bash install.sh --global --vscode-stable     Target VS Code stable only for Copilot assets
 #   bash install.sh --global --vscode-insiders   Target VS Code Insiders only for Copilot assets
 #   bash install.sh --global --mcp-profile-both  Configure MCP settings in both VS Code profiles
+#   bash install.sh --role=developer             Skip role wizard with a preset role
+#   bash install.sh --config=team.json           Load team config for unattended installs
 #   bash install.sh --yes                        Accept optional install prompts automatically
 #   bash install.sh --no-auto-update             Skip auto-update setup without prompting
 #   bash install.sh --dry-run                    Preview targets without making changes
+#   bash install.sh --force                      Overwrite existing agent/skill files
+#   bash install.sh --quiet                      Suppress informational output
+#   bash install.sh --verbose                    Show verbose diagnostic output
 #   bash install.sh --summary=path.json          Write a machine-readable summary file
+#   bash install.sh --help                       Show usage information and exit
+#   bash install.sh --version                    Show version information and exit
 #
 # One-liner:
 #   curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
@@ -170,6 +177,11 @@ AUTO_APPROVE=false
 NO_AUTO_UPDATE=false
 ROLE_ARG=""
 CONFIG_ARG=""
+HELP_FLAG=false
+FORCE_FLAG=false
+QUIET_FLAG=false
+VERBOSE_FLAG=false
+VERSION_FLAG=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -192,6 +204,11 @@ for arg in "$@"; do
     --summary=*) SUMMARY_PATH="${arg#--summary=}" ;;
     --role=*) ROLE_ARG="${arg#--role=}" ;;
     --config=*) CONFIG_ARG="${arg#--config=}" ;;
+    --help) HELP_FLAG=true ;;
+    --force) FORCE_FLAG=true ;;
+    --quiet) QUIET_FLAG=true ;;
+    --verbose) VERBOSE_FLAG=true ;;
+    --version) VERSION_FLAG=true ;;
   esac
 done
 
@@ -216,6 +233,107 @@ if [ -n "$CONFIG_ARG" ]; then
     [ "$_cfg_yes" = "true" ] && AUTO_APPROVE=true
   else
     echo "  Warning: python3 not found, cannot parse config file. Ignoring --config."
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# --help handler
+# ---------------------------------------------------------------------------
+if [ "$HELP_FLAG" = true ]; then
+  echo ""
+  echo "  Accessibility Agents Installer"
+  echo "  Built by Community Access - https://community-access.org"
+  echo ""
+  echo "  Usage: bash install.sh [options]"
+  echo ""
+  echo "  Scope:"
+  echo "    --project              Install to .claude/ in the current directory"
+  echo "    --global               Install to ~/.claude/ (all projects)"
+  echo ""
+  echo "  Platforms:"
+  echo "    --copilot              Also install Copilot agents to VS Code"
+  echo "    --cli                  Also install Copilot CLI agents"
+  echo "    --codex                Also install Codex CLI support"
+  echo "    --gemini               Also install Gemini CLI extension"
+  echo ""
+  echo "  Configuration:"
+  echo "    --role=<role>          Skip role wizard (developer/reviewer/author/full/custom)"
+  echo "    --config=<path.json>   Load team config for unattended installs"
+  echo "    --yes                  Accept optional install prompts automatically"
+  echo "    --no-auto-update       Skip auto-update setup without prompting"
+  echo "    --force                Overwrite existing agent/skill files"
+  echo ""
+  echo "  Output:"
+  echo "    --quiet                Suppress informational output"
+  echo "    --verbose              Show verbose diagnostic output"
+  echo "    --dry-run              Preview targets without making changes"
+  echo "    --summary=<path.json>  Write a machine-readable summary file"
+  echo ""
+  echo "  VS Code profiles:"
+  echo "    --vscode-stable        Target VS Code stable only"
+  echo "    --vscode-insiders      Target VS Code Insiders only"
+  echo "    --vscode-both          Target both VS Code profiles"
+  echo "    --mcp-profile-stable   MCP settings in VS Code stable only"
+  echo "    --mcp-profile-insiders MCP settings in VS Code Insiders only"
+  echo "    --mcp-profile-both     MCP settings in both VS Code profiles"
+  echo ""
+  echo "  Info:"
+  echo "    --check                Verify install status without changes"
+  echo "    --help                 Show this usage information and exit"
+  echo "    --version              Show version information and exit"
+  echo ""
+  echo "  One-liner:"
+  echo "    curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash"
+  echo ""
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# --version handler
+# ---------------------------------------------------------------------------
+if [ "$VERSION_FLAG" = true ]; then
+  _ver_hash=""
+  _ver_tag=""
+  if command -v git &>/dev/null && [ -d "$SCRIPT_DIR/.git" ]; then
+    _ver_hash=$(git -C "$SCRIPT_DIR" rev-parse --short HEAD 2>/dev/null)
+    _ver_tag=$(git -C "$SCRIPT_DIR" describe --tags --abbrev=0 2>/dev/null)
+  fi
+  echo "  Accessibility Agents Installer"
+  [ -n "$_ver_tag" ] && echo "  Version: $_ver_tag"
+  [ -n "$_ver_hash" ] && echo "  Commit:  $_ver_hash"
+  [ -z "$_ver_hash" ] && echo "  Version: unknown (not a git checkout)"
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Bash version check
+# ---------------------------------------------------------------------------
+if [ -n "$BASH_VERSION" ]; then
+  _bash_major="${BASH_VERSINFO[0]:-0}"
+  if [ "$_bash_major" -lt 4 ]; then
+    echo "  Warning: Bash 4+ is recommended (current: $BASH_VERSION)."
+    echo "    Some features may not work correctly on Bash 3."
+  fi
+fi
+
+# Timer
+START_TIME=$SECONDS
+
+# ---------------------------------------------------------------------------
+# Config schema validation
+# ---------------------------------------------------------------------------
+if [ -n "$CONFIG_ARG" ] && command -v python3 &>/dev/null; then
+  _unknown_keys=$(python3 -c "
+import json, sys
+known = {'scope', 'role', 'autoUpdate', 'yes'}
+d = json.load(open(sys.argv[1]))
+unknown = [k for k in d if k not in known]
+if unknown:
+    print(', '.join(unknown))
+" "$CONFIG_ARG" 2>/dev/null)
+  if [ -n "$_unknown_keys" ]; then
+    echo "  Warning: Unknown config keys: $_unknown_keys"
+    echo "    Recognized keys: scope, role, autoUpdate, yes"
   fi
 fi
 
@@ -270,6 +388,24 @@ case "$choice" in
     exit 1
     ;;
 esac
+
+# ---------------------------------------------------------------------------
+# Idempotent guard -- skip if already up to date (unless --force)
+# ---------------------------------------------------------------------------
+SOURCE_HASH=""
+if command -v git &>/dev/null && [ -d "$SCRIPT_DIR/.git" ]; then
+  SOURCE_HASH=$(git -C "$SCRIPT_DIR" rev-parse --short HEAD 2>/dev/null)
+fi
+if [ -n "$SOURCE_HASH" ] && [ "$FORCE_FLAG" != true ]; then
+  _installed_hash=""
+  [ -f "$TARGET_DIR/.a11y-agent-team-version" ] && _installed_hash=$(cat "$TARGET_DIR/.a11y-agent-team-version" 2>/dev/null)
+  if [ "$SOURCE_HASH" = "$_installed_hash" ]; then
+    echo ""
+    echo "  Already up to date ($SOURCE_HASH). Use --force to reinstall."
+    [ "$DOWNLOADED" = true ] && rm -rf "$TMPDIR_DL"
+    exit 0
+  fi
+fi
 
 # ---- Step 2 of 3: What is your role? ----
 ROLE_NAME=""
@@ -406,7 +542,7 @@ BACKUP_METADATA_PATH="$(initialize_operation_state install "$([ "$choice" = "1" 
 
 if [ "$CHECK_MODE" = true ]; then
   CHECK_NOTES=("Check mode only. No files were changed.")
-  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":true,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${CHECK_NOTES[@]}")}"
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":true,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${CHECK_NOTES[@]}"),\"version\":\"$SOURCE_HASH\",\"elapsedSeconds\":null,\"healthCheck\":null}"
   echo ""
   echo "  Check mode only. No files will be changed."
   echo "  Summary file: $SUMMARY_PATH"
@@ -448,7 +584,7 @@ if [ "$DRY_RUN" = true ]; then
       echo "    -> none detected for the requested profile filter"
     fi
   fi
-  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":true,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${DRY_RUN_NOTES[@]}")}"
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":true,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${DRY_RUN_NOTES[@]}"),\"version\":\"$SOURCE_HASH\",\"elapsedSeconds\":null,\"healthCheck\":null}"
   echo "  Summary file: $SUMMARY_PATH"
   [ "$DOWNLOADED" = true ] && rm -rf "$TMPDIR_DL"
   exit 0
@@ -1522,7 +1658,7 @@ for agent in "${AGENTS[@]}"; do
   fi
   dst_agent="$TARGET_DIR/agents/$agent"
   name="${agent%.md}"
-  if [ -f "$dst_agent" ]; then
+  if [ -f "$dst_agent" ] && [ "$FORCE_FLAG" != true ]; then
     echo "    ~ $name (skipped - already exists)"
     SKIPPED_AGENTS=$((SKIPPED_AGENTS + 1))
   else
@@ -1532,7 +1668,7 @@ for agent in "${AGENTS[@]}"; do
   fi
 done
 if [ "$SKIPPED_AGENTS" -gt 0 ]; then
-  echo "      $SKIPPED_AGENTS agent(s) skipped. Delete them first to reinstall."
+  echo "      $SKIPPED_AGENTS agent(s) skipped. Use --force to overwrite."
 fi
 
 # Copy skills — skip any file that already exists (preserves user customisations)
@@ -1547,7 +1683,7 @@ if [ ${#SKILLS[@]} -gt 0 ]; then
     fi
     dst_skill="$TARGET_DIR/skills/$skill"
     name="${skill%.md}"
-    if [ -f "$dst_skill" ]; then
+    if [ -f "$dst_skill" ] && [ "$FORCE_FLAG" != true ]; then
       echo "    ~ /$name (skipped - already exists)"
       SKIPPED_SKILLS=$((SKIPPED_SKILLS + 1))
     else
@@ -1557,7 +1693,7 @@ if [ ${#SKILLS[@]} -gt 0 ]; then
     fi
   done
   if [ "$SKIPPED_SKILLS" -gt 0 ]; then
-    echo "      $SKIPPED_SKILLS skill(s) skipped. Delete them first to reinstall."
+    echo "      $SKIPPED_SKILLS skill(s) skipped. Use --force to overwrite."
   fi
   # Clean up stale commands/ directory from previous installs
   if [ -d "$TARGET_DIR/commands" ]; then
@@ -1612,7 +1748,7 @@ if [ "$install_copilot" = true ]; then
         for f in "$COPILOT_AGENTS_SRC"/*; do
           [ -f "$f" ] || continue
           dst_f="$COPILOT_DST/$(basename "$f")"
-          if [ -f "$dst_f" ]; then
+          if [ -f "$dst_f" ] && [ "$FORCE_FLAG" != true ]; then
             echo "    ~ $(basename "$f") (skipped - already exists)"
           else
             cp "$f" "$COPILOT_DST/"
@@ -1648,7 +1784,7 @@ if [ "$install_copilot" = true ]; then
             rel="${src_file#$SRC_DIR/}"
             dst_file="$DST_DIR/$rel"
             mkdir -p "$(dirname "$dst_file")"
-            if [ -f "$dst_file" ]; then
+            if [ -f "$dst_file" ] && [ "$FORCE_FLAG" != true ]; then
               skipped=$((skipped + 1))
             else
               cp "$src_file" "$dst_file"
@@ -2704,7 +2840,9 @@ if [ "$MCP_INSTALLED" = true ] && [ "$MCP_PROFILE_MODE" != "auto" ] && [ -z "$SE
   INSTALL_NOTES+=("The requested MCP profile filter did not match any installed VS Code profile.")
 fi
 
-write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"role\":\"$(json_escape "$ROLE_NAME")\",\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}")}"
+ELAPSED=$((SECONDS - START_TIME))
+
+write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"role\":\"$(json_escape "$ROLE_NAME")\",\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}"),\"version\":\"$SOURCE_HASH\",\"elapsedSeconds\":$ELAPSED,\"healthCheck\":{\"total\":$health_total,\"found\":$health_found}}"
 
 echo ""
 echo "  Summary written to:"
@@ -2742,5 +2880,7 @@ echo "  For manual uninstall instructions, see: UNINSTALL.md"
 echo ""
 echo "  Start Claude Code and try: \"Build a login form\""
 echo "  The accessibility-lead should activate automatically."
+echo ""
+echo "  Completed in ${ELAPSED}s"
 echo ""
 

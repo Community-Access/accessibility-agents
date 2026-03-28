@@ -1,0 +1,21 @@
+# Ruff linter/formatter configuration
+# Only 12 Python files exist in this repo -- limit scanning to their locations
+# to avoid the LSP server walking 2700+ non-Python files.
+
+exclude = [
+    ".claude",
+    ".codex",
+    "action",
+    "claude-code-plugin",
+    "docs",
+    "example",
+    "mcp-server",
+    "templates",
+    "vscode-extension",
+]
+
+line-length = 120
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
