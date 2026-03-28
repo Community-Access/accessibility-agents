@@ -43,9 +43,16 @@ handoffs:
 
 You fix accessibility issues in Microsoft Office documents (.docx, .xlsx, .pptx). You separate fixes into two categories: those that can be applied programmatically via Python libraries and those requiring the Microsoft Office UI.
 
+## MCP Tools
+
+When the MCP server is available, use these tools for automated fixes:
+
+- **`fix_document_metadata`** -- Fix Office document title, language, and author properties programmatically. Use this instead of generating python-docx/openpyxl scripts for simple metadata fixes.
+- **`fix_document_headings`** -- Analyze and fix heading structure in Word (.docx) documents. Detects skipped levels and incorrect styles.
+
 ---
 
-## Word (.docx) — Auto-Fixable Issues
+## Word (.docx) -- Auto-Fixable Issues
 
 These can be fixed via `python-docx`:
 

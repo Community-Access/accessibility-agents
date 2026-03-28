@@ -32,11 +32,53 @@ All priorities P1–P7 implemented except P4.4 (component audit caching — defe
 
 ---
 
+## Planned for 5.0
+
+Full planning details: [5.0 Release Plan](docs/5.0-RELEASE-PLAN.md)
+
+### Remediation Engine
+
+**Status:** Planning  
+**Target:** 5.0
+
+Automated fix tools for web, Office, and PDF content exposed as MCP tools with dry-run safety model and fix verification loop. Resolves [#11](https://github.com/Community-Access/accessibility-agents/issues/11).
+
+- `fix_office_document` -- python-docx / openpyxl / python-pptx scripts
+- `fix_pdf_document` -- pdf-lib / qpdf scripts
+- `fix_web_issue` -- source-level HTML/JSX/Vue/Svelte auto-fixes
+- Fix verification loop: apply, re-scan, confirm, rollback on regression
+
+### VS Code Marketplace Extension
+
+**Status:** Planning (scaffolded at vscode-extension/)  
+**Target:** 5.0
+
+`@a11y` chat participant published to VS Code Marketplace. Agent discovery, slash commands, diagnostics integration, contrast checker status bar, audit dashboard WebView.
+
+### Distribution Channels
+
+**Status:** Planning  
+**Target:** 5.0
+
+- npm package publish (`@a11y-agent-team/mcp-server`)
+- `npx` zero-install quickstart
+- Anthropic Connectors Directory listing ([#9](https://github.com/Community-Access/accessibility-agents/issues/9))
+- GitHub Marketplace reusable action
+
+### Enterprise Compliance
+
+**Status:** Planning  
+**Target:** 5.0
+
+Audit persistence in `.a11y-history/`, trend dashboard, VPAT generation from stored scan data, multi-repo organizational scanning, Section 508 / EN 301 549 / EAA compliance export.
+
+---
+
 ## Remaining / Deferred
 
 ### P4.4: Component Audit Caching
 
-**Status:** Deferred  
+**Status:** Deferred (scheduled for 5.0 Milestone 1)  
 **From:** Playwright Integration Plan
 
 Cache scanned file hashes to skip unchanged files on re-audit. Design system token changes invalidate all consumers.

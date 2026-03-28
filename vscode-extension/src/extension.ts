@@ -3,10 +3,19 @@ import * as path from "path";
 import { AgentIndex } from "./agentIndex";
 import type { AgentEntry } from "./types";
 import { route, buildPrompt } from "./router";
+import { A11yDiagnostics, A11yCodeActionProvider } from "./diagnostics";
+import {
+  registerQuickScan,
+  registerImportSarif,
+  registerClearDiagnostics,
+  registerCheckContrast,
+  registerShowDashboard,
+} from "./commands";
 
 // ── Shared state ─────────────────────────────────────────────────────
 
 let agentIndex: AgentIndex;
+let a11yDiagnostics: A11yDiagnostics;
 
 // ── Settings ─────────────────────────────────────────────────────────
 
@@ -102,6 +111,34 @@ let individualParticipants: vscode.Disposable[] = [];
 export async function activate(context: vscode.ExtensionContext) {
   agentIndex = await bootstrapIndex(context);
   const config = getConfig();
+
+  // ── Diagnostics & Code Actions ──
+  a11yDiagnostics = new A11yDiagnostics();
+  context.subscriptions.push(a11yDiagnostics);
+
+  const uiFileSelector: vscode.DocumentSelector = [
+    { language: "html" },
+    { language: "javascriptreact" },
+    { language: "typescriptreact" },
+    { language: "vue" },
+    { language: "svelte" },
+    { language: "astro" },
+    { language: "css" },
+  ];
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      uiFileSelector,
+      new A11yCodeActionProvider(a11yDiagnostics),
+      { providedCodeActionKinds: A11yCodeActionProvider.providedCodeActionKinds }
+    )
+  );
+
+  // ── New commands ──
+  registerQuickScan(context, a11yDiagnostics);
+  registerImportSarif(context, a11yDiagnostics);
+  registerClearDiagnostics(context, a11yDiagnostics);
+  registerCheckContrast(context);
+  registerShowDashboard(context);
 
   // ── Hub participant (@a11y) — always registered, behavior varies by mode ──
   const hubParticipant = vscode.chat.createChatParticipant(

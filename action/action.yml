@@ -1,0 +1,84 @@
+name: "Accessibility Scan"
+description: "Scan web content and documents for WCAG 2.2 AA accessibility issues. Outputs SARIF for GitHub Code Scanning, PR annotations, and a summary badge."
+author: "Community Access"
+
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  scan-type:
+    description: "What to scan: web, office, pdf, or all"
+    required: false
+    default: "web"
+  profile:
+    description: "Rule profile: strict, moderate, or minimal"
+    required: false
+    default: "moderate"
+  fail-on:
+    description: "Minimum severity to fail the check: critical, serious, moderate, minor, or none"
+    required: false
+    default: "serious"
+  paths:
+    description: "Glob pattern or directory to scan (default: changed files in a PR, or . for push events)"
+    required: false
+    default: ""
+  sarif-file:
+    description: "Path to write the SARIF results file"
+    required: false
+    default: "a11y-results.sarif"
+  upload-sarif:
+    description: "Upload SARIF to GitHub Code Scanning"
+    required: false
+    default: "true"
+
+outputs:
+  violations:
+    description: "Total number of accessibility violations found"
+    value: ${{ steps.scan.outputs.violations }}
+  critical:
+    description: "Number of critical violations"
+    value: ${{ steps.scan.outputs.critical }}
+  serious:
+    description: "Number of serious violations"
+    value: ${{ steps.scan.outputs.serious }}
+  moderate:
+    description: "Number of moderate violations"
+    value: ${{ steps.scan.outputs.moderate }}
+  minor:
+    description: "Number of minor violations"
+    value: ${{ steps.scan.outputs.minor }}
+  result:
+    description: "Overall result: pass or fail"
+    value: ${{ steps.scan.outputs.result }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Install MCP server dependencies
+      shell: bash
+      run: npm ci --prefix "${{ github.action_path }}/../mcp-server"
+
+    - name: Run accessibility scan
+      id: scan
+      shell: bash
+      env:
+        INPUT_SCAN_TYPE: ${{ inputs.scan-type }}
+        INPUT_PROFILE: ${{ inputs.profile }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_PATHS: ${{ inputs.paths }}
+        INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
+      run: node "${{ github.action_path }}/scan.mjs"
+
+    - name: Upload SARIF to Code Scanning
+      if: inputs.upload-sarif == 'true' && always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-file }}
+        category: accessibility
+      continue-on-error: true

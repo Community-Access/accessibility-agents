@@ -224,9 +224,68 @@ MCP servers are **orthogonal to subagent delegation**:
 **Cause:** Different specialists giving different recommendations
 **Solution:** Ensure only one coordinator is active; have coordinator synthesize findings into one guidance set
 
+## Claude Code Delegation
+
+Claude Code uses a different delegation model than VS Code Copilot. This section documents the key differences and the patterns used in this repository.
+
+### Task Tool
+
+In Claude Code, orchestrators delegate to sub-agents using the **Task** tool. Each Task invocation spawns a focused sub-agent with the instructions from the named agent file. The Task tool is the Claude Code equivalent of Copilot's `agent` tool.
+
+**Critical requirement:** The `Task` tool must be listed in the orchestrator's YAML frontmatter `tools:` field. Without it, all delegation instructions are dead code.
+
+### Single-Level Delegation
+
+Claude Code enforces single-level delegation: sub-agents spawned via Task receive a stripped tool set (Read, Write, Edit, Bash, Grep, Glob). The Task tool is **not** passed to sub-agents. This means:
+
+- Orchestrators can spawn specialists
+- Specialists cannot spawn further sub-agents
+- Deep delegation chains are structurally impossible (no need for `allowInvocationsFromSubagents`)
+
+### Graceful Fallback Pattern
+
+Because orchestrators may themselves be spawned as sub-agents by higher-level coordinators (e.g., accessibility-lead spawns web-accessibility-wizard), every orchestrator must handle both modes:
+
+```
+If Task tool is available (top-level invocation):
+    Delegate to specialist sub-agents via Task
+    Collect and aggregate their results
+
+If Task tool is unavailable (sub-agent mode):
+    Apply specialist domain knowledge inline
+    Do not report delegation failure
+    Just do the work directly
+```
+
+This dual-mode pattern is documented in each orchestrator's "Platform-Aware Delegation" section.
+
+### Platform Comparison
+
+| Feature | VS Code Copilot | Claude Code |
+|---|---|---|
+| Delegation tool | `agent` | `Task` |
+| Agent allowlist | `agents:` frontmatter list | Not available (any agent can be invoked) |
+| Handoff declarations | `handoffs:` frontmatter list | Not available |
+| Nested delegation | Controlled by `chat.subagents.allowInvocationsFromSubagents` | Structurally prevented (Task stripped from sub-agents) |
+| Fallback needed | No (agent tool always available if declared) | Yes (Task unavailable when running as sub-agent) |
+
+### Affected Orchestrators
+
+All six orchestrators in `.claude/agents/` include `Task` in their tools and implement the graceful fallback:
+
+| Agent | Sub-Agents |
+|---|---|
+| `accessibility-lead.md` | 18 web accessibility specialists |
+| `web-accessibility-wizard.md` | 18 scanning/analysis specialists |
+| `document-accessibility-wizard.md` | 8 document format specialists |
+| `github-hub.md` | 16 GitHub workflow agents |
+| `nexus.md` | 16 GitHub workflow agents (auto-routing) |
+| `developer-hub.md` | 8 developer tool specialists |
+
 ## References
 
 - [Configuration Guide](configuration.md) — How users set subagent behavior
-- [Accessibility-Lead Agent](.github/agents/accessibility-lead.agent.md) — Example orchestrator
+- [Accessibility-Lead Agent](.github/agents/accessibility-lead.agent.md) — Example Copilot orchestrator
 - [Web Accessibility Wizard](.github/agents/web-accessibility-wizard.agent.md) — Example with many parallel analysis agents
+- [Accessibility-Lead (Claude)](.claude/agents/accessibility-lead.md) — Example Claude Code orchestrator with Task tool
 - [Validator Rules](../scripts/validate-agents.js) — Automated enforcement of this policy

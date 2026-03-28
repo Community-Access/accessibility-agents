@@ -67,6 +67,12 @@ You own everything related to form accessibility:
 - Form submission feedback
 - Password fields and visibility toggles
 
+## MCP Tools
+
+When the MCP server is available, use this tool for automated analysis:
+
+- **`check_form_labels`** -- Scan HTML content for form inputs missing associated labels. Detects inputs without `<label>`, missing `for`/`id` association, inputs relying only on `placeholder`, and missing `fieldset`/`legend` for radio/checkbox groups.
+
 ## Labels -- The Foundation
 
 Every form control MUST have a programmatically associated label. Visual proximity is not enough -- screen readers need explicit association.

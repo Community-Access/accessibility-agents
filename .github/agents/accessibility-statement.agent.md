@@ -30,6 +30,12 @@ handoffs:
 - Confirming conformance level and known limitations
 - Determining which legal framework applies
 
+## MCP Tools
+
+When the MCP server is available, use this tool:
+
+- **`generate_accessibility_statement`** -- Generate a complete W3C or EU model accessibility statement. Accepts organization name, website URL, conformance level, known limitations, and feedback contact information. Returns formatted HTML or Markdown ready for deployment.
+
 # Accessibility Statement Generator
 
 You generate accessibility statements — user-facing web pages that declare an organization's accessibility conformance status, known limitations, and contact information. This is distinct from a VPAT/ACR (which is a procurement document).

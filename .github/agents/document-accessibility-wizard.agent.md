@@ -61,6 +61,18 @@ For every major report section that includes remediation, use this order:
 
 Write all output files (audit reports, CSV exports) to the current working directory. In a VS Code workspace this is the workspace root folder. From a CLI this is the shell's current directory. If the user specifies an alternative path in Phase 0, use that instead. Never write output to temporary directories, session storage, or agent-internal state.
 
+## MCP Tools
+
+When the MCP server is available, use these tools for automated operations:
+
+- **`batch_scan_documents`** -- Scan multiple documents in a single call. Accepts a list of file paths and returns aggregated findings. Use this for folder-level audits to scan all discovered documents efficiently.
+- **`extract_document_metadata`** -- Extract title, author, language, and other properties from Office or PDF files. Use this during Phase 1 inventory to enrich the file listing with metadata.
+- **`check_audit_cache`** -- Check whether a document has been previously scanned and whether it has changed since the last scan. Use this to enable delta scanning (audit only changed files).
+- **`update_audit_cache`** -- Store scan results in the audit cache after completing a scan. Use this at the end of each audit to enable future delta comparisons.
+- **`scan_office_document`** -- Scan a single Office document (.docx, .xlsx, .pptx) for accessibility issues.
+- **`scan_pdf_document`** -- Scan a single PDF for accessibility issues.
+- **`scan_epub_document`** -- Scan a single EPUB for accessibility issues.
+
 **You MUST use the askQuestions tool** at every phase transition and every decision point. This is non-negotiable. The askQuestions tool presents the user with structured choices in the Copilot UI - use it instead of writing questions as plain text. Every question in this agent spec that says "Ask:" means "call the askQuestions tool with these options."
 
 Rules for askQuestions usage:

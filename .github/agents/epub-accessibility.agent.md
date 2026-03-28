@@ -47,6 +47,12 @@ You own everything related to ePub document accessibility:
 - Language attributes (`xml:lang` on root and inline switches)
 - EPUB reading system compatibility
 
+## MCP Tools
+
+When the MCP server is available, use this tool for automated scanning:
+
+- **`scan_epub_document`** -- Scan an EPUB file for accessibility issues. Checks package metadata, navigation documents, reading order, alt text, heading hierarchy, table structure, link text, language attributes, and schema.org accessibility metadata. Returns structured findings mapped to EPUB accessibility rules and WCAG criteria.
+
 ## EPUB Accessibility Rule Set
 
 ### Errors - Block assistive technology access

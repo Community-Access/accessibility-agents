@@ -16,6 +16,8 @@
  *              batch_scan_documents, fix_document_metadata, fix_document_headings
  *   Media:     validate_caption_file
  *   Caching:   check_audit_cache, update_audit_cache
+ *   EPUB:     scan_epub_document
+ *   Markdown: scan_markdown_document
  *   Advanced:  run_axe_scan (Playwright), run_playwright_keyboard_scan,
  *              run_playwright_contrast_scan, run_verapdf_scan (veraPDF CLI),
  *              convert_pdf_form_to_html (pdf-lib)
@@ -42,13 +44,18 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { readFile as fsReadFile, writeFile as fsWriteFile, stat } from "node:fs/promises";
 import { realpathSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 import { join, dirname, extname, basename, resolve, sep } from "node:path";
 import { inflateRawSync } from "node:zlib";
 
 import { registerPlaywrightTools } from "./tools/playwright-tools.js";
-import { registerVeraPdfTools } from "./tools/verapdf-tools.js";
+import { registerVeraPdfTools, registerVeraPdfInstallerTools } from "./tools/verapdf-tools.js";
 import { registerPdfFormTools } from "./tools/pdf-form-tools.js";
+import { registerEpubTools } from "./tools/epub-tools.js";
+import { registerMarkdownTools } from "./tools/markdown-tools.js";
+import { registerAuditHistoryTools } from "./tools/audit-history-tools.js";
+import { registerTrendTools, registerTrendResource } from "./tools/trend-tools.js";
 
 /** Maximum file size accepted for document scanning (100 MB). */
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -109,6 +116,61 @@ function contrastRatio(hex1, hex2) {
   const l1 = relativeLuminance(hex1);
   const l2 = relativeLuminance(hex2);
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+// ---------------------------------------------------------------------------
+// APCA contrast (WCAG 3.0 draft - Accessible Perceptual Contrast Algorithm)
+// Based on APCA-W3 0.0.98G-4g specification.
+// ---------------------------------------------------------------------------
+
+const APCA_EXPONENT_TXT = 0.57;
+const APCA_EXPONENT_BG = 0.56;
+const APCA_SCALE = 1.14;
+const APCA_THRESHOLD = 0.022;
+const APCA_CLAMP = 0.1;
+
+function apcaSoftClamp(y) {
+  return y < APCA_THRESHOLD ? y + Math.pow(APCA_THRESHOLD - y, 1.414) : y;
+}
+
+/**
+ * Compute APCA Lightness Contrast (Lc) value.
+ * Positive Lc = dark text on light background.
+ * Negative Lc = light text on dark background.
+ * Values range from roughly -108 to +106.
+ */
+function apcaContrast(textHex, bgHex) {
+  // Parse and linearize
+  const tR = srgbToLinear(parseInt(textHex.slice(1, 3), 16));
+  const tG = srgbToLinear(parseInt(textHex.slice(3, 5), 16));
+  const tB = srgbToLinear(parseInt(textHex.slice(5, 7), 16));
+  const bR = srgbToLinear(parseInt(bgHex.slice(1, 3), 16));
+  const bG = srgbToLinear(parseInt(bgHex.slice(3, 5), 16));
+  const bB = srgbToLinear(parseInt(bgHex.slice(5, 7), 16));
+
+  // Luminance using APCA coefficients (slightly different from WCAG 2.x)
+  let txtY = 0.2126729 * tR + 0.7151522 * tG + 0.0721750 * tB;
+  let bgY = 0.2126729 * bR + 0.7151522 * bG + 0.0721750 * bB;
+
+  // Soft clamp near black
+  txtY = apcaSoftClamp(txtY);
+  bgY = apcaSoftClamp(bgY);
+
+  // SAPC (Spatial APCA Predicted Contrast)
+  let sapc;
+  if (bgY > txtY) {
+    // Dark text on light background (positive polarity)
+    sapc = (Math.pow(bgY, APCA_EXPONENT_BG) - Math.pow(txtY, APCA_EXPONENT_TXT)) * APCA_SCALE;
+  } else {
+    // Light text on dark background (negative polarity)
+    sapc = (Math.pow(bgY, APCA_EXPONENT_TXT) - Math.pow(txtY, APCA_EXPONENT_BG)) * APCA_SCALE;
+  }
+
+  // Apply low-contrast clamp
+  if (Math.abs(sapc) < APCA_CLAMP) return 0;
+  return sapc > 0
+    ? (sapc - APCA_CLAMP) * 100
+    : (sapc + APCA_CLAMP) * 100;
 }
 
 // ---------------------------------------------------------------------------
@@ -266,9 +328,13 @@ function readZipEntries(buf) {
   return entries;
 }
 
+/** Maximum uncompressed size for a single ZIP entry (500 MB). Prevents zip bombs. */
+const MAX_UNCOMPRESSED_BYTES = 500 * 1024 * 1024;
+
 function getZipEntry(buf, entries, name) {
   const entry = entries.get(name);
   if (!entry) return null;
+  if (entry.uSize > MAX_UNCOMPRESSED_BYTES) return null;
   const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
   const lo = entry.localOffset;
   if (dv.getUint32(lo, true) !== 0x04034b50) return null;
@@ -632,7 +698,7 @@ function buildPdfSarif(filePath, findings) {
     $schema: "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0.json",
     version: "2.1.0",
     runs: [{
-      tool: { driver: { name: "a11y-agent-team-pdf-scanner", version: "4.0.0" } },
+      tool: { driver: { name: "a11y-agent-team-pdf-scanner", version: "4.6.0" } },
       results: findings.map(f => ({
         ruleId: f.ruleId,
         level: f.severity === "error" ? "error" : f.severity === "warning" ? "warning" : "note",
@@ -748,7 +814,7 @@ Always use the native <dialog> element. Never build modals from <div> elements.
 export function createServer() {
   const server = new McpServer({
     name: "a11y-agent-team",
-    version: "4.0.0",
+    version: "4.6.0",
   });
 
   // ---- Tool: check_contrast ----
@@ -787,6 +853,85 @@ export function createServer() {
           lines.push(``, `To pass normal text AA, you need a ratio of at least 4.5:1.`);
           lines.push(`Current ratio ${rounded}:1 is ${ratio >= 3.0 ? "only sufficient for large text and UI components" : "insufficient for all WCAG AA levels"}.`);
         }
+        return { content: [{ type: "text", text: lines.join("\n") }] };
+      } catch {
+        return { content: [{ type: "text", text: `Error: Could not parse colors. Use hex format like "#1a1a1a" or "#fff".` }] };
+      }
+    }
+  );
+
+  // ---- Tool: check_apca_contrast (WCAG 3.0 draft) ----
+  server.registerTool(
+    "check_apca_contrast",
+    {
+      title: "Check APCA Contrast (WCAG 3.0 Draft)",
+      description:
+        "Calculate APCA (Accessible Perceptual Contrast Algorithm) Lightness Contrast " +
+        "between text and background colors. APCA is the candidate contrast method for " +
+        "WCAG 3.0 and provides perceptually uniform results. Returns Lc value and " +
+        "recommended minimum font sizes. EXPERIMENTAL: WCAG 3.0 is still in draft.",
+      inputSchema: z.object({
+        foreground: z.string().describe('Text color as hex (e.g. "#1a1a1a" or "#fff")'),
+        background: z.string().describe('Background color as hex (e.g. "#ffffff" or "#000")'),
+      }),
+    },
+    async ({ foreground, background }) => {
+      const expand = (h) => {
+        h = h.replace("#", "");
+        if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+        return "#" + h.toLowerCase();
+      };
+      try {
+        const fg = expand(foreground);
+        const bg = expand(background);
+        const lc = apcaContrast(fg, bg);
+        const absLc = Math.abs(Math.round(lc * 10) / 10);
+        const polarity = lc >= 0 ? "dark text on light background" : "light text on dark background";
+
+        // APCA font size lookup table (simplified from APCA-W3 spec)
+        // |Lc| >= threshold => minimum font weight and size
+        const levels = [
+          { lc: 90, use: "Body text: 14px/400 weight or larger" },
+          { lc: 75, use: "Body text: 16px/400 weight, or 14px/700 weight" },
+          { lc: 60, use: "Large text: 24px/400 weight, or 18px/700 weight" },
+          { lc: 45, use: "Headlines only: 36px/400 weight, or 24px/700 weight" },
+          { lc: 30, use: "Non-text elements only (icons, borders, focus rings)" },
+          { lc: 15, use: "Barely perceptible; not suitable for any meaningful content" },
+        ];
+
+        let recommendation = "Insufficient contrast for any use";
+        for (const level of levels) {
+          if (absLc >= level.lc) {
+            recommendation = level.use;
+            break;
+          }
+        }
+
+        // Also compute WCAG 2.x ratio for comparison
+        const wcagRatio = contrastRatio(fg, bg);
+        const wcagRounded = Math.round(wcagRatio * 100) / 100;
+
+        const lines = [
+          `APCA Lightness Contrast (Lc): ${absLc}`,
+          `Polarity: ${polarity}`,
+          ``,
+          `Recommended Use: ${recommendation}`,
+          ``,
+          `APCA Thresholds:`,
+          `  Lc >= 90: Body text (14px+)`,
+          `  Lc >= 75: Body text (16px+ or 14px bold)`,
+          `  Lc >= 60: Large text (24px+ or 18px bold)`,
+          `  Lc >= 45: Headlines (36px+ or 24px bold)`,
+          `  Lc >= 30: Non-text only (icons, borders)`,
+          `  Lc <  15: Not usable`,
+          ``,
+          `For comparison -- WCAG 2.x ratio: ${wcagRounded}:1`,
+          ``,
+          `Colors: ${fg} text on ${bg} background`,
+          ``,
+          `Note: APCA is part of the WCAG 3.0 Working Draft and is not yet a W3C Recommendation.`,
+          `Current WCAG 2.2 AA still uses the traditional contrast ratio method.`,
+        ];
         return { content: [{ type: "text", text: lines.join("\n") }] };
       } catch {
         return { content: [{ type: "text", text: `Error: Could not parse colors. Use hex format like "#1a1a1a" or "#fff".` }] };
@@ -1081,7 +1226,12 @@ export function createServer() {
   // ---- Register optional tool modules ----
   registerPlaywrightTools(server);
   registerVeraPdfTools(server);
+  registerVeraPdfInstallerTools(server);
   registerPdfFormTools(server);
+  registerEpubTools(server);
+  registerMarkdownTools(server);
+  registerAuditHistoryTools(server);
+  registerTrendTools(server);
 
   // ---- Tool: fix_document_metadata ----
   server.registerTool(
@@ -1227,13 +1377,15 @@ export function createServer() {
     "check_audit_cache",
     {
       title: "Check Audit Cache",
-      description: "Check the component audit cache (.a11y-cache.json) to determine which files have changed since the last scan and need re-auditing. Returns lists of changed, new, and unchanged files.",
+      description: "Check the component audit cache (.a11y-cache.json) to determine which files have changed since the last scan and need re-auditing. Supports content hashing for reliable change detection and configurable expiry. Returns lists of changed, new, expired, and unchanged files plus cache statistics.",
       inputSchema: z.object({
         filePaths: z.array(z.string()).max(MAX_BATCH_FILES).describe("Array of file paths to check against the cache"),
         cacheFile: z.string().optional().describe("Path to cache file (default: .a11y-cache.json in project root)"),
+        useContentHash: z.boolean().optional().describe("Use SHA-256 content hash instead of size+mtime (more reliable but slower). Default: false"),
+        maxAgeDays: z.number().optional().describe("Treat entries older than this many days as expired and needing re-scan. Default: no expiry"),
       }),
     },
-    async ({ filePaths, cacheFile }) => {
+    async ({ filePaths, cacheFile, useContentHash, maxAgeDays }) => {
       try {
         const cachePath = cacheFile
           ? validateFilePath(cacheFile)
@@ -1248,16 +1400,33 @@ export function createServer() {
         const changed = [];
         const unchanged = [];
         const newFiles = [];
+        const expired = [];
+        const nowMs = Date.now();
+        const maxAgeMs = maxAgeDays ? maxAgeDays * 86400000 : 0;
 
         for (const fp of filePaths) {
           try {
             const safe = validateFilePath(fp);
             const fstat = await stat(safe);
-            const currentHash = `${fstat.size}-${fstat.mtimeMs}`;
+            let currentHash;
+            if (useContentHash) {
+              const content = await fsReadFile(safe);
+              currentHash = createHash("sha256").update(content).digest("hex");
+            } else {
+              currentHash = `${fstat.size}-${fstat.mtimeMs}`;
+            }
             const cached = cache[safe];
 
             if (!cached) {
               newFiles.push(basename(safe));
+            } else if (maxAgeMs && cached.scannedAt) {
+              const age = nowMs - new Date(cached.scannedAt).getTime();
+              if (age > maxAgeMs) {
+                expired.push(basename(safe));
+                continue;
+              }
+              if (cached.hash !== currentHash) changed.push(basename(safe));
+              else unchanged.push(basename(safe));
             } else if (cached.hash !== currentHash) {
               changed.push(basename(safe));
             } else {
@@ -1268,20 +1437,37 @@ export function createServer() {
           }
         }
 
+        const totalEntries = Object.keys(cache).length;
+        const totalFindings = Object.values(cache).reduce((sum, e) => sum + (e.findings || 0), 0);
+        const needsScan = newFiles.length + changed.length + expired.length;
+
         const lines = [
           `Audit Cache Check: ${filePaths.length} files`,
+          `Hash mode: ${useContentHash ? "SHA-256 content" : "size+mtime"}${maxAgeDays ? ` | Max age: ${maxAgeDays} days` : ""}`,
           "",
           `New (not previously scanned): ${newFiles.length}`,
           ...newFiles.map(f => `  + ${f}`),
           "",
           `Changed (need re-scan): ${changed.length}`,
           ...changed.map(f => `  ~ ${f}`),
+        ];
+
+        if (expired.length > 0) {
+          lines.push("", `Expired (older than ${maxAgeDays} days): ${expired.length}`);
+          lines.push(...expired.map(f => `  ! ${f}`));
+        }
+
+        lines.push(
           "",
           `Unchanged (skip): ${unchanged.length}`,
           ...unchanged.map(f => `  = ${f}`),
           "",
-          `Files to scan: ${newFiles.length + changed.length} of ${filePaths.length}`,
-        ];
+          `Files to scan: ${needsScan} of ${filePaths.length}`,
+          "",
+          `Cache statistics:`,
+          `  Total cached entries: ${totalEntries}`,
+          `  Total cached findings: ${totalFindings}`,
+        );
 
         return { content: [{ type: "text", text: lines.join("\n") }] };
       } catch (err) {
@@ -1295,23 +1481,23 @@ export function createServer() {
     "update_audit_cache",
     {
       title: "Update Audit Cache",
-      description: "Update the component audit cache (.a11y-cache.json) after scanning files. Stores file hashes and finding counts so unchanged files can be skipped on re-audit.",
+      description: "Update the component audit cache (.a11y-cache.json) after scanning files. Stores file hashes, finding counts, severity breakdown, and scan timestamp so unchanged files can be skipped on re-audit.",
       inputSchema: z.object({
         entries: z.array(z.object({
           filePath: z.string().describe("Absolute path to the scanned file"),
           findingCount: z.number().describe("Number of accessibility findings in this file"),
+          errorCount: z.number().optional().describe("Number of error-severity findings"),
+          warningCount: z.number().optional().describe("Number of warning-severity findings"),
         })).describe("Array of scan results to cache"),
         cacheFile: z.string().optional().describe("Path to cache file (default: .a11y-cache.json in project root)"),
+        useContentHash: z.boolean().optional().describe("Use SHA-256 content hash instead of size+mtime. Default: false"),
       }),
     },
-    async ({ entries, cacheFile }) => {
+    async ({ entries, cacheFile, useContentHash }) => {
       try {
         const cachePath = cacheFile
-          ? validateFilePath(cacheFile)
+          ? validateFilePath(cacheFile, { write: true })
           : join(process.cwd(), ".a11y-cache.json");
-
-        // Validate cache path for writes (resolve symlinks)
-        const resolvedCache = realpathSync(dirname(cachePath));
 
         let cache = {};
         if (existsSync(cachePath)) {
@@ -1324,9 +1510,18 @@ export function createServer() {
           try {
             const safe = validateFilePath(entry.filePath);
             const fstat = await stat(safe);
+            let hash;
+            if (useContentHash) {
+              const content = await fsReadFile(safe);
+              hash = createHash("sha256").update(content).digest("hex");
+            } else {
+              hash = `${fstat.size}-${fstat.mtimeMs}`;
+            }
             cache[safe] = {
-              hash: `${fstat.size}-${fstat.mtimeMs}`,
+              hash,
               findings: entry.findingCount,
+              errors: entry.errorCount || 0,
+              warnings: entry.warningCount || 0,
               scannedAt: new Date().toISOString(),
             };
             updated++;
@@ -1335,16 +1530,21 @@ export function createServer() {
           }
         }
 
+        // Write using validateFilePath for write safety
+        const safeCachePath = validateFilePath(cachePath, { write: true });
         await fsWriteFile(
-          join(resolvedCache, basename(cachePath)),
+          safeCachePath,
           JSON.stringify(cache, null, 2),
           "utf8"
         );
 
+        const totalEntries = Object.keys(cache).length;
+        const totalFindings = Object.values(cache).reduce((sum, e) => sum + (e.findings || 0), 0);
+
         return {
           content: [{
             type: "text",
-            text: `Audit cache updated: ${updated} entries written to ${basename(cachePath)}`,
+            text: `Audit cache updated: ${updated} entries written to ${basename(cachePath)}\nTotal cached: ${totalEntries} files, ${totalFindings} findings`,
           }],
         };
       } catch (err) {
@@ -1928,6 +2128,8 @@ export function createServer() {
       };
     }
   );
+
+  registerTrendResource(server);
 
   return server;
 }

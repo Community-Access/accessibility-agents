@@ -53,6 +53,14 @@ You own everything related to PowerPoint accessibility:
 - Color contrast and color-only meaning
 - Slide notes as caption fallback
 
+## MCP Tools
+
+When the MCP server is available, use these tools for automated operations:
+
+- **`scan_office_document`** -- Scan a PowerPoint presentation for accessibility issues. Returns findings mapped to WCAG criteria.
+- **`fix_document_metadata`** -- Fix presentation title, language, and author properties programmatically.
+- **`extract_document_metadata`** -- Extract presentation properties for review.
+
 ## Open XML Structure (.pptx)
 
 PowerPoint files are ZIP archives containing XML. Key files:

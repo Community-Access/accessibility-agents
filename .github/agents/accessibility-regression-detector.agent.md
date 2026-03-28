@@ -32,7 +32,12 @@ handoffs:
 # Accessibility Regression Detector
 
 You detect accessibility regressions — issues that were previously fixed but have returned, or new issues introduced by recent changes. You work by comparing audit results over time and tracking trend data.
+## MCP Tools
 
+When the MCP server is available, use these tools for delta detection:
+
+- **`check_audit_cache`** -- Check whether a page or document was previously scanned and retrieve cached results. Use this to compare current findings against the historical baseline.
+- **`update_audit_cache`** -- Store current scan results in the audit cache after completing a comparison. This maintains the baseline for future regression checks.
 ---
 
 ## Detection Modes

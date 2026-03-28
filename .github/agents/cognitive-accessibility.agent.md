@@ -66,6 +66,12 @@ Apply cognitive accessibility review when asked to:
 - Improve content clarity or reading level
 - Generate a compliance checklist for cognitive accessibility
 
+## MCP Tools
+
+When the MCP server is available, use this tool for automated analysis:
+
+- **`check_reading_level`** -- Analyze text content for readability using Flesch-Kincaid Grade Level and Gunning Fog Index. Returns grade level, reading ease score, and WCAG 3.1.5 (AAA) assessment. Use this when evaluating whether content is written in plain language or when auditing instructional text and error messages.
+
 ---
 
 ## Phase 1 - Identify Review Type

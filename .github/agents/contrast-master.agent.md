@@ -48,6 +48,13 @@ You own everything visual that affects readability and perception:
 - Animation and motion safety
 - User preference media queries (`prefers-*` and `forced-colors`)
 
+## MCP Tools
+
+When the MCP server is available, use these tools for automated analysis:
+
+- **`check_contrast`** -- Calculate WCAG contrast ratios between any two colors. Accepts hex, RGB, or named colors. Reports pass/fail for normal text (4.5:1), large text (3:1), and UI components (3:1).
+- **`check_color_blindness`** -- Simulate how color pairs appear under protanopia, deuteranopia, tritanopia, and achromatopsia. Use this to verify that color-only information remains distinguishable for users with color vision deficiencies.
+
 ## WCAG AA Contrast Requirements
 
 These ratios are the minimum. Meeting them is mandatory, not aspirational.

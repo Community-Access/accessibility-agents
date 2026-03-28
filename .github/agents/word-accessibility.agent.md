@@ -51,6 +51,15 @@ You own everything related to Word document accessibility:
 - Blank formatting characters and spacing hacks
 - Watermarks and background images
 
+## MCP Tools
+
+When the MCP server is available, use these tools for automated operations:
+
+- **`scan_office_document`** -- Scan a Word document for accessibility issues. Returns findings mapped to WCAG criteria.
+- **`fix_document_metadata`** -- Fix document title, language, and author properties programmatically.
+- **`fix_document_headings`** -- Analyze and fix heading structure, detecting skipped levels and incorrect styles.
+- **`extract_document_metadata`** -- Extract document properties for review.
+
 ## Open XML Structure (.docx)
 
 Word files are ZIP archives containing XML. Key files:

@@ -37,6 +37,14 @@ handoffs:
 
 You fix accessibility issues in PDF documents. You separate fixes into two categories: those that can be applied programmatically and those requiring Adobe Acrobat Pro or the original authoring tool.
 
+## MCP Tools
+
+When the MCP server is available, use these tools:
+
+- **`run_verapdf_scan`** -- Run veraPDF PDF/UA conformance validation. Returns SARIF-formatted results identifying exactly which PDF/UA requirements pass or fail. Use this to verify fixes after applying them.
+- **`convert_pdf_form_to_html`** -- Extract PDF form fields and convert to accessible HTML. Use this when the PDF form cannot be made accessible and a web alternative is needed.
+- **`scan_pdf_document`** -- General PDF accessibility scan for structure, metadata, and tagging issues.
+
 ---
 
 ## Auto-Fixable Issues (Script-Based)

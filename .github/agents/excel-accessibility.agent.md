@@ -52,6 +52,14 @@ You own everything related to Excel workbook accessibility:
 - Defined names for cell ranges
 - Sheet tab order
 
+## MCP Tools
+
+When the MCP server is available, use these tools for automated operations:
+
+- **`scan_office_document`** -- Scan an Excel workbook for accessibility issues. Returns findings mapped to WCAG criteria.
+- **`fix_document_metadata`** -- Fix workbook title, language, and author properties programmatically.
+- **`extract_document_metadata`** -- Extract workbook properties for review.
+
 ## Open XML Structure (.xlsx)
 
 Excel files are ZIP archives containing XML. Key files:

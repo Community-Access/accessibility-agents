@@ -721,7 +721,52 @@ if [ "$choice" = "2" ]; then
 fi
 
 # =============================================
-# 9. Clean up manifest and empty directories
+# 9. Remove MCP server
+# =============================================
+MCP_REMOVED=false
+if [ "$choice" = "1" ]; then
+  MCP_DIR="$(pwd)/mcp-server"
+  if [ -d "$MCP_DIR" ]; then
+    echo ""
+    echo "  Removing MCP server..."
+    rm -rf "$MCP_DIR"
+    echo "    - $MCP_DIR"
+    MCP_REMOVED=true
+  fi
+  # Clean project .vscode/settings.json MCP entry
+  VSCODE_SETTINGS="$(pwd)/.vscode/settings.json"
+  if [ -f "$VSCODE_SETTINGS" ] && command -v python3 >/dev/null 2>&1; then
+    python3 -c "
+import json, sys
+with open('$VSCODE_SETTINGS', 'r') as f:
+    data = json.load(f)
+mcp = data.get('mcp', {})
+servers = mcp.get('servers', {})
+if 'a11y-agent-team' in servers:
+    del servers['a11y-agent-team']
+    if not servers: mcp.pop('servers', None)
+    if not mcp: data.pop('mcp', None)
+    with open('$VSCODE_SETTINGS', 'w') as f:
+        json.dump(data, f, indent=2)
+    print('    - Removed MCP entry from .vscode/settings.json')
+" 2>/dev/null || true
+  fi
+elif [ "$choice" = "2" ]; then
+  # Global MCP server is inside ~/.a11y-agent-team/ which is already removed
+  # by the global store cleanup in section 3, but confirm it is gone
+  MCP_DIR="$HOME/.a11y-agent-team/mcp-server"
+  if [ -d "$MCP_DIR" ]; then
+    echo ""
+    echo "  Removing MCP server..."
+    rm -rf "$MCP_DIR"
+    echo "    - $MCP_DIR"
+    MCP_REMOVED=true
+  fi
+  # VS Code settings.json MCP entry is already cleaned in section 3
+fi
+
+# =============================================
+# 10. Clean up manifest and empty directories
 # =============================================
 rm -f "$MANIFEST_FILE"
 rm -f "$TARGET_DIR/.a11y-agent-team-version"
@@ -746,6 +791,9 @@ else
 fi
 if [ "$GEMINI_REMOVED" = true ]; then
   echo "    - Gemini CLI extension"
+fi
+if [ "$MCP_REMOVED" = true ]; then
+  echo "    - MCP server (directory and VS Code settings)"
 fi
 echo ""
 echo "  Next steps:"

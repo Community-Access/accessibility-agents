@@ -109,6 +109,47 @@ Check for:
 
 See the [Agent Debug Panel Guide](../../docs/guides/agent-debug-panel.md) for troubleshooting workflows.
 
+### MCP Tools
+
+When the MCP server is available, the following tools provide automated analysis capabilities across all accessibility domains. Use them to supplement specialist agent reviews.
+
+**Web analysis:**
+- `check_contrast` -- WCAG contrast ratio calculator for color pairs
+- `check_color_blindness` -- CVD simulation (protanopia, deuteranopia, tritanopia, achromatopsia)
+- `check_heading_structure` -- HTML heading hierarchy analysis
+- `check_link_text` -- Ambiguous/missing link text detection
+- `check_form_labels` -- Missing form input labels detection
+- `check_reading_level` -- Flesch-Kincaid / Gunning Fog readability analysis
+
+**Document scanning:**
+- `scan_office_document` -- Office (.docx/.xlsx/.pptx) accessibility scan
+- `scan_pdf_document` -- PDF/UA accessibility scan
+- `scan_epub_document` -- EPUB accessibility scan
+- `scan_markdown_document` -- Markdown accessibility scan
+- `batch_scan_documents` -- Multi-file batch scan
+- `extract_document_metadata` -- Document metadata extraction
+- `fix_document_metadata` -- Fix Office doc title/language/author
+- `fix_document_headings` -- Analyze/fix .docx heading structure
+
+**PDF specialist:**
+- `run_verapdf_scan` -- veraPDF PDF/UA conformance validation (SARIF output)
+- `convert_pdf_form_to_html` -- PDF form to accessible HTML conversion
+
+**Media and compliance:**
+- `validate_caption_file` -- WebVTT/SRT caption validation
+- `generate_accessibility_statement` -- W3C/EU accessibility statement generator
+
+**Audit tracking:**
+- `check_audit_cache` -- Delta detection for re-audits
+- `update_audit_cache` -- Store scan results in cache
+
+**Browser testing (Playwright):**
+- `run_axe_scan` -- axe-core scan via Playwright
+- `run_playwright_a11y_tree` -- Accessibility tree capture
+- `run_playwright_keyboard_scan` -- Keyboard navigation testing
+- `run_playwright_contrast_scan` -- Computed-style contrast scan
+- `run_playwright_viewport_scan` -- Viewport/zoom reflow test
+
 ## Your Team
 
 | Agent | Specialty | When to Invoke |

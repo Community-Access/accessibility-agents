@@ -35,6 +35,12 @@ You will receive a Markdown Scan Context block:
 - **User Notes:** [any specifics from Phase 0]
 ```
 
+## MCP Tools
+
+When the MCP server is available, use this tool to supplement your manual scan:
+
+- **`scan_markdown_document`** -- Automated Markdown accessibility scanner covering all 9 domains. Run this first to get baseline findings, then perform your manual scan to catch context-dependent issues the automated tool may miss.
+
 ## Scan Process
 
 ### Step 1: Read the File

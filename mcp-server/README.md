@@ -180,6 +180,7 @@ If you also want the chat workflow layer, add:
 |------|-------------|
 | `scan_office_document` | Scan .docx/.xlsx/.pptx for accessibility issues |
 | `scan_pdf_document` | Scan PDF using PDF/UA checks |
+| `scan_epub_document` | Scan .epub files for EPUB Accessibility 1.1 conformance |
 | `extract_document_metadata` | Extract accessibility-relevant metadata |
 | `batch_scan_documents` | Scan multiple documents in one call |
 | `fix_document_metadata` | Fix document metadata (title, language, author) |
@@ -194,8 +195,14 @@ If you also want the chat workflow layer, add:
 | `run_playwright_keyboard_scan` | playwright | Test keyboard navigation |
 | `run_playwright_contrast_scan` | playwright | Visual contrast analysis |
 | `run_playwright_viewport_scan` | playwright | Test reflow at multiple widths |
-| `run_verapdf_scan` | veraPDF CLI | PDF/UA-1 conformance validation |
+| `run_verapdf_scan` | veraPDF CLI | PDF/UA-1 conformance validation (SARIF output) |
 | `convert_pdf_form_to_html` | pdf-lib | Convert PDF forms to accessible HTML |
+
+### Markdown Tools
+
+| Tool | Description |
+|------|-------------|
+| `lint_markdown` | Lint markdown files for accessibility issues (links, alt text, headings, tables, emoji) |
 
 ### Caching Tools
 
@@ -295,7 +302,7 @@ For more background, see [../docs/tools/verapdf-integration.md](../docs/tools/ve
 
 ```bash
 curl http://127.0.0.1:3100/health
-# {"status":"ok","name":"a11y-agent-team","version":"4.0.0","mode":"stateful"}
+# {"status":"ok","name":"a11y-agent-team","version":"4.6.0","mode":"stateful"}
 ```
 
 ## MCP Prompts

@@ -55,6 +55,12 @@ You own everything related to text alternatives and document structure:
 - Page titles
 - Language attributes
 
+## MCP Tools
+
+When the MCP server is available, use this tool for automated analysis:
+
+- **`check_heading_structure`** -- Analyze HTML content for heading hierarchy issues. Detects skipped heading levels, missing H1, multiple H1s, empty headings, and headings used purely for visual styling.
+
 ## Image Analysis Workflow
 
 When you encounter images in the codebase, follow this workflow:

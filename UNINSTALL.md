@@ -51,6 +51,7 @@ Each line tells you what was installed:
 | `copilot-global/central-store` | Copilot agents installed globally to VS Code profiles |
 | `codex/project` or `codex/global` | Codex CLI was installed |
 | `gemini/project` or `gemini/global` | Gemini CLI was installed |
+| `mcp/project` or `mcp/global` | MCP server was installed |
 | `scope:project` or `scope:global` | Whether this was a project or global install |
 
 If the manifest is missing, that is okay. Follow all the sections below that apply to your setup.
@@ -289,7 +290,57 @@ Remove-Item "$env:USERPROFILE\.gemini\extensions\a11y-agents" -Recurse -Force -E
 
 ---
 
-## 5. Auto-updates
+## 5. MCP server
+
+The installer copies an MCP server directory (`mcp-server/`) and registers it in VS Code settings.
+
+### Project install
+
+Remove the MCP server directory:
+
+```bash
+rm -rf ./mcp-server/
+```
+
+On Windows:
+
+```powershell
+Remove-Item .\mcp-server -Recurse -Force -ErrorAction SilentlyContinue
+```
+
+Then remove the MCP entry from `.vscode/settings.json`. Open the file and delete the `a11y-agent-team` key from the `mcp.servers` block:
+
+```json
+"mcp": {
+    "servers": {
+        "a11y-agent-team": { ... }  // <-- delete this entire entry
+    }
+}
+```
+
+### Global install
+
+The global MCP server lives inside the central store at `~/.a11y-agent-team/mcp-server/`. If you already removed the entire `~/.a11y-agent-team/` directory in section 2, there is nothing extra to do.
+
+Otherwise:
+
+```bash
+rm -rf ~/.a11y-agent-team/mcp-server/
+```
+
+On Windows:
+
+```powershell
+Remove-Item "$env:USERPROFILE\.a11y-agent-team\mcp-server" -Recurse -Force -ErrorAction SilentlyContinue
+```
+
+Then remove the MCP entry from your VS Code User settings (`settings.json`). Open the file (Ctrl+Shift+P then "Preferences: Open User Settings (JSON)") and delete the `a11y-agent-team` key from the `mcp.servers` block.
+
+**How to verify:** In VS Code, press Ctrl+Shift+P and type "MCP: List Servers". The `a11y-agent-team` server should not appear.
+
+---
+
+## 6. Auto-updates
 
 If you enabled auto-updates during global install, they need to be removed too.
 
@@ -320,7 +371,7 @@ rm -rf ~/.claude/.a11y-agent-team-repo
 
 ---
 
-## 6. Final cleanup
+## 7. Final cleanup
 
 After removing everything above:
 

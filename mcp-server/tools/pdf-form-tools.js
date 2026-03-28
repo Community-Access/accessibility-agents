@@ -86,10 +86,16 @@ export function registerPdfFormTools(server) {
           `  <form>`,
         ];
 
+        function esc(str) {
+          return str.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+        }
+
         let fieldNum = 0;
         for (const field of fields) {
           fieldNum++;
-          const name = field.getName() || `field-${fieldNum}`;
+          const name = esc(field.getName() || `field-${fieldNum}`);
           const type = field.constructor.name;
           const id = `field-${fieldNum}`;
 
@@ -102,18 +108,18 @@ export function registerPdfFormTools(server) {
             htmlParts.push(`    <fieldset><legend>${name}</legend>`);
             const options = field.getOptions();
             for (let i = 0; i < options.length; i++) {
-              htmlParts.push(`      <label><input type="radio" name="${name}" value="${options[i]}"> ${options[i]}</label>`);
+              htmlParts.push(`      <label><input type="radio" name="${name}" value="${esc(options[i])}"> ${esc(options[i])}</label>`);
             }
             htmlParts.push(`    </fieldset>`);
           } else if (type === "PDFDropdown") {
             htmlParts.push(`    <label for="${id}">${name}</label>`);
             htmlParts.push(`    <select id="${id}" name="${name}">`);
             for (const opt of field.getOptions()) {
-              htmlParts.push(`      <option value="${opt}">${opt}</option>`);
+              htmlParts.push(`      <option value="${esc(opt)}">${esc(opt)}</option>`);
             }
             htmlParts.push(`    </select>`);
           } else {
-            htmlParts.push(`    <!-- ${type}: ${name} (unsupported field type) -->`);
+            htmlParts.push(`    <!-- unsupported field type: ${esc(type)} -->`);
           }
         }
 

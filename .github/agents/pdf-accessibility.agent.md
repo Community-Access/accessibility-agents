@@ -170,6 +170,8 @@ These rules catch process-level problems for CI/CD pipelines and documentation w
 ### Automated
 
 - **MCP scan_pdf_document tool** - Built-in scanner checking structure, metadata, and tagging
+- **MCP run_verapdf_scan tool** - Run veraPDF PDF/UA conformance validation via the MCP server. Returns SARIF-formatted results with rule-level pass/fail and Matterhorn Protocol mapping.
+- **MCP convert_pdf_form_to_html tool** - Extract PDF form fields and convert them to an accessible HTML form. Use this to audit form accessibility or generate an accessible web alternative.
 - **veraPDF** - Open-source PDF/UA validator: `verapdf --flavour ua1 file.pdf`
 - **PAC (PDF Accessibility Checker)** - Windows GUI tool for PDF/UA validation
 

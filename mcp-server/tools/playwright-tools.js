@@ -31,8 +31,9 @@ const NOT_INSTALLED_MSG =
   "Playwright is not installed. Install with:\n  npm install -D playwright @axe-core/playwright && npx playwright install chromium";
 
 /**
- * Validate a URL to prevent SSRF. Only allows http: and https: schemes
- * and rejects localhost/private IPs unless explicitly allowed.
+ * Validate a URL. Only allows http: and https: schemes.
+ * Does not restrict private/internal IPs -- the server should be
+ * bound to localhost (default) to limit SSRF exposure.
  */
 function validateUrl(urlString) {
   let parsed;

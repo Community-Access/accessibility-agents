@@ -5,6 +5,94 @@ All notable changes to the Accessibility Agents project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.0] - 2026-03-27
+
+### Added
+
+#### EPUB Accessibility Scanning (MCP Tools)
+
+- **`scan_epub`** -- Full EPUB Accessibility 1.1 scan: language, navigation documents (NCX/TOC), accessibility metadata (schema.org), image alt text, heading hierarchy, and table structure across all content documents.
+- **`scan_epub_reading_order`** -- Validates spine reading order against TOC navigation, detects orphaned spine items and unreferenced content.
+- **`check_epub_metadata`** -- Checks EPUB accessibility metadata for conformsTo declarations, accessMode, accessModeSufficient, accessibilityFeature, accessibilityHazard, and accessibilitySummary (schema.org).
+- **ePub scan configuration** -- New `.a11y-epub-config.json` with strict/moderate/minimal templates.
+
+#### Markdown Accessibility Scanning (MCP Tools)
+
+- **`scan_markdown`** -- 9-domain accessibility audit: heading hierarchy, image alt text, link text quality, table structure, emoji detection, Mermaid/ASCII diagrams, em-dash normalization, anchor link validation, and language markers.
+- **`scan_markdown_links`** -- Dedicated link checker with ambiguous text detection ("click here", "read more"), broken internal anchors, and bare URLs without descriptive text.
+
+#### veraPDF SARIF Output
+
+- **`run_verapdf_sarif`** -- Runs veraPDF validation and outputs findings as SARIF 2.1.0 (Static Analysis Results Interchange Format). Integrates with GitHub code scanning, IDE SARIF viewers, and CI/CD pipelines. Maps PDF/UA clause IDs to SARIF rule objects with help URIs.
+
+#### Audit Cache Enhancement
+
+- **Content-based cache invalidation** -- `check_audit_cache` now uses SHA-256 content hashing instead of file modification timestamps, eliminating false cache hits from touched-but-unchanged files.
+- **Configurable cache expiry** -- New `maxAgeDays` parameter (default: 30) allows tuning cache freshness per workflow.
+- **Severity breakdown tracking** -- `update_audit_cache` now stores per-file severity counts (critical, serious, moderate, minor) for trend analysis without re-scanning.
+
+#### Sub-Agent Delegation (Claude Code)
+
+- All 5 missing Claude Code orchestrator agents (web-accessibility-wizard, document-accessibility-wizard, github-hub, nexus, developer-hub) now include the `Task` tool for spawning specialist sub-agents.
+- Platform-aware delegation sections added to each orchestrator with graceful fallback when sub-agents are unavailable.
+- `docs/subagent-architecture.md` updated with comprehensive Claude Code delegation documentation, including platform comparison table and affected orchestrators reference.
+
+#### Audit Persistence (MCP Tools)
+
+- **`save_audit_result`** -- Save accessibility audit findings to persistent storage with URL, timestamp, score, and severity breakdown for trend tracking.
+- **`list_audit_history`** -- List all stored audit results with filtering by URL pattern and date range.
+- **`get_audit_result`** -- Retrieve a specific audit result by ID with full finding details.
+- **`prune_audit_history`** -- Remove old audit results by age threshold (default: 90 days) to manage storage.
+
+#### veraPDF Installer Helper (MCP Tool)
+
+- **`check_verapdf_installation`** -- Detects veraPDF installation status, checks Java dependency, reports version and path. Provides platform-specific installation instructions when veraPDF is not found.
+
+#### npm Publish Readiness
+
+- Added `a11y-mcp-server` and `a11y-mcp-stdio` binary entry points to mcp-server/package.json, enabling `npx @a11y-agent-team/mcp-server` zero-install usage after npm publish.
+- Package metadata finalized for npm registry: name, description, keywords, repository URL, license.
+
+#### Audit Trend Dashboard (MCP Tools)
+
+- **`get_audit_trend`** -- Analyze score trends across stored audits for a URL. Returns latest vs. oldest scores, delta, direction (improving/declining/stable), and per-audit history for charting.
+- **`a11y://dashboard/summary` resource** -- MCP resource endpoint providing a human-readable audit dashboard summary with per-URL trend data.
+
+#### APCA Contrast (MCP Tool)
+
+- **`check_apca_contrast`** -- Calculate Accessible Perceptual Contrast Algorithm (APCA) lightness contrast between foreground and background colors. Returns Lc value with pass/fail assessment against font-size-specific thresholds per WCAG 3.0 draft methodology.
+
+#### Anthropic Directory Manifest
+
+- **`anthropic-directory.json`** -- Anthropic MCP Directory listing file with all 37 tools and 4 resources for discovery by Claude Desktop and other Anthropic-ecosystem clients.
+
+#### GitHub Action for CI/CD
+
+- **`action/action.yml`** -- Composite GitHub Action for zero-dependency accessibility scanning in CI pipelines. Scans a URL with 9 checks (document title, lang attribute, viewport meta, heading hierarchy, image alt text, link text quality, form labels, ARIA validity, color contrast declarations), generates SARIF 2.1.0 output, and uploads to GitHub Code Scanning.
+- **`action/scan.mjs`** -- Standalone scanner (~400 lines) with built-in `McpStdioClient` class for MCP server communication. Zero external npm dependencies.
+- **`action/README.md`** -- Usage documentation, configuration reference, and integration examples.
+
+#### VS Code Extension Sync
+
+- Added 23 missing slash commands to the VS Code extension `@a11y` chat participant, bringing the total from 41 to 64 and fully synchronizing with all user-invocable agents in the repository.
+- Bumped VS Code extension version from 4.0.0 to 4.6.0.
+- **Check Contrast command** now reports both WCAG 2.x ratio and APCA Lc value in a single result, with pass/fail for body text, large text, and UI components.
+- Updated extension description to reflect current capabilities.
+
+### Changed
+
+- Updated health check endpoint version from 4.0.0 to 4.6.0.
+- Updated Anthropic Directory listing with 6 new tool entries and expanded description.
+
+### Security
+
+- **XSS prevention (pdf-form-tools.js)** -- All PDF field names and option values are now HTML-escaped before interpolation into generated HTML. Prevents stored XSS from malicious PDF form fields. (CWE-79)
+- **ZIP bomb protection (server-core.js, epub-tools.js)** -- `getZipEntry()` now validates `entry.uSize` against a 500 MB limit before decompression via `inflateRawSync`. Prevents memory exhaustion from crafted ZIP entries. (CWE-409)
+- **CORS deny-all (server.js)** -- Cross-origin requests are now blocked with `Access-Control-Allow-Origin: null`. (CWE-942)
+- **Session limits (server.js)** -- Stateful mode now enforces maximum 100 concurrent sessions with 30-minute TTL and periodic cleanup sweep, preventing memory exhaustion from abandoned sessions. (CWE-770)
+- **Non-loopback warning (server.js)** -- Server emits a console warning when bound to a non-loopback address without authentication. (CWE-306)
+- **SSRF comment correction (playwright-tools.js)** -- Fixed misleading JSDoc that claimed private IP filtering was implemented when only protocol scheme validation existed.
+
 ## [4.5.0] - 2026-03-26
 
 ### Added

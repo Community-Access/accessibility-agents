@@ -1,6 +1,6 @@
 {
   "name": "A11y Agent Team MCP Server",
-  "description": "Accessibility scanning and remediation tools for WCAG 2.2 compliance. Provides 24 tools for checking contrast, headings, links, forms, document metadata, Office/PDF scanning, Playwright-based browser testing, color blindness simulation, reading level analysis, caption validation, accessibility statement generation, and audit caching.",
+  "description": "Accessibility scanning and remediation tools for WCAG 2.2 compliance with experimental WCAG 3.0 support. Provides 40+ tools for checking contrast (WCAG 2.x and APCA), headings, links, forms, document metadata, Office/PDF/EPUB scanning, markdown linting, Playwright-based browser testing, veraPDF SARIF output, color blindness simulation, reading level analysis, caption validation, accessibility statement generation, audit persistence with trend tracking, and scan configuration.",
   "vendor": "Community-Access",
   "sourceUrl": "https://github.com/Community-Access/accessibility-agents",
   "homepage": "https://github.com/Community-Access/accessibility-agents/tree/main/mcp-server#readme",
@@ -22,6 +22,18 @@
       "description": "Calculate WCAG 2.x contrast ratio between two hex colors"
     },
     {
+      "name": "check_apca_contrast",
+      "description": "Calculate APCA Lightness Contrast (WCAG 3.0 draft) between text and background colors"
+    },
+    {
+      "name": "check_color_blindness",
+      "description": "Simulate color blindness types and check distinguishability"
+    },
+    {
+      "name": "check_reading_level",
+      "description": "Analyze text readability using Flesch-Kincaid and other metrics"
+    },
+    {
       "name": "get_accessibility_guidelines",
       "description": "Get accessibility guidelines for a specific component type"
     },
@@ -36,6 +48,14 @@
     {
       "name": "check_form_labels",
       "description": "Check form inputs for accessible labels and structure"
+    },
+    {
+      "name": "validate_caption_file",
+      "description": "Validate WebVTT or SRT caption files for timing, overlap, and quality"
+    },
+    {
+      "name": "generate_accessibility_statement",
+      "description": "Generate W3C or EU model accessibility statements from audit data"
     },
     {
       "name": "scan_office_document",
@@ -94,8 +114,56 @@
       "description": "Run veraPDF validation on a PDF"
     },
     {
+      "name": "run_verapdf_sarif",
+      "description": "Run veraPDF and output findings as SARIF"
+    },
+    {
+      "name": "check_verapdf_installation",
+      "description": "Check and guide veraPDF CLI installation"
+    },
+    {
       "name": "convert_pdf_form_to_html",
       "description": "Convert PDF form fields for accessibility"
+    },
+    {
+      "name": "scan_epub",
+      "description": "Scan ePub files for accessibility issues (EPUB Accessibility 1.1)"
+    },
+    {
+      "name": "scan_epub_reading_order",
+      "description": "Validate ePub spine reading order against TOC"
+    },
+    {
+      "name": "check_epub_metadata",
+      "description": "Check ePub accessibility metadata (schema.org)"
+    },
+    {
+      "name": "scan_markdown",
+      "description": "Scan markdown files for accessibility issues"
+    },
+    {
+      "name": "scan_markdown_links",
+      "description": "Check markdown links for ambiguous text and broken anchors"
+    },
+    {
+      "name": "save_audit_result",
+      "description": "Save an audit result to the .a11y-history directory for trend tracking"
+    },
+    {
+      "name": "list_audit_history",
+      "description": "List stored audit results with filtering by type, target, and date range"
+    },
+    {
+      "name": "get_audit_result",
+      "description": "Retrieve a specific stored audit result by ID"
+    },
+    {
+      "name": "prune_audit_history",
+      "description": "Delete audit history entries older than a specified number of days"
+    },
+    {
+      "name": "get_audit_trend",
+      "description": "Compute score progression and issue velocity for a target from audit history"
     }
   ],
   "prompts": [
@@ -124,6 +192,10 @@
     {
       "uri": "a11y://config/{profile}",
       "description": "Scan configuration templates (strict, moderate, minimal)"
+    },
+    {
+      "uri": "a11y://dashboard/summary",
+      "description": "Aggregate accessibility dashboard with per-target trends, score progression, and issue velocity"
     }
   ]
 }

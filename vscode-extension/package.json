@@ -1,8 +1,8 @@
 {
   "name": "accessibility-agents",
   "displayName": "Accessibility Agents",
-  "description": "WCAG AA accessibility specialists for GitHub Copilot Chat — invoke @a11y with slash commands for ARIA, contrast, keyboard, forms, and more. v4.0 adds 6 new agents, comprehensive user guide, cross-platform sync, and MCP bug fixes.",
-  "version": "4.0.0",
+  "description": "WCAG AA accessibility specialists for GitHub Copilot Chat -- 64 agents via @a11y slash commands covering ARIA, contrast, keyboard, forms, documents, GitHub workflows, and more. Includes SARIF diagnostics, axe-core scanning, and MCP server integration.",
+  "version": "4.6.0",
   "publisher": "community-access",
   "license": "MIT",
   "repository": {
@@ -35,6 +35,31 @@
         "command": "a11y.listAgents",
         "title": "A11y: List Discovered Agents",
         "category": "A11y Agent Team"
+      },
+      {
+        "command": "a11y.quickScan",
+        "title": "A11y: Quick Scan",
+        "category": "A11y Agent Team"
+      },
+      {
+        "command": "a11y.importSarif",
+        "title": "A11y: Import SARIF Report",
+        "category": "A11y Agent Team"
+      },
+      {
+        "command": "a11y.clearDiagnostics",
+        "title": "A11y: Clear Diagnostics",
+        "category": "A11y Agent Team"
+      },
+      {
+        "command": "a11y.checkContrast",
+        "title": "A11y: Check Contrast",
+        "category": "A11y Agent Team"
+      },
+      {
+        "command": "a11y.showDashboard",
+        "title": "A11y: Show Dashboard",
+        "category": "A11y Agent Team"
       }
     ],
     "chatParticipants": [
@@ -51,7 +76,19 @@
           },
           {
             "name": "accessibility-lead",
-            "description": "Team lead and orchestrator — coordinates specialists, final review"
+            "description": "Team lead and orchestrator -- coordinates specialists, final review"
+          },
+          {
+            "name": "accessibility-regression-detector",
+            "description": "Detect regressions by comparing audit results across commits/branches"
+          },
+          {
+            "name": "accessibility-statement",
+            "description": "Generate W3C or EU model accessibility statements from audits"
+          },
+          {
+            "name": "actions-manager",
+            "description": "GitHub Actions -- view runs, read logs, re-run jobs, debug CI"
           },
           {
             "name": "alt-text-headings",
@@ -66,8 +103,16 @@
             "description": "ARIA roles, states, properties for custom widgets and live regions"
           },
           {
+            "name": "ci-accessibility",
+            "description": "CI/CD accessibility pipeline setup, baselines, SARIF, PR annotations"
+          },
+          {
             "name": "cognitive-accessibility",
             "description": "Plain language, COGA, auth patterns, reading level, timeouts"
+          },
+          {
+            "name": "compliance-mapping",
+            "description": "Map audit results to Section 508, EN 301 549, EAA, ADA, AODA"
           },
           {
             "name": "contrast-master",
@@ -79,7 +124,11 @@
           },
           {
             "name": "daily-briefing",
-            "description": "Daily GitHub briefing — issues, PRs, reviews, releases, discussions"
+            "description": "Daily GitHub briefing -- issues, PRs, reviews, releases, discussions"
+          },
+          {
+            "name": "data-visualization-accessibility",
+            "description": "Charts, graphs, dashboards -- SVG ARIA, data tables, color-safe palettes"
           },
           {
             "name": "design-system-auditor",
@@ -99,7 +148,11 @@
           },
           {
             "name": "document-accessibility-wizard",
-            "description": "Document audit wizard — Word, Excel, PowerPoint, PDF, ePub"
+            "description": "Document audit wizard -- Word, Excel, PowerPoint, PDF, ePub"
+          },
+          {
+            "name": "email-accessibility",
+            "description": "HTML email accessibility -- table layout, inline styles, screen readers"
           },
           {
             "name": "epub-accessibility",
@@ -115,7 +168,11 @@
           },
           {
             "name": "github-hub",
-            "description": "GitHub command center — plain English routing to all GitHub agents"
+            "description": "GitHub command center -- plain English routing to all GitHub agents"
+          },
+          {
+            "name": "i18n-accessibility",
+            "description": "Internationalization, RTL, dir attributes, BCP 47 lang tags"
           },
           {
             "name": "insiders-a11y-tracker",
@@ -139,7 +196,11 @@
           },
           {
             "name": "markdown-a11y-assistant",
-            "description": "Markdown audit wizard — links, alt text, headings, emoji, Mermaid"
+            "description": "Markdown audit wizard -- links, alt text, headings, emoji, Mermaid"
+          },
+          {
+            "name": "media-accessibility",
+            "description": "Video, audio, captions, transcripts, audio descriptions, media players"
           },
           {
             "name": "mobile-accessibility",
@@ -151,15 +212,39 @@
           },
           {
             "name": "nexus",
-            "description": "Intelligent GitHub orchestrator — plain English to any GitHub action"
+            "description": "Intelligent GitHub orchestrator -- plain English to any GitHub action"
+          },
+          {
+            "name": "notifications-manager",
+            "description": "GitHub notifications -- read, filter, triage, manage from editor"
+          },
+          {
+            "name": "nvda-addon-specialist",
+            "description": "NVDA addon development -- architecture, APIs, packaging, testing"
+          },
+          {
+            "name": "office-remediator",
+            "description": "Office document remediation -- Word, Excel, PowerPoint fixes"
           },
           {
             "name": "pdf-accessibility",
-            "description": "PDF accessibility — PDF/UA, Matterhorn Protocol, tagged structure"
+            "description": "PDF accessibility -- PDF/UA, Matterhorn Protocol, tagged structure"
+          },
+          {
+            "name": "pdf-remediator",
+            "description": "PDF remediation -- programmatic fixes and Acrobat Pro instructions"
+          },
+          {
+            "name": "performance-accessibility",
+            "description": "Web performance and a11y -- lazy loading, CLS, skeleton screens"
           },
           {
             "name": "powerpoint-accessibility",
-            "description": "PowerPoint accessibility — titles, alt text, reading order, tables"
+            "description": "PowerPoint accessibility -- titles, alt text, reading order, tables"
+          },
+          {
+            "name": "projects-manager",
+            "description": "GitHub Projects v2 -- boards, views, custom fields, iterations"
           },
           {
             "name": "pr-review",
@@ -167,7 +252,11 @@
           },
           {
             "name": "python-specialist",
-            "description": "Python expert — debugging, packaging, testing, async, performance"
+            "description": "Python expert -- debugging, packaging, testing, async, performance"
+          },
+          {
+            "name": "release-manager",
+            "description": "GitHub releases -- create, edit, manage releases and assets"
           },
           {
             "name": "repo-admin",
@@ -175,7 +264,15 @@
           },
           {
             "name": "repo-manager",
-            "description": "Repo setup — issue templates, CI workflows, releases, labels"
+            "description": "Repo setup -- issue templates, CI workflows, releases, labels"
+          },
+          {
+            "name": "screen-reader-lab",
+            "description": "Interactive screen reader simulation for education and debugging"
+          },
+          {
+            "name": "security-dashboard",
+            "description": "GitHub security alerts -- Dependabot, code scanning, secret scanning"
           },
           {
             "name": "tables-data-specialist",
@@ -191,15 +288,35 @@
           },
           {
             "name": "testing-coach",
-            "description": "Testing guidance — screen reader, keyboard, axe-core, test plans"
+            "description": "Testing guidance -- screen reader, keyboard, axe-core, test plans"
+          },
+          {
+            "name": "text-quality-reviewer",
+            "description": "Non-visual text quality -- alt text, aria-labels, button names"
+          },
+          {
+            "name": "wcag-aaa",
+            "description": "WCAG AAA conformance -- enhanced contrast, reading level, sign language"
           },
           {
             "name": "wcag-guide",
-            "description": "WCAG 2.2 AA reference — criteria explanations, conformance levels"
+            "description": "WCAG 2.2 AA reference -- criteria explanations, conformance levels"
+          },
+          {
+            "name": "wcag3-preview",
+            "description": "WCAG 3.0 education -- methodology changes, APCA, functional needs"
           },
           {
             "name": "web-accessibility-wizard",
-            "description": "Interactive web accessibility audit wizard — guided WCAG review"
+            "description": "Interactive web accessibility audit wizard -- guided WCAG review"
+          },
+          {
+            "name": "web-component-specialist",
+            "description": "Shadow DOM, custom elements -- ElementInternals, cross-shadow ARIA"
+          },
+          {
+            "name": "wiki-manager",
+            "description": "GitHub Wiki -- create, edit, organize, search pages from editor"
           },
           {
             "name": "word-accessibility",
@@ -268,6 +385,44 @@
             "AAA"
           ],
           "markdownDescription": "Target WCAG conformance level. Agents will tailor their advice to this level."
+        },
+        "a11y.scanProfile": {
+          "type": "string",
+          "default": "moderate",
+          "enum": [
+            "strict",
+            "moderate",
+            "minimal"
+          ],
+          "enumDescriptions": [
+            "All rules enabled, all severities reported.",
+            "All rules enabled, errors and warnings only.",
+            "Errors only, for quick triage."
+          ],
+          "markdownDescription": "Scan profile controlling which axe-core rules and severity levels are included in scan results."
+        },
+        "a11y.autoScanOnSave": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Automatically run a lightweight accessibility lint when saving HTML, JSX, TSX, Vue, Svelte, or Astro files."
+        },
+        "a11y.mcpServerUrl": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "URL of the A11y Agent Team MCP server for remote scanning and audit persistence. Leave empty to disable.",
+          "examples": [
+            "http://localhost:3000",
+            "https://a11y-mcp.example.com"
+          ]
+        },
+        "a11y.mcpTransport": {
+          "type": "string",
+          "default": "streamable-http",
+          "enum": [
+            "streamable-http",
+            "stdio"
+          ],
+          "markdownDescription": "Transport protocol for the MCP server connection."
         }
       }
     }

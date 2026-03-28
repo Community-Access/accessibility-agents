@@ -35,7 +35,7 @@ Verify it contains:
 - Name: "accessibility-agents"
 - Title: "Accessibility Agents for GitHub Copilot"
 - Description: (compelling 1-2 sentence summary)
-- Version: "4.0.0"
+- Version: "4.6.0"
 - Author: "Community-Access"
 - License: "MIT"
 - Contents section with agents, skills, prompts paths
@@ -53,10 +53,10 @@ $yaml | Out-String -InputObject $yaml | Select-String "^name:|^title:|^version:"
 
 Verify v4.0.0 is set in:
 
-- ✅ plugin.yaml - `version: "4.0.0"`
-- ✅ prd.md - `**Version:** 4.0.0`
+- ✅ plugin.yaml - `version: "4.6.0"`
+- ✅ prd.md - `**Version:** 4.6.0`
 - ✅ README.md - Check header references
-- ✅ CHANGELOG.md - Section for [4.0.0]
+- ✅ CHANGELOG.md - Section for [4.6.0]
 
 ### 1.3 Documentation Quality Check
 

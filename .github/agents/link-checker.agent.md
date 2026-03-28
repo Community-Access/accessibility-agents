@@ -46,6 +46,12 @@ You own everything related to link text accessibility:
 - Links that open in new windows/tabs
 - Links to non-HTML resources (PDFs, documents, files)
 
+## MCP Tools
+
+When the MCP server is available, use this tool for automated analysis:
+
+- **`check_link_text`** -- Scan HTML content for ambiguous, missing, or non-descriptive link text. Detects patterns like "click here", "read more", "learn more", empty links, and icon-only links without accessible names.
+
 ## WCAG Success Criteria
 
 ### 2.4.4 Link Purpose (In Context) -- Level A
