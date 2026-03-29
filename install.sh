@@ -436,6 +436,9 @@ elif [ -n "$ROLE_ARG" ]; then
     custom)    ROLE_NAME="Custom"
       # Custom via flag still needs interactive prompts or defaults to none
       if has_tty; then
+        printf "  Install Claude Code agents? [y/N]: "
+        read -r yn < /dev/tty
+        [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_CLAUDE=true
         printf "  Install Copilot agents? [y/N]: "
         read -r yn < /dev/tty
         [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_COPILOT=true
@@ -476,6 +479,9 @@ elif has_tty && [ "$AUTO_APPROVE" != true ]; then
     4) get_role_platforms "full"      ; ROLE_NAME="Full install" ;;
     5)
       ROLE_NAME="Custom"
+      printf "  Install Claude Code agents? [y/N]: "
+      read -r yn < /dev/tty
+      [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_CLAUDE=true
       printf "  Install Copilot agents? [y/N]: "
       read -r yn < /dev/tty
       [ "$yn" = "y" ] || [ "$yn" = "Y" ] && ROLE_COPILOT=true
@@ -509,10 +515,10 @@ if has_tty && [ "$AUTO_APPROVE" != true ] && [ "$ROLE_NAME" != "flags" ]; then
   echo "  Scope: $([ "$choice" = "1" ] && echo 'Project' || echo 'Global')"
   echo ""
   echo "  The following will be installed:"
-  echo "    [x] Claude Code agents (always included)"
+  [ "$ROLE_CLAUDE" = true ]      && echo "    [x] Claude Code agents"    || echo "    [ ] Claude Code agents"
   [ "$ROLE_COPILOT" = true ]     && echo "    [x] Copilot agents"        || echo "    [ ] Copilot agents"
   [ "$ROLE_COPILOT_CLI" = true ] && echo "    [x] Copilot CLI agents"    || echo "    [ ] Copilot CLI agents"
-  [ "$ROLE_CODEX_CLI" = true ]   && echo "    [x] Codex CLI support"     || echo "    [ ] Codex CLI support"
+  [ "$ROLE_CODEX_CLI" = true ]   && echo "    [x] Codex support"         || echo "    [ ] Codex support"
   [ "$ROLE_GEMINI_CLI" = true ]  && echo "    [x] Gemini CLI extension"  || echo "    [ ] Gemini CLI extension"
   [ "$ROLE_MCP" = true ]         && echo "    [x] MCP server"            || echo "    [ ] MCP server"
   echo ""
@@ -1700,6 +1706,19 @@ if [ ${#SKILLS[@]} -gt 0 ]; then
     rm -rf "$TARGET_DIR/commands"
     echo "    ~ Removed stale commands/ directory"
   fi
+fi
+
+# Merge AGENTS.md (multi-agent team workflow config) into .claude/
+CLAUDE_AGENTS_MD_SRC=""
+if [ -f "$SCRIPT_DIR/claude-code-plugin/AGENTS.md" ]; then
+  CLAUDE_AGENTS_MD_SRC="$SCRIPT_DIR/claude-code-plugin/AGENTS.md"
+elif [ -f "$SCRIPT_DIR/.claude/AGENTS.md" ]; then
+  CLAUDE_AGENTS_MD_SRC="$SCRIPT_DIR/.claude/AGENTS.md"
+fi
+if [ -n "$CLAUDE_AGENTS_MD_SRC" ]; then
+  CLAUDE_AGENTS_MD_DST="$TARGET_DIR/AGENTS.md"
+  merge_config_file "$CLAUDE_AGENTS_MD_SRC" "$CLAUDE_AGENTS_MD_DST" "AGENTS.md (Claude team config)"
+  grep -qxF "AGENTS.md" "$MANIFEST_FILE" 2>/dev/null || echo "AGENTS.md" >> "$MANIFEST_FILE"
 fi
 
 fi  # end of project/fallback install path

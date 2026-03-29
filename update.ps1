@@ -396,6 +396,128 @@ if (-not $Project) {
     }
 }
 
+# ---------------------------------------------------------------------------
+# Update Codex assets if Codex support was previously installed
+# ---------------------------------------------------------------------------
+$CodexRoot = if ($Project) {
+    Join-Path (Get-Location) ".codex"
+} else {
+    Join-Path $env:USERPROFILE ".codex"
+}
+$CodexAgentsDst = Join-Path $CodexRoot "AGENTS.md"
+$CodexConfigDst = Join-Path $CodexRoot "config.toml"
+$CodexRolesDst  = Join-Path $CodexRoot "roles"
+$CodexAgentsSrc = Join-Path $CacheDir ".codex\AGENTS.md"
+$CodexConfigSrc = Join-Path $CacheDir ".codex\config.toml"
+$CodexRolesSrc  = Join-Path $CacheDir ".codex\roles"
+
+$HasCodex = (Test-Path $CodexAgentsDst) -or (Test-Path $CodexConfigDst)
+if ($HasCodex) {
+    if (Test-Path $CodexAgentsSrc) {
+        Merge-ConfigFile -SrcFile $CodexAgentsSrc -DstFile $CodexAgentsDst -Label "Codex AGENTS.md"
+    }
+    if (Test-Path $CodexConfigSrc) {
+        Merge-ConfigFile -SrcFile $CodexConfigSrc -DstFile $CodexConfigDst -Label "Codex config.toml"
+    }
+    if (Test-Path $CodexRolesSrc) {
+        if (-not (Test-Path $CodexRolesDst)) {
+            New-Item -ItemType Directory -Path $CodexRolesDst -Force | Out-Null
+        }
+        foreach ($SrcFile in (Get-ChildItem -Path $CodexRolesSrc -Filter "*.toml" -Recurse -File)) {
+            $Rel = $SrcFile.FullName.Substring($CodexRolesSrc.Length + 1)
+            $DstFile = Join-Path $CodexRolesDst $Rel
+            $DstDir = Split-Path $DstFile -Parent
+            if (-not (Test-Path $DstDir)) {
+                New-Item -ItemType Directory -Path $DstDir -Force | Out-Null
+            }
+            $SrcContent = Get-Content $SrcFile.FullName -Raw -ErrorAction SilentlyContinue
+            $DstContent = if (Test-Path $DstFile) { Get-Content $DstFile -Raw -ErrorAction SilentlyContinue } else { "" }
+            if ($SrcContent -ne $DstContent) {
+                Copy-Item -Path $SrcFile.FullName -Destination $DstFile -Force
+                Write-Log "Updated Codex role: $Rel"
+                $Updated++
+            }
+        }
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Update .claude/AGENTS.md (multi-agent team workflow config) if previously installed
+# ---------------------------------------------------------------------------
+$ClaudeAgentsSrc = Join-Path $CacheDir "claude-code-plugin\AGENTS.md"
+if (-not (Test-Path $ClaudeAgentsSrc)) {
+    $ClaudeAgentsSrc = Join-Path $CacheDir ".claude\AGENTS.md"
+}
+$ClaudeAgentsDst = Join-Path $InstallDir "AGENTS.md"
+if ((Test-Path $ClaudeAgentsSrc) -and (Test-Path $ClaudeAgentsDst)) {
+    Merge-ConfigFile -SrcFile $ClaudeAgentsSrc -DstFile $ClaudeAgentsDst -Label "AGENTS.md (Claude team config)"
+}
+
+# ---------------------------------------------------------------------------
+# Update Gemini CLI extension if previously installed
+# ---------------------------------------------------------------------------
+$GeminiDst = ""
+if (Test-Path $ManifestPath) {
+    $GeminiLine = [IO.File]::ReadAllLines($ManifestPath, [Text.Encoding]::UTF8) |
+        Where-Object { $_ -match '^gemini/path:' } |
+        Select-Object -First 1
+    if ($GeminiLine) {
+        $GeminiDst = $GeminiLine -replace '^gemini/path:', ''
+    }
+}
+$GeminiSrcDir = Join-Path $CacheDir ".gemini\extensions\a11y-agents"
+if ($GeminiDst -and (Test-Path $GeminiDst) -and (Test-Path $GeminiSrcDir)) {
+    foreach ($f in @("gemini-extension.json", "GEMINI.md")) {
+        $SrcF = Join-Path $GeminiSrcDir $f
+        $DstF = Join-Path $GeminiDst $f
+        if (Test-Path $SrcF) {
+            $SrcContent = Get-Content $SrcF -Raw -ErrorAction SilentlyContinue
+            $DstContent = if (Test-Path $DstF) { Get-Content $DstF -Raw -ErrorAction SilentlyContinue } else { "" }
+            if ($SrcContent -ne $DstContent) {
+                Copy-Item -Path $SrcF -Destination $DstF -Force
+                Write-Log "Updated Gemini: $f"
+                $Updated++
+            }
+        }
+    }
+    $GeminiSkillsSrc = Join-Path $GeminiSrcDir "skills"
+    $GeminiSkillsDst = Join-Path $GeminiDst "skills"
+    if ((Test-Path $GeminiSkillsSrc) -and (Test-Path $GeminiSkillsDst)) {
+        foreach ($SrcFile in (Get-ChildItem -Path $GeminiSkillsSrc -Recurse -File)) {
+            $Rel = $SrcFile.FullName.Substring($GeminiSkillsSrc.Length + 1)
+            $DstFile = Join-Path $GeminiSkillsDst $Rel
+            $DstDir = Split-Path $DstFile -Parent
+            if (-not (Test-Path $DstDir)) {
+                New-Item -ItemType Directory -Path $DstDir -Force | Out-Null
+            }
+            $SC = Get-Content $SrcFile.FullName -Raw -ErrorAction SilentlyContinue
+            $DC = if (Test-Path $DstFile) { Get-Content $DstFile -Raw -ErrorAction SilentlyContinue } else { "" }
+            if ($SC -ne $DC) {
+                Copy-Item -Path $SrcFile.FullName -Destination $DstFile -Force
+                Write-Log "Updated Gemini skill: $Rel"
+                $Updated++
+            }
+        }
+    }
+    $GeminiHooksSrc = Join-Path $GeminiSrcDir "hooks"
+    $GeminiHooksDst = Join-Path $GeminiDst "hooks"
+    if ((Test-Path $GeminiHooksSrc)) {
+        if (-not (Test-Path $GeminiHooksDst)) {
+            New-Item -ItemType Directory -Path $GeminiHooksDst -Force | Out-Null
+        }
+        foreach ($SrcFile in (Get-ChildItem -Path $GeminiHooksSrc -File)) {
+            $DstFile = Join-Path $GeminiHooksDst $SrcFile.Name
+            $SC = Get-Content $SrcFile.FullName -Raw -ErrorAction SilentlyContinue
+            $DC = if (Test-Path $DstFile) { Get-Content $DstFile -Raw -ErrorAction SilentlyContinue } else { "" }
+            if ($SC -ne $DC) {
+                Copy-Item -Path $SrcFile.FullName -Destination $DstFile -Force
+                Write-Log "Updated Gemini hook: $($SrcFile.Name)"
+                $Updated++
+            }
+        }
+    }
+}
+
 # Update enforcement hooks (global install only)
 if (-not $Project) {
     $HooksDir = Join-Path $env:USERPROFILE ".claude\hooks"

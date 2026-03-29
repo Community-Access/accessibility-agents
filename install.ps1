@@ -1165,6 +1165,14 @@ if ($SkippedAgents -gt 0) {
     Write-Host "      $SkippedAgents agent(s) skipped. Use -Force to overwrite."
 }
 
+# Merge AGENTS.md (multi-agent team workflow config) into .claude/
+$ClaudeAgentsMdSrc = Join-Path $ScriptDir ".claude\AGENTS.md"
+if (Test-Path $ClaudeAgentsMdSrc) {
+    $ClaudeAgentsMdDst = Join-Path $TargetDir "AGENTS.md"
+    Merge-ConfigFile -SrcFile $ClaudeAgentsMdSrc -DstFile $ClaudeAgentsMdDst -Label "AGENTS.md (Claude team config)"
+    Add-ManifestEntry "AGENTS.md"
+}
+
 # Save manifest (will be updated again as more platforms are installed)
 Save-Manifest
 
@@ -1327,6 +1335,41 @@ if ($InstallCopilot) {
             }
 
             Write-Host "    Copied $($AgentFiles.Count) agents, $($PromptFiles.Count) prompts, $($InstructionFiles.Count) instructions"
+
+            # Disable .claude/agents in VS Code so Claude Code agents
+            # don't appear as duplicates in the Copilot agent picker
+            $SettingsFile = Join-Path $ProfileDir "settings.json"
+            try {
+                $SettingsObj = [PSCustomObject]@{}
+                if (Test-Path $SettingsFile) {
+                    $Raw = Get-Content $SettingsFile -Raw
+                    if (-not [string]::IsNullOrWhiteSpace($Raw)) {
+                        $SettingsObj = $Raw | ConvertFrom-Json -Depth 20
+                    }
+                }
+                $LocKey = "chat.agentFilesLocations"
+                if ($SettingsObj.PSObject.Properties.Name -notcontains $LocKey) {
+                    $SettingsObj | Add-Member -NotePropertyName $LocKey -NotePropertyValue ([PSCustomObject]@{})
+                }
+                $Loc = $SettingsObj.$LocKey
+                foreach ($Pair in @(
+                    @{ Key = ".github/agents"; Val = $true },
+                    @{ Key = ".claude/agents"; Val = $false }
+                )) {
+                    if ($Loc.PSObject.Properties.Name -contains $Pair.Key) {
+                        $Loc.($Pair.Key) = $Pair.Val
+                    } else {
+                        $Loc | Add-Member -NotePropertyName $Pair.Key -NotePropertyValue $Pair.Val
+                    }
+                }
+                $SettingsObj | ConvertTo-Json -Depth 20 | Set-Content $SettingsFile -Encoding UTF8
+                Write-Host "    Configured agent discovery (disabled .claude/agents)"
+            }
+            catch {
+                Write-Host "    ! Could not update settings.json for agent discovery"
+                Write-Host "      Add manually: chat.agentFilesLocations: { .github/agents: true, .claude/agents: false }"
+            }
+
             $script:CopilotDestinations += $PromptsDir
         }
 

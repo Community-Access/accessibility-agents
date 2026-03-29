@@ -199,9 +199,10 @@ function Detect-InstalledTools {
     $CopilotCliDir = Join-Path $env:USERPROFILE ".copilot"
     $Tools.CopilotCli = @{ Available = Test-Path $CopilotCliDir }
 
-    # Codex CLI
+    # Codex (CLI + Desktop App + IDE all share ~/.codex/)
+    $CodexCmd = Get-Command codex -ErrorAction SilentlyContinue
     $CodexCliDir = Join-Path $env:USERPROFILE ".codex"
-    $Tools.CodexCli = @{ Available = Test-Path $CodexCliDir }
+    $Tools.CodexCli = @{ Available = [bool]$CodexCmd -or (Test-Path $CodexCliDir) }
 
     # Gemini CLI
     $GeminiCmd = Get-Command gemini -ErrorAction SilentlyContinue
@@ -220,7 +221,7 @@ function Show-DetectedTools {
     if ($Tools.Node.Available)     { $Found += "Node.js" }
     if ($Tools.ClaudeCode.Available) { $Found += "Claude Code" }
     if ($Tools.CopilotCli.Available) { $Found += "Copilot CLI" }
-    if ($Tools.CodexCli.Available) { $Found += "Codex CLI" }
+    if ($Tools.CodexCli.Available) { $Found += "Codex" }
     if ($Tools.GeminiCli.Available) { $Found += "Gemini CLI" }
     if ($Tools.Python3.Available)  { $Found += "Python 3" }
     if ($Tools.Java.Available)     { $Found += "Java" }
@@ -246,7 +247,7 @@ function Get-RoleBasedPlatforms {
     switch ($Role) {
         'developer' {
             return @{
-                Claude = $true
+                Claude = $Tools.ClaudeCode.Available
                 Copilot = $Tools.VSCode.Stable -or $Tools.VSCode.Insiders
                 CopilotCli = $Tools.CopilotCli.Available
                 CodexCli = $Tools.CodexCli.Available
@@ -256,7 +257,7 @@ function Get-RoleBasedPlatforms {
         }
         'reviewer' {
             return @{
-                Claude = $true
+                Claude = $Tools.ClaudeCode.Available
                 Copilot = $Tools.VSCode.Stable -or $Tools.VSCode.Insiders
                 CopilotCli = $false
                 CodexCli = $false
@@ -266,7 +267,7 @@ function Get-RoleBasedPlatforms {
         }
         'author' {
             return @{
-                Claude = $true
+                Claude = $Tools.ClaudeCode.Available
                 Copilot = $false
                 CopilotCli = $false
                 CodexCli = $false
@@ -276,7 +277,7 @@ function Get-RoleBasedPlatforms {
         }
         'full' {
             return @{
-                Claude = $true
+                Claude = $Tools.ClaudeCode.Available
                 Copilot = $Tools.VSCode.Stable -or $Tools.VSCode.Insiders
                 CopilotCli = $Tools.CopilotCli.Available
                 CodexCli = $Tools.CodexCli.Available

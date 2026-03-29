@@ -196,6 +196,15 @@ if (Test-Path $ManifestFile) {
                 $ManifestEntries += "codex/project"
                 $ManifestEntries += "codex/global"
             }
+            if (Test-Path (Join-Path $TmpRepo ".codex\config.toml")) {
+                $ManifestEntries += "codex/config.toml"
+            }
+            $CodexRolesDir = Join-Path $TmpRepo ".codex\roles"
+            if (Test-Path $CodexRolesDir) {
+                Get-ChildItem -Path $CodexRolesDir -Filter "*.toml" -ErrorAction SilentlyContinue | ForEach-Object {
+                    $ManifestEntries += "codex/roles/$($_.Name)"
+                }
+            }
 
             if (Test-Path (Join-Path $TmpRepo ".gemini\extensions\a11y-agents")) {
                 $ManifestEntries += "gemini/project"
@@ -218,18 +227,38 @@ function Remove-OurSection {
     param([string]$Path)
     if (-not (Test-Path $Path)) { return "absent" }
     $Content = [IO.File]::ReadAllText($Path, [Text.Encoding]::UTF8)
-    if ($Content -match '<!-- a11y-agent-team: start -->') {
-        $Cleaned = [regex]::Replace($Content, '(?s)<!-- a11y-agent-team: start -->.*?<!-- a11y-agent-team: end -->', '')
-        $Cleaned = $Cleaned.Trim()
-        if ($Cleaned -eq "") {
-            Remove-Item -Path $Path -Force
-            return "deleted"
-        } else {
-            [IO.File]::WriteAllText($Path, $Cleaned, [Text.Encoding]::UTF8)
-            return "cleaned"
+
+    # Choose markers based on file type
+    if ($Path -match '\.toml$') {
+        $Start       = '# a11y-agent-team: start'
+        $End         = '# a11y-agent-team: end'
+        $LegacyStart = '# accessibility-agents: start'
+        $LegacyEnd   = '# accessibility-agents: end'
+    } else {
+        $Start       = '<!-- a11y-agent-team: start -->'
+        $End         = '<!-- a11y-agent-team: end -->'
+        $LegacyStart = '<!-- accessibility-agents: start -->'
+        $LegacyEnd   = '<!-- accessibility-agents: end -->'
+    }
+
+    $Found = $false
+    foreach ($pair in @(@($Start, $End), @($LegacyStart, $LegacyEnd))) {
+        $Pattern = '(?s)' + [regex]::Escape($pair[0]) + '.*?' + [regex]::Escape($pair[1])
+        if ($Content -match [regex]::Escape($pair[0])) {
+            $Content = [regex]::Replace($Content, $Pattern, '')
+            $Found = $true
         }
     }
-    return "skipped"
+    if (-not $Found) { return "skipped" }
+
+    $Content = $Content.Trim()
+    if ($Content -eq "") {
+        Remove-Item -Path $Path -Force
+        return "deleted"
+    } else {
+        [IO.File]::WriteAllText($Path, "$Content`n", [Text.Encoding]::UTF8)
+        return "cleaned"
+    }
 }
 
 # =============================================
@@ -455,6 +484,61 @@ if (Test-Path $CodexFile) {
             Write-Host "    ~ AGENTS.md (removed our section, kept your content)"
         }
     }
+}
+
+# Clean Codex config.toml (contains our role pointer section)
+$CodexConfigFile = Join-Path $CodexDir "config.toml"
+if (Test-Path $CodexConfigFile) {
+    $Result = Remove-OurSection -Path $CodexConfigFile
+    switch ($Result) {
+        "deleted" {
+            Write-Host ""
+            Write-Host "  Removing Codex experimental role config..."
+            Write-Host "    - config.toml (Codex role config removed)"
+        }
+        "cleaned" {
+            Write-Host ""
+            Write-Host "  Codex CLI:"
+            Write-Host "    ~ config.toml (removed our section, kept your content)"
+        }
+    }
+}
+
+# Clean Codex config paths tracked in manifest
+$ManifestEntries | Where-Object { $_ -like "codex-config/path:*" } | ForEach-Object {
+    $ConfigPath = $_ -replace '^codex-config/path:', ''
+    if (Test-Path $ConfigPath) {
+        $Result = Remove-OurSection -Path $ConfigPath
+        $BaseName = Split-Path $ConfigPath -Leaf
+        switch ($Result) {
+            "deleted" { Write-Host "    - $BaseName (removed)" }
+            "cleaned" { Write-Host "    ~ $BaseName (removed our section, kept your content)" }
+        }
+    }
+}
+
+# Remove Codex role files tracked in manifest
+$CodexRolePaths = @()
+$ManifestEntries | Where-Object { $_ -like "codex-role/path:*" } | ForEach-Object {
+    $CodexRolePaths += ($_ -replace '^codex-role/path:', '')
+}
+$ManifestEntries | Where-Object { $_ -like "codex/roles/*" } | ForEach-Object {
+    $CodexRolePaths += Join-Path $CodexDir ($_ -replace '^codex/', '')
+}
+foreach ($RolePath in ($CodexRolePaths | Select-Object -Unique)) {
+    if (Test-Path $RolePath) {
+        Remove-Item -Path $RolePath -Force
+        Write-Host "    - $(Split-Path $RolePath -Leaf)"
+    }
+}
+# Clean up empty roles directory
+$RolesDir = Join-Path $CodexDir "roles"
+if ((Test-Path $RolesDir) -and (Get-ChildItem $RolesDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+    Remove-Item -Path $RolesDir -Force -ErrorAction SilentlyContinue
+}
+# Clean up empty .codex directory
+if ((Test-Path $CodexDir) -and (Get-ChildItem $CodexDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+    Remove-Item -Path $CodexDir -Force -ErrorAction SilentlyContinue
 }
 
 # =============================================

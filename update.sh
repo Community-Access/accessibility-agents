@@ -519,6 +519,67 @@ if [ "$HAS_CODEX" = true ]; then
   fi
 fi
 
+# Update .claude/AGENTS.md (multi-agent team workflow config) if previously installed
+CLAUDE_AGENTS_SRC=""
+if [ -f "$CACHE_DIR/claude-code-plugin/AGENTS.md" ]; then
+  CLAUDE_AGENTS_SRC="$CACHE_DIR/claude-code-plugin/AGENTS.md"
+elif [ -f "$CACHE_DIR/.claude/AGENTS.md" ]; then
+  CLAUDE_AGENTS_SRC="$CACHE_DIR/.claude/AGENTS.md"
+fi
+CLAUDE_AGENTS_DST="$INSTALL_DIR/AGENTS.md"
+if [ -n "$CLAUDE_AGENTS_SRC" ] && [ -f "$CLAUDE_AGENTS_DST" ]; then
+  merge_config_file "$CLAUDE_AGENTS_SRC" "$CLAUDE_AGENTS_DST" "AGENTS.md (Claude team config)"
+fi
+
+# Update Gemini CLI extension if previously installed
+GEMINI_DST=""
+if [ -f "$INSTALL_DIR/.a11y-agent-manifest" ]; then
+  GEMINI_DST=$(grep '^gemini/path:' "$INSTALL_DIR/.a11y-agent-manifest" 2>/dev/null | head -1 | sed 's/^gemini\/path://')
+fi
+GEMINI_SRC_DIR="$CACHE_DIR/.gemini/extensions/a11y-agents"
+if [ -n "$GEMINI_DST" ] && [ -d "$GEMINI_DST" ] && [ -d "$GEMINI_SRC_DIR" ]; then
+  for f in gemini-extension.json GEMINI.md; do
+    src_f="$GEMINI_SRC_DIR/$f"
+    dst_f="$GEMINI_DST/$f"
+    if [ -f "$src_f" ] && [ -f "$dst_f" ]; then
+      if ! cmp -s "$src_f" "$dst_f" 2>/dev/null; then
+        cp "$src_f" "$dst_f"
+        log "Updated Gemini: $f"
+        UPDATED=$((UPDATED + 1))
+      fi
+    elif [ -f "$src_f" ]; then
+      cp "$src_f" "$dst_f"
+      log "Added Gemini (new): $f"
+      UPDATED=$((UPDATED + 1))
+    fi
+  done
+  if [ -d "$GEMINI_SRC_DIR/skills" ]; then
+    mkdir -p "$GEMINI_DST/skills"
+    while read -r src_file; do
+      rel="${src_file#$GEMINI_SRC_DIR/skills/}"
+      dst_file="$GEMINI_DST/skills/$rel"
+      mkdir -p "$(dirname "$dst_file")"
+      if ! cmp -s "$src_file" "$dst_file" 2>/dev/null; then
+        cp "$src_file" "$dst_file"
+        log "Updated Gemini skill: $rel"
+        UPDATED=$((UPDATED + 1))
+      fi
+    done < <(find "$GEMINI_SRC_DIR/skills" -type f | sort)
+  fi
+  if [ -d "$GEMINI_SRC_DIR/hooks" ]; then
+    mkdir -p "$GEMINI_DST/hooks"
+    for src_file in "$GEMINI_SRC_DIR/hooks"/*; do
+      [ -f "$src_file" ] || continue
+      dst_file="$GEMINI_DST/hooks/$(basename "$src_file")"
+      if ! cmp -s "$src_file" "$dst_file" 2>/dev/null; then
+        cp "$src_file" "$dst_file"
+        log "Updated Gemini hook: $(basename "$src_file")"
+        UPDATED=$((UPDATED + 1))
+      fi
+    done
+  fi
+fi
+
 # Update enforcement hooks (global install only)
 if [ "$TARGET" = "global" ] && [ -d "$HOME/.claude/hooks" ]; then
   HOOK_SRC_DIR=""

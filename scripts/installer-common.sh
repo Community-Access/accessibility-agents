@@ -209,8 +209,9 @@ detect_installed_tools() {
   HAS_COPILOT_CLI=false
   [ -d "$HOME/.copilot" ] && HAS_COPILOT_CLI=true
 
+  # Codex (CLI + Desktop App + IDE all share ~/.codex/)
   HAS_CODEX_CLI=false
-  [ -d "$HOME/.codex" ] && HAS_CODEX_CLI=true
+  { [ -d "$HOME/.codex" ] || command -v codex &>/dev/null; } && HAS_CODEX_CLI=true
 
   HAS_GEMINI_CLI=false
   command -v gemini &>/dev/null && HAS_GEMINI_CLI=true
@@ -225,7 +226,7 @@ show_detected_tools() {
     "Node.js|$HAS_NODE" \
     "Claude Code|$HAS_CLAUDE" \
     "Copilot CLI|$HAS_COPILOT_CLI" \
-    "Codex CLI|$HAS_CODEX_CLI" \
+    "Codex|$HAS_CODEX_CLI" \
     "Gemini CLI|$HAS_GEMINI_CLI" \
     "Python 3|$HAS_PYTHON3" \
     "Java|$HAS_JAVA" \
@@ -249,7 +250,7 @@ get_role_platforms() {
   # ROLE_GEMINI_CLI, ROLE_MCP based on role and detected tools.
   local role="$1"
 
-  ROLE_CLAUDE=true
+  ROLE_CLAUDE=false
   ROLE_COPILOT=false
   ROLE_COPILOT_CLI=false
   ROLE_CODEX_CLI=false
@@ -261,19 +262,23 @@ get_role_platforms() {
 
   case "$role" in
     developer)
+      ROLE_CLAUDE=$HAS_CLAUDE
       ROLE_COPILOT=$has_vscode
       ROLE_COPILOT_CLI=$HAS_COPILOT_CLI
       ROLE_CODEX_CLI=$HAS_CODEX_CLI
       ROLE_MCP=$HAS_NODE
       ;;
     reviewer)
+      ROLE_CLAUDE=$HAS_CLAUDE
       ROLE_COPILOT=$has_vscode
       ROLE_MCP=$HAS_NODE
       ;;
     author)
+      ROLE_CLAUDE=$HAS_CLAUDE
       ROLE_MCP=$HAS_NODE
       ;;
     full)
+      ROLE_CLAUDE=$HAS_CLAUDE
       ROLE_COPILOT=$has_vscode
       ROLE_COPILOT_CLI=$HAS_COPILOT_CLI
       ROLE_CODEX_CLI=$HAS_CODEX_CLI
@@ -281,7 +286,7 @@ get_role_platforms() {
       ROLE_MCP=$HAS_NODE
       ;;
     custom)
-      ROLE_CLAUDE=false
+      # All false; caller toggles individually
       ;;
   esac
 }

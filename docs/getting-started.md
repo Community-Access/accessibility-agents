@@ -16,6 +16,8 @@ Key sources:
 
 When a setting or feature changes upstream, this guide should be updated with the corresponding source link.
 
+For a detailed explanation of where every file is placed on disk and why, see [Deployment Layout and File Placement](deployment-layout.md). For a mapping of tool names across platforms (PascalCase versus camelCase), see [Cross-Platform Tool Mapping](cross-platform-tool-mapping.md).
+
 ---
 
 ## Claude Code Setup
