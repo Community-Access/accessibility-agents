@@ -338,10 +338,14 @@ switch ($RoleChoice) {
         $RoleName = 'Custom'
         Write-Host ""
         Write-Host "  Choose which platforms to install:"
+        $r = Read-Host "    Claude Code agents? [y/N]"
+        if ($r -match '^[Yy]') { $Platforms.Claude = $true }
         $r = Read-Host "    Copilot agents (VS Code)? [y/N]"
         if ($r -match '^[Yy]') { $Platforms.Copilot = $true }
         $r = Read-Host "    Copilot CLI agents? [y/N]"
         if ($r -match '^[Yy]') { $Platforms.CopilotCli = $true }
+        $r = Read-Host "    Codex support (CLI + Desktop App)? [y/N]"
+        if ($r -match '^[Yy]') { $Platforms.CodexCli = $true }
         $r = Read-Host "    Gemini CLI extension? [y/N]"
         if ($r -match '^[Yy]') { $Platforms.GeminiCli = $true }
         $r = Read-Host "    MCP server (document/PDF scanning)? [y/N]"
@@ -349,7 +353,7 @@ switch ($RoleChoice) {
     }
     'flags' {
         $Platforms = @{
-            Claude     = $true
+            Claude     = $DetectedTools.ClaudeCode.Available
             Copilot    = $Copilot.IsPresent
             CopilotCli = $Cli.IsPresent
             CodexCli   = $Codex.IsPresent
@@ -376,11 +380,12 @@ Write-Host "  Role:  $RoleName"
 Write-Host "  Scope: $ScopeLabel"
 Write-Host ""
 Write-Host "  What will be installed:"
-Write-Host "    [x] Claude Code agents (always included)"
-if ($Platforms.Copilot)    { Write-Host "    [x] Copilot agents for VS Code" }
-if ($Platforms.CopilotCli) { Write-Host "    [x] Copilot CLI agents" }
-if ($Platforms.GeminiCli)  { Write-Host "    [x] Gemini CLI extension" }
-if ($Platforms.Mcp)        { Write-Host "    [x] MCP server (document and PDF scanning)" }
+if ($Platforms.Claude)     { Write-Host "    [x] Claude Code agents" } else { Write-Host "    [ ] Claude Code agents" }
+if ($Platforms.Copilot)    { Write-Host "    [x] Copilot agents for VS Code" } else { Write-Host "    [ ] Copilot agents for VS Code" }
+if ($Platforms.CopilotCli) { Write-Host "    [x] Copilot CLI agents" } else { Write-Host "    [ ] Copilot CLI agents" }
+if ($Platforms.CodexCli)   { Write-Host "    [x] Codex support" } else { Write-Host "    [ ] Codex support" }
+if ($Platforms.GeminiCli)  { Write-Host "    [x] Gemini CLI extension" } else { Write-Host "    [ ] Gemini CLI extension" }
+if ($Platforms.Mcp)        { Write-Host "    [x] MCP server (document and PDF scanning)" } else { Write-Host "    [ ] MCP server" }
 Write-Host ""
 
 if ((-not $AutoApprove) -and (Test-InteractivePrompting)) {
@@ -1507,6 +1512,73 @@ if ($InstallCopilotCli) {
 }
 
 # ---------------------------------------------------------------------------
+# Codex CLI support
+# ---------------------------------------------------------------------------
+$CodexSrc = Join-Path $ScriptDir ".codex\AGENTS.md"
+$CodexConfigSrc = Join-Path $ScriptDir ".codex\config.toml"
+$CodexRolesSrc = Join-Path $ScriptDir ".codex\roles"
+$CodexInstalled = $false
+$CodexDst = ""
+$CodexConfigDst = ""
+$CodexRolesDst = ""
+$InstallCodex = $Codex.IsPresent -or $Platforms.CodexCli
+
+if ((Test-Path $CodexSrc) -or (Test-Path $CodexConfigSrc)) {
+    if ($InstallCodex) {
+        Write-Host ""
+        Write-Host "  Installing Codex CLI support..."
+
+        if ($Choice -eq "1") {
+            $CodexTargetDir = Join-Path (Get-Location) ".codex"
+        }
+        else {
+            $CodexTargetDir = Join-Path $env:USERPROFILE ".codex"
+        }
+        New-Item -ItemType Directory -Force -Path $CodexTargetDir | Out-Null
+
+        # Merge AGENTS.md
+        if (Test-Path $CodexSrc) {
+            $CodexDst = Join-Path $CodexTargetDir "AGENTS.md"
+            Merge-ConfigFile -SrcFile $CodexSrc -DstFile $CodexDst -Label "AGENTS.md (Codex)"
+        }
+
+        # Merge config.toml
+        if (Test-Path $CodexConfigSrc) {
+            $CodexConfigDst = Join-Path $CodexTargetDir "config.toml"
+            Merge-ConfigFile -SrcFile $CodexConfigSrc -DstFile $CodexConfigDst -Label "config.toml (Codex experimental roles)"
+            Add-ManifestEntry "codex-config/path:$CodexConfigDst"
+        }
+
+        # Copy role files
+        if (Test-Path $CodexRolesSrc) {
+            $CodexRolesDst = Join-Path $CodexTargetDir "roles"
+            New-Item -ItemType Directory -Force -Path $CodexRolesDst | Out-Null
+            $RoleCount = 0
+            Get-ChildItem -Path $CodexRolesSrc -Filter "*.toml" -File | Sort-Object Name | ForEach-Object {
+                Copy-Item -Path $_.FullName -Destination (Join-Path $CodexRolesDst $_.Name) -Force
+                Add-ManifestEntry "codex-role/path:$(Join-Path $CodexRolesDst $_.Name)"
+                $RoleCount++
+            }
+            Write-Host "    + roles/ ($RoleCount role files)"
+        }
+
+        $CodexInstalled = $true
+        if ($Choice -eq "1") {
+            Add-ManifestEntry "codex/project"
+        }
+        else {
+            Add-ManifestEntry "codex/global"
+        }
+        Add-ManifestEntry "codex/path:$CodexDst"
+        Save-Manifest
+        Write-Host ""
+        Write-Host "  Codex will now enforce WCAG AA rules on all UI code in this project."
+        Write-Host "  Experimental named roles are available through .codex/config.toml."
+        Write-Host "  Run: codex `"Build a login form`" -- accessibility rules apply automatically."
+    }
+}
+
+# ---------------------------------------------------------------------------
 # Gemini CLI extension
 # ---------------------------------------------------------------------------
 $GeminiSrc = Join-Path $ScriptDir ".gemini\extensions\a11y-agents"
@@ -1821,6 +1893,13 @@ if ($CopilotCliInstalled) {
     Write-Host ""
     Write-Host "  Verify with: copilot /agent"
 }
+if ($CodexInstalled) {
+    Write-Host ""
+    Write-Host "  Codex CLI support installed to:"
+    Write-Host "    -> $CodexDst"
+    if ($CodexConfigDst) { Write-Host "    -> $CodexConfigDst" }
+    if ($CodexRolesDst) { Write-Host "    -> $CodexRolesDst/" }
+}
 if ($GeminiInstalled) {
     Write-Host ""
     Write-Host "  Gemini CLI extension installed to:"
@@ -1948,6 +2027,7 @@ $InstallSummary.installed = [ordered]@{
     plugin = $false
     copilot = [bool]$CopilotInstalled
     copilotCli = [bool]$CopilotCliInstalled
+    codex = [bool]$CodexInstalled
     gemini = [bool]$GeminiInstalled
     mcp = [bool]$McpInstalled
     autoUpdate = [bool]$AutoUpdateEnabled
@@ -1956,6 +2036,7 @@ $InstallSummary.destinations = [ordered]@{
     claude = @($TargetDir)
     copilot = @($CopilotDestinations)
     copilotCli = @($CliAgentsDst, $CliSkillsDst) | Where-Object { $_ }
+    codex = @($CodexDst, $CodexConfigDst, $CodexRolesDst) | Where-Object { $_ }
     gemini = @($GeminiDst) | Where-Object { $_ }
     mcp = @($McpDest) | Where-Object { $_ }
 }
