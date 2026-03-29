@@ -392,6 +392,25 @@ node scripts/validate-agents.js 2>&1 | grep "ERROR"
 
 ## Configuration Troubleshooting
 
+### Symptom: Duplicate Agents in Copilot Chat Picker
+
+If every agent appears twice in the Copilot Chat picker (for example, two copies of "Accessibility Lead", two copies of "ARIA Specialist"), VS Code is discovering agents from both `.github/agents/` and `.claude/agents/`. The Claude-format agents are not functional in VS Code.
+
+**Fix:** Add or correct the `chat.agentFilesLocations` setting in your VS Code `settings.json`:
+
+```json
+{
+  "chat.agentFilesLocations": {
+    ".github/agents": true,
+    ".claude/agents": false
+  }
+}
+```
+
+The installer and updater set this automatically. If it is missing, run the updater (`update.ps1` or `update.sh`) to repair it.
+
+See [Deployment Layout -- VS Code Settings Changes](deployment-layout.md#vs-code-settings-changes) for the full explanation of this setting.
+
 ### Symptom: Agent Settings Not Taking Effect
 
 #### Check 1: Setting Format

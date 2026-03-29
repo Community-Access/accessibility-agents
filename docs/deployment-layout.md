@@ -81,7 +81,7 @@ The installer places the following files for VS Code Copilot:
 
 - **Additional Copilot config files**: The installer also places `copilot-review-instructions.md` (loaded during code review) and `copilot-commit-message-instructions.md` (loaded when generating commit messages) in `.github/`.
 
-- **VS Code settings**: The installer configures the `chat.agentFilesLocations` setting in your VS Code `settings.json` to exclude `.claude/agents/` from the Copilot agent picker. Without this setting, VS Code would display both the `.github/agents/` and `.claude/agents/` versions of each agent -- resulting in every agent appearing twice in the picker. The setting ensures only the `.github/agents/` versions (which use the correct Copilot tool names) appear in VS Code.
+- **VS Code settings**: The installer modifies your VS Code `settings.json` to configure agent discovery. See the [VS Code Settings Changes](#vs-code-settings-changes) section at the end of this document for the full list of settings, their values, the rationale for each, and instructions for reverting.
 
 For global installs, the VS Code profile directory varies by platform:
 
@@ -260,3 +260,90 @@ The uninstaller scripts (`uninstall.ps1` and `uninstall.sh`) use the manifest fi
 - **Gemini CLI**: Removes the entire extension directory. If the parent `.gemini/extensions/` directory is empty after removal, it is also cleaned up.
 
 If no manifest file is found (for example, after a manual install or if the manifest was deleted), the uninstaller downloads the repository to build a fallback list of expected files.
+
+---
+
+## VS Code Settings Changes
+
+The installer and updater modify VS Code's `settings.json` file. This section documents every setting that is added or changed, explains the rationale, and describes how to revert each one.
+
+### chat.agentFilesLocations
+
+The installer adds this setting to control which directories VS Code scans for Copilot agent definitions.
+
+**Value set by the installer:**
+
+```json
+{
+  "chat.agentFilesLocations": {
+    ".github/agents": true,
+    ".claude/agents": false
+  }
+}
+```
+
+**What it does:**
+
+- `.github/agents: true` -- tells VS Code to discover agent files from `.github/agents/`. This is where the Copilot-format agents live (using camelCase tool names like `read`, `edit`, `search`).
+- `.claude/agents: false` -- tells VS Code to ignore `.claude/agents/`. This directory contains Claude Code-format agents (using PascalCase tool names like `Read`, `Edit`, `Grep`). These agents are not functional in VS Code because the tool names do not match.
+
+**Why it is necessary:**
+
+VS Code scans the workspace for any directory containing `.agent.md` files. Because Accessibility Agents ships parallel agent definitions for both Copilot and Claude Code, VS Code would otherwise discover 80+ agents from `.github/agents/` and another 80+ from `.claude/agents/`. Every agent would appear twice in the Copilot Chat picker. Selecting the Claude-format duplicate would silently fail because VS Code does not recognize PascalCase tool names.
+
+This setting eliminates the confusion by telling VS Code which directory to use and which to skip.
+
+**When it is applied:**
+
+- During initial installation (both project and global installs)
+- During every updater run, as a repair step for installations that predate version 4.6.0 when this fix was introduced
+
+**Where the file is modified:**
+
+For global installs, the setting is written to each detected VS Code profile's `settings.json`:
+
+- Windows Stable: `%APPDATA%\Code\User\settings.json`
+- Windows Insiders: `%APPDATA%\Code - Insiders\User\settings.json`
+- macOS Stable: `~/Library/Application Support/Code/User/settings.json`
+- macOS Insiders: `~/Library/Application Support/Code - Insiders/User/settings.json`
+- Linux Stable: `~/.config/Code/User/settings.json`
+- Linux Insiders: `~/.config/Code - Insiders/User/settings.json`
+
+For project installs, the setting is written to `.vscode/settings.json` inside the project.
+
+The installer only adds or updates this specific key. All other settings in `settings.json` are preserved.
+
+**How to verify:**
+
+1. Open the VS Code Command Palette and run `Preferences: Open User Settings (JSON)`.
+2. Search for `chat.agentFilesLocations`.
+3. Confirm that `.claude/agents` is set to `false`.
+
+Alternatively, open the Copilot Chat agent picker (type `@` in the chat input). Each agent should appear exactly once. If agents are duplicated, the setting is missing.
+
+**How to revert:**
+
+To restore the default behavior (VS Code discovers agents from all directories), remove or edit the setting:
+
+```json
+{
+  "chat.agentFilesLocations": {
+    ".github/agents": true
+  }
+}
+```
+
+Note that reverting this setting means Claude-format agents will appear in the VS Code picker alongside the Copilot-format agents. Only the Copilot-format agents (from `.github/agents/`) function correctly in VS Code.
+
+**The uninstaller removes this setting** during uninstallation, restoring VS Code to its default discovery behavior.
+
+### Settings not modified
+
+The installer does **not** modify any other VS Code settings. Specifically, it does not change:
+
+- `github.copilot.chat.agentDebugLog.enabled` (agent debug logging -- documented in the [Configuration guide](configuration.md#agent-debug-settings-vs-code-1112) as optional)
+- `chat.autopilot.enabled` (autonomous operation -- documented in [Configuration guide](configuration.md#permission-levels-vs-code-1112) as optional)
+- `chat.useCustomizationsInParentRepositories` (monorepo support -- documented in [Configuration guide](configuration.md#monorepo-configuration-vs-code-1112) as optional)
+- `chat.imageSupport.enabled` (image analysis -- documented in [Configuration guide](configuration.md#image-analysis-settings-vs-code-1112) as optional)
+
+Those settings are recommended but not required. They are documented in the [Configuration guide](configuration.md) for users who want to opt in.

@@ -291,6 +291,246 @@ function Migrate-Prompts {
 
 $GitHubSrc = Join-Path $CacheDir ".github"
 
+# ---------------------------------------------------------------------------
+# Repair-PriorInstall: fix known issues left by earlier installer versions
+# ---------------------------------------------------------------------------
+# Detects and repairs artifacts from prior buggy releases so users who
+# installed with an older version get a clean state after updating.
+#   R1  VS Code settings: ensure chat.agentFilesLocations excludes .claude/agents
+#   R2  Deploy .claude/AGENTS.md if it was never created (pre-4.6 installs)
+#   R3  Migrate legacy section markers (accessibility-agents -> a11y-agent-team)
+#   R4  Add missing Codex/Gemini/Claude manifest entries
+#   R5  Remove stale manifest-tracked files no longer in current repo
+#   R6  Migrate legacy central store directory name
+# Safety: only touches files we own (manifest-tracked). User-created files
+# are never modified or removed.
+# ---------------------------------------------------------------------------
+function Repair-PriorInstall {
+    $Repaired = 0
+    $CodexRoot = if ($Project) { Join-Path (Get-Location) ".codex" } else { Join-Path $env:USERPROFILE ".codex" }
+
+    # R1: VS Code settings - ensure chat.agentFilesLocations excludes .claude/agents
+    # Pre-4.6 installs did not set this, causing duplicate agents in the picker.
+    if (-not $Project) {
+        foreach ($Profile in $SelectedVsCodeProfiles) {
+            $SettingsFile = Join-Path $Profile.Path "settings.json"
+            if (-not (Test-Path $SettingsFile)) { continue }
+            try {
+                $Raw = Get-Content $SettingsFile -Raw
+                if ([string]::IsNullOrWhiteSpace($Raw)) { continue }
+                $SettingsObj = $Raw | ConvertFrom-Json -Depth 20
+                $LocKey = "chat.agentFilesLocations"
+                $NeedsFix = $false
+                if ($SettingsObj.PSObject.Properties.Name -notcontains $LocKey) {
+                    $NeedsFix = $true
+                }
+                else {
+                    $Loc = $SettingsObj.$LocKey
+                    if ($Loc.PSObject.Properties.Name -notcontains '.claude/agents' -or
+                        $Loc.'.claude/agents' -ne $false) {
+                        $NeedsFix = $true
+                    }
+                }
+                if ($NeedsFix) {
+                    if ($SettingsObj.PSObject.Properties.Name -notcontains $LocKey) {
+                        $SettingsObj | Add-Member -NotePropertyName $LocKey -NotePropertyValue ([PSCustomObject]@{})
+                    }
+                    $Loc = $SettingsObj.$LocKey
+                    foreach ($Pair in @(
+                        @{ Key = ".github/agents"; Val = $true },
+                        @{ Key = ".claude/agents"; Val = $false }
+                    )) {
+                        if ($Loc.PSObject.Properties.Name -contains $Pair.Key) {
+                            $Loc.($Pair.Key) = $Pair.Val
+                        }
+                        else {
+                            $Loc | Add-Member -NotePropertyName $Pair.Key -NotePropertyValue $Pair.Val
+                        }
+                    }
+                    $SettingsObj | ConvertTo-Json -Depth 20 | Set-Content $SettingsFile -Encoding UTF8
+                    Write-Log "Repair: fixed chat.agentFilesLocations in $($Profile.Name)"
+                    $Repaired++
+                }
+            }
+            catch {
+                Write-Log "Repair: could not check settings.json for $($Profile.Name)"
+            }
+        }
+    }
+
+    # R2: Deploy missing .claude/AGENTS.md (pre-4.6 installs never created this)
+    $ClaudeAgentsMd = Join-Path $InstallDir "AGENTS.md"
+    if ((-not (Test-Path $ClaudeAgentsMd)) -and (Test-Path (Join-Path $InstallDir "agents"))) {
+        $AgentsMdSrc = $null
+        $PluginSrc = Join-Path $CacheDir "claude-code-plugin\AGENTS.md"
+        $ClaudeSrc = Join-Path $CacheDir ".claude\AGENTS.md"
+        if (Test-Path $PluginSrc) { $AgentsMdSrc = $PluginSrc }
+        elseif (Test-Path $ClaudeSrc) { $AgentsMdSrc = $ClaudeSrc }
+        if ($AgentsMdSrc) {
+            Copy-Item -Path $AgentsMdSrc -Destination $ClaudeAgentsMd
+            $Manifest["AGENTS.md"] = $true
+            Write-Log "Repair: deployed missing .claude/AGENTS.md"
+            $Repaired++
+        }
+    }
+
+    # R3: Migrate legacy section markers (accessibility-agents -> a11y-agent-team)
+    # Very early versions used the old project name in marker comments.
+    $LegacyPairs = @(
+        @{ Old = '<!-- accessibility-agents: start -->'; New = '<!-- a11y-agent-team: start -->' },
+        @{ Old = '<!-- accessibility-agents: end -->';   New = '<!-- a11y-agent-team: end -->' },
+        @{ Old = '# accessibility-agents: start';        New = '# a11y-agent-team: start' },
+        @{ Old = '# accessibility-agents: end';          New = '# a11y-agent-team: end' }
+    )
+    $MarkerFiles = @($ClaudeAgentsMd)
+    $MarkerFiles += Join-Path $CodexRoot "AGENTS.md"
+    $MarkerFiles += Join-Path $CodexRoot "config.toml"
+    if ($Project) {
+        $ProjGH = Join-Path (Get-Location) ".github"
+        foreach ($c in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
+            $MarkerFiles += Join-Path $ProjGH $c
+        }
+    }
+    else {
+        $CR = Join-Path $env:USERPROFILE ".a11y-agent-team"
+        foreach ($c in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
+            $MarkerFiles += Join-Path $CR $c
+        }
+    }
+    foreach ($FilePath in $MarkerFiles) {
+        if (-not (Test-Path $FilePath)) { continue }
+        $Content = Get-Content $FilePath -Raw -ErrorAction SilentlyContinue
+        if (-not $Content) { continue }
+        $Changed = $false
+        foreach ($Pat in $LegacyPairs) {
+            if ($Content.Contains($Pat.Old)) {
+                $Content = $Content.Replace($Pat.Old, $Pat.New)
+                $Changed = $true
+            }
+        }
+        if ($Changed) {
+            [IO.File]::WriteAllText($FilePath, $Content, [Text.Encoding]::UTF8)
+            Write-Log "Repair: migrated legacy markers in $(Split-Path $FilePath -Leaf)"
+            $Repaired++
+        }
+    }
+
+    # R4: Reconcile manifest - add missing entries for installed tools
+    # Codex entries (older installers did not track these)
+    if (Test-Path (Join-Path $CodexRoot "AGENTS.md")) {
+        if (-not $Manifest.ContainsKey("codex/AGENTS.md")) { $Manifest["codex/AGENTS.md"] = $true; $Repaired++ }
+    }
+    if (Test-Path (Join-Path $CodexRoot "config.toml")) {
+        if (-not $Manifest.ContainsKey("codex/config.toml")) { $Manifest["codex/config.toml"] = $true; $Repaired++ }
+    }
+    if (Test-Path (Join-Path $CodexRoot "roles")) {
+        foreach ($Role in Get-ChildItem -Path (Join-Path $CodexRoot "roles") -Filter "*.toml" -ErrorAction SilentlyContinue) {
+            $Key = "codex/roles/$($Role.Name)"
+            if (-not $Manifest.ContainsKey($Key)) { $Manifest[$Key] = $true; $Repaired++ }
+        }
+    }
+    # Claude AGENTS.md entry
+    if ((Test-Path $ClaudeAgentsMd) -and -not $Manifest.ContainsKey("AGENTS.md")) {
+        $Manifest["AGENTS.md"] = $true; $Repaired++
+    }
+    # Gemini path entry - read from manifest; if files exist on disk but path missing, cannot reconstruct
+    # (the installer records the path; if it's missing, the normal Gemini update section handles discovery)
+
+    # R5: Remove stale manifest-tracked files no longer in current repo
+    # Build expected-file sets from the repo cache
+    $ExpectedAgents = @{}
+    $AgentCachePath = Join-Path $CacheDir ".claude\agents"
+    if (Test-Path $AgentCachePath) {
+        foreach ($F in Get-ChildItem -Path $AgentCachePath -Filter "*.md" -ErrorAction SilentlyContinue) {
+            $ExpectedAgents[$F.Name] = $true
+        }
+    }
+    $ExpectedCopilotAgents = @{}
+    $ExpectedCopilotPrompts = @{}
+    $ExpectedCopilotInstructions = @{}
+    $CopilotAgentCache = Join-Path $CacheDir ".github\agents"
+    $CopilotPromptCache = Join-Path $CacheDir ".github\prompts"
+    $CopilotInstrCache = Join-Path $CacheDir ".github\instructions"
+    if (Test-Path $CopilotAgentCache) {
+        foreach ($F in Get-ChildItem -Path $CopilotAgentCache -Filter "*.agent.md" -ErrorAction SilentlyContinue) {
+            $ExpectedCopilotAgents[$F.Name] = $true
+        }
+    }
+    if (Test-Path $CopilotPromptCache) {
+        foreach ($F in Get-ChildItem -Path $CopilotPromptCache -Filter "*.prompt.md" -Recurse -ErrorAction SilentlyContinue) {
+            $ExpectedCopilotPrompts[$F.Name] = $true
+        }
+    }
+    if (Test-Path $CopilotInstrCache) {
+        foreach ($F in Get-ChildItem -Path $CopilotInstrCache -Filter "*.instructions.md" -Recurse -ErrorAction SilentlyContinue) {
+            $ExpectedCopilotInstructions[$F.Name] = $true
+        }
+    }
+
+    # R5a: Stale Claude Code agents
+    $AgentsDir = Join-Path $InstallDir "agents"
+    if (Test-Path $AgentsDir) {
+        foreach ($F in Get-ChildItem -Path $AgentsDir -Filter "*.md" -ErrorAction SilentlyContinue) {
+            $Key = "agents/$($F.Name)"
+            if ($Manifest.ContainsKey($Key) -and -not $ExpectedAgents.ContainsKey($F.Name)) {
+                Remove-Item $F.FullName -Force
+                $Manifest.Remove($Key)
+                Write-Log "Repair: removed stale agent $($F.Name)"
+                $Repaired++
+            }
+        }
+    }
+
+    # R5b: Stale files in VS Code prompts/ directories (global install only)
+    if (-not $Project) {
+        foreach ($Profile in $SelectedVsCodeProfiles) {
+            $PromptsDir = Join-Path $Profile.Path "prompts"
+            if (-not (Test-Path $PromptsDir)) { continue }
+            $VsCleaned = 0
+            foreach ($F in Get-ChildItem -Path $PromptsDir -File -ErrorAction SilentlyContinue) {
+                if ($F.Name -notmatch '\.(agent|prompt|instructions)\.md$') { continue }
+                # Check against expected sets
+                $IsExpected = $false
+                if ($F.Name -like "*.agent.md"        -and $ExpectedCopilotAgents.ContainsKey($F.Name))        { $IsExpected = $true }
+                if ($F.Name -like "*.prompt.md"        -and $ExpectedCopilotPrompts.ContainsKey($F.Name))       { $IsExpected = $true }
+                if ($F.Name -like "*.instructions.md"  -and $ExpectedCopilotInstructions.ContainsKey($F.Name))  { $IsExpected = $true }
+                if ($IsExpected) { continue }
+                # Not in current repo - check if it's manifest-tracked (ours)
+                $MKey = $null
+                if ($F.Name -like "*.agent.md")        { $MKey = "copilot-agents/$($F.Name)" }
+                elseif ($F.Name -like "*.prompt.md")   { $MKey = "copilot-prompts/$($F.Name)" }
+                elseif ($F.Name -like "*.instructions.md") { $MKey = "copilot-instructions/$($F.Name)" }
+                if ($MKey -and $Manifest.ContainsKey($MKey)) {
+                    Remove-Item $F.FullName -Force
+                    $Manifest.Remove($MKey)
+                    $VsCleaned++
+                }
+            }
+            if ($VsCleaned -gt 0) {
+                Write-Log "Repair: removed $VsCleaned stale file(s) from $($Profile.Name) prompts/"
+                $Repaired++
+            }
+        }
+    }
+
+    # R6: Migrate legacy central store directory (global install only)
+    if (-not $Project) {
+        $LegacyCentral = Join-Path $env:USERPROFILE ".accessibility-agents"
+        $CurrentCentral = Join-Path $env:USERPROFILE ".a11y-agent-team"
+        if ((Test-Path $LegacyCentral) -and -not (Test-Path $CurrentCentral)) {
+            New-Item -ItemType Directory -Force -Path $CurrentCentral | Out-Null
+            Copy-Item -Path (Join-Path $LegacyCentral "*") -Destination $CurrentCentral -Recurse -Force
+            Write-Log "Repair: migrated legacy central store .accessibility-agents -> .a11y-agent-team"
+            $Repaired++
+        }
+    }
+
+    if ($Repaired -gt 0) {
+        Write-Log "Prior-install repair: $Repaired fix(es) applied."
+    }
+    return $Repaired
+}
+
 # Update Copilot assets for project install
 if ($Project) {
     $ProjectRoot = (Get-Location).Path
