@@ -176,7 +176,16 @@ function Detect-InstalledTools {
     }
 
     # veraPDF
+    # Get-Command relies on $env:Path being current. When verapdf is installed
+    # by choco in the same irm | iex session, the registry PATH is updated but
+    # the running session does not inherit the change. Fall back to probing
+    # known install locations so the readiness check is PATH-independent.
     $VeraPdfCmd = Get-Command verapdf -ErrorAction SilentlyContinue
+    if (-not $VeraPdfCmd -and $env:ChocolateyInstall) {
+        # Choco sets $env:ChocolateyInstall; probe its bin dir when PATH is stale
+        $ChocoVeraPdf = Join-Path $env:ChocolateyInstall 'bin\verapdf.bat'
+        if (Test-Path $ChocoVeraPdf) { $VeraPdfCmd = $ChocoVeraPdf }
+    }
     $Tools.VeraPdf = @{ Available = [bool]$VeraPdfCmd }
 
     # Python 3

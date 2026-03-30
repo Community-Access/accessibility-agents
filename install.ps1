@@ -782,6 +782,10 @@ function Ensure-NodeJsRuntime {
 function Show-PdfDeepValidationReadiness {
     $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
     $VeraPdfCmd = Get-Command verapdf -ErrorAction SilentlyContinue
+    if (-not $VeraPdfCmd -and $env:ChocolateyInstall) {
+        $ChocoVeraPdf = Join-Path $env:ChocolateyInstall 'bin\verapdf.bat'
+        if (Test-Path $ChocoVeraPdf) { $VeraPdfCmd = $ChocoVeraPdf }
+    }
     $JavaMajor = Get-JavaMajorVersion
 
     Write-Host ""
@@ -942,6 +946,10 @@ function Show-McpCapabilityReadiness {
     $JavaMajor = Get-JavaMajorVersion
     $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
     $VeraPdfCmd = Get-Command verapdf -ErrorAction SilentlyContinue
+    if (-not $VeraPdfCmd -and $env:ChocolateyInstall) {
+        $ChocoVeraPdf = Join-Path $env:ChocolateyInstall 'bin\verapdf.bat'
+        if (Test-Path $ChocoVeraPdf) { $VeraPdfCmd = $ChocoVeraPdf }
+    }
     $CoreSdkReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName '@modelcontextprotocol/sdk'
     $CoreSchemaReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'zod'
     $PlaywrightReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'playwright'
@@ -1828,7 +1836,9 @@ if (Test-Path $McpServerSrc) {
         }
 
         Write-Host ""
-        if (Get-Command verapdf -ErrorAction SilentlyContinue) {
+        $VeraPdfDetected = (Get-Command verapdf -ErrorAction SilentlyContinue) -or
+            ($env:ChocolateyInstall -and (Test-Path (Join-Path $env:ChocolateyInstall 'bin\verapdf.bat')))
+        if ($VeraPdfDetected) {
             Write-Host "  veraPDF detected."
             Write-Host "  Deep PDF/UA validation will be available through run_verapdf_scan."
         }
@@ -1862,8 +1872,10 @@ if (Test-Path $McpServerSrc) {
                     try {
                         winget install --exact --id EclipseAdoptium.Temurin.21.JRE --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
                         if ($LASTEXITCODE -ne 0) { throw "winget install failed with exit code $LASTEXITCODE" }
-                        Write-Host "    + Java 21 JRE install requested through winget"
-                        Write-Host "    ! Restart your terminal or VS Code after install so java is added to PATH"
+                        # Refresh session PATH so subsequent Get-Command calls see the new binary
+                        $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+                                    [System.Environment]::GetEnvironmentVariable('Path', 'User')
+                        Write-Host "    + Java 21 JRE installed via winget"
                     }
                     catch {
                         Write-Host "    ! winget Java install failed. You can retry manually with:"
@@ -1878,8 +1890,10 @@ if (Test-Path $McpServerSrc) {
                     try {
                         choco install verapdf -y 2>&1 | Out-Null
                         if ($LASTEXITCODE -ne 0) { throw "choco install failed with exit code $LASTEXITCODE" }
-                        Write-Host "    + veraPDF install requested through Chocolatey"
-                        Write-Host "    ! Restart your terminal or VS Code after install so verapdf is added to PATH"
+                        # Refresh session PATH so subsequent Get-Command calls see the new binary
+                        $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+                                    [System.Environment]::GetEnvironmentVariable('Path', 'User')
+                        Write-Host "    + veraPDF installed via Chocolatey"
                     }
                     catch {
                         Write-Host "    ! Chocolatey veraPDF install failed. You can retry manually with:"
