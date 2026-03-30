@@ -80,7 +80,7 @@ Prioritized action items:
 
 | Source | Help URL Base |
 |--------|--------------|
-| Adobe PDF | `https://helpx.adobe.com/acrobat/using/...` (PDF accessibility topics) |
+| Adobe PDF | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html` (PDF accessibility topics) |
 
 ## Fix Step Examples
 
