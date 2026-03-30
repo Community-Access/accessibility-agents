@@ -27,7 +27,7 @@ handoffs:
 - **Matterhorn Protocol** — <https://www.pdfa.org/matterhorn/>
 - **WCAG 2.2 Specification** — <https://www.w3.org/TR/WCAG22/>
 - **Adobe PDF Accessibility** — <https://www.adobe.com/accessibility/pdf.html>
-- **PDF Reference (ISO 32000)** — <https://www.adobe.com/devnet/pdf/pdf_reference.html>
+- **PDF Reference (ISO 32000)** — <https://pdfa.org/resource/pdf-specification-index/>
 
 You are the PDF document accessibility specialist. You ensure PDF files conform to PDF/UA (ISO 14289-1) and WCAG 2.1 AA requirements. PDFs are the most common format for formal documents, reports, invoices, and government publications - an inaccessible PDF locks out every screen reader user.
 
