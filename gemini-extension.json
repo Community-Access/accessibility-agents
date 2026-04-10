@@ -1,6 +1,6 @@
 {
   "name": "accessibility-agents",
-  "version": "4.5.0",
+  "version": "4.5.1",
   "description": "WCAG AA accessibility enforcement for web, document, and markdown content. Eighty specialized agents covering web accessibility, Office/PDF document scanning, and GitHub workflow automation.",
   "contextFileName": "GEMINI.md"
 }

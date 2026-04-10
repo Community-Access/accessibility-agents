@@ -7,12 +7,12 @@
 #   bash install.sh --global           Install globally to ~/.claude/
 #   bash install.sh --global --copilot Also install Copilot agents to VS Code
 #   bash install.sh --global --cli     Also install Copilot CLI agents to ~/.copilot/
-#   bash install.sh --global --codex   Also install Codex CLI support to ~/.codex/
+#   bash install.sh --global --codex   Also install Codex skills to ~/.codex/skills/
 #   bash install.sh --global --gemini  Also install Gemini CLI extension
 #   bash install.sh --project          Install to .claude/ in the current directory
 #   bash install.sh --project --copilot Also install Copilot agents to project
 #   bash install.sh --project --cli    Also install Copilot CLI agents to project
-#   bash install.sh --project --codex  Also install Codex CLI support to .codex/
+#   bash install.sh --project --codex  Also install Codex skills to .codex/skills/
 #   bash install.sh --project --gemini Also install Gemini CLI extension
 #   bash install.sh --global --vscode-stable     Target VS Code stable only for Copilot assets
 #   bash install.sh --global --vscode-insiders   Target VS Code Insiders only for Copilot assets
@@ -191,6 +191,11 @@ for arg in "$@"; do
   esac
 done
 
+OPTIONAL_PLATFORM_FLAGS=false
+if [ "$COPILOT_FLAG" = true ] || [ "$COPILOT_CLI_FLAG" = true ] || [ "$CODEX_FLAG" = true ] || [ "$GEMINI_FLAG" = true ]; then
+  OPTIONAL_PLATFORM_FLAGS=true
+fi
+
 
 if [ -z "$choice" ]; then
   if ! has_tty; then
@@ -261,7 +266,7 @@ fi
 if [ "$DRY_RUN" = true ]; then
   DRY_RUN_NOTES=()
   if [ "$AUTO_APPROVE" = true ]; then
-    DRY_RUN_NOTES+=("Optional prompts would be auto-approved because --yes was supplied.")
+    DRY_RUN_NOTES+=("Interactive prompts would be skipped because --yes was supplied.")
   fi
   if [ "$NO_AUTO_UPDATE" = true ]; then
     DRY_RUN_NOTES+=("Auto-update setup would be skipped because --no-auto-update was supplied.")
@@ -359,15 +364,7 @@ PYEOF
     case "$dst" in
       *.toml)
         if command -v python3 &>/dev/null; then
-          _toml_dup=$(python3 - "$src" "$dst" << 'PYEOF'
-import re, sys
-src_hdrs = set(re.findall(r'^\[[\w.\- "\']+\]', open(sys.argv[1]).read(), re.MULTILINE))
-dst_hdrs = set(re.findall(r'^\[[\w.\- "\']+\]', open(sys.argv[2]).read(), re.MULTILINE))
-dupes = src_hdrs & dst_hdrs
-if dupes:
-    print(",".join(sorted(dupes)))
-PYEOF
-          )
+          _toml_dup=$(python3 -c 'import re, sys; hdr_re = re.compile(r"^\[[^]]+\]", re.MULTILINE); src_hdrs = set(hdr_re.findall(open(sys.argv[1]).read())); dst_hdrs = set(hdr_re.findall(open(sys.argv[2]).read())); dupes = src_hdrs & dst_hdrs; print(",".join(sorted(dupes))) if dupes else None' "$src" "$dst" 2>/dev/null || true)
         fi
         ;;
     esac
@@ -433,7 +430,7 @@ java_major_version() {
   command -v java &>/dev/null || return 1
   local java_line
   java_line="$(java -version 2>&1 | head -n 1)"
-  if [[ "$java_line" =~ \"([0-9]+)\.([0-9]+) ]]; then
+  if [[ "$java_line" =~ \"([0-9]+)\.([0-9]+)\" ]]; then
     if [ "${BASH_REMATCH[1]}" = "1" ]; then
       echo "${BASH_REMATCH[2]}"
     else
@@ -441,7 +438,7 @@ java_major_version() {
     fi
     return 0
   fi
-  if [[ "$java_line" =~ \"([0-9]+) ]]; then
+  if [[ "$java_line" =~ \"([0-9]+)\" ]]; then
     echo "${BASH_REMATCH[1]}"
     return 0
   fi
@@ -1317,6 +1314,14 @@ PYEOF
 # Installation: plugin (global) vs file-copy (project)
 # ---------------------------------------------------------------------------
 PLUGIN_INSTALL=false
+mkdir -p "$TARGET_DIR"
+MANIFEST_FILE="$TARGET_DIR/.a11y-agent-manifest"
+touch "$MANIFEST_FILE"
+
+add_manifest_entry() {
+  local entry="$1"
+  grep -qxF "$entry" "$MANIFEST_FILE" 2>/dev/null || echo "$entry" >> "$MANIFEST_FILE"
+}
 
 if [ "$choice" = "2" ] && [ -n "$PLUGIN_SRC" ] && command -v python3 &>/dev/null; then
   # Global install: register as a Claude Code plugin
@@ -1344,15 +1349,6 @@ mkdir -p "$TARGET_DIR/agents"
 if [ ${#SKILLS[@]} -gt 0 ]; then
   mkdir -p "$TARGET_DIR/skills"
 fi
-
-# Manifest: track which files we install so updates never touch user-created files
-MANIFEST_FILE="$TARGET_DIR/.a11y-agent-manifest"
-touch "$MANIFEST_FILE"
-
-add_manifest_entry() {
-  local entry="$1"
-  grep -qxF "$entry" "$MANIFEST_FILE" 2>/dev/null || echo "$entry" >> "$MANIFEST_FILE"
-}
 
 # Copy agents — skip any file that already exists (preserves user customisations)
 echo ""
@@ -1437,7 +1433,7 @@ install_copilot=false
 
 if [ "$COPILOT_FLAG" = true ]; then
   install_copilot=true
-elif read_yes_no "Install Copilot agents?" false; then
+elif [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && read_yes_no "Install Copilot agents?" false; then
   echo ""
   echo "  Would you also like to install GitHub Copilot agents?"
   echo "  This adds accessibility agents for Copilot Chat in VS Code/GitHub."
@@ -1772,7 +1768,7 @@ COPILOT_CLI_INSTALLED=false
 install_copilot_cli=false
 if [ "$COPILOT_CLI_FLAG" = true ]; then
   install_copilot_cli=true
-elif read_yes_no "Install Copilot CLI agents?" false; then
+elif [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && read_yes_no "Install Copilot CLI agents?" false; then
   echo ""
   echo "  Would you also like to install Copilot CLI agents?"
   echo "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
@@ -1864,47 +1860,39 @@ if [ "$install_copilot_cli" = true ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Codex CLI support
+# Codex skills support
 # ---------------------------------------------------------------------------
-CODEX_SRC="$SCRIPT_DIR/.codex/AGENTS.md"
 CODEX_CONFIG_SRC="$SCRIPT_DIR/.codex/config.toml"
 CODEX_ROLES_SRC="$SCRIPT_DIR/.codex/roles"
+CODEX_SKILLS_SRC="$SCRIPT_DIR/codex-skills"
 CODEX_INSTALLED=false
 
 install_codex=false
 if [ "$CODEX_FLAG" = true ]; then
   install_codex=true
-elif { [ -f "$CODEX_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; } && { true < /dev/tty; } 2>/dev/null; then
+elif [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && { [ -d "$CODEX_PLUGIN_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; } && { true < /dev/tty; } 2>/dev/null; then
   echo ""
-  echo "  Would you also like to install Codex CLI support?"
-  echo "  This installs the stable AGENTS.md baseline plus experimental"
+  echo "  Would you also like to install Codex support?"
+  echo "  This installs the Accessibility Agents skill pack plus optional"
   echo "  TOML-based Codex roles under .codex/config.toml and .codex/roles/."
   echo ""
-  printf "  Install Codex CLI support? [y/N]: "
+  printf "  Install Codex support? [y/N]: "
   read -r codex_choice < /dev/tty
   if [ "$codex_choice" = "y" ] || [ "$codex_choice" = "Y" ]; then
     install_codex=true
   fi
 fi
 
-if [ "$install_codex" = true ] && { [ -f "$CODEX_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; }; then
+if [ "$install_codex" = true ] && { [ -d "$CODEX_SKILLS_SRC" ] || [ -f "$CODEX_CONFIG_SRC" ]; }; then
   echo ""
-  echo "  Installing Codex CLI support..."
+  echo "  Installing Codex support..."
 
   if [ "$choice" = "1" ]; then
-    # Project install: copy to .codex/AGENTS.md in the current project
     CODEX_TARGET_DIR="$(pwd)/.codex"
     mkdir -p "$CODEX_TARGET_DIR"
-    CODEX_DST="$CODEX_TARGET_DIR/AGENTS.md"
   else
-    # Global install: copy to ~/.codex/AGENTS.md
     CODEX_TARGET_DIR="$HOME/.codex"
     mkdir -p "$CODEX_TARGET_DIR"
-    CODEX_DST="$CODEX_TARGET_DIR/AGENTS.md"
-  fi
-
-  if [ -f "$CODEX_SRC" ]; then
-    merge_config_file "$CODEX_SRC" "$CODEX_DST" "AGENTS.md (Codex)"
   fi
   if [ -f "$CODEX_CONFIG_SRC" ]; then
     CODEX_CONFIG_DST="$CODEX_TARGET_DIR/config.toml"
@@ -1922,18 +1910,31 @@ if [ "$install_codex" = true ] && { [ -f "$CODEX_SRC" ] || [ -f "$CODEX_CONFIG_S
       add_manifest_entry "codex-role/path:$dst_file"
     done < <(find "$CODEX_ROLES_SRC" -type f -name "*.toml" | sort)
   fi
+  if [ -d "$CODEX_SKILLS_SRC" ]; then
+    CODEX_SKILLS_DST="$CODEX_TARGET_DIR/skills"
+    mkdir -p "$CODEX_SKILLS_DST"
+    while IFS= read -r src_skill_dir; do
+      rel="${src_skill_dir#$CODEX_SKILLS_SRC/}"
+      dst_skill_dir="$CODEX_SKILLS_DST/$rel"
+      mkdir -p "$dst_skill_dir"
+      cp "$src_skill_dir/SKILL.md" "$dst_skill_dir/SKILL.md"
+      add_manifest_entry "codex-skill/path:$dst_skill_dir/SKILL.md"
+    done < <(find "$CODEX_SKILLS_SRC" -mindepth 1 -maxdepth 1 -type d | sort)
+    echo "    + Codex skills installed to $CODEX_SKILLS_DST"
+  fi
   CODEX_INSTALLED=true
   if [ "$choice" = "1" ]; then
     add_manifest_entry "codex/project"
   else
     add_manifest_entry "codex/global"
   fi
-  add_manifest_entry "codex/path:$CODEX_DST"
 
   echo ""
-  echo "  Codex will now enforce WCAG AA rules on all UI code in this project."
+  echo "  Codex will now load the Accessibility Agents skills."
   echo "  Experimental named roles are available through .codex/config.toml."
-  echo "  Run: codex \"Build a login form\" — accessibility rules apply automatically."
+  echo "  Codex hook support exists upstream, but it is currently experimental and"
+  echo "  only intercepts Bash/local-shell flows, not all file-edit tools."
+  echo "  Run: codex \"Review this page for accessibility issues\"."
 fi
 
 # ---------------------------------------------------------------------------
@@ -1945,7 +1946,7 @@ GEMINI_INSTALLED=false
 install_gemini=false
 if [ "$GEMINI_FLAG" = true ]; then
   install_gemini=true
-elif [ -d "$GEMINI_SRC" ] && read_yes_no "Install Gemini CLI support?" false; then
+elif [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && [ -d "$GEMINI_SRC" ] && read_yes_no "Install Gemini CLI support?" false; then
   echo ""
   echo "  Would you also like to install Gemini CLI support?"
   echo "  This installs accessibility skills as a Gemini CLI extension"
@@ -2033,7 +2034,7 @@ MCP_DEST=""
 
 if [ -d "$MCP_SERVER_SRC" ]; then
   setup_mcp=false
-  if read_yes_no "Set up MCP server?" false; then
+  if [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && read_yes_no "Set up MCP server?" false; then
     echo ""
     echo "  Would you like to set up the MCP server for document and PDF scanning?"
     echo "  This copies the open-source server to a stable location, can install npm"
@@ -2264,8 +2265,8 @@ if [ "$COPILOT_CLI_INSTALLED" = true ]; then
 fi
 if [ "$CODEX_INSTALLED" = true ]; then
   echo ""
-  echo "  Codex CLI support installed to:"
-  echo "    -> $CODEX_DST"
+  echo "  Codex support installed to:"
+  [ -n "$CODEX_SKILLS_DST" ] && echo "    -> $CODEX_SKILLS_DST"
   [ -n "$CODEX_CONFIG_DST" ] && echo "    -> $CODEX_CONFIG_DST"
   [ -n "$CODEX_ROLES_DST" ] && echo "    -> $CODEX_ROLES_DST/"
 fi
@@ -2518,7 +2519,7 @@ fi
 
 INSTALL_NOTES=()
 if [ "$AUTO_APPROVE" = true ]; then
-  INSTALL_NOTES+=("Optional prompts were auto-approved with --yes.")
+  INSTALL_NOTES+=("Interactive prompts were skipped with --yes.")
 fi
 if [ "$NO_AUTO_UPDATE" = true ]; then
   INSTALL_NOTES+=("Auto-update setup was skipped with --no-auto-update.")
@@ -2566,7 +2567,11 @@ echo "    curl -fsSL https://raw.githubusercontent.com/Community-Access/accessib
 echo ""
 echo "  For manual uninstall instructions, see: UNINSTALL.md"
 echo ""
-echo "  Start Claude Code and try: \"Build a login form\""
-echo "  The accessibility-lead should activate automatically."
+if [ "$CODEX_INSTALLED" = true ]; then
+  echo "  Start Codex in this project and try: \"Review this component for accessibility issues\""
+  echo "  The Accessibility Agents skills should load from .codex/skills or ~/.codex/skills."
+else
+  echo "  Start Claude Code and try: \"Build a login form\""
+  echo "  The accessibility-lead should activate automatically."
+fi
 echo ""
-
