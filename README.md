@@ -36,7 +36,7 @@ All agents run on:
 - **Claude Code** - Agents you invoke directly for accessibility evaluation
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
-- **Codex CLI** - Stable `.codex/AGENTS.md` baseline plus optional experimental TOML-based roles for focused accessibility passes
+- **Codex CLI** - Direct Accessibility Agents skills pack plus optional experimental TOML-based roles for focused accessibility passes
 - **MCP Server** - HTTP-based server providing 24 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
 
 ## System Requirements
@@ -409,7 +409,7 @@ The following guides cover advanced configuration, cross-platform handoff, and d
 | [Advanced Scanning Patterns](docs/advanced/advanced-scanning-patterns.md) | Background scanning, worktree isolation, large libraries |
 | [Plugin Packaging](docs/advanced/plugin-packaging.md) | Packaging and distributing agents for different environments |
 | [Platform References](docs/advanced/platform-references.md) | External documentation sources with feature-to-source mapping |
-| [Experimental Codex Multi-Agent Roles](docs/guides/codex-experimental-multi-agent.md) | Optional TOML-based Codex roles layered on top of the stable AGENTS.md baseline |
+| [Experimental Codex Multi-Agent Roles](docs/guides/codex-experimental-multi-agent.md) | Optional TOML-based Codex roles for focused accessibility passes |
 | [Research Sources](docs/RESEARCH-SOURCES.md) | Authoritative sources (W3C APG, WebAIM, WCAG 2.2, Deque) that informed every agent rule |
 
 ## What This Covers

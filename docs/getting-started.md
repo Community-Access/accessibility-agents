@@ -850,9 +850,33 @@ This is for **OpenAI Codex CLI** (the terminal coding agent).
 
 ### How It Works
 
-Codex CLI reads `AGENTS.md` files from the project directory tree automatically. The accessibility rules are loaded into every session — no extra flags or configuration needed. When Codex works on any UI task, it applies the WCAG 2.2 AA rules from the AGENTS.md file before considering the work done.
+Accessibility Agents ships for Codex as a direct skills pack under `codex-skills/`. The installer copies those 80 skills into `.codex/skills/` for project installs or `~/.codex/skills/` for global installs, which is currently more reliable than depending on the Codex plugin marketplace flow for community distributions.
 
-Accessibility Agents keeps that stable AGENTS.md baseline, and now also includes an experimental TOML-based role layer for newer Codex builds that support multi-agent workflows. The experimental roles are optional and do not replace the baseline rules.
+This repo also includes an experimental TOML-based role layer for newer Codex builds that support multi-agent workflows. Those roles are optional and separate from the skills pack.
+
+### Why Not the Codex Plugin Marketplace?
+
+We originally implemented Accessibility Agents for Codex as a repo-local plugin package plus marketplace registration and tested it against current Codex plugin docs and app behavior.
+
+What we verified during that research:
+
+- Codex does have a curated plugins directory in the app.
+- Local marketplace/plugin installation can work on a developer machine and Codex may cache the installed plugin under `~/.codex/plugins/cache/...`.
+- Codex plugin packaging is documented by OpenAI, but we could not find a public self-serve submission or broad community distribution workflow for third-party plugins.
+
+What did not hold up well enough for primary distribution:
+
+- Third-party plugin discovery was less predictable than direct skills installs across fresh Codex sessions.
+- Users often still had to install or confirm the plugin through the Codex app UI.
+- The experience was not close enough to the one-step familiarity people get from Claude-style agent installs or direct skill packs.
+
+Because of that, Codex support in this repo now uses the simpler and more dependable path: install the skills directly into `.codex/skills/` or `~/.codex/skills/`.
+
+Research references:
+
+- Codex curated plugins directory announcement: `https://help.openai.com/en/articles/11391654-chatgpt-business-release-notes`
+- Codex usage and workspace app controls: `https://help.openai.com/en/articles/11369540`
+- Codex plugin format sample: `https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/plugin-creator/references/plugin-json-spec.md`
 
 ### Prerequisites
 
@@ -891,7 +915,7 @@ bash install.sh --project --codex
 bash install.sh --global --codex
 ```
 
-The interactive installer also prompts for Codex support if you do not pass the flag. Codex installs include the stable `.codex/AGENTS.md` baseline and, when available, the experimental `.codex/config.toml` plus `.codex/roles/*.toml` files.
+The interactive installer also prompts for Codex support if you do not pass the flag. Codex installs include the 80-skill Accessibility Agents pack under `.codex/skills/` or `~/.codex/skills/` and, when available, the experimental `.codex/config.toml` plus `.codex/roles/*.toml` files.
 
 #### One-Liner
 
@@ -904,19 +928,19 @@ curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agen
 
 ```bash
 # For project install
-mkdir -p .codex/roles
-cp path/to/accessibility-agents/.codex/AGENTS.md .codex/AGENTS.md
+mkdir -p .codex/skills .codex/roles
+cp -R path/to/accessibility-agents/codex-skills/. .codex/skills/
 cp path/to/accessibility-agents/.codex/config.toml .codex/config.toml
 cp path/to/accessibility-agents/.codex/roles/*.toml .codex/roles/
 
 # For global install
-mkdir -p ~/.codex/roles
-cp path/to/accessibility-agents/.codex/AGENTS.md ~/.codex/AGENTS.md
+mkdir -p ~/.codex/skills ~/.codex/roles
+cp -R path/to/accessibility-agents/codex-skills/. ~/.codex/skills/
 cp path/to/accessibility-agents/.codex/config.toml ~/.codex/config.toml
 cp path/to/accessibility-agents/.codex/roles/*.toml ~/.codex/roles/
 ```
 
-For project installs, commit `.codex/AGENTS.md`, `.codex/config.toml`, and `.codex/roles/` to your repo so the baseline rules and experimental role definitions travel with the project together.
+For project installs, commit `.codex/skills/` and optionally `.codex/config.toml` plus `.codex/roles/` so the Accessibility Agents skill pack and any experimental roles travel with the project together.
 
 ### Using Codex with Accessibility Rules
 
@@ -928,7 +952,7 @@ codex "Add a modal dialog to the settings page"
 codex "Create a data table for the analytics dashboard"
 ```
 
-Codex will apply the accessibility rules from AGENTS.md to all UI code it generates. The experimental role files add narrower specialist passes when you want them, but the baseline still does the always-on guardrail work.
+Codex can use the Accessibility Agents skills directly from `.codex/skills/` or `~/.codex/skills/`. The experimental role files add narrower specialist passes when you want them.
 
 For the current role list, install details, and limitations, see [Experimental Codex Multi-Agent Roles](guides/codex-experimental-multi-agent.md).
 

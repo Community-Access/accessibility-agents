@@ -1,5 +1,5 @@
-# Experimental Codex multi-agent roles layered on top of .codex/AGENTS.md.
-# AGENTS.md remains the stable baseline that applies automatically to UI work.
+# Experimental Codex multi-agent roles for focused accessibility passes.
+# The primary Codex distribution path in this repo is the direct skills pack.
 
 [features]
 multi_agent = true
