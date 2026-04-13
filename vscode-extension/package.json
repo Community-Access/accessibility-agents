@@ -279,7 +279,7 @@
     "package": "npx @vscode/vsce package"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.6.0",
     "@types/vscode": "^1.110.0",
     "@vscode/vsce": "^3.5.0",
     "typescript": "^5.8.0"
