@@ -47,6 +47,5 @@ jobs:
       - name: Verify artifacts exist
         run: node scripts/check-skills-artifacts.js
 
-      - name: Verify release consistency (advisory)
-        continue-on-error: true
+      - name: Verify release consistency
         run: node scripts/check-release-consistency.js
