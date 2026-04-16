@@ -188,6 +188,82 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "Repair: Validate Install (PowerShell)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/scripts/repair-install.ps1",
+				"-SummaryPath",
+				"${workspaceFolder}/.a11y-agent-team-install-summary.json"
+			],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Repair: Validate and Repair Install (PowerShell)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/scripts/repair-install.ps1",
+				"-SummaryPath",
+				"${workspaceFolder}/.a11y-agent-team-install-summary.json",
+				"-Repair"
+			],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Repair: Validate Install (Shell)",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"${workspaceFolder}/scripts/repair-install.sh",
+				"--summary=${workspaceFolder}/.a11y-agent-team-install-summary.json",
+				"--validate-only"
+			],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Repair: Validate and Repair Install (Shell)",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"${workspaceFolder}/scripts/repair-install.sh",
+				"--summary=${workspaceFolder}/.a11y-agent-team-install-summary.json"
+			],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
 			"label": "Delete forge.agent.md",
 			"type": "shell",
 			"command": "Remove-Item -Path '.github\\agents\\forge.agent.md' -Force && echo DONE"

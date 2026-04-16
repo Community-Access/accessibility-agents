@@ -175,6 +175,7 @@ VSCODE_PROFILE_MODE="auto"
 MCP_PROFILE_MODE="auto"
 AUTO_APPROVE=false
 NO_AUTO_UPDATE=false
+SKIP_POST_INSTALL_REPAIR=false
 ROLE_ARG=""
 CONFIG_ARG=""
 HELP_FLAG=false
@@ -182,6 +183,35 @@ FORCE_FLAG=false
 QUIET_FLAG=false
 VERBOSE_FLAG=false
 VERSION_FLAG=false
+
+INSTALL_ISSUES=()
+
+json_array_from_objects() {
+  local first=true
+  printf '['
+  for item in "$@"; do
+    [ -n "$item" ] || continue
+    if [ "$first" = true ]; then
+      first=false
+    else
+      printf ','
+    fi
+    printf '%s' "$item"
+  done
+  printf ']'
+}
+
+add_install_issue() {
+  local code="$1"
+  local severity="$2"
+  local component="$3"
+  local message="$4"
+  local recovered="$5"
+  local requires_rework="$6"
+  local recommendation="$7"
+
+  INSTALL_ISSUES+=("{\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"code\":\"$(json_escape "$code")\",\"severity\":\"$(json_escape "$severity")\",\"component\":\"$(json_escape "$component")\",\"message\":\"$(json_escape "$message")\",\"recovered\":$(json_bool "$recovered"),\"requiresRework\":$(json_bool "$requires_rework"),\"recommendation\":\"$(json_escape "$recommendation")\"}")
+}
 
 for arg in "$@"; do
   case "$arg" in
@@ -193,6 +223,7 @@ for arg in "$@"; do
     --gemini) GEMINI_FLAG=true ;;
     --yes) AUTO_APPROVE=true ;;
     --no-auto-update) NO_AUTO_UPDATE=true ;;
+    --skip-post-install-repair) SKIP_POST_INSTALL_REPAIR=true ;;
     --check) CHECK_MODE=true ;;
     --dry-run) DRY_RUN=true ;;
     --vscode-stable) VSCODE_PROFILE_MODE=$(set_profile_mode "$VSCODE_PROFILE_MODE" "stable") ;;
@@ -261,6 +292,7 @@ if [ "$HELP_FLAG" = true ]; then
   echo "    --config=<path.json>   Load team config for unattended installs"
   echo "    --yes                  Accept optional install prompts automatically"
   echo "    --no-auto-update       Skip auto-update setup without prompting"
+  echo "    --skip-post-install-repair  Skip post-install validation and auto-repair pass"
   echo "    --force                Overwrite existing agent/skill files"
   echo ""
   echo "  Output:"
@@ -1052,6 +1084,18 @@ node_module_available() {
   [ -n "$working_dir" ] && [ -d "$working_dir" ] || return 1
 
   (cd "$working_dir" && node -e "import('$module_name').then(() => process.exit(0)).catch(() => process.exit(1))" >/dev/null 2>&1)
+}
+
+# ---------------------------------------------------------------------------
+# node_module_package_present working_dir module_name
+# Returns success if node_modules/<module_name>/package.json exists.
+# ---------------------------------------------------------------------------
+node_module_package_present() {
+  local working_dir="$1"
+  local module_name="$2"
+
+  [ -n "$working_dir" ] && [ -d "$working_dir" ] || return 1
+  [ -f "$working_dir/node_modules/$module_name/package.json" ]
 }
 
 # ---------------------------------------------------------------------------
@@ -2376,12 +2420,52 @@ if [ -d "$MCP_SERVER_SRC" ]; then
       if [ "$MCP_PLAN_BROWSER" = true ]; then
         echo ""
         echo "  Setting up Playwright browser tooling..."
-        if (cd "$MCP_DEST" && npm install playwright @axe-core/playwright && npx playwright install chromium); then
-          echo "    + Playwright tooling and Chromium installed"
+        if (cd "$MCP_DEST" && npm install playwright @axe-core/playwright); then
+          if ! node_module_package_present "$MCP_DEST" "playwright-core"; then
+            echo "    ! Detected incomplete Playwright install (playwright-core missing); attempting repair..."
+            add_install_issue "playwright.missingCoreDetected" "warning" "mcp-browser-tools" "Detected incomplete Playwright dependency graph: playwright-core missing after install playwright." false false "Installer attempted automatic repair by installing playwright-core."
+            playwright_version="$(cd "$MCP_DEST" && node -e "try { const pkg = require('./node_modules/playwright/package.json'); process.stdout.write(pkg.version || ''); } catch { process.stdout.write(''); }" 2>/dev/null)"
+            if [ -n "$playwright_version" ]; then
+              if ! (cd "$MCP_DEST" && npm install "playwright-core@$playwright_version"); then
+                echo "    ! Playwright setup failed while repairing playwright-core. You can retry later with:"
+                add_install_issue "playwright.coreRepairFailed" "error" "mcp-browser-tools" "Failed to repair playwright-core using version-pinned install." false true "Re-run browser tooling commands manually and review npm configuration, lockfile integrity, and local cache state."
+                echo "      cd \"$MCP_DEST\""
+                echo "      npm install playwright @axe-core/playwright"
+                echo "      npm install playwright-core@$playwright_version"
+                echo "      npx playwright install chromium"
+              else
+                add_install_issue "playwright.missingCoreRecovered" "info" "mcp-browser-tools" "Recovered from missing playwright-core by reinstalling playwright-core." true true "Review npm install reliability on this host if issue repeats."
+              fi
+            else
+              if ! (cd "$MCP_DEST" && npm install playwright-core); then
+                echo "    ! Playwright setup failed while repairing playwright-core. You can retry later with:"
+                add_install_issue "playwright.coreRepairFailed" "error" "mcp-browser-tools" "Failed to repair playwright-core using latest install." false true "Re-run browser tooling commands manually and review npm configuration, lockfile integrity, and local cache state."
+                echo "      cd \"$MCP_DEST\""
+                echo "      npm install playwright @axe-core/playwright"
+                echo "      npm install playwright-core"
+                echo "      npx playwright install chromium"
+              else
+                add_install_issue "playwright.missingCoreRecovered" "info" "mcp-browser-tools" "Recovered from missing playwright-core by reinstalling playwright-core." true true "Review npm install reliability on this host if issue repeats."
+              fi
+            fi
+          fi
+
+          if (cd "$MCP_DEST" && npx playwright install chromium) && playwright_chromium_ready "$MCP_DEST"; then
+            echo "    + Playwright tooling and Chromium installed"
+          else
+            echo "    ! Playwright setup failed. You can retry later with:"
+            add_install_issue "playwright.setupFailed" "error" "mcp-browser-tools" "npx playwright install chromium failed or Chromium was not resolvable by Playwright after install." false true "Run browser tooling install commands manually and review npm/playwright output."
+            echo "      cd \"$MCP_DEST\""
+            echo "      npm install playwright @axe-core/playwright"
+            echo "      npm install playwright-core"
+            echo "      npx playwright install chromium"
+          fi
         else
           echo "    ! Playwright setup failed. You can retry later with:"
+          add_install_issue "playwright.setupFailed" "error" "mcp-browser-tools" "npm install playwright @axe-core/playwright failed." false true "Run npm install commands manually and inspect npm output."
           echo "      cd \"$MCP_DEST\""
           echo "      npm install playwright @axe-core/playwright"
+          echo "      npm install playwright-core"
           echo "      npx playwright install chromium"
         fi
       fi
@@ -2859,9 +2943,51 @@ if [ "$MCP_INSTALLED" = true ] && [ "$MCP_PROFILE_MODE" != "auto" ] && [ -z "$SE
   INSTALL_NOTES+=("The requested MCP profile filter did not match any installed VS Code profile.")
 fi
 
+RUN_POST_INSTALL_REPAIR=false
+if [ "$SKIP_POST_INSTALL_REPAIR" != true ]; then
+  if [ "$AUTO_APPROVE" = true ]; then
+    RUN_POST_INSTALL_REPAIR=true
+  elif has_tty; then
+    echo ""
+    printf "  Run post-install validation and auto-repair now? [Y/n]: "
+    read -r _repair_choice < /dev/tty
+    if [ -z "$_repair_choice" ] || [ "$_repair_choice" = "y" ] || [ "$_repair_choice" = "Y" ]; then
+      RUN_POST_INSTALL_REPAIR=true
+    fi
+  else
+    RUN_POST_INSTALL_REPAIR=true
+  fi
+fi
+
+if [ "$RUN_POST_INSTALL_REPAIR" = true ]; then
+  INSTALL_NOTES+=("Post-install validation/auto-repair was requested.")
+elif [ "$SKIP_POST_INSTALL_REPAIR" = true ]; then
+  INSTALL_NOTES+=("Post-install validation/auto-repair was skipped via --skip-post-install-repair.")
+else
+  INSTALL_NOTES+=("Post-install validation/auto-repair was skipped by user choice.")
+fi
+
 ELAPSED=$((SECONDS - START_TIME))
 
-write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"role\":\"$(json_escape "$ROLE_NAME")\",\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}"),\"version\":\"$SOURCE_HASH\",\"elapsedSeconds\":$ELAPSED,\"healthCheck\":{\"total\":$health_total,\"found\":$health_found}}"
+write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"role\":\"$(json_escape "$ROLE_NAME")\",\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}"),\"issues\":$(json_array_from_objects "${INSTALL_ISSUES[@]}"),\"issueCount\":${#INSTALL_ISSUES[@]},\"version\":\"$SOURCE_HASH\",\"elapsedSeconds\":$ELAPSED,\"healthCheck\":{\"total\":$health_total,\"found\":$health_found}}"
+
+if [ "$RUN_POST_INSTALL_REPAIR" = true ]; then
+  echo ""
+  echo "  Running post-install validation and auto-repair..."
+  REPAIR_SCRIPT="$SCRIPT_DIR/scripts/repair-install.sh"
+  if [ -f "$REPAIR_SCRIPT" ]; then
+    if bash "$REPAIR_SCRIPT" --summary="$SUMMARY_PATH"; then
+      REPAIR_REPORT_PATH="$([ "$choice" = "1" ] && printf '%s/.a11y-agent-team-repair-summary.json' "$(pwd)" || printf '%s/.a11y-agent-team-repair-summary.json' "$HOME")"
+      echo "    + Post-install validation/repair completed"
+      echo "    + Repair report: $REPAIR_REPORT_PATH"
+    else
+      echo "    ! Post-install validation/repair reported errors"
+      echo "    ! Run manually: bash scripts/repair-install.sh --summary=\"$SUMMARY_PATH\""
+    fi
+  else
+    echo "    ! Post-install repair script missing: $REPAIR_SCRIPT"
+  fi
+fi
 
 echo ""
 echo "  Summary written to:"
