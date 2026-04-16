@@ -28,6 +28,9 @@ jobs:
       - name: Validate agents and skills (Phase 3 checks)
         run: node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks
 
+      - name: Check skill description quality
+        run: node scripts/check-skill-description-quality.js
+
       - name: Generate manifest, SBOM, and signature payload
         env:
           GH_SKILLS_SIGNING_KEY: ${{ secrets.GH_SKILLS_SIGNING_KEY }}

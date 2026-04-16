@@ -35,6 +35,9 @@ jobs:
       - name: Phase 3 validation checks
         run: node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks
 
+      - name: Description quality gate
+        run: node scripts/check-skill-description-quality.js
+
       - name: Generate release artifacts
         env:
           GH_SKILLS_SIGNING_KEY: ${{ secrets.GH_SKILLS_SIGNING_KEY }}

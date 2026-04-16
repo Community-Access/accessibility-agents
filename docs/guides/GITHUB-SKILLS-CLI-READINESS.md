@@ -17,11 +17,14 @@ What it does:
    - --validate-wcag
    - --validate-urls
    - --skip-url-checks
-2. Generates:
+2. Runs description quality gate:
+   - `node scripts/check-skill-description-quality.js`
+   - Fails if any skill description quality score is below threshold
+3. Generates:
    - artifacts/skills-manifest.json
    - artifacts/skills-sbom.cdx.json
    - artifacts/skills-manifest.sig.json
-3. Verifies artifacts are present and non-empty.
+4. Verifies artifacts are present and non-empty.
 
 ## Local Execution
 
@@ -29,6 +32,7 @@ Run the same sequence locally:
 
 powershell
 node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks
+node scripts/check-skill-description-quality.js
 node scripts/generate-skills-manifest.js
 node scripts/generate-skills-sbom.js
 node scripts/sign-skills-manifest.js
