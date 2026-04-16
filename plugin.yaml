@@ -1,7 +1,7 @@
 ---
 # Accessibility Agents for GitHub Copilot
 # Plugin manifest for VS Code Marketplace
-# 
+#
 # Format: Follows GitHub Copilot Plugin specification for agent bundling
 # Author: Community-Access Organization
 # License: MIT
@@ -45,7 +45,7 @@ contents:
     description: "Orchestrator agents (accessibility-lead, web-accessibility-wizard, etc.) and specialist agents for WCAG A11y auditing across web, document, desktop, and developer accessibility domains"
     count: 80
     format: "agent.md"
-    
+
   # Reusable multi-platform skills (25 skills)
   skills:
     path: ".github/skills"
@@ -66,7 +66,7 @@ contents:
     path: ".github/instructions"
     description: "Global accessibility baseline rules, semantic HTML requirements, ARIA patterns, and markdown accessibility guidelines"
     count: 9
-    
+
   # Documentation
   documentation:
     - path: "README.md"
@@ -87,7 +87,7 @@ contents:
 # Installation & activation
 activation:
   onStartup: preload
-  agents: 
+  agents:
     - accessibility-lead
     - web-accessibility-wizard
     - document-accessibility-wizard
@@ -109,7 +109,7 @@ platforms:
     skills: 25
     prompts: 134
     status: "fully-supported"
-    
+
   - name: "Copilot CLI"
     agents: 80
     skills: 25
@@ -170,13 +170,13 @@ support:
   issues: "https://github.com/Community-Access/accessibility-agents/issues"
   discussions: "https://github.com/Community-Access/accessibility-agents/discussions"
   email: "contact@community-access.org"
-  
+
 # Quality & compliance
 quality:
   testCoverage: "Verified across 3 platforms"
   securityAudit: "Clean (no external dependencies)"
   accessibilityRating: "WCAG 2.2 Level AA (self-audited)"
-  
+
 # Acknowledgments
 acknowledgments:
   - "W3C WCAG Working Group"
