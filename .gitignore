@@ -8,6 +8,7 @@ source-validation-results.json
 node_modules/
 *.vsix
 dist/
+artifacts/
 .env
 *.log
 __pycache__/

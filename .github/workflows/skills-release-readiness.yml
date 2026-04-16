@@ -1,0 +1,52 @@
+name: Skills Release Readiness
+
+on:
+  pull_request:
+    paths:
+      - '.github/skills/**'
+      - '.github/workflows/skills-release-readiness.yml'
+      - '.github/workflows/skills-cli-readiness.yml'
+      - '.github/workflows/skills-supply-chain.yml'
+      - 'scripts/validate-agents.js'
+      - 'scripts/generate-skills-manifest.js'
+      - 'scripts/generate-skills-sbom.js'
+      - 'scripts/sign-skills-manifest.js'
+      - 'scripts/check-skills-artifacts.js'
+      - 'scripts/check-release-consistency.js'
+  workflow_dispatch:
+
+jobs:
+  release-readiness:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Phase 3 validation checks
+        run: node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks
+
+      - name: Generate release artifacts
+        env:
+          GH_SKILLS_SIGNING_KEY: ${{ secrets.GH_SKILLS_SIGNING_KEY }}
+          REQUIRE_SIGNING: ${{ matrix.os == 'ubuntu-latest' && 'true' || 'false' }}
+        run: |
+          node scripts/generate-skills-manifest.js
+          node scripts/generate-skills-sbom.js
+          node scripts/sign-skills-manifest.js
+
+      - name: Verify artifacts exist
+        run: node scripts/check-skills-artifacts.js
+
+      - name: Verify release consistency (advisory)
+        continue-on-error: true
+        run: node scripts/check-release-consistency.js

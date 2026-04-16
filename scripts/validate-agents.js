@@ -19,13 +19,16 @@
  *   - Prompt body length checked (max 30,000 chars for github.com)
  *
  * Usage:
- *   node scripts/validate-agents.js [--fix] [--strict] [--quiet] [--files file1 file2 ...]
+ *   node scripts/validate-agents.js [--fix] [--strict] [--quiet] [--validate-urls] [--validate-wcag] [--skip-url-checks] [--files file1 file2 ...]
  *
  * Options:
  *   --fix      Suggest auto-fixable changes (future: apply them)
  *   --strict   Treat warnings as errors (exit 1 on any warning)
  *   --quiet    Only output errors, suppress warnings and info
  *   --files    Validate only the specified files (for pre-commit hooks)
+ *   --validate-urls   Validate markdown links and URL reachability in skill files
+ *   --validate-wcag   Validate WCAG criteria and version references in skill files
+ *   --skip-url-checks Skip outbound HTTP checks (local link checks still run)
  *
  * Exit codes:
  *   0 - All validations passed
@@ -34,6 +37,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 // ---------------------------------------------------------------------------
 // CLI flags
@@ -42,6 +46,9 @@ const args = process.argv.slice(2);
 const FLAG_FIX = args.includes('--fix');
 const FLAG_STRICT = args.includes('--strict');
 const FLAG_QUIET = args.includes('--quiet');
+const FLAG_VALIDATE_URLS = args.includes('--validate-urls');
+const FLAG_VALIDATE_WCAG = args.includes('--validate-wcag');
+const FLAG_SKIP_URL_CHECKS = args.includes('--skip-url-checks');
 const filesIdx = args.indexOf('--files');
 const SPECIFIC_FILES = filesIdx !== -1 ? args.slice(filesIdx + 1) : null;
 
@@ -165,6 +172,15 @@ const CLAUDE_MCP_PATTERN = /^MCP\(([\w_.-]+)\)$/;
 let errors = [];
 let warnings = [];
 let info = [];
+let checkedSkillFiles = [];
+const remoteUrlCache = new Map();
+
+const WCAG_GUIDELINES = {
+  1: new Set([1, 2, 3, 4]),
+  2: new Set([1, 2, 3, 4, 5]),
+  3: new Set([1, 2, 3]),
+  4: new Set([1]),
+};
 
 // ---------------------------------------------------------------------------
 // YAML frontmatter parser (handles inline arrays, block arrays, key-value pairs,
@@ -246,6 +262,169 @@ function extractBody(content) {
   const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const match = normalized.match(/^---\n[\s\S]*?\n---\n([\s\S]*)$/);
   return match ? match[1] : normalized;
+}
+
+function getLineNumberAtIndex(content, index) {
+  const prior = content.slice(0, index);
+  return prior.split('\n').length;
+}
+
+function parseMarkdownLinks(content) {
+  const links = [];
+  const mdLink = /\[[^\]]+\]\(([^)]+)\)/g;
+  let match;
+  while ((match = mdLink.exec(content)) !== null) {
+    links.push({
+      url: match[1].trim(),
+      index: match.index,
+      source: 'markdown-link',
+    });
+  }
+
+  const bareUrl = /(^|\s)(https?:\/\/[^\s)]+)(?=\s|$)/g;
+  while ((match = bareUrl.exec(content)) !== null) {
+    links.push({
+      url: match[2].trim(),
+      index: match.index,
+      source: 'bare-url',
+    });
+  }
+  return links;
+}
+
+function isHttpUrl(url) {
+  return /^https?:\/\//i.test(url);
+}
+
+function isAnchorOnly(url) {
+  return /^#/.test(url);
+}
+
+function isMailto(url) {
+  return /^mailto:/i.test(url);
+}
+
+function normalizeLocalUrl(url) {
+  return decodeURIComponent(url.split('#')[0]);
+}
+
+async function checkRemoteUrl(url) {
+  if (remoteUrlCache.has(url)) {
+    return remoteUrlCache.get(url);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  try {
+    let response = await fetch(url, {
+      method: 'HEAD',
+      redirect: 'follow',
+      signal: controller.signal,
+    });
+
+    // Some endpoints reject HEAD; retry with GET.
+    if (response.status === 405 || response.status === 501) {
+      response = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: controller.signal,
+      });
+    }
+
+    const result = { ok: response.status < 400, status: response.status };
+    remoteUrlCache.set(url, result);
+    return result;
+  } catch (err) {
+    const result = { ok: false, error: err.message || 'network error' };
+    remoteUrlCache.set(url, result);
+    return result;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function validateSkillUrls(filePath, content, relativePath) {
+  const links = parseMarkdownLinks(content);
+  const uniqueLinks = [];
+  const seen = new Set();
+  for (const link of links) {
+    const key = `${link.source}:${link.url}:${link.index}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueLinks.push(link);
+    }
+  }
+
+  for (const link of uniqueLinks) {
+    const line = getLineNumberAtIndex(content, link.index);
+    const url = link.url;
+
+    if (!url || url.length === 0) {
+      warnings.push(`${relativePath}:${line}: Empty markdown link target`);
+      continue;
+    }
+
+    if (isAnchorOnly(url) || isMailto(url)) {
+      continue;
+    }
+
+    if (isHttpUrl(url)) {
+      if (FLAG_SKIP_URL_CHECKS) {
+        info.push(`${relativePath}:${line}: Skipped remote URL check for '${url}' due to --skip-url-checks`);
+        continue;
+      }
+      const result = await checkRemoteUrl(url);
+      if (!result.ok) {
+        if (result.status) {
+          warnings.push(`${relativePath}:${line}: URL returned HTTP ${result.status}: ${url}`);
+        } else {
+          warnings.push(`${relativePath}:${line}: URL check failed (${result.error}): ${url}`);
+        }
+      }
+      continue;
+    }
+
+    // Local relative path check
+    const localTarget = normalizeLocalUrl(url);
+    if (!localTarget || localTarget.length === 0) {
+      continue;
+    }
+    const resolved = path.resolve(path.dirname(filePath), localTarget);
+    if (!fs.existsSync(resolved)) {
+      warnings.push(`${relativePath}:${line}: Local link target not found: ${url}`);
+    }
+  }
+}
+
+function validateWcagReferences(content, relativePath) {
+  // Validate SC pattern like 2.4.3
+  const scPattern = /\b([1-4])\.(\d{1,2})\.(\d{1,2})\b/g;
+  let match;
+  while ((match = scPattern.exec(content)) !== null) {
+    const principle = Number(match[1]);
+    const guideline = Number(match[2]);
+    const criterion = Number(match[3]);
+    const line = getLineNumberAtIndex(content, match.index);
+
+    if (!WCAG_GUIDELINES[principle] || !WCAG_GUIDELINES[principle].has(guideline)) {
+      warnings.push(`${relativePath}:${line}: Possible invalid WCAG guideline reference '${match[0]}'`);
+      continue;
+    }
+
+    if (criterion < 1 || criterion > 20) {
+      warnings.push(`${relativePath}:${line}: Possible invalid WCAG criterion number '${match[0]}'`);
+    }
+  }
+
+  // Validate WCAG version references
+  const versionPattern = /WCAG\s+(\d\.\d)/gi;
+  while ((match = versionPattern.exec(content)) !== null) {
+    const version = match[1];
+    const line = getLineNumberAtIndex(content, match.index);
+    if (!new Set(['2.0', '2.1', '2.2', '3.0']).has(version)) {
+      warnings.push(`${relativePath}:${line}: Unrecognized WCAG version reference 'WCAG ${version}'`);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -479,6 +658,12 @@ function validateSkill(filePath) {
   if (!frontmatter.gh || !frontmatter.gh.repository) {
     info.push(`${relativePath}: [FUTURE] Will require gh.repository field for publishing; will be auto-populated by 'gh skill install'`);
   }
+
+  checkedSkillFiles.push({
+    filePath,
+    relativePath,
+    content,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -521,11 +706,27 @@ function validateClaudeAgent(filePath) {
 // ---------------------------------------------------------------------------
 // Main validation orchestrator
 // ---------------------------------------------------------------------------
-function validateAll() {
+async function runPhase3Checks() {
+  if (FLAG_VALIDATE_WCAG) {
+    for (const skill of checkedSkillFiles) {
+      validateWcagReferences(skill.content, skill.relativePath);
+    }
+  }
+
+  if (FLAG_VALIDATE_URLS) {
+    for (const skill of checkedSkillFiles) {
+      await validateSkillUrls(skill.filePath, skill.content, skill.relativePath);
+    }
+  }
+}
+
+async function validateAll() {
   if (!FLAG_QUIET) {
     console.log('Validating agent and skill files...');
     console.log('Sources: GitHub custom-agents configuration reference, VS Code docs, VS Code cheat sheet\n');
   }
+
+  await runPhase3Checks();
 
   // If specific files requested (pre-commit mode), only validate those
   if (SPECIFIC_FILES && SPECIFIC_FILES.length > 0) {
@@ -635,5 +836,9 @@ function validateAll() {
 }
 
 // Run validation
-const exitCode = validateAll();
-process.exit(exitCode);
+validateAll()
+  .then((exitCode) => process.exit(exitCode))
+  .catch((err) => {
+    console.error(`Validation failed unexpectedly: ${err.message}`);
+    process.exit(1);
+  });

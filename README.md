@@ -162,6 +162,15 @@ Attribution policy:
 
 ## Optional Customization
 
+## GitHub Skills Rollout Guides
+
+For the GitHub Skills specification rollout and release-readiness workflows, see:
+
+- docs/guides/GITHUB-SKILLS-CLI-READINESS.md
+- docs/guides/SKILLS-RELEASE-READINESS-TEST-PLAN.md
+- .github/workflows/skills-cli-readiness.yml
+- .github/workflows/skills-release-readiness.yml
+
 ### VS Code 1.113 Workflow Tips
 
 If you are using Accessibility Agents in VS Code 1.113, these settings and commands are the most useful starting point:

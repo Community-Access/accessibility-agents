@@ -1,0 +1,57 @@
+name: Skills Supply Chain
+
+on:
+  push:
+    branches: [main, feature/5.0-github-skills-spec]
+    paths:
+      - '.github/skills/**'
+      - 'scripts/generate-skills-manifest.js'
+      - 'scripts/generate-skills-sbom.js'
+      - 'scripts/sign-skills-manifest.js'
+      - '.github/workflows/skills-supply-chain.yml'
+  pull_request:
+    paths:
+      - '.github/skills/**'
+      - 'scripts/generate-skills-manifest.js'
+      - 'scripts/generate-skills-sbom.js'
+      - 'scripts/sign-skills-manifest.js'
+      - '.github/workflows/skills-supply-chain.yml'
+  workflow_dispatch:
+
+jobs:
+  build-supply-chain-artifacts:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Generate skills manifest
+        run: node scripts/generate-skills-manifest.js
+
+      - name: Generate skills SBOM
+        run: node scripts/generate-skills-sbom.js
+
+      - name: Sign manifest (best effort on PRs)
+        env:
+          GH_SKILLS_SIGNING_KEY: ${{ secrets.GH_SKILLS_SIGNING_KEY }}
+          REQUIRE_SIGNING: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
+        run: node scripts/sign-skills-manifest.js
+
+      - name: Upload supply chain artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: skills-supply-chain-artifacts
+          path: |
+            artifacts/skills-manifest.json
+            artifacts/skills-manifest.sig.json
+            artifacts/skills-sbom.cdx.json
+          if-no-files-found: error

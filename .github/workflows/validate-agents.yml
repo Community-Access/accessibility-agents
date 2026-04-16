@@ -31,4 +31,4 @@ jobs:
           node-version: "20"
 
       - name: Validate agent and skill files
-        run: node scripts/validate-agents.js --strict
+        run: node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks

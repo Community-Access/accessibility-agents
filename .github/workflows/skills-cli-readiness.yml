@@ -1,0 +1,51 @@
+name: Skills CLI Readiness
+
+on:
+  pull_request:
+    paths:
+      - '.github/skills/**'
+      - 'scripts/validate-agents.js'
+      - 'scripts/generate-skills-manifest.js'
+      - 'scripts/generate-skills-sbom.js'
+      - 'scripts/sign-skills-manifest.js'
+      - 'scripts/check-skills-artifacts.js'
+      - '.github/workflows/skills-cli-readiness.yml'
+  workflow_dispatch:
+
+jobs:
+  cli-readiness:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Validate agents and skills (Phase 3 checks)
+        run: node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks
+
+      - name: Generate manifest, SBOM, and signature payload
+        env:
+          GH_SKILLS_SIGNING_KEY: ${{ secrets.GH_SKILLS_SIGNING_KEY }}
+          REQUIRE_SIGNING: 'false'
+        run: |
+          node scripts/generate-skills-manifest.js
+          node scripts/generate-skills-sbom.js
+          node scripts/sign-skills-manifest.js
+
+      - name: Verify generated artifacts
+        run: node scripts/check-skills-artifacts.js
+
+      - name: Upload CLI readiness artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: skills-cli-readiness
+          path: |
+            artifacts/skills-manifest.json
+            artifacts/skills-manifest.sig.json
+            artifacts/skills-sbom.cdx.json
+          if-no-files-found: error
