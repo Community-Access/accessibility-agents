@@ -1,6 +1,6 @@
 ---
 name: playwright-testing
-description: Browser-based accessibility testing patterns using Playwright and @axe-core/playwright. Covers MCP tool usage, keyboard scan patterns, viewport testing, contrast verification, and accessibility tree snapshots. Use when implementing or reviewing Playwright-based accessibility tests.
+description: Browser accessibility testing using Playwright and @axe-core/playwright. Keyboard scans, contrast verification, and accessibility tree snapshots.
 ---
 
 # Playwright Accessibility Testing

@@ -1,6 +1,6 @@
 ---
 name: legal-compliance-mapping
-description: Cross-jurisdictional accessibility law reference. Maps Section 508, ADA, EN 301 549, European Accessibility Act, AODA, and other frameworks to WCAG versions, additional requirements, applicable sectors, and enforcement mechanisms.
+description: Map accessibility audit results to legal frameworks: Section 508, ADA, EN 301 549, EAA, AODA. Generate VPAT 2.5 conformance tables.
 ---
 
 # Legal Compliance Mapping Skill

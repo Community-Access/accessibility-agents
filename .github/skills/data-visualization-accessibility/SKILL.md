@@ -1,6 +1,6 @@
 ---
 name: data-visualization-accessibility
-description: Accessible chart and data visualization patterns. Chart library accessibility APIs (D3, Chart.js, Highcharts, Recharts), SVG ARIA roles, data table fallbacks, keyboard interaction models, and color-safe palettes.
+description: Audit charts and graphs for accessibility: SVG ARIA, data table alternatives, keyboard interaction, color-safe palettes, and library APIs.
 ---
 
 # Data Visualization Accessibility Skill

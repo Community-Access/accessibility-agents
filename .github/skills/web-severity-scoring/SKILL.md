@@ -1,6 +1,6 @@
 ---
 name: web-severity-scoring
-description: Severity scoring, scorecard computation, confidence levels, and remediation tracking for web accessibility audits. Use when computing page accessibility scores (0-100 with A-F grades), tracking remediation progress across audits, or generating cross-page comparison scorecards.
+description: Compute web accessibility scores (0-100, A-F grades) with severity scoring, confidence levels, and remediation tracking across audits.
 ---
 
 # Web Severity Scoring

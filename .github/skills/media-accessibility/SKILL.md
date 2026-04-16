@@ -1,6 +1,6 @@
 ---
 name: media-accessibility
-description: Video, audio, and streaming media accessibility reference. WebVTT/SRT/TTML caption formats, audio description patterns, accessible media player ARIA, WCAG 1.2.x criteria mapping, caption quality guidelines, and live captioning integration.
+description: Video/audio accessibility: WebVTT/SRT/TTML captions, audio descriptions, accessible media player ARIA, and WCAG 1.2.x compliance.
 ---
 
 # Media Accessibility Skill

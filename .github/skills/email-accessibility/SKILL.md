@@ -1,6 +1,6 @@
 ---
 name: email-accessibility
-description: HTML email accessibility reference. Email client rendering constraints, table-based layout patterns, accessible inline styles, MJML/Foundation/Maizzle framework patterns, dark mode adaptation, and image blocking fallbacks.
+description: HTML email accessibility: table layouts, inline styles, dark mode, image fallbacks, and email client rendering constraints.
 ---
 
 # Email Accessibility Skill

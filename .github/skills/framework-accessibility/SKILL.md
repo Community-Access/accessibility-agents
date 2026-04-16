@@ -1,6 +1,6 @@
 ---
 name: framework-accessibility
-description: Framework-specific accessibility patterns, common pitfalls, and code fix templates for React, Next.js, Vue, Angular, Svelte, and Tailwind CSS. Use when generating framework-aware accessibility fixes or checking framework-specific anti-patterns.
+description: Framework-specific accessibility patterns and fix templates for React, Vue, Angular, Svelte, Next.js, and Tailwind CSS.
 ---
 
 # Framework-Specific Accessibility Patterns

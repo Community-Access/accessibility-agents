@@ -1,6 +1,6 @@
 ---
 name: github-workflow-standards
-description: Core standards for all GitHub workflow agents. Covers authentication, smart defaults, repository discovery, dual MD+HTML output, screen-reader-compliant HTML accessibility standards, safety rules, progress announcements, parallel execution, and output quality. Apply when building any GitHub workflow agent - issues, PRs, briefings, analytics, community reports, team management.
+description: Core standards for GitHub workflow agents: authentication, repository discovery, dual MD+HTML output, accessibility compliance, safety rules, and parallel execution patterns.
 ---
 
 # GitHub Workflow Standards

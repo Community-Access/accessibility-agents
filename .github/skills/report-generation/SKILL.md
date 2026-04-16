@@ -1,6 +1,6 @@
 ---
 name: report-generation
-description: Audit report formatting, severity scoring, scorecard computation, and compliance export for document accessibility audits. Use when generating DOCUMENT-ACCESSIBILITY-AUDIT.md reports, computing document severity scores (0-100 with A-F grades), creating VPAT/ACR compliance exports, or formatting remediation priorities.
+description: Format accessibility audit reports with severity scoring (0-100, A-F grades), scorecard computation, and compliance exports including VPAT/ACR and remediation priorities.
 ---
 
 # Report Generation

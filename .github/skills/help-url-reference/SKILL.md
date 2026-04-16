@@ -1,6 +1,6 @@
 ---
 name: help-url-reference
-description: Centralized help URL reference for accessibility remediation. Maps axe-core rule IDs to Accessibility Insights info-examples pages, document rule IDs to Microsoft Office and Adobe PDF help pages, and WCAG criteria to W3C Understanding documents. Use when generating CSV exports, markdown reports, or any output that links findings to external remediation documentation.
+description: Map accessibility findings to help resources: axe-core to Accessibility Insights, document rules to Microsoft Office/Adobe, WCAG criteria to W3C Understanding documents.
 ---
 
 # Help URL Reference

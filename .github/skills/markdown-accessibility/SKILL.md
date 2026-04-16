@@ -1,6 +1,6 @@
 ---
 name: markdown-accessibility
-description: Markdown accessibility rule library covering ambiguous links, anchor validation, emoji handling (remove or translate to English), Mermaid and ASCII diagram replacement templates, heading structure, table descriptions, and severity scoring. Use when auditing or fixing markdown documentation for accessibility.
+description: Audit and fix markdown for accessibility. Covers ambiguous links, anchors, emoji (remove/translate), Mermaid/ASCII templates, heading hierarchy, table descriptions, and severity scoring.
 ---
 
 # Markdown Accessibility Skill

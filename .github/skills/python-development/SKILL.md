@@ -1,6 +1,6 @@
 ---
 name: python-development
-description: "Python and wxPython development reference patterns, common pitfalls, framework-specific guides, desktop accessibility APIs, and cross-platform considerations. Use when building, debugging, packaging, or reviewing Python desktop applications."
+description: Python and wxPython development: packaging (PyInstaller/Nuitka), testing, desktop accessibility APIs, cross-platform paths, and framework patterns.
 ---
 
 # Python Development Skill

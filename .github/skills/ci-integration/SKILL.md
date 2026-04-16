@@ -1,6 +1,6 @@
 ---
 name: ci-integration
-description: CI/CD accessibility pipeline patterns, axe-core CLI configuration, SARIF output, PR annotations, baseline management, and multi-platform CI templates. Use when setting up or troubleshooting automated accessibility scanning in CI pipelines.
+description: CI/CD accessibility pipeline patterns with axe-core CLI, SARIF output, PR annotations, baseline management, and multi-platform CI templates.
 ---
 
 # Skill: CI Integration

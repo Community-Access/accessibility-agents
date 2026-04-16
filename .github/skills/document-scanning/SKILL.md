@@ -1,6 +1,6 @@
 ---
 name: document-scanning
-description: Document discovery, inventory building, and metadata extraction for accessibility audits. Use when scanning folders for Office documents (.docx, .xlsx, .pptx) and PDFs, building file inventories, detecting changes via git diff, or extracting document properties like title, author, and language.
+description: Discover and inventory documents for accessibility audits. Scans folders for .docx, .xlsx, .pptx, and PDFs. Detects git changes and extracts title, author, and language metadata.
 ---
 
 # Document Scanning
