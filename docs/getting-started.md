@@ -16,8 +16,6 @@ Key sources:
 
 When a setting or feature changes upstream, this guide should be updated with the corresponding source link.
 
-For a detailed explanation of where every file is placed on disk and why, see [Deployment Layout and File Placement](deployment-layout.md). For a mapping of tool names across platforms (PascalCase versus camelCase), see [Cross-Platform Tool Mapping](cross-platform-tool-mapping.md).
-
 ---
 
 ## Claude Code Setup
@@ -85,8 +83,6 @@ irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main
 ```
 
 The installer downloads the repo, copies agents, installs the three enforcement hooks to `~/.claude/hooks/`, registers them in `~/.claude/settings.json`, and optionally sets up daily auto-updates and GitHub Copilot agents. It will prompt you to choose project-level or global install.
-
-The installer also configures VS Code's `chat.agentFilesLocations` setting to prevent duplicate agents in the Copilot Chat picker. See the [Deployment Layout -- VS Code Settings Changes](deployment-layout.md#vs-code-settings-changes) section for full details on what is modified and why.
 
 **Non-interactive one-liners:**
 

@@ -1,0 +1,169 @@
+name: Repair Script Smoke Test
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/repair-install.ps1'
+      - 'scripts/repair-install.sh'
+      - 'scripts/Installer.Common.ps1'
+      - 'scripts/installer-common.sh'
+      - '.github/workflows/repair-smoke-test.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/repair-install.ps1'
+      - 'scripts/repair-install.sh'
+      - 'scripts/Installer.Common.ps1'
+      - 'scripts/installer-common.sh'
+      - '.github/workflows/repair-smoke-test.yml'
+  workflow_dispatch:
+
+jobs:
+  powershell-repair-smoke:
+    name: PowerShell repair script smoke test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write minimal install summary fixture
+        shell: powershell
+        run: |
+          $fixture = @{
+            schemaVersion    = '1.0'
+            operation        = 'install'
+            scope            = 'project'
+            targetDir        = $env:RUNNER_TEMP
+            installed        = $true
+            destinations     = @{
+              claude    = @{ agentsDir = Join-Path $env:RUNNER_TEMP '.claude\agents' }
+              copilot   = @{}
+              copilotCli = @{}
+              codex     = @{}
+              gemini    = @{}
+              mcp       = @{ serverDir = Join-Path $env:RUNNER_TEMP 'mcp-server' }
+            }
+            notes            = @()
+            issues           = @()
+            issueCount       = 0
+            lastRepairRun    = $null
+            version          = '4.6.0'
+            elapsedSeconds   = 0
+          } | ConvertTo-Json -Depth 10
+
+          $fixturePath = Join-Path $env:RUNNER_TEMP 'smoke-test-summary.json'
+          Set-Content -Path $fixturePath -Value $fixture -Encoding utf8
+          Write-Host "Written fixture to: $fixturePath"
+
+          # Create the stub destination directories so validate does not flag them as missing
+          $claudeDir = Join-Path $env:RUNNER_TEMP '.claude\agents'
+          $mcpDir    = Join-Path $env:RUNNER_TEMP 'mcp-server'
+          New-Item -ItemType Directory -Path $claudeDir -Force | Out-Null
+          New-Item -ItemType Directory -Path $mcpDir    -Force | Out-Null
+
+      - name: Run repair script in validate-only mode
+        shell: powershell
+        run: |
+          $fixturePath = Join-Path $env:RUNNER_TEMP 'smoke-test-summary.json'
+          $result = & pwsh -NoProfile -ExecutionPolicy Bypass -File scripts\repair-install.ps1 `
+            -SummaryPath $fixturePath
+          $exitCode = $LASTEXITCODE
+          Write-Host "Repair script exited with code: $exitCode"
+          if ($exitCode -ne 0) { throw "Repair script (validate-only) exited with non-zero code $exitCode" }
+
+      - name: Run repair script with -Repair flag
+        shell: powershell
+        run: |
+          $fixturePath = Join-Path $env:RUNNER_TEMP 'smoke-test-summary.json'
+          & pwsh -NoProfile -ExecutionPolicy Bypass -File scripts\repair-install.ps1 `
+            -SummaryPath $fixturePath `
+            -Repair
+          $exitCode = $LASTEXITCODE
+          Write-Host "Repair script (-Repair) exited with code: $exitCode"
+          if ($exitCode -ne 0) { throw "Repair script (-Repair) exited with non-zero code $exitCode" }
+
+      - name: Confirm repair summary was written
+        shell: powershell
+        run: |
+          $repairPath = Join-Path $env:RUNNER_TEMP 'smoke-test-repair-summary.json'
+          if (-not (Test-Path $repairPath)) { throw "Repair summary file was not written: $repairPath" }
+          $repairData = Get-Content $repairPath -Raw | ConvertFrom-Json
+          Write-Host "Repair summary operation: $($repairData.operation)"
+          if ($repairData.operation -ne 'repair') { throw "Expected repair summary operation='repair', got '$($repairData.operation)'" }
+          Write-Host "Smoke test passed."
+
+  shell-repair-smoke:
+    name: Shell repair script smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Write minimal install summary fixture
+        run: |
+          FIXTURE_DIR="$RUNNER_TEMP"
+          CLAUDE_DIR="$FIXTURE_DIR/.claude/agents"
+          MCP_DIR="$FIXTURE_DIR/mcp-server"
+          mkdir -p "$CLAUDE_DIR" "$MCP_DIR"
+
+          python3 - <<'PYEOF'
+import json, os
+
+fixture_dir = os.environ['RUNNER_TEMP']
+fixture = {
+    "schemaVersion": "1.0",
+    "operation": "install",
+    "scope": "project",
+    "targetDir": fixture_dir,
+    "installed": True,
+    "destinations": {
+        "claude":     {"agentsDir": os.path.join(fixture_dir, ".claude", "agents")},
+        "copilot":    {},
+        "copilotCli": {},
+        "codex":      {},
+        "gemini":     {},
+        "mcp":        {"serverDir": os.path.join(fixture_dir, "mcp-server")}
+    },
+    "notes": [],
+    "issues": [],
+    "issueCount": 0,
+    "lastRepairRun": None,
+    "version": "4.6.0",
+    "elapsedSeconds": 0
+}
+
+out = os.path.join(fixture_dir, "smoke-test-summary.json")
+with open(out, "w") as f:
+    json.dump(fixture, f, indent=2)
+print(f"Written fixture to: {out}")
+PYEOF
+
+      - name: Run repair script in validate-only mode
+        run: |
+          FIXTURE="$RUNNER_TEMP/smoke-test-summary.json"
+          bash scripts/repair-install.sh --summary="$FIXTURE" --validate-only
+          echo "Repair script (validate-only) exit code: $?"
+
+      - name: Run repair script with repair enabled
+        run: |
+          FIXTURE="$RUNNER_TEMP/smoke-test-summary.json"
+          bash scripts/repair-install.sh --summary="$FIXTURE"
+          echo "Repair script (repair) exit code: $?"
+
+      - name: Confirm repair summary was written
+        run: |
+          REPAIR_PATH="$RUNNER_TEMP/smoke-test-repair-summary.json"
+          if [ ! -f "$REPAIR_PATH" ]; then
+            echo "ERROR: Repair summary file was not written: $REPAIR_PATH"
+            exit 1
+          fi
+          OPERATION=$(python3 -c "import json,sys; d=json.load(open('$REPAIR_PATH')); print(d.get('operation',''))")
+          if [ "$OPERATION" != "repair" ]; then
+            echo "ERROR: Expected operation='repair', got '$OPERATION'"
+            exit 1
+          fi
+          echo "Smoke test passed."

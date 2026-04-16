@@ -37,7 +37,7 @@ All agents run on:
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
 - **Codex CLI** - Stable `.codex/AGENTS.md` baseline plus optional experimental TOML-based roles for focused accessibility passes
-- **MCP Server** - HTTP-based server providing 37 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
+- **MCP Server** - HTTP-based server providing 24 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
 
 ## System Requirements
 
@@ -288,6 +288,42 @@ The installer is designed to be additive and non-destructive:
 **Updates are equally safe** - the update script never deletes agent files. If a file is not in the manifest (meaning you created it yourself), it will not be modified or removed.
 
 To reinstall a specific agent from scratch, delete it first and rerun the installer (or update script).
+
+## Post-Install Validation
+
+After installation, both installers automatically run a validation and self-repair pass. This step verifies that all installed surfaces are intact, MCP base dependencies are present, and Playwright is functional if installed. It runs by default and can be skipped with `--skip-post-install-repair` (shell) or `-SkipPostInstallRepair` (PowerShell).
+
+You can also run it manually at any time:
+
+**PowerShell (Windows) — validate only:**
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/repair-install.ps1 -SummaryPath .a11y-agent-team-install-summary.json
+```
+
+**PowerShell (Windows) — validate and auto-repair:**
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/repair-install.ps1 -SummaryPath .a11y-agent-team-install-summary.json -Repair
+```
+
+**Shell (macOS / Linux / Git Bash) — validate only:**
+```bash
+bash scripts/repair-install.sh --summary=.a11y-agent-team-install-summary.json --validate-only
+```
+
+**Shell (macOS / Linux / Git Bash) — validate and auto-repair:**
+```bash
+bash scripts/repair-install.sh --summary=.a11y-agent-team-install-summary.json
+```
+
+VS Code users can run these via the **Terminal > Run Task** menu: look for the `Repair:` task group.
+
+The repair pass checks and fixes:
+- **Destination paths** — every installed surface (Claude, Copilot, Codex, Gemini, MCP) exists on disk
+- **MCP base dependencies** — `@modelcontextprotocol/sdk` and `zod` are present; runs `npm install --omit=dev` if missing
+- **Playwright** — `playwright-core` is installed; Chromium is functional; re-runs setup if broken
+- **Copilot profile root cleanup** — removes stray agent/prompt/instruction files placed directly in VS Code profile roots instead of the expected subdirectories
+
+Findings are appended to the install summary JSON and a separate `.a11y-agent-team-repair-summary.json` is written next to it. See [Troubleshooting](docs/troubleshooting.md) for symptom-specific guidance.
 
 ## Install from VS Code Marketplace (Coming Soon)
 

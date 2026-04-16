@@ -2,6 +2,79 @@
 
 ## MCP Troubleshooting
 
+### Symptom: Playwright install fails even though npm install succeeded
+
+You may see errors similar to these:
+
+- Cannot find module `playwright-core/lib/cli/program`
+- Cannot find package `playwright-core` imported from `node_modules/playwright/index.mjs`
+
+This usually means npm finished with a partial dependency graph where `playwright` exists but `playwright-core` is missing.
+
+#### What the installer now does
+
+The installer now checks for `playwright-core` after installing Playwright browser tooling.
+If `playwright-core` is missing, it attempts an automatic repair by installing `playwright-core` (matching the detected Playwright version when possible), then retries Chromium installation.
+
+If setup still fails, the installer now prints the relevant npm and Playwright error output tail instead of a generic failure message.
+
+#### Manual recovery
+
+From the MCP server folder:
+
+```bash
+cd mcp-server
+npm install playwright @axe-core/playwright
+npm install playwright-core
+npx playwright install chromium
+```
+
+Then verify Chromium resolution:
+
+```bash
+node -e "import('playwright').then(async ({ chromium }) => { const fs = await import('node:fs'); const exe = chromium.executablePath(); console.log(exe); console.log(fs.existsSync(exe)); }).catch((e) => { console.error(e.message); process.exit(1); })"
+```
+
+Expected output ends with `true` on the second line.
+
+### Run Full Post-Install Validation and Repair
+
+Use the repair scripts to run an extensive validation pass across everything the installer configured, then automatically repair common issues.
+
+Windows PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/repair-install.ps1
+```
+
+Shell (macOS/Linux/Git Bash):
+
+```bash
+bash scripts/repair-install.sh
+```
+
+What these scripts validate and repair:
+
+- Destination paths recorded by the install summary JSON
+- MCP base dependencies (`@modelcontextprotocol/sdk`, `zod`)
+- Playwright dependency integrity (`playwright` + `playwright-core`)
+- Playwright Chromium availability and executable resolution
+- Stale duplicate Copilot assets in VS Code profile roots
+
+Outputs:
+
+- Updates install summary JSON and appends structured findings to `issues`
+- Updates `issueCount` and `lastRepairRun` metadata
+- Writes a standalone repair report:
+  - Project scope: `.a11y-agent-team-repair-summary.json`
+  - Global scope: `~/.a11y-agent-team-repair-summary.json`
+
+Recommended cadence:
+
+- Run once after install or update
+- Run in CI or scheduled maintenance for managed environments
+- Run after any npm cache reset, Node runtime change, or profile migration
+
 ### Symptom: "MCP connection refused" or Agent can't reach MCP tools
 
 #### Step 1: Verify MCP Server is Running
@@ -391,25 +464,6 @@ node scripts/validate-agents.js 2>&1 | grep "ERROR"
 | `Agents list incomplete` | Coordinator must list *all* agents it calls |
 
 ## Configuration Troubleshooting
-
-### Symptom: Duplicate Agents in Copilot Chat Picker
-
-If every agent appears twice in the Copilot Chat picker (for example, two copies of "Accessibility Lead", two copies of "ARIA Specialist"), VS Code is discovering agents from both `.github/agents/` and `.claude/agents/`. The Claude-format agents are not functional in VS Code.
-
-**Fix:** Add or correct the `chat.agentFilesLocations` setting in your VS Code `settings.json`:
-
-```json
-{
-  "chat.agentFilesLocations": {
-    ".github/agents": true,
-    ".claude/agents": false
-  }
-}
-```
-
-The installer and updater set this automatically. If it is missing, run the updater (`update.ps1` or `update.sh`) to repair it.
-
-See [Deployment Layout -- VS Code Settings Changes](deployment-layout.md#vs-code-settings-changes) for the full explanation of this setting.
 
 ### Symptom: Agent Settings Not Taking Effect
 

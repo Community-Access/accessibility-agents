@@ -464,7 +464,20 @@ function validateSkill(filePath) {
 
   const folderName = path.basename(path.dirname(filePath));
   if (frontmatter.name && frontmatter.name !== folderName) {
-    warnings.push(`${relativePath}: Skill name '${frontmatter.name}' doesn't match folder name '${folderName}'`);
+    errors.push(`${relativePath}: Skill name '${frontmatter.name}' must match folder name '${folderName}' per agentskills.io spec`);
+  }
+
+  // agentskills.io spec compliance checks
+  if (frontmatter.description) {
+    const descLength = frontmatter.description.length;
+    if (descLength > 200) {
+      warnings.push(`${relativePath}: Description is ${descLength} chars; agentskills.io spec recommends <200 chars`);
+    }
+  }
+
+  // Optional: warn if missing provenance metadata (will be added by gh skill install)
+  if (!frontmatter.gh || !frontmatter.gh.repository) {
+    info.push(`${relativePath}: [FUTURE] Will require gh.repository field for publishing; will be auto-populated by 'gh skill install'`);
   }
 }
 

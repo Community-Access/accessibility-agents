@@ -20,6 +20,7 @@ param(
     [string]$Config,
     [switch]$Yes,
     [switch]$NoAutoUpdate,
+    [switch]$SkipPostInstallRepair,
     [switch]$Check,
     [switch]$DryRun,
     [switch]$VsCodeStable,
@@ -67,6 +68,7 @@ if ($Help) {
     Write-Host "    -Config <path>        Path to team config JSON file"
     Write-Host "    -Yes                  Accept all prompts (non-interactive)"
     Write-Host "    -NoAutoUpdate         Skip auto-update setup"
+    Write-Host "    -SkipPostInstallRepair Skip post-install validation and auto-repair pass"
     Write-Host "    -Check                Check mode (dry run + report)"
     Write-Host "    -DryRun               Preview actions without making changes"
     Write-Host "    -Force                Overwrite existing agent/skill files"
@@ -428,9 +430,50 @@ function Merge-ConfigFile {
 function Write-InstallSummaryFile {
     param(
         [string]$Path,
-        [hashtable]$Data
+        [object]$Data
     )
     Write-A11ySummaryFile -Path $Path -Data $Data
+}
+
+function Add-InstallIssue {
+    param(
+        [object]$Summary,
+        [string]$Code,
+        [string]$Severity,
+        [string]$Component,
+        [string]$Message,
+        [bool]$Recovered = $false,
+        [bool]$RequiresRework = $false,
+        [string]$Recommendation = ''
+    )
+
+    if (-not $Summary) {
+        return
+    }
+
+    $IssueRecord = [ordered]@{
+        timestampUtc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+        code = $Code
+        severity = $Severity
+        component = $Component
+        message = $Message
+        recovered = [bool]$Recovered
+        requiresRework = [bool]$RequiresRework
+        recommendation = $Recommendation
+    }
+
+    if ($Summary -is [hashtable]) {
+        if ($Summary.Contains('issues') -eq $false -or -not $Summary.issues) {
+            $Summary.issues = @()
+        }
+        $Summary.issues += $IssueRecord
+        return
+    }
+
+    if ($Summary.PSObject.Properties.Name -notcontains 'issues' -or -not $Summary.issues) {
+        $Summary | Add-Member -NotePropertyName 'issues' -NotePropertyValue @() -Force
+    }
+    $Summary.issues = @($Summary.issues) + $IssueRecord
 }
 
 function Configure-VSCodeMcpSettings {
@@ -579,6 +622,7 @@ $InstallSummary = [ordered]@{
     selectedMcpProfiles = @($SelectedMcpProfiles | ForEach-Object { $_.Path })
     backupMetadataPath = $BackupMetadataPath
     notes = @()
+    issues = @()
 }
 
 if ($Check) {
@@ -914,6 +958,12 @@ function Test-NodeModuleAvailable {
 
     $ModulePkgPath = Join-Path $WorkingDir "node_modules" $ModuleName "package.json"
     return (Test-Path $ModulePkgPath)
+}
+
+function Test-PlaywrightCoreReady {
+    param([string]$WorkingDir)
+
+    return (Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'playwright-core')
 }
 
 function Test-PlaywrightChromiumReady {
@@ -1789,18 +1839,63 @@ if (Test-Path $McpServerSrc) {
                 Write-Host "  Setting up Playwright browser tooling..."
                 try {
                     Push-Location $McpDest
-                    npm install playwright @axe-core/playwright 2>&1 | Out-Null
-                    if ($LASTEXITCODE -ne 0) { throw "npm install playwright failed with exit code $LASTEXITCODE" }
-                    npx playwright install chromium 2>&1 | Out-Null
-                    if ($LASTEXITCODE -ne 0) { throw "npx playwright install chromium failed with exit code $LASTEXITCODE" }
+                    $PlaywrightInstallOutput = npm install playwright @axe-core/playwright 2>&1
+                    if ($LASTEXITCODE -ne 0) {
+                        $Tail = ($PlaywrightInstallOutput | Select-Object -Last 20) -join [Environment]::NewLine
+                        throw "npm install playwright failed with exit code $LASTEXITCODE.$([Environment]::NewLine)$Tail"
+                    }
+
+                    if (-not (Test-PlaywrightCoreReady -WorkingDir $McpDest)) {
+                        Write-Host "    ! Detected incomplete Playwright install (playwright-core missing); attempting repair..."
+                        Add-InstallIssue -Summary $InstallSummary -Code 'playwright.missingCoreDetected' -Severity 'warning' -Component 'mcp-browser-tools' -Message 'Detected incomplete Playwright dependency graph: playwright-core missing after install playwright.' -Recommendation 'Installer attempted automatic repair by installing playwright-core.'
+                        $PlaywrightVersion = ""
+                        try {
+                            $PlaywrightVersion = (& node -e "try { const pkg = require('./node_modules/playwright/package.json'); process.stdout.write(pkg.version || ''); } catch { process.stdout.write(''); }").Trim()
+                        }
+                        catch {
+                            $PlaywrightVersion = ""
+                        }
+
+                        if ($PlaywrightVersion) {
+                            $RepairOutput = npm install "playwright-core@$PlaywrightVersion" 2>&1
+                        }
+                        else {
+                            $RepairOutput = npm install playwright-core 2>&1
+                        }
+
+                        if ($LASTEXITCODE -ne 0) {
+                            $RepairTail = ($RepairOutput | Select-Object -Last 20) -join [Environment]::NewLine
+                            throw "Failed to repair playwright-core with exit code $LASTEXITCODE.$([Environment]::NewLine)$RepairTail"
+                        }
+
+                        if (-not (Test-PlaywrightCoreReady -WorkingDir $McpDest)) {
+                            throw "playwright-core is still missing after repair."
+                        }
+
+                        Add-InstallIssue -Summary $InstallSummary -Code 'playwright.missingCoreRecovered' -Severity 'info' -Component 'mcp-browser-tools' -Message 'Recovered from missing playwright-core by reinstalling playwright-core.' -Recovered $true -RequiresRework $true -Recommendation 'Review npm install reliability on this host if issue repeats.'
+                    }
+
+                    $PlaywrightBrowserOutput = npx playwright install chromium 2>&1
+                    if ($LASTEXITCODE -ne 0) {
+                        $BrowserTail = ($PlaywrightBrowserOutput | Select-Object -Last 20) -join [Environment]::NewLine
+                        throw "npx playwright install chromium failed with exit code $LASTEXITCODE.$([Environment]::NewLine)$BrowserTail"
+                    }
+
+                    if (-not (Test-PlaywrightChromiumReady -WorkingDir $McpDest)) {
+                        throw "Chromium install completed, but Playwright cannot resolve a Chromium executable."
+                    }
+
                     Pop-Location
                     Write-Host "    + Playwright tooling and Chromium installed"
                 }
                 catch {
                     Pop-Location -ErrorAction SilentlyContinue
-                    Write-Host "    ! Playwright setup failed. You can retry later with:"
+                    Add-InstallIssue -Summary $InstallSummary -Code 'playwright.setupFailed' -Severity 'error' -Component 'mcp-browser-tools' -Message $_.Exception.Message -RequiresRework $true -Recommendation 'Re-run browser tooling commands manually and review npm configuration, lockfile integrity, and local cache state.'
+                    Write-Host "    ! Playwright setup failed: $($_.Exception.Message)"
+                    Write-Host "    ! You can retry later with:"
                     Write-Host "      cd \"$McpDest\""
                     Write-Host "      npm install playwright @axe-core/playwright"
+                    Write-Host "      npm install playwright-core"
                     Write-Host "      npx playwright install chromium"
                 }
             }
@@ -2079,6 +2174,29 @@ if (($McpProfileMode -ne 'auto') -and ($SelectedMcpProfiles.Count -eq 0) -and $M
     $InstallSummary.notes += 'The requested MCP profile filter did not match any installed VS Code profile.'
 }
 
+$RunPostInstallRepair = $false
+if (-not $SkipPostInstallRepair) {
+    if ($AutoApprove) {
+        $RunPostInstallRepair = $true
+    }
+    elseif (Test-InteractivePrompting) {
+        $RunPostInstallRepair = Read-YesNo -Prompt 'Run post-install validation and auto-repair now?' -DefaultYes:$true
+    }
+    else {
+        $RunPostInstallRepair = $true
+    }
+}
+
+if ($RunPostInstallRepair) {
+    $InstallSummary.notes += 'Post-install validation/auto-repair was requested.'
+}
+elseif ($SkipPostInstallRepair) {
+    $InstallSummary.notes += 'Post-install validation/auto-repair was skipped via -SkipPostInstallRepair.'
+}
+else {
+    $InstallSummary.notes += 'Post-install validation/auto-repair was skipped by user choice.'
+}
+
 $InstallSummary.installed = [ordered]@{
     claude = $true
     plugin = $false
@@ -2104,7 +2222,43 @@ $InstallSummary.elapsedSeconds = [math]::Round($Stopwatch.Elapsed.TotalSeconds, 
 if ($null -ne $HealthTotal) {
     $InstallSummary.healthCheck = [ordered]@{ total = $HealthTotal; found = $HealthFound; passed = $HealthOk }
 }
+$InstallSummary.issueCount = $InstallSummary.issues.Count
 Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
+
+$RepairReportPath = if ($Choice -eq '1') { Join-Path (Get-Location).Path '.a11y-agent-team-repair-summary.json' } else { Join-Path $env:USERPROFILE '.a11y-agent-team-repair-summary.json' }
+if ($RunPostInstallRepair) {
+    Write-Host ""
+    Write-Host "  Running post-install validation and auto-repair..."
+    $RepairScript = Join-Path $ScriptDir 'scripts\repair-install.ps1'
+    if (Test-Path $RepairScript) {
+        $RepairOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $RepairScript -SummaryPath $SummaryPath -Repair 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "    + Post-install validation/repair completed"
+            Write-Host "    + Repair report: $RepairReportPath"
+        }
+        else {
+            $LatestSummary = $null
+            try {
+                $LatestSummary = Get-Content -Path $SummaryPath -Raw | ConvertFrom-Json -Depth 50
+            }
+            catch {
+                $LatestSummary = $InstallSummary
+            }
+
+            Add-InstallIssue -Summary $LatestSummary -Code 'repair.postInstallFailed' -Severity 'error' -Component 'installer' -Message (($RepairOutput | Select-Object -Last 20) -join [Environment]::NewLine) -RequiresRework $true -Recommendation 'Run scripts\\repair-install.ps1 manually and review repair findings.'
+            $LatestSummary.issueCount = @($LatestSummary.issues).Count
+            Write-InstallSummaryFile -Path $SummaryPath -Data $LatestSummary
+            Write-Host "    ! Post-install validation/repair reported errors"
+            Write-Host "    ! Run manually: powershell -ExecutionPolicy Bypass -File scripts\\repair-install.ps1 -SummaryPath \"$SummaryPath\""
+        }
+    }
+    else {
+        Add-InstallIssue -Summary $InstallSummary -Code 'repair.scriptMissing' -Severity 'warning' -Component 'installer' -Message "Post-install repair script not found: $RepairScript" -Recommendation 'Ensure scripts\\repair-install.ps1 exists, then run it manually.'
+        $InstallSummary.issueCount = $InstallSummary.issues.Count
+        Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
+        Write-Host "    ! Post-install repair script missing: $RepairScript"
+    }
+}
 
 # Clean up temp download
 if ($Downloaded) { Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue }
