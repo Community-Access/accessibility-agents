@@ -1,4 +1,4 @@
-﻿name: Installer Dry Run
+name: Installer Dry Run
 
 on:
   pull_request:
@@ -31,7 +31,7 @@ jobs:
   macos-system-bash-dry-run:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Show system bash version
         run: /bin/bash --version
@@ -73,7 +73,7 @@ jobs:
   powershell-dry-run:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dry run
         shell: powershell
@@ -125,7 +125,7 @@ jobs:
   macos-system-bash-integration:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Show system bash version
         run: /bin/bash --version

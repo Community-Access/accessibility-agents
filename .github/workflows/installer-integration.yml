@@ -1,4 +1,4 @@
-﻿name: Installer Integration
+name: Installer Integration
 
 on:
   pull_request:
@@ -31,7 +31,7 @@ jobs:
   powershell-project-and-global:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Project install, check, update, uninstall
         shell: powershell
