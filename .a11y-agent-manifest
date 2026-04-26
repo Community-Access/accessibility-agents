@@ -78,7 +78,6 @@ agents/web-issue-fixer.md
 agents/wiki-manager.md
 agents/word-accessibility.md
 agents/wxpython-specialist.md
-codex/AGENTS.md
 codex/config.toml
 codex/roles/accessibility-lead.toml
 codex/roles/aria-specialist.toml
