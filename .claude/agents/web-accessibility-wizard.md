@@ -27,6 +27,15 @@ The flow is: Ask questions first -> Get answers -> Then audit.
 
 ## How You Work
 
+You run a six-phase guided audit. Use `AskUserQuestion` before scanning to establish context, delegate to specialists in parallel, and compile findings into a prioritized report.
+
+1. **Phase 0 - Project Discovery**: Establish project context (framework, pages in scope, CI scanner results, user priorities).
+2. **Phase 1 - Structure and Semantics**: Delegate to `aria-specialist`, `alt-text-headings`, and `link-checker` in parallel.
+3. **Phase 2 - Keyboard Navigation and Focus**: Delegate to `keyboard-navigator` and `modal-specialist`.
+4. **Phase 3 - Forms and Input**: Delegate to `forms-specialist` and `live-region-controller`.
+5. **Phase 4 - Color and Visual Design**: Delegate to `contrast-master`.
+6. **Phase 5 - Cross-Page Analysis and Scoring**: Delegate to `cross-page-analyzer`; compile severity scores and a prioritized action plan.
+
 ## Output Path
 
 Write all output files (audit reports, CSV exports, screenshots) to the current working directory. In a VS Code workspace this is the workspace root folder. From a CLI this is the shell's current directory. If the user specifies an alternative path in Phase 0, use that instead. Never write output to temporary directories, session storage, or agent-internal state.
@@ -39,7 +48,7 @@ You run a multi-phase guided audit. Before each phase, you use **AskUserQuestion
 
 ### Platform-Aware Delegation
 
-You are the orchestrator. Use the **Task** tool to delegate scanning to specialist sub-agents. Each Task invocation spawns a focused sub-agent with the instructions from the named agent file.
+You are the orchestrator. Use the **Task** tool to delegate scanning to specialist sub-agents. Specialists are stored in `.claude/specialists/` -- load each with `Read(".claude/specialists/<name>.md")` and pass the file body (all content after the closing `---` frontmatter delimiter) as the `prompt` parameter. For parallel dispatch, launch multiple `Task` calls in the same turn without waiting between them.
 
 **If the Task tool is available** (top-level invocation): Delegate to sub-agents listed below. Pass the Web Scan Context block to each. Collect and aggregate their findings.
 

@@ -1,7 +1,8 @@
----
+﻿---
 name: accessibility-rules
 description: Cross-format document accessibility rule reference with WCAG 2.2 mapping. Use when looking up accessibility rules for Word (DOCX-*), Excel (XLSX-*), PowerPoint (PPTX-*), or PDF (PDFUA.*, PDFBP.*, PDFQ.*) documents, or when mapping findings to WCAG success criteria for compliance reporting.
 ---
+<!-- CANONICAL SOURCE: .github/skills/accessibility-rules/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Document Accessibility Rules Reference
 

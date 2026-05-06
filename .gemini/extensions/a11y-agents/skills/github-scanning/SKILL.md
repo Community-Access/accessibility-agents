@@ -1,7 +1,8 @@
----
+﻿---
 name: github-scanning
 description: GitHub data collection patterns for workflow agents. Covers search query construction by intent, date range handling, repository scope narrowing, preferences.md integration, cross-repo intelligence, parallel stream collection model, and auto-recovery for empty results. Use when building agents that search GitHub for issues, PRs, discussions, releases, security alerts, or CI status.
 ---
+<!-- CANONICAL SOURCE: .github/skills/github-scanning/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # GitHub Scanning
 

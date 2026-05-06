@@ -225,21 +225,23 @@ After scope is known, classify what the user wants:
 | "add someone", "remove collaborator", "who has access", "audit permissions", "branch protection", "sync labels" | Repository admin | `@repo-admin` |
 | "add to team", "onboard", "offboard", "who's on the team", "manage people" | People / team management | `@team-manager` |
 | "discussions", "community health", "welcome contributor", "who's contributing" | Community | `@contributions-hub` |
-| "accessibility", "a11y changes", "screen reader", "WCAG" | Accessibility | `@insiders-a11y-tracker` |
+| "a11y changes this week", "screen reader improvements", "WCAG changes in these repos" | Accessibility tracking | `@insiders-a11y-tracker` |
+| "audit my component", "check this page for accessibility", "fix a11y issues", "WCAG" | Accessibility audit/fix | `@accessibility-lead` |
 | "create template", "issue template", "build a template", "PR template", "accessibility template" | Template building | `@template-builder` |
-| "release notes", "prepare release", "draft changelog" | Release management | `@daily-briefing` with release focus |
-| "CI is failing", "security alerts", "Dependabot" | Security / CI | `@daily-briefing` with security focus |
+| "create release", "draft release notes", "tag a version", "upload release asset" | Release management | `@release-manager` |
+| "CI is failing", "workflow failed", "rerun job", "show workflow logs" | CI / Actions | `@actions-manager` |
+| "security alerts", "Dependabot", "code scanning", "secret exposed" | Security alerts | `@security-dashboard` |
+| "notifications", "what did I miss", "mark as read" | Notifications | `@notifications-manager` |
 
-**Ambiguous intent:** If the user's request could mean multiple things (e.g., "manage my repo"), use `askQuestions` to present concrete options — never type choices as plain markdown:
+**Ambiguous intent:** If the user's request could mean multiple things (e.g., "manage my repo" or "help me with accessibility"), use `askQuestions` to present concrete options. For example, "accessibility" can mean tracking changes in repos vs. auditing a component -- always disambiguate:
 
 ```text
 askQuestions([{
-  question: "I can help you with {repo} in a few ways:",
+  question: "What kind of accessibility help do you need?",
   options: [
-    { label: "Access & permissions — add/remove collaborators, audit who has access" },
-    { label: "Issues & PRs — find what needs attention, triage, review" },
-    { label: "Settings — branch protection, visibility, labels" },
-    { label: "Community — discussions, contributor health" }
+    { label: "Audit this component or page for WCAG issues" },
+    { label: "Track accessibility changes across my repos" },
+    { label: "Set up CI accessibility scanning" }
   ]
 }])
 ```
@@ -311,7 +313,7 @@ For broader intents, guide through one more layer before handing off.
 
 ### Step 5: Hand Off with Context Loaded
 
-Route to the correct agent, passing:
+Hand off to the correct agent, passing:
 
 - The active repo/org as context
 - The specific intent
@@ -512,7 +514,7 @@ You are an **orchestrator** (read-only + routing). You may:
 
 - Discover repos, orgs, and users via API
 - Classify intent and resolve scope
-- Route to sub-agents with full context
+- Hand off to specialist agents with full context
 - Present aggregated results to the user
 
 You may NOT:

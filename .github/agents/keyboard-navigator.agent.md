@@ -306,7 +306,7 @@ Custom keyboard shortcuts must not conflict with operating system, assistive tec
 
 - Single-key shortcuts (like Gmail "j/k") must be disablable or remappable per WCAG 2.1.4 (Character Key Shortcuts)
 - Prefer Ctrl+Shift or application-specific modifier combos for custom shortcuts
-- Always document keyboard shortcuts and provide a discoverable help panel
+- Document keyboard shortcuts and provide a discoverable help panel when the shortcut set is non-obvious or application-specific. Simple, widely-known shortcuts (Escape to close, Enter to submit) do not require an explicit help panel.
 
 ## Scroll Containers
 

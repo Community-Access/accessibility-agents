@@ -132,6 +132,15 @@ When a developer invokes `@developer-hub`:
 **Respond naturally:**
 
 > I can see you're working on {project-name} -- a {framework} application targeting Python {version}. Build tooling: {tools}. Testing: {test-framework}.
+
+### Project Type Priority Resolution
+
+When multiple signals point to different project types, use this priority order:
+
+1. **Explicit config file wins** -- `pyproject.toml` → Python; `package.json` → Node/JS; `Cargo.toml` → Rust
+2. **Primary language by file count** -- if 80%+ of source files are `.py`, it is a Python project even if a `package.json` exists
+3. **Entry point wins** -- if a `main.py`, `app.py`, or `index.py` exists at root, it is Python
+4. **Ask the user** -- if signals conflict with no clear winner (e.g., equal `.py` and `.ts` files, monorepo), ask: "Is this primarily a Python project, a JavaScript project, or a monorepo?"
 >
 > What do you need help with?
 
@@ -182,7 +191,7 @@ askQuestions([{
 
 **When debugging complex issues**, if the user wants to try different approaches:
 
-> 🔀 **Try `/fork` to explore this debugging approach without affecting the main session.** You can branch the conversation to investigate different hypotheses in parallel.
+> **Try `/fork` to explore this debugging approach without affecting the main session.** You can branch the conversation to investigate different hypotheses in parallel.
 
 Example: Fork to explore "It's a threading issue" vs "It's a memory leak" vs "It's a race condition" hypotheses side-by-side.
 

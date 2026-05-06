@@ -2,11 +2,34 @@
 applyTo: "**/*.{html,jsx,tsx,vue,svelte,astro}"
 ---
 
+## Dependencies
+
+- `web-accessibility-baseline.instructions.md` — WCAG AA baseline rules this file extends
+- `semantic-html.instructions.md` — native HTML alternatives to prefer before reaching for ARIA roles
+
 # ARIA Widget Patterns
 
 When generating custom interactive widgets, apply these role-specific ARIA patterns. Each pattern defines the required markup structure, required attributes, and mandatory keyboard behavior. These patterns follow the WAI-ARIA Authoring Practices Guide (APG).
 
+> **Impact:** Using an ARIA role without its required keyboard pattern creates a widget that is completely unusable by keyboard-only users and confusing to screen reader users who expect specific key behaviors based on the announced role.
+
 **Golden rule:** Only use `role="menu"` / `role="tab"` / `role="tree"` / etc. when you also implement the full keyboard interaction pattern for that role. Partial ARIA is worse than no ARIA.
+
+## Required Keyboard Behavior by Role
+
+Every role below requires the listed keys to be fully implemented before using that role. Missing any required key makes the pattern non-conformant.
+
+| Role | Required Keys | Navigation Pattern |
+|------|--------------|--------------------|
+| `tab` / `tablist` | Arrow Left/Right, Home, End; Tab exits into panel | Roving tabindex |
+| `dialog` | Tab/Shift+Tab (trapped inside), Escape | No — use `tabindex="-1"` on container, manage focus explicitly |
+| `combobox` | Down/Up Arrow, Enter (select), Escape (close), Tab (accept + move) | `aria-activedescendant` |
+| `menu` / `menuitem` | Down/Up Arrow, Home, End, Escape, Tab (closes menu) | Roving tabindex |
+| `tree` / `treeitem` | Down/Up Arrow, Right (expand), Left (collapse), Home, End | Roving tabindex |
+| `listbox` / `option` | Down/Up Arrow, Home, End, Enter/Space (select) | Roving tabindex |
+| `grid` / `gridcell` | All four Arrow keys, Home/End, Page Up/Down | Roving tabindex |
+
+> **Roving tabindex:** Only one item in a composite widget has `tabindex="0"` at any time; all others have `tabindex="-1"`. When focus moves via arrow keys, set the new item to `tabindex="0"` and the previous to `tabindex="-1"`. Tab enters and exits the whole widget as one focus stop; arrow keys navigate internally. See [APG Roving tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex).
 
 ---
 
@@ -48,7 +71,11 @@ When generating custom interactive widgets, apply these role-specific ARIA patte
 </dialog>
 ```
 
-Use `dialog.showModal()` when using the native element. For the ARIA pattern (non-native):
+Use `dialog.showModal()` when using the native element — the browser handles focus trapping, Escape key, and backdrop automatically.
+
+> **Note:** The native `<dialog>` element already has an implicit `dialog` role. Do **not** add `role="dialog"` to a `<dialog>` element — it is redundant and may confuse some assistive technology. Only add `role="dialog"` when using a non-native element (e.g., `<div role="dialog">`).
+
+For the ARIA pattern (non-native `<div>`-based dialog):
 
 ```html
 <div role="dialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-desc" tabindex="-1">
@@ -276,3 +303,26 @@ Or as a styled checkbox (semantically equivalent):
 ```
 
 **Note:** The native `<input type="number">` handles `role="spinbutton"`, `aria-valuemin`, `aria-valuemax`, and `aria-valuenow` automatically. The increment/decrement buttons are supplements - keep Tab focus on the input itself.
+
+## Redundant ARIA Attributes
+
+### `aria-required` vs native `required`
+
+In modern assistive technology (JAWS 18+, NVDA 2020.1+, VoiceOver iOS 14+), `aria-required="true"` on a native `<input>`, `<select>`, or `<textarea>` that already has the `required` attribute is **redundant** -- the native attribute is announced by all modern AT.
+
+**Use native `required` only:**
+
+```html
+<!-- Correct -->
+<input type="email" id="email" required>
+
+<!-- Redundant -- aria-required adds nothing for modern AT -->
+<input type="email" id="email" required aria-required="true">
+```
+
+**Exception:** Add `aria-required="true"` alongside `required` only when you must support legacy AT that predates the ARIA 1.1 mapping of `required`. If you do, add a comment:
+
+```html
+<!-- aria-required retained for JAWS 2019 and NVDA 2019 compatibility -->
+<input type="email" id="email" required aria-required="true">
+```

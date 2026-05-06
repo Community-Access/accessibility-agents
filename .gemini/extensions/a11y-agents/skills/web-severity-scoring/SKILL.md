@@ -1,7 +1,8 @@
----
+﻿---
 name: web-severity-scoring
 description: Severity scoring, scorecard computation, confidence levels, and remediation tracking for web accessibility audits. Use when computing page accessibility scores (0-100 with A-F grades), tracking remediation progress across audits, or generating cross-page comparison scorecards.
 ---
+<!-- CANONICAL SOURCE: .github/skills/web-severity-scoring/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Web Severity Scoring
 

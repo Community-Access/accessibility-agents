@@ -2,6 +2,29 @@
 
 This file defines coordinated multi-agent workflows for enterprise accessibility scanning in the Claude Code environment.
 
+## Directory Structure
+
+```
+.claude/
+├── agents/          -- REGISTERED (7 orchestrators only; appear in the Claude Code agent schema)
+│   ├── accessibility-lead.md
+│   ├── web-accessibility-wizard.md
+│   ├── document-accessibility-wizard.md
+│   ├── markdown-a11y-assistant.md
+│   ├── developer-hub.md
+│   ├── github-hub.md
+│   └── nexus.md
+│
+├── specialists/     -- NOT REGISTERED (73 specialists; zero schema cost)
+│   └── <all other agents>
+│
+└── AGENTS.md
+```
+
+Registering only orchestrators reduces per-turn schema token cost by approximately 10k tokens. Orchestrators load specialists on demand: `Read(".claude/specialists/<name>.md")`, extract the body (content after closing `---`), then dispatch via `Task(description="...", prompt="<body>\n\n<task>")`.
+
+Resolves: https://github.com/Community-Access/accessibility-agents/issues/111
+
 ## Team: Markdown Accessibility Audit
 
 **Lead:** `markdown-a11y-assistant`

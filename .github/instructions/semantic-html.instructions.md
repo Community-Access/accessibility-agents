@@ -2,11 +2,18 @@
 applyTo: "**/*.{html,jsx,tsx,vue,svelte,astro}"
 ---
 
+## Dependencies
+
+- `web-accessibility-baseline.instructions.md` — baseline WCAG rules; this file provides the structural HTML patterns that the baseline requires
+- `aria-patterns.instructions.md` — the ARIA widget patterns to use when native HTML is not sufficient
+
 # Semantic HTML Patterns
 
 Use semantic HTML before reaching for ARIA or generic elements. The correct structural choice is always the first line of defense - it provides meaning to browsers, search engines, and assistive technologies without any ARIA overhead. Apply these patterns when generating or editing any web UI code.
 
 ---
+
+> **Impact:** Screen reader users navigate pages by jumping between landmarks (using the R key in NVDA/JAWS). A missing `<main>` means they cannot skip to the primary content. Multiple unnamed `<nav>` elements all announce as "navigation" with no way to distinguish them.
 
 ## Page Landmark Structure
 
@@ -19,7 +26,7 @@ Every page template must include these landmark elements. Screen reader users na
 | `<main>` | main | Exactly one per page; wraps the primary page content |
 | `<footer>` | contentinfo | Wrap copyright, legal links, and secondary site links |
 | `<aside>` | complementary | Supplementary content - sidebars, related articles, callout boxes |
-| `<section>` | region | Thematic grouping with a heading; add `aria-labelledby` referencing the section's heading |
+| `<section>` | region (only when named) | Thematic grouping with a heading; becomes a `region` landmark only when `aria-labelledby` or `aria-label` is present. Most sections should NOT be landmarks — only major navigable destinations need region status. |
 | `<article>` | article | Self-contained content that makes sense in isolation: blog post, product card, news item |
 
 **Multiple `<nav>` elements:** Distinguish them with `aria-label`:
@@ -42,6 +49,8 @@ Every page template must include these landmark elements. Screen reader users na
 
 ---
 
+> **Impact:** Using `<div>` or `<a>` without `href` for buttons means those elements receive no keyboard focus and announce no role. Voice control users cannot activate them by speaking the label.
+
 ## Buttons vs. Links
 
 This is the most common semantic error in generated UI code. The rule is absolute:
@@ -60,6 +69,8 @@ This is the most common semantic error in generated UI code. The rule is absolut
 
 ---
 
+> **Impact:** Screen readers announce "list, N items" which sets user expectations. Non-list containers used for lists remove this count and item-count navigation.
+
 ## Lists
 
 - `<ul>` - for unordered collections where sequence does not matter: nav links, feature lists, tag lists.
@@ -72,6 +83,8 @@ For site navigation, use `<nav><ul><li><a>` - this is correct and fully semantic
 **Application menus** (keyboard-navigable dropdown menus following the ARIA menu pattern) use `role="menu"` / `role="menuitem"` - but only when the full ARIA keyboard pattern (Arrow keys, Home, End, Escape) is implemented. If in doubt, use `<nav><ul><li><button>` - it is always safe.
 
 ---
+
+> **Impact:** Without `<th scope>` and `<caption>`, screen readers cannot announce which column/row header applies to a cell. Users hear data values with no context.
 
 ## Tables
 
@@ -105,6 +118,8 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 - Never use `<table>` for layout. Use CSS Grid or Flexbox.
 
 ---
+
+> **Impact:** See `web-accessibility-baseline.instructions.md` § Forms and Inputs for the full labeling rules. This section provides the structural HTML patterns.
 
 ## Forms
 
@@ -147,6 +162,8 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 
 ---
 
+> **Impact:** Native `<details>` is fully accessible across all browsers and AT for free. Custom accordion patterns built from `<div>` elements require complete ARIA and keyboard implementation to reach the same baseline.
+
 ## Disclosure Widgets
 
 **Native `<details>` / `<summary>` for simple show/hide:**
@@ -160,9 +177,11 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 
 No JavaScript required. Browser handles open/close, keyboard, and AT announcements.
 
-**When to use ARIA instead:** When visual design requirements exceed what `<details>` supports, use the ARIA accordion pattern (see `aria-patterns.instructions.md`).
+**When to use ARIA instead:** When visual design requirements cannot be met with `<details>` (e.g., animated transitions, custom styling that `<summary>` marker doesn't allow), use the ARIA accordion pattern (see `aria-patterns.instructions.md`). Visual design is a legitimate reason to reach for ARIA here — but only after confirming `<details>` genuinely cannot meet the requirement.
 
 ---
+
+> **Impact:** Non-modal dialogs that lack focus trapping allow screen reader and keyboard users to read and interact with content behind the dialog, creating a confusing and broken experience.
 
 ## Dialogs
 
@@ -180,6 +199,8 @@ No JavaScript required. Browser handles open/close, keyboard, and AT announcemen
 Open with `dialog.showModal()`. The browser handles focus trapping, `Escape` key, and backdrop automatically. When `showModal()` is not available or polyfill constraints apply, use the ARIA dialog pattern (see `aria-patterns.instructions.md`).
 
 ---
+
+> **Impact:** Headings are the primary navigation mechanism for screen reader users. A skipped level (H2 to H4) causes users to think an H3 section was removed. Heading levels chosen for visual size corrupt the document outline.
 
 ## Heading Hierarchy
 

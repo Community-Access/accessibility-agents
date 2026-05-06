@@ -1,7 +1,8 @@
----
+﻿---
 name: help-url-reference
 description: Centralized help URL reference for accessibility remediation. Maps axe-core rule IDs to Deque University topics, document rule IDs to Microsoft Office and Adobe PDF help pages, and WCAG criteria to W3C Understanding documents. Use when generating CSV exports, markdown reports, or any output that links findings to external remediation documentation.
 ---
+<!-- CANONICAL SOURCE: .github/skills/help-url-reference/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Help URL Reference
 

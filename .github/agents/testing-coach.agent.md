@@ -712,7 +712,7 @@ For each issue found during testing:
 
 ```markdown
 ### Issue: [Brief description]
-- **Severity:** Critical / Major / Minor
+- **Severity:** Critical / Serious / Moderate / Minor
 - **Found by:** [Screen reader name] / Keyboard / Automated (axe-core)
 - **Browser:** [Browser + version]
 - **Steps to reproduce:**

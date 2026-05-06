@@ -2,21 +2,28 @@
 applyTo: "**/*.{html,jsx,tsx,vue,svelte,astro}"
 ---
 
+## Dependencies
+
+No other instruction files are required before reading this one. This is the baseline — all other web accessibility instructions extend it.
+
 # Web Accessibility Baseline - WCAG 2.2 AA
 
 These rules apply automatically to every HTML and component file. They represent the minimum non-negotiable requirements for WCAG 2.2 AA conformance. Apply all of them when generating or editing web UI code - no agent invocation required.
 
 ---
 
+> **Impact:** Interactive elements without correct semantics are invisible to screen reader users and unreachable by keyboard-only users — they simply cannot use those parts of the UI.
+
 ## Interactive Elements
 
 - Use `<button>` for actions that do not navigate. Use `<a href>` for navigation. Never swap them.
-- Never add `onClick` to a non-interactive element (`<div>`, `<span>`, `<p>`) without also adding `role="button"`, `tabIndex={0}`, and keyboard handlers (`onKeyDown`/`onKeyUp` for Enter and Space).
-- The preferred fix is always to replace the non-semantic element with a `<button>`.
+- Avoid adding `onClick` to a non-interactive element (`<div>`, `<span>`, `<p>`). The preferred fix is always to replace it with a `<button>` — this requires zero ARIA and gets keyboard/AT support for free. If replacing is not feasible (e.g., deeply nested third-party component), add all three: `role="button"`, `tabIndex={0}`, and keyboard handlers (`onKeyDown`/`onKeyUp` for both Enter and Space). This is a last resort, not a first choice.
 - No positive `tabindex` values (`tabindex="1"` or higher). Use `tabindex="0"` to add an element to the tab order, `tabindex="-1"` to allow programmatic focus only.
-- Never write `outline: none` or `outline: 0` on interactive elements without providing a visible alternative. Always pair with a `:focus-visible` rule that has a `2px solid` outline or an equivalent visible ring.
+- Avoid `outline: none` or `outline: 0` on interactive elements without a visible replacement. Pair with a `:focus-visible` rule providing a `2px solid` outline or box-shadow equivalent. Acceptable only when a custom `:focus-visible` style is immediately defined that provides equal or greater visibility (contrast ≥3:1, minimum 2px width, clear boundary around the component).
 
 ---
+
+> **Impact:** Images without alt text are announced as the filename or skipped entirely by screen readers, providing no context to blind users about what is conveyed.
 
 ## Images and Media
 
@@ -29,6 +36,8 @@ These rules apply automatically to every HTML and component file. They represent
 - `<video>` elements must have a caption track. `<audio>` elements must have a text transcript.
 
 ---
+
+> **Impact:** Unlabeled form fields make forms unusable for screen reader users and voice control users (who activate fields by speaking their label). This is the most common critical finding in web audits.
 
 ## Forms and Inputs
 
@@ -44,6 +53,8 @@ These rules apply automatically to every HTML and component file. They represent
 - Apply `autocomplete` attributes to identity and payment fields: `name`, `email`, `tel`, `street-address`, `postal-code`, `cc-number`, etc.
 
 ---
+
+> **Impact:** Screen readers announce heading levels numerically and expose them as a navigation list. Skipped levels cause users to think content is missing; a missing H1 removes the page title from AT navigation.
 
 ## Headings and Structure
 
@@ -64,6 +75,8 @@ These rules apply automatically to every HTML and component file. They represent
 
 ---
 
+> **Impact:** Insufficient contrast makes text unreadable for users with low vision and in bright-light environments. Color-only indicators are completely invisible to colorblind users.
+
 ## Color and Contrast
 
 - Color must never be the sole means of conveying information, indicating state, or prompting action. Always pair color with text, pattern, shape, or non-color indicator.
@@ -74,6 +87,8 @@ These rules apply automatically to every HTML and component file. They represent
 
 ---
 
+> **Impact:** Content that updates without a live region is invisible to screen reader users who cannot see the visual change. Silent form updates leave screen reader users with no feedback.
+
 ## Dynamic Content and Live Regions
 
 - When content updates in place without a page reload, announce the change to screen readers using a live region.
@@ -83,6 +98,8 @@ These rules apply automatically to every HTML and component file. They represent
 - Toast/notification components that disappear automatically must remain visible for at least 5 seconds and must not disappear while keyboard focus is inside them.
 
 ---
+
+> **Impact:** Incorrect ARIA is worse than no ARIA — it overrides native semantics and can make elements completely inaccessible. Broken `aria-controls` / `aria-labelledby` references produce empty or misleading AT announcements.
 
 ## ARIA
 
@@ -95,6 +112,8 @@ These rules apply automatically to every HTML and component file. They represent
 - **Working accessibility beats spec purity.** If code works correctly with screen readers and keyboard navigation but uses a non-standard ARIA pattern, flag it as Minor, not Critical. Never change working ARIA roles without first searching all workspace files for JavaScript/CSS selectors that reference the current role, and never remove documented attributes (`aria-keyshortcuts`, `title`) without explicit user approval.
 
 ---
+
+> **Impact:** Animations and auto-playing content can trigger vestibular disorders and cause distraction for users with cognitive disabilities.
 
 ## Motion and Animation
 
@@ -110,6 +129,8 @@ These rules apply automatically to every HTML and component file. They represent
 - No content may flash more than 3 times per second (WCAG 2.3.1, Level A).
 
 ---
+
+> **Impact:** These six criteria were the most commonly failed in 2022-2024 audits of newly built sites. They cover real barriers that were not addressed in WCAG 2.1.
 
 ## WCAG 2.2 New Criteria (AA)
 

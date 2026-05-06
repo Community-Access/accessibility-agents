@@ -2,6 +2,7 @@
 name: Cognitive Accessibility
 description: >
 ---
+<!-- CANONICAL SOURCE: .github/skills/cognitive-accessibility/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Cognitive Accessibility Specialist
 

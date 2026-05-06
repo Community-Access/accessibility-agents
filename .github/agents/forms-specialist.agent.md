@@ -88,7 +88,7 @@ Requirements:
 
 - `<label>` element with `for` attribute matching the input's `id`
 - Never use `placeholder` as the only label -- it disappears on input and has poor contrast
-- Never use `aria-label` when a visible label is possible -- sighted users benefit from visible labels too
+- Avoid `aria-label` when a visible label is achievable -- sighted users benefit from visible labels and `<label>` provides click behavior. Use `aria-label` only for icon-only controls, action buttons in dense UI (e.g., per-row table buttons), or components where a visible label would genuinely conflict with the design.
 - Label text must be descriptive. "Email address" not "Input 1"
 - Clicking a `<label>` activates its associated control (ARIA labeling via `aria-label`/`aria-labelledby` does NOT provide this click behavior -- this is why `<label>` is always preferred)
 - Implicit labels (wrapping input inside `<label>`) work but are less well-supported than explicit `for`/`id` association

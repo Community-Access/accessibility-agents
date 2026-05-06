@@ -1,7 +1,8 @@
----
+﻿---
 name: github-analytics-scoring
 description: Scoring formulas and analytical frameworks for GitHub workflow agents. Covers repository health scoring (0-100, A-F grades), priority scoring for issues/PRs/discussions, confidence levels for analytics findings, delta tracking (Fixed/New/Persistent/Regressed), velocity metrics, contributor metrics, bottleneck detection, and trend classification. Use when computing scores, tracking remediation progress, building prioritized dashboards, or detecting workflow bottlenecks.
 ---
+<!-- CANONICAL SOURCE: .github/skills/github-analytics-scoring/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # GitHub Analytics Scoring
 

@@ -27,6 +27,22 @@ Weights:
 Floor: 0 (minimum score)
 ```
 
+### Formula
+
+```pseudocode
+page_score = 100
+for each finding:
+    base = lookup(severity, confidence_level, source_count)  // from table above
+    multiplier = 1.2 if confidence_level == "confirmed" else 1.0
+    deduction = base × multiplier
+    page_score = max(0, page_score - deduction)
+```
+
+The values in the lookup table above are **base deductions** (pre-multiplier).
+"Confirmed" findings (validated by all three sources: axe-core + agent review + Playwright) apply an additional 1.2× multiplier.
+
+**Example:** One Critical finding at confirmed confidence = 18 (base) × 1.2 = **21.6 points** deducted → page score 78.
+
 ## Score Grades
 
 | Score | Grade | Meaning |

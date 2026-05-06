@@ -1,7 +1,8 @@
----
+﻿---
 name: lighthouse-scanner
 description: Integration patterns for Lighthouse CI accessibility auditing. Teaches agents how to detect Lighthouse CI configuration, parse accessibility audit results, map findings to the standard severity model, correlate with local axe-core scans, and track score regressions.
 ---
+<!-- CANONICAL SOURCE: .github/skills/lighthouse-scanner/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Lighthouse CI Accessibility Integration
 

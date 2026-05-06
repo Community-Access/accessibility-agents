@@ -3,9 +3,17 @@ description: Markdown accessibility guidelines - comprehensive rules for inclusi
 applyTo: "**/*.md"
 ---
 
+## Dependencies
+
+No other instruction files are required. This file is self-contained for markdown accessibility.
+
+**Skill file:** For the full pattern library, emoji translation maps, Mermaid templates, and severity scoring formula, load the `markdown-accessibility` skill.
+
 # Markdown Accessibility Review Guidelines
 
 ## Repository Hard Rule: No Emoji
+
+> **Impact:** Screen readers announce the full Unicode name of every emoji character ("face with tears of joy"), which makes sentences with multiple emoji completely unintelligible.
 
 - Emoji characters are prohibited in repository markdown content.
 - Always remove emoji from headings, bullets, prose, tables, callouts, and summaries.
@@ -15,6 +23,8 @@ applyTo: "**/*.md"
 When reviewing or generating markdown files, check for all of the following accessibility issues. Flag violations and suggest fixes with clear explanations of the accessibility impact. These rules extend GitHub's [5 tips for making your GitHub profile page accessible](https://github.blog/developer-skills/github/5-tips-for-making-your-github-profile-page-accessible/) with table, diagram, typographic, and anchor-link rules.
 
 **For guided interactive audits**, use the `markdown-a11y-assistant` agent which orchestrates `markdown-scanner` and `markdown-fixer` sub-agents with parallel scanning and a full review gate.
+
+> **Impact:** Screen reader users navigate links from a links list with no surrounding context. "Click here" in that list tells them nothing about the destination.
 
 ## 1. Descriptive Links (WCAG 2.4.4)
 
@@ -27,6 +37,16 @@ When reviewing or generating markdown files, check for all of the following acce
 Bad: `Read my blog post [here](https://example.com)`
 Good: `Read my blog post "[Crafting an accessible resume](https://example.com)"`
 
+**3-question self-test for link text:**
+
+1. Does this text make sense read aloud with no surrounding context?
+2. If the page had 20 links, would this text distinguish this one from the others?
+3. Does the text describe the destination or action, not the act of clicking?
+
+If any answer is No, rewrite the link text.
+
+> **Impact:** Screen readers announce "image" followed by the filename when alt text is missing. A filename like "img_1234.jpg" is meaningless to a blind user viewing a meaningful diagram or screenshot.
+
 ## 2. Image Alt Text (WCAG 1.1.1)
 
 - Flag images with empty alt text (`![]()`) unless they are explicitly decorative.
@@ -36,12 +56,23 @@ Good: `Read my blog post "[Crafting an accessible resume](https://example.com)"`
 - For complex images (charts, infographics): flag and suggest a `<details>` block with a data summary.
 - Always present alt text improvements as recommendations for the author to review - never auto-apply.
 
+| DO | DON'T |
+|---|---|
+| `![Bar chart showing Q1 sales up 23% year over year](chart.png)` | `![chart](chart.png)` |
+| `![Company logo](logo.png)` | `![image001.jpg](logo.png)` |
+| `![](decorative-divider.png)` (empty alt = decorative) | `![decorative divider](decorative-divider.png)` |
+| `![Screenshot of the Settings Privacy page](screenshot.png)` | `![screenshot](screenshot.png)` |
+
+> **Impact:** Screen reader users navigate by heading level. Skipped levels create gaps in the outline — users assume content is missing. Bold text used as a heading cannot be navigated at all.
+
 ## 3. Heading Hierarchy (WCAG 1.3.1 / 2.4.6)
 
 - One H1 (`#`) per document, used as the page title.
 - Never skip heading levels: `##` followed by `####` is a violation.
 - Flag bold text (`**text**`) used as a visual substitute for a heading.
 - Documents with no H1 should have the first major heading promoted.
+
+> **Impact:** Tables without descriptions leave screen reader users wondering what the data represents before they navigate into the cells.
 
 ## 4. Table Accessibility (WCAG 1.3.1)
 
@@ -62,17 +93,21 @@ The following table lists agents with their role and supported platform.
 
 ## 5. Emoji (WCAG 1.3.3 / Cognitive)
 
+> **Impact:** Screen readers read full emoji names aloud ("face with stuck-out tongue and squinting eyes"). Emoji as bullets break list semantics and interrupt the reading flow.
+
 Screen readers read full emoji names aloud ("face with stuck-out tongue and squinting eyes"). Emoji as bullets break list semantics.
 
-Required behavior:
+Required behavior (mode: `remove-all`):
 
 - Flag any emoji occurrence and remove it.
 - Preserve meaning in plain text where needed.
 - Never keep emoji in final markdown output.
 
-Translate mode is disabled in this repository. Emoji must be removed, not translated.
+`remove-all` mode is active for this repository. The `markdown-accessibility` skill supports additional modes (`remove-decorative`, `translate`, `leave-unchanged`) — see the skill file for details — but they are disabled here by this instruction file.
 
 ## 6. Mermaid and ASCII Diagrams (WCAG 1.1.1 / 1.3.1)
+
+> **Impact:** Mermaid diagrams and ASCII art are entirely invisible to screen reader users — they hear nothing or a jumble of punctuation characters. The `<details>` pattern preserves the visual diagram for sighted users while exposing the text description to AT.
 
 Both Mermaid diagrams and ASCII art render without accessible text alternatives for screen reader users.
 
@@ -106,6 +141,8 @@ graph TD
 
 ## 7. Em-Dash and En-Dash Normalization (Cognitive / Readability)
 
+> **Impact:** Em-dashes are read by screen readers inconsistently — NVDA reads them as "dash", JAWS skips them silently, VoiceOver reads "em dash". The result is that sentence flow breaks unpredictably.
+
 - Em-dashes (`—`, `--` used as em-dash, or `---` in prose) are read inconsistently by screen readers.
 - Recommended fix: replace with ` - ` (space-hyphen-space) in prose.
 - Never modify: content inside code blocks or inline code, YAML front matter, HTML comments, or standalone `---` horizontal rules.
@@ -114,6 +151,8 @@ Before: `The process takes 2--4 hours—depending on configuration.`
 After: `The process takes 2 - 4 hours - depending on configuration.`
 
 ## 8. Anchor Link Validation (WCAG 2.4.4)
+
+> **Impact:** Broken anchor links silently drop users at the top of the page with no error message. Screen reader users expect `[text](#section)` links to navigate them within the document and cannot know why the link did nothing.
 
 - Broken anchor links (`[text](#nonexistent-section)`) silently fail - users are dropped at top of page with no error.
 - Validate all `[text](#anchor)` links against headings in the same file.

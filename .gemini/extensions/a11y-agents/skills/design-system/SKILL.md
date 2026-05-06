@@ -1,7 +1,8 @@
----
+﻿---
 name: design-system
 description: Color token contrast computation, framework token paths (Tailwind/MUI/Chakra/shadcn), focus ring validation, WCAG 2.4.13 Focus Appearance, motion tokens, and spacing tokens for touch target compliance. Use when validating design system tokens for WCAG AA/AAA contrast compliance before they reach deployed UI.
 ---
+<!-- CANONICAL SOURCE: .github/skills/design-system/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Design System Accessibility Skill
 

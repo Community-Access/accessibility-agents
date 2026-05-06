@@ -1,7 +1,8 @@
----
+﻿---
 name: web-scanning
 description: Web content discovery, URL crawling, and page inventory for accessibility audits. Use when scanning web pages, crawling sites for audit scope, or building page inventories for multi-page audits.
 ---
+<!-- CANONICAL SOURCE: .github/skills/web-scanning/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Web Scanning
 

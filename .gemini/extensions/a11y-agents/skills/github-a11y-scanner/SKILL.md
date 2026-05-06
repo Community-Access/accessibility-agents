@@ -1,7 +1,8 @@
----
+﻿---
 name: github-a11y-scanner
 description: Integration patterns for the GitHub Accessibility Scanner Action (github/accessibility-scanner). Teaches agents how to detect scanner presence, parse scanner-created issues, correlate findings with local scans, and track Copilot-assigned fix status.
 ---
+<!-- CANONICAL SOURCE: .github/skills/github-a11y-scanner/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # GitHub Accessibility Scanner Integration
 

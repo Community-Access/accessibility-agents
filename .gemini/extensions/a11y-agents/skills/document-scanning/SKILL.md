@@ -1,7 +1,8 @@
----
+﻿---
 name: document-scanning
 description: Document discovery, inventory building, and metadata extraction for accessibility audits. Use when scanning folders for Office documents (.docx, .xlsx, .pptx) and PDFs, building file inventories, detecting changes via git diff, or extracting document properties like title, author, and language.
 ---
+<!-- CANONICAL SOURCE: .github/skills/document-scanning/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Document Scanning
 

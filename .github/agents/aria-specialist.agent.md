@@ -182,7 +182,8 @@ Requirements:
 
 ## Icons and Decorative Elements
 
-Always hide icons from screen readers. They create verbosity.
+Hide decorative icons from screen readers -- they create verbosity without adding meaning.
+Meaningful icons that convey information not present in adjacent text should retain an accessible name (use `aria-label` or `aria-labelledby` on the containing control).
 
 ```html
 <!-- Button with icon -- hide the icon -->

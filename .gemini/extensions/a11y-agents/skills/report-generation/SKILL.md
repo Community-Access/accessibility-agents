@@ -1,7 +1,8 @@
----
+﻿---
 name: report-generation
 description: Audit report formatting, severity scoring, scorecard computation, and compliance export for document accessibility audits. Use when generating DOCUMENT-ACCESSIBILITY-AUDIT.md reports, computing document severity scores (0-100 with A-F grades), creating VPAT/ACR compliance exports, or formatting remediation priorities.
 ---
+<!-- CANONICAL SOURCE: .github/skills/report-generation/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Report Generation
 

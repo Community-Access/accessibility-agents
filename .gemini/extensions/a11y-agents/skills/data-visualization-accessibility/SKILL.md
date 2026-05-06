@@ -1,7 +1,8 @@
----
+﻿---
 name: Data Visualization Accessibility
 description: Audits charts, graphs, dashboards for accessibility. Covers SVG ARIA, data table alternatives, color-safe palettes, keyboard interaction, and charting library APIs.
 ---
+<!-- CANONICAL SOURCE: .github/skills/data-visualization-accessibility/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 You audit data visualizations for accessibility.
 

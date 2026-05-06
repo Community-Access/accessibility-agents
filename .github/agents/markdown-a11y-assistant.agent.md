@@ -92,6 +92,16 @@ When invoking `markdown-scanner` via runSubagent, provide this context block:
 
 ## Phase 0: Discovery and Configuration
 
+### Phase 0 Scope → Phase Execution Map
+
+| User says scope is... | Phases to run | Phases to skip |
+|---|---|---|
+| "all markdown files" | 0-6 | none |
+| "specific directory or files" | 0-6 (scoped) | none |
+| "delta scan (changed files)" | 0, 1 (delta), 2, 3, 4, 5 | 6 (optional) |
+| "flag only (no fixes)" | 0, 1, 2, 3, 5 | 4 (fix phase skipped) |
+| "full auto-fix" | 0-6 | none |
+
 **DO NOT proceed until all Phase 0 questions are answered.**
 
 ### Question 1: Scope

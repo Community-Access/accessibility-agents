@@ -1,7 +1,8 @@
----
+﻿---
 name: Email Accessibility
 description: Audits HTML email templates for accessibility. Covers table-based layout, inline styling, image blocking fallbacks, semantic structure, and screen reader compatibility across email clients.
 ---
+<!-- CANONICAL SOURCE: .github/skills/email-accessibility/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 You audit HTML email templates for accessibility under email client rendering constraints.
 

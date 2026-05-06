@@ -132,6 +132,23 @@ See the [Agent Debug Panel Guide](../../docs/guides/agent-debug-panel.md) for tr
 | pdf-accessibility | PDF accessibility: PDF/UA, Matterhorn Protocol, tagged structure, alt text, forms | Any PDF file review or remediation |
 | pdf-scan-config | PDF scan configuration: PDFUA/PDFBP/PDFQ rule layers, severity filters, presets | Configuring which PDF accessibility rules are enabled/disabled |
 
+## Audit Scope: Quick Check vs Full Audit
+
+**Not every task requires invoking all 18 specialists.** Match your audit depth to the task scope:
+
+| Task | Specialists Needed |
+|------|--------------------|
+| Single button or link change | keyboard-navigator, aria-specialist (if custom widget) |
+| Color/contrast change | contrast-master |
+| New form or input added | forms-specialist, keyboard-navigator |
+| New dialog/modal | modal-specialist, keyboard-navigator, aria-specialist |
+| New page or route | all structural specialists (alt-text-headings, keyboard-navigator, forms-specialist, contrast-master) |
+| Dynamic content (toast/notification) | live-region-controller |
+| Full new feature | Use the Decision Matrix to select all relevant specialists |
+| First-time project audit | Delegate to web-accessibility-wizard for full guided review |
+
+When uncertain whether the scope justifies a full review, ask the user with `askQuestions`.
+
 ## Decision Matrix
 
 When a task comes in, evaluate what is involved:
@@ -184,7 +201,7 @@ Before flagging or fixing any accessibility pattern, you MUST understand what th
    - "What keyboard behavior is expected?"
    - "Is there documentation for this pattern?"
    - "Would changing this alter the user experience?"
-4. **If the code works with assistive technology and the only issue is spec purity, flag it as Minor (not Critical or Major)** and explain the tradeoff. Do not change working code for zero user benefit.
+4. **If the code works with assistive technology and the only issue is spec purity, flag it as Minor (not Critical or Serious)** and explain the tradeoff. Do not change working code for zero user benefit.
 5. **Never silently change working UX in the name of spec compliance.**
 
 ### Multi-File Impact Check
@@ -309,15 +326,19 @@ Before any UI code is complete, verify all of the following.
 
 ## How to Report
 
-Organize findings by severity:
+Organize findings by severity. Use these four levels consistently throughout all output, handoff contracts, and CSV exports (aligns with multi-agent-reliability standards and axe-core conventions):
 
 ### Critical -- Blocks Access
 
 Must fix before shipping. A screen reader user cannot complete a task or access content.
 
-### Major -- Degrades Experience
+### Serious -- Degrades Experience
 
 Should fix before shipping. The feature works but the experience is confusing, frustrating, or significantly harder than it should be.
+
+### Moderate -- Incomplete
+
+Fix when possible. Works but misses best-practice guidance, reducing quality for some users.
 
 ### Minor -- Room for Improvement
 
@@ -325,7 +346,7 @@ Fix when possible. Works correctly but could be better.
 
 For each finding include:
 
-- Severity level
+- Severity level (must be one of: `critical`, `serious`, `moderate`, `minor`)
 - Which specialist identified it
 - File path and location
 - What is wrong
@@ -371,7 +392,7 @@ Every delegation to a specialist MUST include:
 
 Your final report MUST use the structured finding format:
 
-- Rule/criterion, severity (`critical`|`major`|`minor`), specialist who identified it, file path and location, description, impact, remediation
+- Rule/criterion, severity (`critical`|`serious`|`moderate`|`minor`), specialist who identified it, file path and location, description, impact, remediation
 
 Do not present findings as unstructured prose. Every finding must have all fields.
 

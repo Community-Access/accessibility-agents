@@ -64,14 +64,22 @@ Floor: 0
 
 ## Emoji Handling Modes
 
-The agent supports four modes configured during Phase 0:
+The agent supports four modes. The **active mode is determined by the nearest `markdown-accessibility.instructions.md` file** in scope. If no instructions file sets a mode, the default is `remove-decorative`.
+
+> **This repository:** The `.github/instructions/markdown-accessibility.instructions.md` file in this repo sets mode to **`remove-all`**. All emoji are removed, not translated. This overrides the skill default.
 
 | Mode | Description | Default? |
 |------|-------------|----------|
-| `remove-all` | Strip every emoji from prose, headings, and bullets | No |
-| `remove-decorative` | Remove emoji in headings, bullets, and consecutive sequences; flag single inline for review | **Yes (default)** |
+| `remove-all` | Strip every emoji from prose, headings, and bullets. Keep surrounding plain-text meaning. | No (repo override sets this) |
+| `remove-decorative` | Remove emoji in headings, bullets, and consecutive sequences; flag single inline for review | **Skill default (no override)** |
 | `translate` | Replace known emoji with `(English)` text; flag unknown for review | No |
 | `leave-unchanged` | Do not flag or modify any emoji | No |
+
+**Mode resolution order:**
+
+1. Agent system prompt or per-task explicit mode override
+2. Nearest `*.instructions.md` file in scope (e.g., `.github/instructions/markdown-accessibility.instructions.md`)
+3. Skill default (`remove-decorative`)
 
 ### Emoji Translation Map
 

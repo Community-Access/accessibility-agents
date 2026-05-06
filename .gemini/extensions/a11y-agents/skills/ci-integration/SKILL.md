@@ -1,7 +1,8 @@
----
+﻿---
 name: CI Integration
 description: CI/CD accessibility pipeline patterns, axe-core CLI configuration, SARIF output, PR annotations, baseline management, and multi-platform CI templates. Reference data for CI accessibility setup.
 ---
+<!-- CANONICAL SOURCE: .github/skills/ci-integration/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Skill: CI Integration
 

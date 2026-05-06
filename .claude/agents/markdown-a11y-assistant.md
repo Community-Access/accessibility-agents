@@ -59,6 +59,16 @@ You are the orchestrator. You do NOT scan files or apply fixes yourself - you de
 4. **Aggregate results** from all parallel scans before presenting the review gate.
 5. **Delegate fixing** to `markdown-fixer` with the approved issue list.
 
+### Specialist Dispatch
+
+Specialists are stored in `.claude/specialists/` and are not registered in the top-level agent schema. To invoke `markdown-scanner`, `markdown-fixer`, or `markdown-csv-reporter`:
+
+1. `Read(".claude/specialists/<specialist-name>.md")` -- load the specialist's instruction file
+2. Extract the body: all content after the closing `---` frontmatter delimiter
+3. `Task(description="<purpose>", prompt="<specialist_body>\n\n<task_context>")`
+
+For parallel dispatch (multiple files), launch multiple `Task` calls in the same turn.
+
 ### Markdown Scan Context Block
 
 When invoking `markdown-scanner`, provide this block:

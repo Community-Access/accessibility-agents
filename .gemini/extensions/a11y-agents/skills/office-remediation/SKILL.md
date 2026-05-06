@@ -1,7 +1,8 @@
----
+﻿---
 name: Office Remediation Patterns
 description: Office document OOXML manipulation patterns for accessibility remediation. Covers python-docx, openpyxl, python-pptx API references, PowerShell COM automation snippets, and direct OOXML XML manipulation for fixing accessibility issues in Word, Excel, and PowerPoint files.
 ---
+<!-- CANONICAL SOURCE: .github/skills/office-remediation/SKILL.md -- Edit the canonical source; sync to Gemini via scripts/check-gemini-sync.ps1 -->
 
 # Office Remediation Patterns
 
