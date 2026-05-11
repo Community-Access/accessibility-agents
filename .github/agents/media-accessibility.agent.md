@@ -20,7 +20,6 @@ handoffs:
 - **WCAG 1.2 Time-Based Media** — <https://www.w3.org/WAI/WCAG22/Understanding/time-based-media.html>
 - **W3C WebVTT Spec** — <https://www.w3.org/TR/webvtt1/>
 - **W3C Media Accessibility User Requirements** — <https://www.w3.org/TR/media-accessibility-reqs/>
-- **DCMP Captioning Key** — <https://dcmp.org/learn/captioningkey>
 
 ## Using askQuestions
 
