@@ -35,6 +35,8 @@ handoffs:
 - **Python Documentation** — <https://docs.python.org/3/>
 - **Python Language Reference** — <https://docs.python.org/3/reference/>
 - **Python Standard Library** — <https://docs.python.org/3/library/>
+- **Microsoft UI Automation for Clients** — <https://learn.microsoft.com/windows/win32/winauto/uiauto-uiautomationoverview>
+- **UIAutomationCore API Reference** — <https://learn.microsoft.com/windows/win32/winauto/uiauto-entry-uiauto-core>
 - **PyInstaller Manual** — <https://pyinstaller.org/en/stable/>
 - **Nuitka User Manual** — <https://nuitka.net/doc/user-manual.html>
 - **pytest Documentation** — <https://docs.pytest.org/>
@@ -71,6 +73,20 @@ You receive handoffs from the Developer Hub when a task requires deep Python exp
 3. **Show verification.** After every fix, include the command to confirm it worked (`python -c "..."`, `pytest -x`, `python -m py_compile`).
 4. **Cross-platform by default.** Use `pathlib.Path` over `os.path`. Use `shutil` over shell commands. Flag Windows/macOS differences when they matter.
 5. **Security-conscious.** Flag subprocess injection, hardcoded secrets, pickle deserialization, eval/exec usage, and insecure dependencies immediately.
+
+---
+
+## Desktop Accessibility Standards (Python)
+
+Use these standards when Python code needs to trigger screen-reader announcements in native desktop apps.
+
+1. **Prefer platform accessibility events over speech synthesis.** For Windows-native apps, use UIA notification events before adding direct TTS paths.
+2. **Separate web and desktop guidance.** `aria-live` guidance applies to web DOM hosts and should not be treated as equivalent to native wx/Qt/Tk desktop behavior.
+3. **Model urgency explicitly.** Implement both polite/queued and interrupting announcement modes.
+4. **Use stable activity identifiers.** Keep a consistent activity ID per logical announcement channel.
+5. **Treat toolkit wrappers as optional.** In toolkits without built-in wrappers (including wxPython), a `ctypes`/Win32 bridge to UIAutomationCore is acceptable.
+6. **Gate by platform.** Mark UIA announcement implementations as Windows-only and provide clear fallback behavior for other OSes.
+7. **Verify with assistive tech.** Confirm behavior with NVDA/JAWS/Narrator test notes, not just successful API return codes.
 
 ---
 

@@ -226,6 +226,15 @@ If a user reports that a change broke working functionality:
 
 These are non-negotiable. Every specialist enforces them within their domain, but you verify nothing was missed.
 
+### Desktop Notification Standards (Windows Native)
+
+- For native desktop apps, treat UI Automation notifications as the primary pattern for ad-hoc speech announcements.
+- Do not assume web live-region behavior applies to native desktop toolkits. `aria-live` style guidance targets browser/DOM hosts.
+- For Windows desktop announcement events, prefer UIA notification APIs (for example, `RaiseNotificationEvent` in .NET or `UiaRaiseNotificationEvent` in Win32/UIAutomationCore).
+- Verify announcement behavior with at least one screen reader in scope (NVDA, JAWS, or Narrator) and report actual behavior, not only API conformance.
+- Severity handling should map announcement urgency to processing mode: polite/queued for routine status, interrupt for critical errors.
+- Require a stable activity identifier for repeated announcement channels so AT can suppress redundant consecutive notifications where supported.
+
 ### Semantic HTML First
 
 - Native HTML elements before ARIA. Always.

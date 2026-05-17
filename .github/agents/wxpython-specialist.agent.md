@@ -41,6 +41,8 @@ handoffs:
 - **wxWidgets Documentation** — <https://docs.wxwidgets.org/>
 - **wxPython Sizers** — <https://docs.wxpython.org/sizers_overview.html>
 - **wxPython Events** — <https://docs.wxpython.org/events_overview.html>
+- **Microsoft UI Automation Overview** — <https://learn.microsoft.com/windows/win32/winauto/uiauto-uiautomationoverview>
+- **UIAutomationCore API Entry Points** — <https://learn.microsoft.com/windows/win32/winauto/uiauto-entry-uiauto-core>
 
 ## Using askQuestions
 
@@ -73,6 +75,20 @@ You receive handoffs from the Developer Hub when a task requires wxPython expert
 3. **Thread safety is non-negotiable.** Never touch the GUI from a worker thread. Always use `wx.CallAfter()` or `wx.PostEvent()`.
 4. **Accessibility is built in, not bolted on.** Every control must be keyboard-accessible. Every image needs alt text. Every dialog must announce properly to screen readers.
 5. **Cross-platform by default.** Test on the supported Windows and macOS platforms. Know the differences.
+
+---
+
+## wxPython Accessibility Notification Standards (Windows)
+
+When a wxPython app must announce runtime status to screen readers:
+
+1. **Use UIA notification events for native announcements.** In wxPython on Windows, use the window handle and UIAutomationCore APIs (for example, host provider plus `UiaRaiseNotificationEvent`).
+2. **Do not rely on web live-region assumptions.** Browser `aria-live` patterns do not directly map to wxPython native controls.
+3. **Provide two announcement modes.** Support polite/queued announcements and interrupting announcements for urgent errors.
+4. **Keep activity IDs stable.** Reuse one activity ID per announcement stream to reduce duplicate speech where AT supports suppression.
+5. **Call only after control realization.** Ensure the frame/control has a valid handle before raising notification events.
+6. **Preserve keyboard workflow.** Announcement buttons and controls must remain fully keyboard operable and focus visible.
+7. **Validate in real AT sessions.** Confirm behavior in NVDA/JAWS/Narrator during manual test runs and capture what was actually announced.
 
 ---
 

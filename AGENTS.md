@@ -94,6 +94,12 @@ Led by `developer-hub`, handles desktop and Python development:
 - `desktop-a11y-specialist` - Desktop accessibility APIs
 - `a11y-tool-builder` - Building accessibility scanning tools
 
+Desktop accessibility standards quick links:
+
+- Windows UIA desktop announcement standards: `.github/agents/accessibility-lead.agent.md` (Desktop Notification Standards)
+- Python desktop implementation standards: `.github/agents/python-specialist.agent.md` (Desktop Accessibility Standards (Python))
+- wxPython implementation standards: `.github/agents/wxpython-specialist.agent.md` (wxPython Accessibility Notification Standards (Windows))
+
 ### CI/CD & Education
 
 Specialist agents for CI pipelines, standards education, and screen reader simulation:
