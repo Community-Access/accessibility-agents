@@ -434,7 +434,7 @@
     "package": "npx @vscode/vsce package"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.9.0",
     "@types/vscode": "^1.118.0",
     "@vscode/vsce": "^3.9.1",
     "typescript": "^5.8.0"
