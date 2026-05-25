@@ -32,41 +32,38 @@ param(
 $ErrorActionPreference = "Stop"
 $AutoApprove = $Yes.IsPresent
 $OptionalPlatformFlags = $Copilot.IsPresent -or $Cli.IsPresent -or $Codex.IsPresent -or $Gemini.IsPresent
+
 # Determine source: running from repo clone or downloaded?
 $Downloaded = $false
-$ScriptDir = if ($MyInvocation.MyCommand.Path)
-{
+$ScriptDir = if ($MyInvocation.MyCommand.Path) {
     Split-Path -Parent $MyInvocation.MyCommand.Path
 }
-else
-{
+else {
     $null
 }
 
-if (-not $ScriptDir -or -not (Test-Path (Join-Path $ScriptDir ".claude\agents")))
-{
+if (-not $ScriptDir -or -not (Test-Path (Join-Path $ScriptDir ".claude\agents"))) {
     # Running from irm pipe or without repo - download first
     $Downloaded = $true
     $TmpDir = Join-Path $env:TEMP "a11y-agent-team-install-$(Get-Random)"
     Write-Host ""
     Write-Host "  Downloading A11y Agent Team..."
 
-    if (-not (Get-Command git -ErrorAction SilentlyContinue))
-    {
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
         Write-Host "  Error: git is required. Install git and try again."
         exit 1
     }
 
     git clone --quiet https://github.com/Community-Access/accessibility-agents.git $TmpDir 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0)
-    {
+    if ($LASTEXITCODE -ne 0) {
         Write-Host "  Error: git clone failed. Check your network connection and try again."
         exit 1
     }
     $ScriptDir = $TmpDir
-    Write-Host "  Downloaded to $ScriptDir"
+    Write-Host "  Downloaded."
 }
-#source the  helper scripts
+
+#source the helper scripts
 . (Join-Path $ScriptDir 'scripts\Installer.Common.ps1')
 
 $AgentsSrc = Join-Path $ScriptDir ".claude\agents"
@@ -79,19 +76,14 @@ $CodexSkillsSrc = Join-Path $ScriptDir "codex-skills"
 
 # Auto-detect agents from source directory
 $Agents = @()
-if (Test-Path $AgentsSrc)
-{
+if (Test-Path $AgentsSrc) {
     $Agents = Get-ChildItem -Path $AgentsSrc -Filter "*.md" | Select-Object -ExpandProperty Name
 }
 
-if ($Agents.Count -eq 0)
-{
+if ($Agents.Count -eq 0) {
     Write-Host "  Error: No agents found in $AgentsSrc"
     Write-Host "  Make sure you are running this script from the a11y-agent-team directory."
-    if ($Downloaded)
-    {
-        Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue
-    }
+    if ($Downloaded) { Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue }
     exit 1
 }
 
@@ -109,45 +101,36 @@ Write-Host "  2) Global    - Install to ~\.claude\"
 Write-Host "                  (available in all your projects)"
 Write-Host ""
 
-if ($Project -and $Global)
-{
+if ($Project -and $Global) {
     Write-Host "  Error: Choose either -Project or -Global, not both."
     exit 1
 }
 
-$Choice = if ($Project)
-{
+$Choice = if ($Project) {
     '1'
 }
-elseif ($Global)
-{
+elseif ($Global) {
     '2'
 }
-else
-{
-    if (-not (Test-InteractivePrompting))
-    {
+else {
+    if (-not (Test-InteractivePrompting)) {
         throw "Choose either -Project or -Global when running non-interactively."
     }
     Read-Host "  Choose [1/2]"
 }
 
-switch ($Choice)
-{
-    "1"
-    {
+switch ($Choice) {
+    "1" {
         $TargetDir = Join-Path (Get-Location) ".claude"
         Write-Host ""
         Write-Host "  Installing to project: $(Get-Location)"
     }
-    "2"
-    {
+    "2" {
         $TargetDir = Join-Path $env:USERPROFILE ".claude"
         Write-Host ""
         Write-Host "  Installing globally to: $TargetDir"
     }
-    default
-    {
+    default {
         Write-Host "  Invalid choice. Exiting."
         exit 1
     }
@@ -158,36 +141,31 @@ switch ($Choice)
 # Never overwrites existing user content. Uses <!-- a11y-agent-team --> markers
 # so the user's own content above/below our section is always preserved.
 # ---------------------------------------------------------------------------
-function Merge-ConfigFile
-{
+function Merge-ConfigFile {
     param([string]$SrcFile, [string]$DstFile, [string]$Label)
     $start = "<!-- a11y-agent-team: start -->"
     $end = "<!-- a11y-agent-team: end -->"
     $body = ([IO.File]::ReadAllText($SrcFile, [Text.Encoding]::UTF8)).TrimEnd()
     $block = "$start`n$body`n$end"
-    if (-not (Test-Path $DstFile))
-    {
+    if (-not (Test-Path $DstFile)) {
         [IO.File]::WriteAllText($DstFile, "$block`n", [Text.Encoding]::UTF8)
         Write-Host "    + $Label (created)"
         return
     }
     $existing = [IO.File]::ReadAllText($DstFile, [Text.Encoding]::UTF8)
-    if ($existing -match [regex]::Escape($start))
-    {
+    if ($existing -match [regex]::Escape($start)) {
         $pattern = "(?s)" + [regex]::Escape($start) + ".*?" + [regex]::Escape($end)
         $updated = [regex]::Replace($existing, $pattern, $block)
         [IO.File]::WriteAllText($DstFile, $updated, [Text.Encoding]::UTF8)
         Write-Host "    ~ $Label (updated our existing section)"
     }
-    else
-    {
+    else {
         [IO.File]::WriteAllText($DstFile, $existing.TrimEnd() + "`n`n$block`n", [Text.Encoding]::UTF8)
         Write-Host "    + $Label (merged into your existing file)"
     }
 }
 
-function Write-InstallSummaryFile
-{
+function Write-InstallSummaryFile {
     param(
         [string]$Path,
         [hashtable]$Data
@@ -195,63 +173,51 @@ function Write-InstallSummaryFile
     Write-A11ySummaryFile -Path $Path -Data $Data
 }
 
-function Configure-VSCodeMcpSettings
-{
+function Configure-VSCodeMcpSettings {
     param([string]$SettingsPath, [string]$Url)
 
     $SettingsDir = Split-Path -Parent $SettingsPath
-    if (-not (Test-Path $SettingsDir))
-    {
+    if (-not (Test-Path $SettingsDir)) {
         New-Item -ItemType Directory -Force -Path $SettingsDir | Out-Null
     }
 
     $SettingsObject = [PSCustomObject]@{}
-    if (Test-Path $SettingsPath)
-    {
-        try
-        {
+    if (Test-Path $SettingsPath) {
+        try {
             $Raw = Get-Content $SettingsPath -Raw
-            if (-not [string]::IsNullOrWhiteSpace($Raw))
-            {
+            if (-not [string]::IsNullOrWhiteSpace($Raw)) {
                 $Parsed = $Raw | ConvertFrom-Json -Depth 20
-                if ($Parsed)
-                {
+                if ($Parsed) {
                     $SettingsObject = $Parsed
                 }
             }
         }
-        catch
-        {
+        catch {
             Write-Host "    ! Could not parse $SettingsPath"
             Write-Host "      Add this manually later under mcp.servers.a11y-agent-team.url = $Url"
             return
         }
     }
 
-    if ($SettingsObject.PSObject.Properties.Name -notcontains "mcp")
-    {
+    if ($SettingsObject.PSObject.Properties.Name -notcontains "mcp") {
         $SettingsObject | Add-Member -NotePropertyName "mcp" -NotePropertyValue ([PSCustomObject]@{})
     }
 
     $McpSettings = $SettingsObject.mcp
-    if ($McpSettings.PSObject.Properties.Name -notcontains "servers")
-    {
+    if ($McpSettings.PSObject.Properties.Name -notcontains "servers") {
         $McpSettings | Add-Member -NotePropertyName "servers" -NotePropertyValue ([PSCustomObject]@{})
     }
 
     $ServerSettings = $McpSettings.servers
-    if ($ServerSettings.PSObject.Properties.Name -notcontains "a11y-agent-team")
-    {
+    if ($ServerSettings.PSObject.Properties.Name -notcontains "a11y-agent-team") {
         $ServerSettings | Add-Member -NotePropertyName "a11y-agent-team" -NotePropertyValue ([PSCustomObject]@{})
     }
 
     $A11yServer = $ServerSettings.'a11y-agent-team'
-    if ($A11yServer.PSObject.Properties.Name -contains "url")
-    {
+    if ($A11yServer.PSObject.Properties.Name -contains "url") {
         $A11yServer.url = $Url
     }
-    else
-    {
+    else {
         $A11yServer | Add-Member -NotePropertyName "url" -NotePropertyValue $Url
     }
 
@@ -259,61 +225,49 @@ function Configure-VSCodeMcpSettings
     Write-Host "    + MCP server registered in $SettingsPath"
 }
 
-function Get-NodeMajorVersion
-{
+function Get-NodeMajorVersion {
     $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
-    if (-not $NodeCmd)
-    {
+    if (-not $NodeCmd) {
         return $null
     }
 
-    try
-    {
+    try {
         return [int](& node -p "process.versions.node.split('.')[0]" 2>$null)
     }
-    catch
-    {
+    catch {
         return $null
     }
 }
 
-function Get-JavaMajorVersion
-{
+function Get-JavaMajorVersion {
     $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
-    if (-not $JavaCmd)
-    {
+    if (-not $JavaCmd) {
         return $null
     }
 
-    try
-    {
+    try {
         $JavaVersionLine = (& java -version 2>&1 | Select-Object -First 1)
     }
-    catch
-    {
+    catch {
         return $null
     }
 
-    if ($JavaVersionLine -match '"(?<major>\d+)(?:\.(?<minor>\d+))?')
-    {
+    if ($JavaVersionLine -match '"(?<major>\d+)(?:\.(?<minor>\d+))?') {
         $Major = [int]$matches['major']
-        if ($Major -eq 1 -and $matches['minor'])
-        {
+        if ($Major -eq 1 -and $matches['minor']) {
             return [int]$matches['minor']
         }
         return $Major
     }
 
-    if ($JavaVersionLine -match '\b(?<major>\d+)\b')
-    {
+    if ($JavaVersionLine -match '\b(?<major>\d+)\b') {
         return [int]$matches['major']
     }
 
     return $null
 }
 
-function Refresh-ProcessPath
-{
+function Refresh-ProcessPath {
     $MachinePath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
     $UserPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
     $env:Path = ($MachinePath, $UserPath -join ";")
@@ -325,35 +279,13 @@ $DetectedVsCodeProfiles = @(Get-VSCodeProfiles)
 $SelectedCopilotProfiles = @(Select-VSCodeProfiles -Profiles $DetectedVsCodeProfiles -Mode $VsCodeProfileMode -OnlyExisting)
 $SelectedMcpProfiles = @(Select-VSCodeProfiles -Profiles $DetectedVsCodeProfiles -Mode $McpProfileMode -OnlyExisting)
 
-if (-not $SummaryPath)
-{
-    $SummaryName = if ($DryRun -or $Check)
-    {
-        '.a11y-agent-team-install-plan.json'
-    }
-    else
-    {
-        '.a11y-agent-team-install-summary.json'
-    }
-    $SummaryRoot = if ($Choice -eq '1')
-    {
-        (Get-Location).Path
-    }
-    else
-    {
-        $env:USERPROFILE
-    }
+if (-not $SummaryPath) {
+    $SummaryName = if ($DryRun -or $Check) { '.a11y-agent-team-install-plan.json' } else { '.a11y-agent-team-install-summary.json' }
+    $SummaryRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
     $SummaryPath = Join-Path $SummaryRoot $SummaryName
 }
 
-$OperationRoot = if ($Choice -eq '1')
-{
-    (Get-Location).Path
-}
-else
-{
-    $env:USERPROFILE
-}
+$OperationRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
 $BackupMetadataPath = Initialize-A11yOperationState -Operation 'install' -Root $OperationRoot -SummaryPath $SummaryPath -DryRun $DryRun -CheckMode $Check -CandidatePaths @($TargetDir, (Join-Path $TargetDir '.a11y-agent-manifest'), (Join-Path $TargetDir '.a11y-agent-team-version'))
 
 $InstallSummary = [ordered]@{
@@ -362,14 +294,7 @@ $InstallSummary = [ordered]@{
     operation               = 'install'
     dryRun                  = [bool]$DryRun
     check                   = [bool]$Check
-    scope                   = if ($Choice -eq '1')
-    {
-        'project'
-    }
-    else
-    {
-        'global'
-    }
+    scope                   = if ($Choice -eq '1') { 'project' } else { 'global' }
     targetDir               = $TargetDir
     requestedOptions        = [ordered]@{
         copilot           = [bool]$Copilot
@@ -395,8 +320,7 @@ $InstallSummary = [ordered]@{
     notes                   = @()
 }
 
-if ($Check)
-{
+if ($Check) {
     $InstallSummary.notes += 'Check mode only. No files were changed.'
     Write-Host ''
     Write-Host '  Check mode only. No files will be changed.'
@@ -409,40 +333,31 @@ if ($Check)
     exit 0
 }
 
-if ($DryRun)
-{
-    if (-not ($Copilot -or $Cli -or $Codex -or $Gemini))
-    {
+if ($DryRun) {
+    if (-not ($Copilot -or $Cli -or $Codex -or $Gemini)) {
         $InstallSummary.notes += 'Optional platforms were not selected in dry-run mode. Use -Copilot, -Cli, -Codex, and/or -Gemini to preview them explicitly.'
     }
     Write-Host ''
     Write-Host '  Dry run only. No files will be changed.'
     Write-Host "  Scope: $($InstallSummary.scope)"
     Write-Host "  Target: $TargetDir"
-    if ($Choice -eq '2')
-    {
+    if ($Choice -eq '2') {
         Write-Host '  VS Code profiles in scope:'
-        if ($SelectedCopilotProfiles.Count -gt 0)
-        {
-            foreach ($Profile in $SelectedCopilotProfiles)
-            {
+        if ($SelectedCopilotProfiles.Count -gt 0) {
+            foreach ($Profile in $SelectedCopilotProfiles) {
                 Write-Host "    -> $($Profile.Name): $($Profile.Path)"
             }
         }
-        else
-        {
+        else {
             Write-Host '    -> none detected for the requested profile filter'
         }
         Write-Host '  MCP settings targets:'
-        if ($SelectedMcpProfiles.Count -gt 0)
-        {
-            foreach ($Profile in $SelectedMcpProfiles)
-            {
+        if ($SelectedMcpProfiles.Count -gt 0) {
+            foreach ($Profile in $SelectedMcpProfiles) {
                 Write-Host "    -> $($Profile.Name): $(Join-Path $Profile.Path 'settings.json')"
             }
         }
-        else
-        {
+        else {
             Write-Host '    -> none detected for the requested profile filter'
         }
     }
@@ -451,43 +366,30 @@ if ($DryRun)
     exit 0
 }
 
-function Read-YesNo
-{
+function Read-YesNo {
     param(
         [string]$Prompt,
         [bool]$DefaultYes = $false
     )
 
-    if ($AutoApprove)
-    {
+    if ($AutoApprove) {
         return $true
     }
 
-    if (-not (Test-InteractivePrompting))
-    {
+    if (-not (Test-InteractivePrompting)) {
         return $DefaultYes
     }
 
-    $Suffix = if ($DefaultYes)
-    {
-        '[Y/n]'
-    }
-    else
-    {
-        '[y/N]'
-    }
+    $Suffix = if ($DefaultYes) { '[Y/n]' } else { '[y/N]' }
     $Answer = Read-Host "  $Prompt $Suffix"
-    if ([string]::IsNullOrWhiteSpace($Answer))
-    {
+    if ([string]::IsNullOrWhiteSpace($Answer)) {
         return $DefaultYes
     }
     return ($Answer -eq 'y' -or $Answer -eq 'Y')
 }
 
-function Get-McpCapabilityPlan
-{
-    if ($AutoApprove -or -not (Test-InteractivePrompting))
-    {
+function Get-McpCapabilityPlan {
+    if ($AutoApprove -or -not (Test-InteractivePrompting)) {
         return [PSCustomObject]@{
             Focus           = 'Baseline scanning'
             BrowserTools    = $false
@@ -516,28 +418,23 @@ function Get-McpCapabilityPlan
         ConfigureVsCode = $true
     }
 
-    switch ($Choice)
-    {
-        '2'
-        {
+    switch ($Choice) {
+        '2' {
             $Plan.Focus = 'Browser testing'
             $Plan.BrowserTools = $true
         }
-        '3'
-        {
+        '3' {
             $Plan.Focus = 'PDF-heavy workflow'
             $Plan.PdfForms = $true
             $Plan.DeepPdf = $true
         }
-        '4'
-        {
+        '4' {
             $Plan.Focus = 'Everything'
             $Plan.BrowserTools = $true
             $Plan.PdfForms = $true
             $Plan.DeepPdf = $true
         }
-        '5'
-        {
+        '5' {
             $Plan.Focus = 'Custom'
             $Plan.BrowserTools = Read-YesNo -Prompt 'Enable browser-based accessibility tools now?' -DefaultYes:$false
             $Plan.PdfForms = Read-YesNo -Prompt 'Enable PDF form conversion tools now?' -DefaultYes:$false
@@ -549,24 +446,20 @@ function Get-McpCapabilityPlan
     return [PSCustomObject]$Plan
 }
 
-function Show-McpCapabilityWarnings
-{
+function Show-McpCapabilityWarnings {
     param([object]$Plan)
 
     Write-Host ""
     Write-Host "  MCP capability plan: $($Plan.Focus)"
     Write-Host "    - Baseline scanning installs the MCP server plus core npm dependencies"
-    if ($Plan.BrowserTools)
-    {
+    if ($Plan.BrowserTools) {
         Write-Host "    - Browser testing needs Playwright, axe-core, and Chromium"
         Write-Host "    - Browser scans run against live pages and can take longer to install"
     }
-    if ($Plan.PdfForms)
-    {
+    if ($Plan.PdfForms) {
         Write-Host "    - PDF form conversion needs the optional pdf-lib package"
     }
-    if ($Plan.DeepPdf)
-    {
+    if ($Plan.DeepPdf) {
         Write-Host "    - Deep PDF validation needs Java 11+ and veraPDF"
         Write-Host "    - Baseline PDF scanning still works even if deep validation is not ready"
     }
@@ -574,58 +467,45 @@ function Show-McpCapabilityWarnings
     Write-Host "    - macOS is supported by the shell installer; Linux is not part of the guided installer target"
 }
 
-function Ensure-NodeJsRuntime
-{
+function Ensure-NodeJsRuntime {
     $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
     $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
     $NodeMajor = Get-NodeMajorVersion
 
-    if ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18)
-    {
+    if ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18) {
         return $true
     }
 
     Write-Host ""
-    if ($NodeCmd -and $NodeMajor)
-    {
+    if ($NodeCmd -and $NodeMajor) {
         Write-Host "  Detected Node.js $NodeMajor, but the MCP server requires Node.js 18 or later."
     }
-    else
-    {
+    else {
         Write-Host "  Node.js and npm were not found."
     }
 
     $WingetCmd = Get-Command winget -ErrorAction SilentlyContinue
-    if ($WingetCmd)
-    {
+    if ($WingetCmd) {
         Write-Host "  The installer can install Node.js LTS with winget."
-        if (Read-YesNo -Prompt 'Install Node.js LTS now?' -DefaultYes:$true)
-        {
-            try
-            {
+        if (Read-YesNo -Prompt 'Install Node.js LTS now?' -DefaultYes:$true) {
+            try {
                 winget install --exact --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements 2>&1 | Out-Null
-                if ($LASTEXITCODE -ne 0)
-                {
-                    throw "winget install failed with exit code $LASTEXITCODE"
-                }
+                if ($LASTEXITCODE -ne 0) { throw "winget install failed with exit code $LASTEXITCODE" }
                 Refresh-ProcessPath
             }
-            catch
-            {
+            catch {
                 Write-Host "    ! Node.js installation via winget failed."
             }
         }
     }
-    else
-    {
+    else {
         Write-Host "  winget was not found, so Node.js cannot be installed automatically here."
     }
 
     $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
     $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
     $NodeMajor = Get-NodeMajorVersion
-    if ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18)
-    {
+    if ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18) {
         Write-Host "    + Node.js runtime is ready for the MCP server"
         return $true
     }
@@ -638,8 +518,7 @@ function Ensure-NodeJsRuntime
     return $false
 }
 
-function Show-PdfDeepValidationReadiness
-{
+function Show-PdfDeepValidationReadiness {
     $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
     $VeraPdfCmd = Get-Command verapdf -ErrorAction SilentlyContinue
     $JavaMajor = Get-JavaMajorVersion
@@ -647,74 +526,57 @@ function Show-PdfDeepValidationReadiness
     Write-Host ""
     Write-Host "  PDF Deep Validation Readiness:"
 
-    if ($JavaCmd)
-    {
-        try
-        {
+    if ($JavaCmd) {
+        try {
             $JavaVersion = (& java -version 2>&1 | Select-Object -First 1)
-            if ($JavaMajor -ge 11)
-            {
+            if ($JavaMajor -ge 11) {
                 Write-Host "    [x] Java detected: $JavaVersion"
             }
-            else
-            {
+            else {
                 Write-Host "    [!] Java detected but too old: $JavaVersion"
             }
         }
-        catch
-        {
-            if ($JavaMajor -ge 11)
-            {
+        catch {
+            if ($JavaMajor -ge 11) {
                 Write-Host "    [x] Java command found"
             }
-            else
-            {
+            else {
                 Write-Host "    [!] Java command found, but version could not be confirmed as 11+"
             }
         }
     }
-    else
-    {
+    else {
         Write-Host "    [ ] Java not detected"
     }
 
-    if ($VeraPdfCmd)
-    {
-        try
-        {
+    if ($VeraPdfCmd) {
+        try {
             $VeraPdfVersion = (& verapdf --version 2>&1 | Select-Object -First 1)
             Write-Host "    [x] veraPDF detected: $VeraPdfVersion"
         }
-        catch
-        {
+        catch {
             Write-Host "    [x] veraPDF command found"
         }
     }
-    else
-    {
+    else {
         Write-Host "    [ ] veraPDF not detected"
     }
 
-    if ($JavaCmd -and $JavaMajor -ge 11 -and $VeraPdfCmd)
-    {
+    if ($JavaCmd -and $JavaMajor -ge 11 -and $VeraPdfCmd) {
         Write-Host "    READY: run_verapdf_scan should be available once the MCP server is running."
     }
-    elseif ($JavaCmd -and $JavaMajor -ge 11)
-    {
+    elseif ($JavaCmd -and $JavaMajor -ge 11) {
         Write-Host "    PARTIAL: Java is ready, but veraPDF still needs to be installed."
     }
-    elseif ($JavaCmd)
-    {
+    elseif ($JavaCmd) {
         Write-Host "    NOT READY: Java 11 or later is required before veraPDF can run."
     }
-    else
-    {
+    else {
         Write-Host "    NOT READY: scan_pdf_document will work, but run_verapdf_scan will not yet be available."
     }
 }
 
-function Test-McpHealthSmoke
-{
+function Test-McpHealthSmoke {
     param([string]$WorkingDir)
 
     $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
@@ -723,8 +585,7 @@ function Test-McpHealthSmoke
     $CoreSdkReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName '@modelcontextprotocol/sdk'
     $CoreSchemaReady = Test-NodeModuleAvailable -WorkingDir $WorkingDir -ModuleName 'zod'
 
-    if (-not ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18 -and $CoreSdkReady -and $CoreSchemaReady))
-    {
+    if (-not ($NodeCmd -and $NpmCmd -and $NodeMajor -ge 18 -and $CoreSdkReady -and $CoreSchemaReady)) {
         return [PSCustomObject]@{
             Label  = '[ ] SKIPPED'
             Detail = 'Baseline MCP prerequisites are not fully installed yet.'
@@ -736,41 +597,33 @@ function Test-McpHealthSmoke
     $StdErr = [System.IO.Path]::GetTempFileName()
     $Process = $null
 
-    try
-    {
+    try {
         $Command = "set PORT=$Port&& set A11Y_MCP_HOST=127.0.0.1&& set A11Y_MCP_STATELESS=1&& node server.js"
         $Process = Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', $Command -WorkingDirectory $WorkingDir -RedirectStandardOutput $StdOut -RedirectStandardError $StdErr -WindowStyle Hidden -PassThru
 
-        for ($Attempt = 0; $Attempt -lt 20; $Attempt++)
-        {
+        for ($Attempt = 0; $Attempt -lt 20; $Attempt++) {
             Start-Sleep -Milliseconds 500
-            try
-            {
+            try {
                 $Response = Invoke-RestMethod -Uri "http://127.0.0.1:$Port/health" -Method Get -TimeoutSec 2
-                if ($Response.status -eq 'ok')
-                {
+                if ($Response.status -eq 'ok') {
                     return [PSCustomObject]@{
                         Label  = '[x] READY'
                         Detail = "HTTP health check passed on port $Port."
                     }
                 }
             }
-            catch
-            {
+            catch {
             }
         }
 
         $ErrorLine = ''
-        if (Test-Path $StdErr)
-        {
+        if (Test-Path $StdErr) {
             $ErrorLine = Get-Content $StdErr -ErrorAction SilentlyContinue | Select-Object -First 1
         }
-        if (-not $ErrorLine -and (Test-Path $StdOut))
-        {
+        if (-not $ErrorLine -and (Test-Path $StdOut)) {
             $ErrorLine = Get-Content $StdOut -ErrorAction SilentlyContinue | Select-Object -First 1
         }
-        if (-not $ErrorLine)
-        {
+        if (-not $ErrorLine) {
             $ErrorLine = 'The temporary MCP server did not answer /health in time.'
         }
 
@@ -779,22 +632,18 @@ function Test-McpHealthSmoke
             Detail = $ErrorLine
         }
     }
-    finally
-    {
-        if ($Process -and -not $Process.HasExited)
-        {
+    finally {
+        if ($Process -and -not $Process.HasExited) {
             Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
         }
         Remove-Item $StdOut, $StdErr -Force -ErrorAction SilentlyContinue
     }
 }
 
-function Test-NodeModuleAvailable
-{
+function Test-NodeModuleAvailable {
     param([string]$WorkingDir, [string]$ModuleName)
 
-    if (-not $WorkingDir -or -not (Test-Path $WorkingDir))
-    {
+    if (-not $WorkingDir -or -not (Test-Path $WorkingDir)) {
         return $false
     }
 
@@ -802,33 +651,28 @@ function Test-NodeModuleAvailable
     return (Test-Path $ModulePkgPath)
 }
 
-function Test-PlaywrightChromiumReady
-{
+function Test-PlaywrightChromiumReady {
     param([string]$WorkingDir)
 
     $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
-    if (-not $NodeCmd -or -not $WorkingDir -or -not (Test-Path $WorkingDir))
-    {
+    if (-not $NodeCmd -or -not $WorkingDir -or -not (Test-Path $WorkingDir)) {
         return $false
     }
 
-    try
-    {
+    try {
         Push-Location $WorkingDir
         $null = node -e "import('playwright').then(async ({ chromium }) => { const fs = await import('node:fs'); const exe = chromium.executablePath(); process.exit(exe && fs.existsSync(exe) ? 0 : 1); }).catch(() => process.exit(1))" 2>&1
         $Success = ($LASTEXITCODE -eq 0)
         Pop-Location
         return $Success
     }
-    catch
-    {
+    catch {
         Pop-Location -ErrorAction SilentlyContinue
         return $false
     }
 }
 
-function Show-McpCapabilityReadiness
-{
+function Show-McpCapabilityReadiness {
     param([string]$WorkingDir)
 
     $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
@@ -847,110 +691,39 @@ function Show-McpCapabilityReadiness
 
     Write-Host ""
     Write-Host "  MCP Optional Capability Readiness:"
-    if ($NodeCmd -and $NodeMajor)
-    {
-        Write-Host ("    Node.js runtime (18+):                  " + ($(if ($NodeMajor -ge 18)
-                    {
-                        "[x] READY (v$NodeMajor)"
-                    }
-                    else
-                    {
-                        "[!] TOO OLD (v$NodeMajor)"
-                    })))
+    if ($NodeCmd -and $NodeMajor) {
+        Write-Host ("    Node.js runtime (18+):                  " + ($(if ($NodeMajor -ge 18) { "[x] READY (v$NodeMajor)" } else { "[!] TOO OLD (v$NodeMajor)" })))
     }
-    else
-    {
+    else {
         Write-Host "    Node.js runtime (18+):                  [ ] NOT READY"
     }
-    Write-Host ("    npm CLI:                                " + ($(if ($NpmCmd)
-                {
-                    '[x] READY'
-                }
-                else
-                {
-                    '[ ] NOT READY'
-                })))
-    Write-Host ("    MCP core dependencies:                  " + ($(if ($CoreSdkReady -and $CoreSchemaReady)
-                {
-                    '[x] READY'
-                }
-                else
-                {
-                    '[ ] NOT READY'
-                })))
+    Write-Host ("    npm CLI:                                " + ($(if ($NpmCmd) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host ("    MCP core dependencies:                  " + ($(if ($CoreSdkReady -and $CoreSchemaReady) { '[x] READY' } else { '[ ] NOT READY' })))
     Write-Host "    Python 3 helper (installer only):       [~] NOT REQUIRED ON WINDOWS"
-    Write-Host ("    Baseline PDF scan (scan_pdf_document):  " + ($(if ($BaselineReady)
-                {
-                    '[x] READY'
-                }
-                else
-                {
-                    '[ ] NOT READY'
-                })))
-    if ($JavaCmd -and $JavaMajor)
-    {
-        Write-Host ("    Deep PDF validation (Java 11+):       " + ($(if ($JavaMajor -ge 11)
-                    {
-                        "[x] READY (v$JavaMajor)"
-                    }
-                    else
-                    {
-                        "[!] TOO OLD (v$JavaMajor)"
-                    })))
+    Write-Host ("    Baseline PDF scan (scan_pdf_document):  " + ($(if ($BaselineReady) { '[x] READY' } else { '[ ] NOT READY' })))
+    if ($JavaCmd -and $JavaMajor) {
+        Write-Host ("    Deep PDF validation (Java 11+):       " + ($(if ($JavaMajor -ge 11) { "[x] READY (v$JavaMajor)" } else { "[!] TOO OLD (v$JavaMajor)" })))
     }
-    else
-    {
+    else {
         Write-Host "    Deep PDF validation (Java 11+):       [ ] NOT READY"
     }
-    Write-Host ("    Deep PDF validation (veraPDF):        " + ($(if ($VeraPdfCmd)
-                {
-                    '[x] READY'
-                }
-                else
-                {
-                    '[ ] NOT READY'
-                })))
+    Write-Host ("    Deep PDF validation (veraPDF):        " + ($(if ($VeraPdfCmd) { '[x] READY' } else { '[ ] NOT READY' })))
     Write-Host ("    Local MCP health smoke test:          " + $SmokeTest.Label)
-    Write-Host ("    Playwright package:                   " + ($(if ($PlaywrightReady)
-                {
-                    '[x] READY'
-                }
-                else
-                {
-                    '[ ] NOT READY'
-                })))
-    Write-Host ("    Chromium browser bundle:              " + ($(if ($ChromiumReady)
-                {
-                    '[x] READY'
-                }
-                else
-                {
-                    '[ ] NOT READY'
-                })))
-    Write-Host ("    PDF form conversion (pdf-lib):        " + ($(if ($PdfLibReady)
-                {
-                    '[x] READY'
-                }
-                else
-                {
-                    '[ ] NOT READY'
-                })))
+    Write-Host ("    Playwright package:                   " + ($(if ($PlaywrightReady) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host ("    Chromium browser bundle:              " + ($(if ($ChromiumReady) { '[x] READY' } else { '[ ] NOT READY' })))
+    Write-Host ("    PDF form conversion (pdf-lib):        " + ($(if ($PdfLibReady) { '[x] READY' } else { '[ ] NOT READY' })))
 
-    if (-not $BaselineReady)
-    {
+    if (-not $BaselineReady) {
         Write-Host "    Baseline scanning needs Node.js 18+, npm, and MCP server dependencies in the MCP directory."
     }
     Write-Host "    Python is not required for MCP runtime on Windows."
-    if ($SmokeTest.Detail)
-    {
+    if ($SmokeTest.Detail) {
         Write-Host "    Smoke test detail: $($SmokeTest.Detail)"
     }
-    if (-not $PlaywrightReady -or -not $ChromiumReady)
-    {
+    if (-not $PlaywrightReady -or -not $ChromiumReady) {
         Write-Host "    Browser-based scans need Playwright plus Chromium."
     }
-    if (-not $PdfLibReady)
-    {
+    if (-not $PdfLibReady) {
         Write-Host "    PDF form conversion needs pdf-lib in the MCP server directory."
     }
 }
@@ -960,13 +733,9 @@ function Show-McpCapabilityReadiness
 # This ensures users upgrading from v2.x to v3.0 don't lose custom prompts.
 # Migration: old naming (task-based) -> new naming (agent-based)
 # ---------------------------------------------------------------------------
-function Migrate-Prompts
-{
+function Migrate-Prompts {
     param([string]$SrcDir)
-    if (-not (Test-Path $SrcDir))
-    {
-        return
-    }
+    if (-not (Test-Path $SrcDir)) { return }
 
     $migrations = @{
         "a11y-update.prompt.md"           = "insiders-a11y-tracker.prompt.md"
@@ -983,18 +752,15 @@ function Migrate-Prompts
         "test-desktop-a11y.prompt.md"     = "desktop-a11y-testing-coach.prompt.md"
     }
 
-    foreach ($oldName in $migrations.Keys)
-    {
+    foreach ($oldName in $migrations.Keys) {
         $newName = $migrations[$oldName]
         $oldFile = Join-Path $SrcDir $oldName
         $newFile = Join-Path $SrcDir $newName
 
-        if ((Test-Path $oldFile) -and -not (Test-Path $newFile))
-        {
+        if ((Test-Path $oldFile) -and -not (Test-Path $newFile)) {
             Rename-Item -Path $oldFile -NewName $newName -ErrorAction SilentlyContinue
         }
-        elseif ((Test-Path $oldFile) -and (Test-Path $newFile))
-        {
+        elseif ((Test-Path $oldFile) -and (Test-Path $newFile)) {
             # Both exist; remove old version and keep new
             Remove-Item -Path $oldFile -Force -ErrorAction SilentlyContinue
         }
@@ -1007,18 +773,15 @@ function Migrate-Prompts
 #   2. a11y-enforce-edit.sh  (PreToolUse)       - Blocks UI file edits without review
 #   3. a11y-mark-reviewed.sh (PostToolUse)      - Creates session marker after review
 # ---------------------------------------------------------------------------
-function Install-GlobalHooks
-{
+function Install-GlobalHooks {
     $HooksDir = Join-Path $env:USERPROFILE ".claude\hooks"
     $SettingsJson = Join-Path $env:USERPROFILE ".claude\settings.json"
     $HookSrc = Join-Path $ScriptDir "claude-code-plugin\scripts"
 
-    if (-not (Test-Path $HookSrc))
-    {
+    if (-not (Test-Path $HookSrc)) {
         $HookSrc = Join-Path $ScriptDir ".claude\hooks"
     }
-    if (-not (Test-Path $HookSrc))
-    {
+    if (-not (Test-Path $HookSrc)) {
         Write-Host "    (hook scripts not found - skipping)"
         return
     }
@@ -1027,18 +790,14 @@ function Install-GlobalHooks
 
     # Resolve bash path - Git for Windows may not add bash.exe to PATH
     $BashCmd = "bash"
-    if (-not (Get-Command bash -ErrorAction SilentlyContinue))
-    {
+    if (-not (Get-Command bash -ErrorAction SilentlyContinue)) {
         $GitCmd = Get-Command git -ErrorAction SilentlyContinue
-        if ($GitCmd)
-        {
+        if ($GitCmd) {
             $GitBin = Join-Path (Split-Path (Split-Path $GitCmd.Source)) "bin\bash.exe"
-            if (Test-Path $GitBin)
-            {
+            if (Test-Path $GitBin) {
                 $BashCmd = $GitBin.Replace('\', '/')
             }
-            else
-            {
+            else {
                 Write-Host "    Warning: bash not found in PATH or Git install. Hooks may not execute."
             }
         }
@@ -1047,58 +806,43 @@ function Install-GlobalHooks
     # Forward-slash path for bash on Windows (Git Bash requires forward slashes)
     $HooksDirFwd = $HooksDir.Replace('\', '/')
 
-    foreach ($Hook in @("a11y-team-eval.sh", "a11y-enforce-edit.sh", "a11y-mark-reviewed.sh"))
-    {
+    foreach ($Hook in @("a11y-team-eval.sh", "a11y-enforce-edit.sh", "a11y-mark-reviewed.sh")) {
         $Src = Join-Path $HookSrc $Hook
         $Dst = Join-Path $HooksDir $Hook
-        if (Test-Path $Src)
-        {
+        if (Test-Path $Src) {
             Copy-Item -Path $Src -Destination $Dst -Force
         }
     }
 
     # Register hooks in settings.json
-    if (-not (Test-Path $SettingsJson))
-    {
+    if (-not (Test-Path $SettingsJson)) {
         [IO.File]::WriteAllText($SettingsJson, "{}", [Text.Encoding]::UTF8)
     }
 
     # Helper: upsert a hook entry by matching a substring in the command
-    function Set-HookEntry
-    {
+    function Set-HookEntry {
         param([string]$EventName, [string]$MatchSubstr, [hashtable]$NewEntry)
         $Settings = Get-Content $SettingsJson -Raw | ConvertFrom-Json
-        if (-not $Settings.PSObject.Properties["hooks"])
-        {
+        if (-not $Settings.PSObject.Properties["hooks"]) {
             $Settings | Add-Member -NotePropertyName "hooks" -NotePropertyValue ([PSCustomObject]@{})
         }
         $Hooks = $Settings.hooks
-        if (-not $Hooks.PSObject.Properties[$EventName])
-        {
+        if (-not $Hooks.PSObject.Properties[$EventName]) {
             $Hooks | Add-Member -NotePropertyName $EventName -NotePropertyValue @()
         }
         $Entries = @($Hooks.$EventName)
         $Replaced = $false
-        for ($i = 0; $i -lt $Entries.Count; $i++)
-        {
-            foreach ($h in $Entries[$i].hooks)
-            {
-                if ($h.command -and $h.command.Contains($MatchSubstr))
-                {
+        for ($i = 0; $i -lt $Entries.Count; $i++) {
+            foreach ($h in $Entries[$i].hooks) {
+                if ($h.command -and $h.command.Contains($MatchSubstr)) {
                     $Entries[$i] = $NewEntry
                     $Replaced = $true
                     break
                 }
             }
-            if ($Replaced)
-            {
-                break
-            }
+            if ($Replaced) { break }
         }
-        if (-not $Replaced)
-        {
-            $Entries += $NewEntry
-        }
+        if (-not $Replaced) { $Entries += $NewEntry }
         $Hooks.$EventName = $Entries
         $Settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsJson -Encoding UTF8
     }
@@ -1128,19 +872,13 @@ New-Item -ItemType Directory -Force -Path (Join-Path $TargetDir "agents") | Out-
 # The manifest is the single source of truth for what belongs to us vs. user files.
 $ManifestPath = Join-Path $TargetDir ".a11y-agent-manifest"
 $Manifest = [System.Collections.Generic.List[string]]::new()
-if (Test-Path $ManifestPath)
-{
+if (Test-Path $ManifestPath) {
     [IO.File]::ReadAllLines($ManifestPath, [Text.Encoding]::UTF8) | Where-Object { $_.Trim() -ne "" } | ForEach-Object { $Manifest.Add($_) }
 }
-function Add-ManifestEntry([string]$Entry)
-{
-    if (-not $Manifest.Contains($Entry))
-    {
-        $Manifest.Add($Entry)
-    }
+function Add-ManifestEntry([string]$Entry) {
+    if (-not $Manifest.Contains($Entry)) { $Manifest.Add($Entry) }
 }
-function Save-Manifest
-{
+function Save-Manifest {
     [IO.File]::WriteAllLines($ManifestPath, $Manifest.ToArray(), [Text.Encoding]::UTF8)
 }
 
@@ -1148,25 +886,21 @@ function Save-Manifest
 Write-Host ""
 Write-Host "  Copying agents..."
 $SkippedAgents = 0
-foreach ($Agent in $Agents)
-{
+foreach ($Agent in $Agents) {
     $Src = Join-Path $AgentsSrc $Agent
     $Dst = Join-Path $TargetDir "agents\$Agent"
     $Name = $Agent -replace '\.md$', ''
-    if (Test-Path $Dst)
-    {
+    if (Test-Path $Dst) {
         Write-Host "    ~ $Name (skipped - already exists)"
         $SkippedAgents++
     }
-    else
-    {
+    else {
         Copy-Item -Path $Src -Destination $Dst
         Add-ManifestEntry "agents/$Agent"
         Write-Host "    + $Name"
     }
 }
-if ($SkippedAgents -gt 0)
-{
+if ($SkippedAgents -gt 0) {
     Write-Host "      $SkippedAgents agent(s) skipped. Use -Force flag or delete them first to reinstall."
 }
 
@@ -1178,19 +912,16 @@ $CopilotInstalled = $false
 $CopilotDestinations = @()
 $InstallCopilot = $Copilot.IsPresent
 
-if ((-not $InstallCopilot) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Copilot agents?' -DefaultYes:$false))
-{
+if ((-not $InstallCopilot) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Copilot agents?' -DefaultYes:$false)) {
     Write-Host ""
     Write-Host "  Would you also like to install GitHub Copilot agents?"
     Write-Host "  This adds accessibility agents for Copilot Chat in VS Code/GitHub."
     $InstallCopilot = $true
 }
 
-if ($InstallCopilot)
-{
+if ($InstallCopilot) {
 
-    if ($Choice -eq "1")
-    {
+    if ($Choice -eq "1") {
         # Project install: put agents in .github\agents\
         $ProjectDir = Get-Location
         $CopilotDst = Join-Path $ProjectDir ".github\agents"
@@ -1200,12 +931,10 @@ if ($InstallCopilot)
         # Merge Copilot config files - appends our section rather than overwriting
         Write-Host ""
         Write-Host "  Merging Copilot config..."
-        foreach ($Config in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md"))
-        {
+        foreach ($Config in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
             $Src = Join-Path $CopilotConfigSrc $Config
             $Dst = Join-Path $ProjectDir ".github\$Config"
-            if (Test-Path $Src)
-            {
+            if (Test-Path $Src) {
                 Merge-ConfigFile -SrcFile $Src -DstFile $Dst -Label $Config
             }
         }
@@ -1213,18 +942,14 @@ if ($InstallCopilot)
         # Copy Copilot agents - skip files that already exist (preserves user agents)
         Write-Host ""
         Write-Host "  Copying Copilot agents..."
-        if (Test-Path $CopilotAgentsSrc)
-        {
-            foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -File)
-            {
+        if (Test-Path $CopilotAgentsSrc) {
+            foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -File) {
                 $DstPath = Join-Path $CopilotDst $File.Name
                 $DisplayName = $File.BaseName -replace '\.agent$', ''
-                if (Test-Path $DstPath)
-                {
+                if (Test-Path $DstPath) {
                     Write-Host "    ~ $DisplayName (skipped - already exists)"
                 }
-                else
-                {
+                else {
                     Copy-Item -Path $File.FullName -Destination $DstPath
                     Add-ManifestEntry "copilot-agents/$($File.Name)"
                     Write-Host "    + $DisplayName"
@@ -1235,31 +960,22 @@ if ($InstallCopilot)
         # Copy Copilot asset subdirs - file-by-file, skipping files that already exist
         Write-Host ""
         Write-Host "  Copying Copilot assets..."
-        foreach ($SubDir in @("skills", "instructions", "prompts"))
-        {
+        foreach ($SubDir in @("skills", "instructions", "prompts")) {
             $SrcSubDir = Join-Path $CopilotConfigSrc $SubDir
             $DstSubDir = Join-Path $ProjectDir ".github\$SubDir"
-            if (Test-Path $SrcSubDir)
-            {
+            if (Test-Path $SrcSubDir) {
                 # Migrate old prompt names to new agent-matching names (v2.5 -> v2.6)
-                if ($SubDir -eq "prompts")
-                {
+                if ($SubDir -eq "prompts") {
                     Migrate-Prompts -SrcDir $SrcSubDir
                 }
 
                 New-Item -ItemType Directory -Force -Path $DstSubDir | Out-Null
                 $Added = 0; $Skipped = 0
-                foreach ($File in Get-ChildItem -Recurse -File $SrcSubDir)
-                {
+                foreach ($File in Get-ChildItem -Recurse -File $SrcSubDir) {
                     $Rel = $File.FullName.Substring($SrcSubDir.Length).TrimStart('\\')
                     $Dst = Join-Path $DstSubDir $Rel
                     New-Item -ItemType Directory -Force -Path (Split-Path $Dst) | Out-Null
-                    if (Test-Path $Dst)
-                    {
-                        $Skipped++
-                    }
-                    else
-                    {
+                    if (Test-Path $Dst) { $Skipped++ } else {
                         Copy-Item $File.FullName $Dst
                         $RelEntry = $Rel.Replace('\\', '/')
                         Add-ManifestEntry "copilot-$SubDir/$RelEntry"
@@ -1267,10 +983,7 @@ if ($InstallCopilot)
                     }
                 }
                 $msg = "    + .github\$SubDir\ ($Added new"
-                if ($Skipped -gt 0)
-                {
-                    $msg += ", $Skipped skipped"
-                }
+                if ($Skipped -gt 0) { $msg += ", $Skipped skipped" }
                 Write-Host "$msg)"
             }
         }
@@ -1280,8 +993,7 @@ if ($InstallCopilot)
         Save-Manifest
         $CopilotInstalled = $true
     }
-    else
-    {
+    else {
         # Global install: store Copilot agents centrally and configure VS Code
         # to discover them via chat.agentFilesLocations setting.
         $CopilotCentral = Join-Path $env:USERPROFILE ".a11y-agent-team\copilot-agents"
@@ -1289,10 +1001,8 @@ if ($InstallCopilot)
 
         Write-Host ""
         Write-Host "  Storing Copilot agents centrally..."
-        if (Test-Path $CopilotAgentsSrc)
-        {
-            foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -Filter "*.agent.md")
-            {
+        if (Test-Path $CopilotAgentsSrc) {
+            foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -Filter "*.agent.md") {
                 Copy-Item -Path $File.FullName -Destination (Join-Path $CopilotCentral $File.Name) -Force
                 $Name = $File.BaseName -replace '\.agent$', ''
                 Write-Host "    + $Name"
@@ -1306,11 +1016,9 @@ if ($InstallCopilot)
         $CopilotCentralInstructions = Join-Path $CentralRoot "copilot-instructions-files"
         $CopilotCentralSkills = Join-Path $CentralRoot "copilot-skills"
 
-        foreach ($Config in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md"))
-        {
+        foreach ($Config in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
             $Src = Join-Path $CopilotConfigSrc $Config
-            if (Test-Path $Src)
-            {
+            if (Test-Path $Src) {
                 Copy-Item -Path $Src -Destination (Join-Path $CentralRoot $Config) -Force
             }
         }
@@ -1318,13 +1026,10 @@ if ($InstallCopilot)
                 @{ Src = Join-Path $CopilotConfigSrc "prompts"; Dst = $CopilotCentralPrompts; SubDir = "prompts" },
                 @{ Src = Join-Path $CopilotConfigSrc "instructions"; Dst = $CopilotCentralInstructions; SubDir = "instructions" },
                 @{ Src = Join-Path $CopilotConfigSrc "skills"; Dst = $CopilotCentralSkills; SubDir = "skills" }
-            ))
-        {
-            if (Test-Path $Pair.Src)
-            {
+            )) {
+            if (Test-Path $Pair.Src) {
                 # Migrate old prompt names to new agent-matching names (v2.5 -> v2.6)
-                if ($Pair.SubDir -eq "prompts")
-                {
+                if ($Pair.SubDir -eq "prompts") {
                     Migrate-Prompts -SrcDir $Pair.Src
                 }
 
@@ -1338,14 +1043,10 @@ if ($InstallCopilot)
         # installer also wrote to the User/ root, which caused every agent to
         # appear twice. We now write only to User/prompts/ and clean up any
         # stale copies left in User/ by earlier installs.
-        function Copy-ToVSCodeProfile
-        {
+        function Copy-ToVSCodeProfile {
             param([string]$ProfileDir, [string]$Label)
 
-            if (-not (Test-Path $ProfileDir))
-            {
-                return
-            }
+            if (-not (Test-Path $ProfileDir)) { return }
 
             $PromptsDir = Join-Path $ProfileDir "prompts"
             New-Item -ItemType Directory -Force -Path $PromptsDir | Out-Null
@@ -1355,22 +1056,17 @@ if ($InstallCopilot)
             $PromptFiles = Get-ChildItem -Path $CopilotCentralPrompts -Filter "*.prompt.md" -ErrorAction SilentlyContinue
             $InstructionFiles = Get-ChildItem -Path $CopilotCentralInstructions -Filter "*.instructions.md" -ErrorAction SilentlyContinue
 
-            foreach ($File in @($AgentFiles) + @($PromptFiles) + @($InstructionFiles))
-            {
-                if ($File)
-                {
+            foreach ($File in @($AgentFiles) + @($PromptFiles) + @($InstructionFiles)) {
+                if ($File) {
                     Copy-Item -Path $File.FullName -Destination (Join-Path $PromptsDir $File.Name) -Force
                 }
             }
 
             # Clean up duplicates left in User/ root by earlier installer versions
-            foreach ($File in @($AgentFiles) + @($PromptFiles) + @($InstructionFiles))
-            {
-                if ($File)
-                {
+            foreach ($File in @($AgentFiles) + @($PromptFiles) + @($InstructionFiles)) {
+                if ($File) {
                     $RootCopy = Join-Path $ProfileDir $File.Name
-                    if (Test-Path $RootCopy)
-                    {
+                    if (Test-Path $RootCopy) {
                         Remove-Item $RootCopy -Force
                     }
                 }
@@ -1383,16 +1079,13 @@ if ($InstallCopilot)
         Write-Host ""
         $StableSelected = $SelectedCopilotProfiles | Where-Object { $_.Key -eq 'stable' }
         $InsidersSelected = $SelectedCopilotProfiles | Where-Object { $_.Key -eq 'insiders' }
-        if ($StableSelected -and $InsidersSelected)
-        {
+        if ($StableSelected -and $InsidersSelected) {
             Write-Host "  Found both VS Code and VS Code Insiders. Installing Copilot assets into both profiles."
         }
-        foreach ($Profile in $SelectedCopilotProfiles)
-        {
+        foreach ($Profile in $SelectedCopilotProfiles) {
             Copy-ToVSCodeProfile -ProfileDir $Profile.Path -Label $Profile.Name
         }
-        if ($SelectedCopilotProfiles.Count -eq 0)
-        {
+        if ($SelectedCopilotProfiles.Count -eq 0) {
             Write-Host "  No matching VS Code profiles were detected for Copilot assets."
         }
 
@@ -1504,8 +1197,7 @@ $CliAgentsDst = ""
 $CliSkillsDst = ""
 $InstallCopilotCli = $Cli.IsPresent
 
-if ((-not $InstallCopilotCli) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Copilot CLI agents?' -DefaultYes:$false))
-{
+if ((-not $InstallCopilotCli) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Copilot CLI agents?' -DefaultYes:$false)) {
     Write-Host ""
     Write-Host "  Would you also like to install Copilot CLI agents?"
     Write-Host "  This adds agents to ~/.copilot/ for 'copilot' CLI use."
@@ -1513,19 +1205,16 @@ if ((-not $InstallCopilotCli) -and (-not $OptionalPlatformFlags) -and (-not $Aut
     $InstallCopilotCli = $true
 }
 
-if ($InstallCopilotCli)
-{
+if ($InstallCopilotCli) {
     Write-Host ""
     Write-Host "  Installing Copilot CLI agents..."
 
-    if ($Choice -eq "1")
-    {
+    if ($Choice -eq "1") {
         # Project install: CLI reads .github/agents/ directly
         $CliAgentsDst = Join-Path (Get-Location) ".github\agents"
         $CliSkillsDst = Join-Path (Get-Location) ".github\skills"
     }
-    else
-    {
+    else {
         # Global install: use ~/.copilot/
         $CliAgentsDst = Join-Path $env:USERPROFILE ".copilot\agents"
         $CliSkillsDst = Join-Path $env:USERPROFILE ".copilot\skills"
@@ -1535,20 +1224,16 @@ if ($InstallCopilotCli)
     New-Item -ItemType Directory -Force -Path $CliSkillsDst | Out-Null
 
     # Copy agents
-    if (Test-Path $CopilotAgentsSrc)
-    {
+    if (Test-Path $CopilotAgentsSrc) {
         $Count = 0
-        foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -Filter "*.agent.md")
-        {
+        foreach ($File in Get-ChildItem -Path $CopilotAgentsSrc -Filter "*.agent.md") {
             $DstFile = Join-Path $CliAgentsDst $File.Name
-            if (-not (Test-Path $DstFile))
-            {
+            if (-not (Test-Path $DstFile)) {
                 Copy-Item -Path $File.FullName -Destination $DstFile
                 Write-Host "    + $($File.Name)"
                 $Count++
             }
-            else
-            {
+            else {
                 Write-Host "    ~ $($File.Name) (skipped - exists)"
             }
         }
@@ -1556,20 +1241,17 @@ if ($InstallCopilotCli)
 
     # Copy skills
     $SkillsSrc = Join-Path $CopilotConfigSrc "skills"
-    if (Test-Path $SkillsSrc)
-    {
+    if (Test-Path $SkillsSrc) {
         $Count = 0
         Get-ChildItem -Path $SkillsSrc -Directory | ForEach-Object {
             $DstSkill = Join-Path $CliSkillsDst $_.Name
-            if (-not (Test-Path $DstSkill))
-            {
+            if (-not (Test-Path $DstSkill)) {
                 New-Item -ItemType Directory -Force -Path $DstSkill | Out-Null
                 Copy-Item -Path "$($_.FullName)\*" -Destination $DstSkill -Recurse
                 Write-Host "    + $($_.Name)/"
                 $Count++
             }
-            else
-            {
+            else {
                 Write-Host "    ~ $($_.Name)/ (skipped - exists)"
             }
         }
@@ -1589,8 +1271,7 @@ if ($InstallCopilotCli)
 $CodexInstalled = $false
 $InstallCodex = $Codex.IsPresent
 
-if ((-not $InstallCodex) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and ((Test-Path $CodexSkillsSrc) -or (Test-Path $CodexConfigSrc)) -and (Read-YesNo -Prompt 'Install Codex support?' -DefaultYes:$false))
-{
+if ((-not $InstallCodex) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and ((Test-Path $CodexSkillsSrc) -or (Test-Path $CodexConfigSrc)) -and (Read-YesNo -Prompt 'Install Codex support?' -DefaultYes:$false)) {
     Write-Host ""
     Write-Host "  Would you also like to install Codex support?"
     Write-Host "  This installs the Accessibility Agents skill pack and"
@@ -1598,32 +1279,27 @@ if ((-not $InstallCodex) -and (-not $OptionalPlatformFlags) -and (-not $AutoAppr
     $InstallCodex = $true
 }
 
-if ($InstallCodex -and ((Test-Path $CodexSkillsSrc) -or (Test-Path $CodexConfigSrc)))
-{
+if ($InstallCodex -and ((Test-Path $CodexSkillsSrc) -or (Test-Path $CodexConfigSrc))) {
     Write-Host ""
     Write-Host "  Installing Codex support..."
 
-    if ($Choice -eq "1")
-    {
+    if ($Choice -eq "1") {
         $CodexTargetDir = Join-Path (Get-Location) ".codex"
         $CodexPluginRoot = (Get-Location).Path
     }
-    else
-    {
+    else {
         $CodexTargetDir = Join-Path $env:USERPROFILE ".codex"
         $CodexPluginRoot = $env:USERPROFILE
     }
 
     New-Item -ItemType Directory -Force -Path $CodexTargetDir | Out-Null
-    if (Test-Path $CodexConfigSrc)
-    {
+    if (Test-Path $CodexConfigSrc) {
         $CodexConfigDst = Join-Path $CodexTargetDir "config.toml"
         Merge-ConfigFile -SrcFile $CodexConfigSrc -DstFile $CodexConfigDst -Label "config.toml (Codex experimental roles)"
         Add-ManifestEntry "codex-config/path:$CodexConfigDst"
     }
 
-    if (Test-Path $CodexRolesSrc)
-    {
+    if (Test-Path $CodexRolesSrc) {
         $CodexRolesDst = Join-Path $CodexTargetDir "roles"
         New-Item -ItemType Directory -Force -Path $CodexRolesDst | Out-Null
         Get-ChildItem -Path $CodexRolesSrc -Recurse -File -Filter "*.toml" | ForEach-Object {
@@ -1635,8 +1311,7 @@ if ($InstallCodex -and ((Test-Path $CodexSkillsSrc) -or (Test-Path $CodexConfigS
         }
     }
 
-    if (Test-Path $CodexSkillsSrc)
-    {
+    if (Test-Path $CodexSkillsSrc) {
         $CodexSkillsDst = Join-Path $CodexTargetDir "skills"
         New-Item -ItemType Directory -Force -Path $CodexSkillsDst | Out-Null
         Get-ChildItem -Path $CodexSkillsSrc -Directory | ForEach-Object {
@@ -1648,12 +1323,10 @@ if ($InstallCodex -and ((Test-Path $CodexSkillsSrc) -or (Test-Path $CodexConfigS
         Write-Host "    + Codex skills installed to $CodexSkillsDst"
     }
 
-    if ($Choice -eq "1")
-    {
+    if ($Choice -eq "1") {
         Add-ManifestEntry "codex/project"
     }
-    else
-    {
+    else {
         Add-ManifestEntry "codex/global"
     }
     Save-Manifest
@@ -1675,10 +1348,8 @@ $GeminiInstalled = $false
 $GeminiDst = ""
 $InstallGemini = $Gemini.IsPresent
 
-if (Test-Path $GeminiSrc)
-{
-    if ((-not $InstallGemini) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Gemini CLI support?' -DefaultYes:$false))
-    {
+if (Test-Path $GeminiSrc) {
+    if ((-not $InstallGemini) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Gemini CLI support?' -DefaultYes:$false)) {
         Write-Host ""
         Write-Host "  Would you also like to install Gemini CLI support?"
         Write-Host "  This installs accessibility skills as a Gemini CLI extension"
@@ -1686,28 +1357,23 @@ if (Test-Path $GeminiSrc)
         $InstallGemini = $true
     }
 
-    if ($InstallGemini)
-    {
+    if ($InstallGemini) {
         Write-Host ""
         Write-Host "  Installing Gemini CLI extension..."
 
-        if ($Choice -eq "1")
-        {
+        if ($Choice -eq "1") {
             $GeminiDst = Join-Path (Get-Location) ".gemini\extensions\a11y-agents"
         }
-        else
-        {
+        else {
             $GeminiDst = Join-Path $env:USERPROFILE ".gemini\extensions\a11y-agents"
         }
 
         New-Item -ItemType Directory -Force -Path $GeminiDst | Out-Null
 
         # Copy extension manifest and context file
-        foreach ($f in @("gemini-extension.json", "GEMINI.md"))
-        {
+        foreach ($f in @("gemini-extension.json", "GEMINI.md")) {
             $Src = Join-Path $GeminiSrc $f
-            if (Test-Path $Src)
-            {
+            if (Test-Path $Src) {
                 Copy-Item -Path $Src -Destination (Join-Path $GeminiDst $f) -Force
                 Write-Host "    + $f"
             }
@@ -1715,22 +1381,14 @@ if (Test-Path $GeminiSrc)
 
         # Copy skills - directory by directory, skip existing
         $SkillsSrc = Join-Path $GeminiSrc "skills"
-        if (Test-Path $SkillsSrc)
-        {
+        if (Test-Path $SkillsSrc) {
             $Added = 0; $Skipped = 0
             Get-ChildItem -Path $SkillsSrc -Directory | ForEach-Object {
                 $DstSkill = Join-Path $GeminiDst "skills\$($_.Name)"
                 New-Item -ItemType Directory -Force -Path $DstSkill | Out-Null
                 Get-ChildItem -Path $_.FullName -File | ForEach-Object {
                     $DstFile = Join-Path $DstSkill $_.Name
-                    if (Test-Path $DstFile)
-                    {
-                        $Skipped++
-                    }
-                    else
-                    {
-                        Copy-Item $_.FullName $DstFile; $Added++
-                    }
+                    if (Test-Path $DstFile) { $Skipped++ } else { Copy-Item $_.FullName $DstFile; $Added++ }
                 }
             }
             Write-Host "    + skills\ ($Added new, $Skipped skipped)"
@@ -1738,8 +1396,7 @@ if (Test-Path $GeminiSrc)
 
         # Copy hooks - overwrite all files (hooks are versioned with the extension)
         $HooksSrc = Join-Path $GeminiSrc "hooks"
-        if (Test-Path $HooksSrc)
-        {
+        if (Test-Path $HooksSrc) {
             $HooksDst = Join-Path $GeminiDst "hooks"
             New-Item -ItemType Directory -Force -Path $HooksDst | Out-Null
             $Added = 0
@@ -1751,12 +1408,10 @@ if (Test-Path $GeminiSrc)
         }
 
         $GeminiInstalled = $true
-        if ($Choice -eq "1")
-        {
+        if ($Choice -eq "1") {
             Add-ManifestEntry "gemini/project"
         }
-        else
-        {
+        else {
             Add-ManifestEntry "gemini/global"
         }
         Add-ManifestEntry "gemini/path:$GeminiDst"
@@ -1770,8 +1425,7 @@ if (Test-Path $GeminiSrc)
 # ---------------------------------------------------------------------------
 # Install enforcement hooks (global only)
 # ---------------------------------------------------------------------------
-if ($Choice -eq "2")
-{
+if ($Choice -eq "2") {
     Write-Host ""
     Write-Host "  Installing enforcement hooks..."
     Install-GlobalHooks
@@ -1785,21 +1439,17 @@ if ($Choice -eq "2")
 $McpInstalled = $false
 $McpDest = $null
 
-if (Test-Path $McpServerSrc)
-{
+if (Test-Path $McpServerSrc) {
     Write-Host ""
     Write-Host "  Would you like to set up the MCP server for document and PDF scanning?"
     Write-Host "  This copies the open-source server to a stable location, can install npm"
     Write-Host "  dependencies, and can add the VS Code MCP entry for local use."
 
-    if ((-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Set up MCP server?' -DefaultYes:$false))
-    {
-        if ($Choice -eq "1")
-        {
+    if ((-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Set up MCP server?' -DefaultYes:$false)) {
+        if ($Choice -eq "1") {
             $McpDest = Join-Path (Get-Location) "mcp-server"
         }
-        else
-        {
+        else {
             $McpDest = Join-Path $env:USERPROFILE ".a11y-agent-team\mcp-server"
         }
 
@@ -1818,28 +1468,21 @@ if (Test-Path $McpServerSrc)
         $NodeCmd = Get-Command node -ErrorAction SilentlyContinue
         $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
         $NodeMajor = Get-NodeMajorVersion
-        if ($NodeReady -and $NodeCmd -and $NpmCmd -and $NodeMajor -ge 18)
-        {
+        if ($NodeReady -and $NodeCmd -and $NpmCmd -and $NodeMajor -ge 18) {
             Write-Host ""
             Write-Host "  Node.js and npm are available."
             $InstallMcpDeps = Read-YesNo -Prompt 'Install MCP server npm dependencies now?' -DefaultYes:$true
-            if ($InstallMcpDeps)
-            {
+            if ($InstallMcpDeps) {
                 Write-Host ""
                 Write-Host "  Installing MCP server dependencies..."
-                try
-                {
+                try {
                     Push-Location $McpDest
                     npm install --omit=dev 2>&1 | Out-Null
-                    if ($LASTEXITCODE -ne 0)
-                    {
-                        throw "npm install failed with exit code $LASTEXITCODE"
-                    }
+                    if ($LASTEXITCODE -ne 0) { throw "npm install failed with exit code $LASTEXITCODE" }
                     Pop-Location
                     Write-Host "    + MCP server dependencies installed"
                 }
-                catch
-                {
+                catch {
                     Pop-Location -ErrorAction SilentlyContinue
                     Write-Host "    ! npm install failed. You can retry later with:"
                     Write-Host "      cd \"$McpDest\""
@@ -1847,23 +1490,17 @@ if (Test-Path $McpServerSrc)
                 }
             }
 
-            if ($CapabilityPlan.PdfForms)
-            {
+            if ($CapabilityPlan.PdfForms) {
                 Write-Host ""
                 Write-Host "  Setting up PDF form conversion tooling..."
-                try
-                {
+                try {
                     Push-Location $McpDest
                     npm install pdf-lib 2>&1 | Out-Null
-                    if ($LASTEXITCODE -ne 0)
-                    {
-                        throw "npm install pdf-lib failed with exit code $LASTEXITCODE"
-                    }
+                    if ($LASTEXITCODE -ne 0) { throw "npm install pdf-lib failed with exit code $LASTEXITCODE" }
                     Pop-Location
                     Write-Host "    + pdf-lib installed"
                 }
-                catch
-                {
+                catch {
                     Pop-Location -ErrorAction SilentlyContinue
                     Write-Host "    ! pdf-lib installation failed. You can retry later with:"
                     Write-Host "      cd \"$McpDest\""
@@ -1871,28 +1508,19 @@ if (Test-Path $McpServerSrc)
                 }
             }
 
-            if ($CapabilityPlan.BrowserTools)
-            {
+            if ($CapabilityPlan.BrowserTools) {
                 Write-Host ""
                 Write-Host "  Setting up Playwright browser tooling..."
-                try
-                {
+                try {
                     Push-Location $McpDest
                     npm install playwright @axe-core/playwright 2>&1 | Out-Null
-                    if ($LASTEXITCODE -ne 0)
-                    {
-                        throw "npm install playwright failed with exit code $LASTEXITCODE"
-                    }
+                    if ($LASTEXITCODE -ne 0) { throw "npm install playwright failed with exit code $LASTEXITCODE" }
                     npx playwright install chromium 2>&1 | Out-Null
-                    if ($LASTEXITCODE -ne 0)
-                    {
-                        throw "npx playwright install chromium failed with exit code $LASTEXITCODE"
-                    }
+                    if ($LASTEXITCODE -ne 0) { throw "npx playwright install chromium failed with exit code $LASTEXITCODE" }
                     Pop-Location
                     Write-Host "    + Playwright tooling and Chromium installed"
                 }
-                catch
-                {
+                catch {
                     Pop-Location -ErrorAction SilentlyContinue
                     Write-Host "    ! Playwright setup failed. You can retry later with:"
                     Write-Host "      cd \"$McpDest\""
@@ -1901,8 +1529,7 @@ if (Test-Path $McpServerSrc)
                 }
             }
         }
-        else
-        {
+        else {
             Write-Host ""
             Write-Host "  Node.js 18+ and npm are still not ready."
             Write-Host "  The MCP server was copied, but dependencies were not installed yet."
@@ -1915,37 +1542,29 @@ if (Test-Path $McpServerSrc)
 
         Write-Host ""
         $ShouldConfigureVsCode = $CapabilityPlan.ConfigureVsCode
-        if (-not $ShouldConfigureVsCode)
-        {
+        if (-not $ShouldConfigureVsCode) {
             $ShouldConfigureVsCode = Read-YesNo -Prompt 'Configure VS Code to use the local MCP server?' -DefaultYes:$true
         }
-        if ($ShouldConfigureVsCode)
-        {
-            if ($Choice -eq "1")
-            {
+        if ($ShouldConfigureVsCode) {
+            if ($Choice -eq "1") {
                 Configure-VSCodeMcpSettings -SettingsPath (Join-Path (Get-Location) ".vscode\settings.json") -Url "http://127.0.0.1:3100/mcp"
             }
-            else
-            {
-                if ($SelectedMcpProfiles.Count -eq 0)
-                {
+            else {
+                if ($SelectedMcpProfiles.Count -eq 0) {
                     Write-Host "    ! No matching VS Code profiles were detected for MCP configuration."
                 }
-                foreach ($Profile in $SelectedMcpProfiles)
-                {
+                foreach ($Profile in $SelectedMcpProfiles) {
                     Configure-VSCodeMcpSettings -SettingsPath (Join-Path $Profile.Path "settings.json") -Url "http://127.0.0.1:3100/mcp"
                 }
             }
         }
 
         Write-Host ""
-        if (Get-Command verapdf -ErrorAction SilentlyContinue)
-        {
+        if (Get-Command verapdf -ErrorAction SilentlyContinue) {
             Write-Host "  veraPDF detected."
             Write-Host "  Deep PDF/UA validation will be available through run_verapdf_scan."
         }
-        elseif (-not $CapabilityPlan.DeepPdf)
-        {
+        elseif (-not $CapabilityPlan.DeepPdf) {
             Write-Host "  Deep PDF validation was not selected during setup."
             Write-Host "  Baseline PDF scanning works without it."
             Write-Host "  If you want it later, install Java 11+ and veraPDF."
@@ -1953,8 +1572,7 @@ if (Test-Path $McpServerSrc)
             Write-Host "    Windows veraPDF via Chocolatey: choco install verapdf"
             Write-Host "    macOS veraPDF via Homebrew: brew install verapdf"
         }
-        else
-        {
+        else {
             $JavaCmd = Get-Command java -ErrorAction SilentlyContinue
             $JavaMajor = Get-JavaMajorVersion
             $WingetCmd = Get-Command winget -ErrorAction SilentlyContinue
@@ -1964,54 +1582,38 @@ if (Test-Path $McpServerSrc)
             Write-Host "  Baseline PDF scanning works without it."
             Write-Host "  For deeper PDF/UA validation later, install Java 11+ and veraPDF."
 
-            if ((-not $JavaCmd -or $JavaMajor -lt 11) -and $WingetCmd)
-            {
+            if ((-not $JavaCmd -or $JavaMajor -lt 11) -and $WingetCmd) {
                 Write-Host ""
-                if (-not $JavaCmd)
-                {
+                if (-not $JavaCmd) {
                     Write-Host "  Java was not found, and winget is available."
                 }
-                else
-                {
+                else {
                     Write-Host "  Java $JavaMajor was detected, but veraPDF requires Java 11 or later."
                 }
-                if (Read-YesNo -Prompt 'Install Java 21 JRE now with winget?' -DefaultYes:$false)
-                {
-                    try
-                    {
+                if (Read-YesNo -Prompt 'Install Java 21 JRE now with winget?' -DefaultYes:$false) {
+                    try {
                         winget install --exact --id EclipseAdoptium.Temurin.21.JRE --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
-                        if ($LASTEXITCODE -ne 0)
-                        {
-                            throw "winget install failed with exit code $LASTEXITCODE"
-                        }
+                        if ($LASTEXITCODE -ne 0) { throw "winget install failed with exit code $LASTEXITCODE" }
                         Write-Host "    + Java 21 JRE install requested through winget"
                         Write-Host "    ! Restart your terminal or VS Code after install so java is added to PATH"
                     }
-                    catch
-                    {
+                    catch {
                         Write-Host "    ! winget Java install failed. You can retry manually with:"
                         Write-Host "      winget install --exact --id EclipseAdoptium.Temurin.21.JRE"
                     }
                 }
             }
 
-            if ($ChocoCmd)
-            {
+            if ($ChocoCmd) {
                 Write-Host ""
-                if (Read-YesNo -Prompt 'Install veraPDF now with Chocolatey?' -DefaultYes:$false)
-                {
-                    try
-                    {
+                if (Read-YesNo -Prompt 'Install veraPDF now with Chocolatey?' -DefaultYes:$false) {
+                    try {
                         choco install verapdf -y 2>&1 | Out-Null
-                        if ($LASTEXITCODE -ne 0)
-                        {
-                            throw "choco install failed with exit code $LASTEXITCODE"
-                        }
+                        if ($LASTEXITCODE -ne 0) { throw "choco install failed with exit code $LASTEXITCODE" }
                         Write-Host "    + veraPDF install requested through Chocolatey"
                         Write-Host "    ! Restart your terminal or VS Code after install so verapdf is added to PATH"
                     }
-                    catch
-                    {
+                    catch {
                         Write-Host "    ! Chocolatey veraPDF install failed. You can retry manually with:"
                         Write-Host "      choco install verapdf"
                     }
@@ -2034,45 +1636,31 @@ Write-Host "  ========================="
 Write-Host "  Installation complete!"
 Write-Host ""
 Write-Host "  Claude Code agents installed:"
-foreach ($Agent in $Agents)
-{
+foreach ($Agent in $Agents) {
     $Name = $Agent -replace '\.md$', ''
     $AgentPath = Join-Path $TargetDir "agents\$Agent"
-    if (Test-Path $AgentPath)
-    {
+    if (Test-Path $AgentPath) {
         Write-Host "    [x] $Name"
     }
-    else
-    {
+    else {
         Write-Host "    [ ] $Name (missing)"
     }
 }
-if ($CopilotInstalled)
-{
+if ($CopilotInstalled) {
     Write-Host ""
     Write-Host "  Copilot agents installed to:"
-    foreach ($Dest in $CopilotDestinations)
-    {
+    foreach ($Dest in $CopilotDestinations) {
         Write-Host "    -> $Dest"
     }
     Write-Host ""
     Write-Host "  Copilot agents:"
-    $AgentSummaryDir = if ($Choice -eq "1")
-    {
-        Join-Path (Get-Location) ".github\agents"
-    }
-    else
-    {
-        $CopilotDestinations[0]
-    }
-    foreach ($File in Get-ChildItem -Path $AgentSummaryDir -Filter "*.agent.md" -ErrorAction SilentlyContinue)
-    {
+    $AgentSummaryDir = if ($Choice -eq "1") { Join-Path (Get-Location) ".github\agents" } else { $CopilotDestinations[0] }
+    foreach ($File in Get-ChildItem -Path $AgentSummaryDir -Filter "*.agent.md" -ErrorAction SilentlyContinue) {
         $Name = $File.BaseName -replace '\.agent$', ''
         Write-Host "    [x] $Name"
     }
 }
-if ($CopilotCliInstalled)
-{
+if ($CopilotCliInstalled) {
     Write-Host ""
     Write-Host "  Copilot CLI agents installed to:"
     Write-Host "    -> $CliAgentsDst"
@@ -2080,31 +1668,19 @@ if ($CopilotCliInstalled)
     Write-Host ""
     Write-Host "  Verify with: copilot /agent"
 }
-if ($CodexInstalled)
-{
+if ($CodexInstalled) {
     Write-Host ""
     Write-Host "  Codex support installed to:"
-    if ($CodexSkillsDst)
-    {
-        Write-Host "    -> $CodexSkillsDst"
-    }
-    if ($CodexConfigDst)
-    {
-        Write-Host "    -> $CodexConfigDst"
-    }
-    if ($CodexRolesDst)
-    {
-        Write-Host "    -> $CodexRolesDst"
-    }
+    if ($CodexSkillsDst) { Write-Host "    -> $CodexSkillsDst" }
+    if ($CodexConfigDst) { Write-Host "    -> $CodexConfigDst" }
+    if ($CodexRolesDst) { Write-Host "    -> $CodexRolesDst" }
 }
-if ($GeminiInstalled)
-{
+if ($GeminiInstalled) {
     Write-Host ""
     Write-Host "  Gemini CLI extension installed to:"
     Write-Host "    -> $GeminiDst"
 }
-if ($McpInstalled)
-{
+if ($McpInstalled) {
     Write-Host ""
     Write-Host "  MCP server ready at:"
     Write-Host "    -> $McpDest"
@@ -2121,21 +1697,17 @@ if ($McpInstalled)
 
 # Auto-update setup (global install only)
 $AutoUpdateEnabled = $false
-if ($Choice -eq "2")
-{
+if ($Choice -eq "2") {
     Write-Host ""
-    if ($NoAutoUpdate)
-    {
+    if ($NoAutoUpdate) {
         Write-Host "  Auto-updates skipped because -NoAutoUpdate was supplied."
     }
-    elseif (Read-YesNo -Prompt 'Enable auto-updates?' -DefaultYes:$false)
-    {
+    elseif (Read-YesNo -Prompt 'Enable auto-updates?' -DefaultYes:$false) {
         Write-Host "  This checks GitHub daily for new agents and improvements."
         # Copy the update script
         $UpdateSrc = Join-Path $ScriptDir "update.ps1"
         $UpdateDst = Join-Path $TargetDir ".a11y-agent-team-update.ps1"
-        if (Test-Path $UpdateSrc)
-        {
+        if (Test-Path $UpdateSrc) {
             Copy-Item -Path $UpdateSrc -Destination $UpdateDst -Force
         }
 
@@ -2150,19 +1722,16 @@ if ($Choice -eq "2")
 
         Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "Auto-update A11y Agent Team for Claude Code" -ErrorAction SilentlyContinue | Out-Null
 
-        if ($?)
-        {
+        if ($?) {
             Write-Host "  Auto-updates enabled (daily at 9:00 AM via Task Scheduler)."
             Write-Host "  Update log: ~\.claude\.a11y-agent-team-update.log"
             $AutoUpdateEnabled = $true
         }
-        else
-        {
+        else {
             Write-Host "  Could not create scheduled task. You can run update.ps1 manually."
         }
     }
-    else
-    {
+    else {
         Write-Host "  Auto-updates skipped. You can run update.ps1 manually anytime."
     }
 }
@@ -2171,26 +1740,14 @@ if ($Choice -eq "2")
 Save-Manifest
 
 # Record install scope for uninstaller
-$ScopeMarker = if ($Choice -eq "1")
-{
-    "scope:project"
-}
-else
-{
-    "scope:global"
-}
-if (-not $Manifest.Contains($ScopeMarker))
-{
-    Add-ManifestEntry $ScopeMarker
-}
+$ScopeMarker = if ($Choice -eq "1") { "scope:project" } else { "scope:global" }
+if (-not $Manifest.Contains($ScopeMarker)) { Add-ManifestEntry $ScopeMarker }
 Save-Manifest
 
-if (($VsCodeProfileMode -ne 'auto') -and ($SelectedCopilotProfiles.Count -eq 0) -and $CopilotInstalled)
-{
+if (($VsCodeProfileMode -ne 'auto') -and ($SelectedCopilotProfiles.Count -eq 0) -and $CopilotInstalled) {
     $InstallSummary.notes += 'The requested VS Code profile filter did not match any installed profile for Copilot assets.'
 }
-if (($McpProfileMode -ne 'auto') -and ($SelectedMcpProfiles.Count -eq 0) -and $McpInstalled)
-{
+if (($McpProfileMode -ne 'auto') -and ($SelectedMcpProfiles.Count -eq 0) -and $McpInstalled) {
     $InstallSummary.notes += 'The requested MCP profile filter did not match any installed VS Code profile.'
 }
 
@@ -2216,10 +1773,7 @@ $InstallSummary.manifestPath = $ManifestPath
 Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
 
 # Clean up temp download
-if ($Downloaded)
-{
-    Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue
-}
+if ($Downloaded) { Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue }
 
 Write-Host ""
 Write-Host "  Summary written to:"
@@ -2227,12 +1781,10 @@ Write-Host "    $SummaryPath"
 Write-Host ""
 Write-Host "  Verification:"
 Write-Host "    - Re-run with -DryRun to preview profile targeting before a future change"
-if ($CopilotInstalled -and $Choice -eq '2')
-{
+if ($CopilotInstalled -and $Choice -eq '2') {
     Write-Host "    - Check VS Code prompts folders under the selected profiles"
 }
-if ($McpInstalled)
-{
+if ($McpInstalled) {
     Write-Host "    - Start the MCP server and check http://127.0.0.1:3100/health"
 }
 Write-Host ""
@@ -2246,13 +1798,11 @@ Write-Host ""
 Write-Host "  To uninstall, run:"
 Write-Host "    irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.ps1 | iex"
 Write-Host ""
-if ($CodexInstalled)
-{
+if ($CodexInstalled) {
     Write-Host "  Start Codex in this project and try: `"Review this component for accessibility issues`""
     Write-Host "  The Accessibility Agents skills should load from .codex\skills or ~\.codex\skills."
 }
-else
-{
+else {
     Write-Host "  Start Claude Code and try: `"Build a login form`""
     Write-Host "  The accessibility-lead should activate automatically."
 }
