@@ -66,7 +66,7 @@ if (-not $ScriptDir -or -not (Test-Path (Join-Path $ScriptDir ".claude\agents"))
     $ScriptDir = $TmpDir
     Write-Host "  Downloaded to $scriptDir"
 }
-Write-Host "  Sourcing common installer functions from $ScriptDir\scripts\Installer.Common.ps1"
+#source the  helper scripts
 . (Join-Path $ScriptDir 'scripts\Installer.Common.ps1')
 
 $AgentsSrc = Join-Path $ScriptDir ".claude\agents"
