@@ -85,11 +85,11 @@ jobs:
       - name: Confirm repair summary was written
         shell: powershell
         run: |
-          $repairPath = Join-Path $env:RUNNER_TEMP 'smoke-test-repair-summary.json'
+          $repairPath = Join-Path (Get-Location).Path '.a11y-agent-team-repair-summary.json'
           if (-not (Test-Path $repairPath)) { throw "Repair summary file was not written: $repairPath" }
           $repairData = Get-Content $repairPath -Raw | ConvertFrom-Json
           Write-Host "Repair summary operation: $($repairData.operation)"
-          if ($repairData.operation -ne 'repair') { throw "Expected repair summary operation='repair', got '$($repairData.operation)'" }
+          if ($repairData.operation -ne 'repair-install') { throw "Expected repair summary operation='repair-install', got '$($repairData.operation)'" }
           Write-Host "Smoke test passed."
 
   shell-repair-smoke:
@@ -128,14 +128,14 @@ jobs:
 
       - name: Confirm repair summary was written
         run: |
-          REPAIR_PATH="$RUNNER_TEMP/smoke-test-repair-summary.json"
+          REPAIR_PATH="$(pwd)/.a11y-agent-team-repair-summary.json"
           if [ ! -f "$REPAIR_PATH" ]; then
             echo "ERROR: Repair summary file was not written: $REPAIR_PATH"
             exit 1
           fi
           OPERATION=$(python3 -c "import json,sys; d=json.load(open('$REPAIR_PATH')); print(d.get('operation',''))")
-          if [ "$OPERATION" != "repair" ]; then
-            echo "ERROR: Expected operation='repair', got '$OPERATION'"
+          if [ "$OPERATION" != "repair-install" ]; then
+            echo "ERROR: Expected operation='repair-install', got '$OPERATION'"
             exit 1
           fi
           echo "Smoke test passed."
