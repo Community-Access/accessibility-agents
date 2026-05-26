@@ -110,37 +110,9 @@ jobs:
           MCP_DIR="$FIXTURE_DIR/mcp-server"
           mkdir -p "$CLAUDE_DIR" "$MCP_DIR"
 
-          python3 - <<'PYEOF'
-import json, os
-
-fixture_dir = os.environ['RUNNER_TEMP']
-fixture = {
-    "schemaVersion": "1.0",
-    "operation": "install",
-    "scope": "project",
-    "targetDir": fixture_dir,
-    "installed": True,
-    "destinations": {
-        "claude":     {"agentsDir": os.path.join(fixture_dir, ".claude", "agents")},
-        "copilot":    {},
-        "copilotCli": {},
-        "codex":      {},
-        "gemini":     {},
-        "mcp":        {"serverDir": os.path.join(fixture_dir, "mcp-server")}
-    },
-    "notes": [],
-    "issues": [],
-    "issueCount": 0,
-    "lastRepairRun": None,
-    "version": "4.6.0",
-    "elapsedSeconds": 0
-}
-
-out = os.path.join(fixture_dir, "smoke-test-summary.json")
-with open(out, "w") as f:
-    json.dump(fixture, f, indent=2)
-print(f"Written fixture to: {out}")
-PYEOF
+          OUT="$FIXTURE_DIR/smoke-test-summary.json"
+          python3 -c "import json, os; d=os.environ['RUNNER_TEMP']; json.dump({'schemaVersion':'1.0','operation':'install','scope':'project','targetDir':d,'installed':True,'destinations':{'claude':{'agentsDir':os.path.join(d,'.claude','agents')},'copilot':{},'copilotCli':{},'codex':{},'gemini':{},'mcp':{'serverDir':os.path.join(d,'mcp-server')}},'notes':[],'issues':[],'issueCount':0,'lastRepairRun':None,'version':'4.6.0','elapsedSeconds':0}, open(os.path.join(d,'smoke-test-summary.json'),'w'), indent=2)"
+          echo "Written fixture to: $OUT"
 
       - name: Run repair script in validate-only mode
         run: |
