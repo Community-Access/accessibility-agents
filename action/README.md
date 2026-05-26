@@ -11,7 +11,7 @@ Part of the [Accessibility Agents](https://github.com/Community-Access/accessibi
 Add one step to any workflow:
 
 ```yaml
-- uses: Community-Access/accessibility-agents/action@v5.3.0
+- uses: Community-Access/accessibility-agents/action@v5.4.0
   with:
     scan-type: web
 ```
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: Community-Access/accessibility-agents/action@v5.3.0
+      - uses: Community-Access/accessibility-agents/action@v5.4.0
         with:
           scan-type: web
           fail-on: serious
@@ -67,7 +67,7 @@ jobs:
 ### Scan Office documents and PDFs
 
 ```yaml
-- uses: Community-Access/accessibility-agents/action@v5.3.0
+- uses: Community-Access/accessibility-agents/action@v5.4.0
   with:
     scan-type: all
     profile: strict
@@ -77,7 +77,7 @@ jobs:
 ### Lenient scan (fail on critical only)
 
 ```yaml
-- uses: Community-Access/accessibility-agents/action@v5.3.0
+- uses: Community-Access/accessibility-agents/action@v5.4.0
   with:
     fail-on: critical
     profile: minimal
@@ -86,7 +86,7 @@ jobs:
 ### Use outputs in subsequent steps
 
 ```yaml
-- uses: Community-Access/accessibility-agents/action@v5.3.0
+- uses: Community-Access/accessibility-agents/action@v5.4.0
   id: a11y
   with:
     scan-type: web
