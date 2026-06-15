@@ -1,4 +1,4 @@
-﻿agents/accessibility-lead.md
+agents/accessibility-lead.md
 agents/developer-hub.md
 agents/document-accessibility-wizard.md
 agents/github-hub.md
@@ -73,8 +73,8 @@ copilot-agents/performance-accessibility.agent.md
 copilot-agents/playwright-scanner.agent.md
 copilot-agents/playwright-verifier.agent.md
 copilot-agents/powerpoint-accessibility.agent.md
-copilot-agents/projects-manager.agent.md
 copilot-agents/pr-review.agent.md
+copilot-agents/projects-manager.agent.md
 copilot-agents/python-specialist.agent.md
 copilot-agents/release-manager.agent.md
 copilot-agents/repo-admin.agent.md
@@ -87,9 +87,9 @@ copilot-agents/team-manager.agent.md
 copilot-agents/template-builder.agent.md
 copilot-agents/testing-coach.agent.md
 copilot-agents/text-quality-reviewer.agent.md
-copilot-agents/wcag3-preview.agent.md
 copilot-agents/wcag-aaa.agent.md
 copilot-agents/wcag-guide.agent.md
+copilot-agents/wcag3-preview.agent.md
 copilot-agents/web-accessibility-wizard.agent.md
 copilot-agents/web-component-specialist.agent.md
 copilot-agents/web-csv-reporter.agent.md
@@ -199,9 +199,9 @@ copilot-prompts/performance-accessibility.prompt.md
 copilot-prompts/powerpoint-accessibility.prompt.md
 copilot-prompts/pr-author-checklist.prompt.md
 copilot-prompts/pr-comment.prompt.md
-copilot-prompts/project-status.prompt.md
 copilot-prompts/pr-report.prompt.md
 copilot-prompts/pr-review.prompt.md
+copilot-prompts/project-status.prompt.md
 copilot-prompts/python-specialist.prompt.md
 copilot-prompts/quick-document-check.prompt.md
 copilot-prompts/quick-markdown-check.prompt.md
@@ -228,9 +228,9 @@ copilot-prompts/testing-coach.prompt.md
 copilot-prompts/text-quality-reviewer.prompt.md
 copilot-prompts/training-scenario.prompt.md
 copilot-prompts/triage.prompt.md
-copilot-prompts/wcag3-preview.prompt.md
 copilot-prompts/wcag-aaa.prompt.md
 copilot-prompts/wcag-guide.prompt.md
+copilot-prompts/wcag3-preview.prompt.md
 copilot-prompts/web-accessibility-wizard.prompt.md
 copilot-prompts/web-component-specialist.prompt.md
 copilot-prompts/web-csv-reporter.prompt.md
@@ -291,8 +291,8 @@ gemini/skills/cross-document-analyzer/SKILL.md
 gemini/skills/cross-page-analyzer/SKILL.md
 gemini/skills/daily-briefing/SKILL.md
 gemini/skills/data-visualization-accessibility/SKILL.md
-gemini/skills/design-system/SKILL.md
 gemini/skills/design-system-auditor/SKILL.md
+gemini/skills/design-system/SKILL.md
 gemini/skills/desktop-a11y-specialist/SKILL.md
 gemini/skills/desktop-a11y-testing-coach/SKILL.md
 gemini/skills/developer-hub/SKILL.md
@@ -343,8 +343,8 @@ gemini/skills/playwright-scanner/SKILL.md
 gemini/skills/playwright-testing/SKILL.md
 gemini/skills/playwright-verifier/SKILL.md
 gemini/skills/powerpoint-accessibility/SKILL.md
-gemini/skills/projects-manager/SKILL.md
 gemini/skills/pr-review/SKILL.md
+gemini/skills/projects-manager/SKILL.md
 gemini/skills/python-development/SKILL.md
 gemini/skills/python-specialist/SKILL.md
 gemini/skills/release-manager/SKILL.md
@@ -361,9 +361,9 @@ gemini/skills/template-builder/SKILL.md
 gemini/skills/testing-coach/SKILL.md
 gemini/skills/testing-strategy/SKILL.md
 gemini/skills/text-quality-reviewer/SKILL.md
-gemini/skills/wcag3-preview/SKILL.md
 gemini/skills/wcag-aaa/SKILL.md
 gemini/skills/wcag-guide/SKILL.md
+gemini/skills/wcag3-preview/SKILL.md
 gemini/skills/web-accessibility-wizard/SKILL.md
 gemini/skills/web-component-specialist/SKILL.md
 gemini/skills/web-csv-reporter/SKILL.md
