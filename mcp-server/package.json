@@ -46,7 +46,7 @@
     "prepublishOnly": "npm test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "express": "^5.1.0",
     "playwright-core": "^1.58.2",
     "zod": "^3.25.0"
