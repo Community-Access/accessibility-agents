@@ -24,7 +24,7 @@ jobs:
     name: PowerShell repair script smoke test
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Write minimal install summary fixture
         shell: powershell
@@ -96,7 +96,7 @@ jobs:
     name: Shell repair script smoke test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
