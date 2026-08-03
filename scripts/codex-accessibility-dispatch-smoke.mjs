@@ -61,13 +61,17 @@ const hookScript = requireFile(hookScriptPath);
 for (const phrase of [
   "Accessibility Agents Codex dispatch is required",
   "permissionDecision: \"deny\"",
-  "Spawn accessibility-lead first",
+  "turn.coordinator || \"accessibility-lead\"",
   "handleStop",
   "parent_thread_id",
   "hasAgentStateSince",
   "look for",
   "selectRequiredSpecialists",
   "modal-specialist",
+  "detectProjectSurface",
+  "desktop-a11y-specialist",
+  "document-accessibility-wizard",
+  "markdown-a11y-assistant",
 ]) {
   if (!hookScript.includes(phrase)) {
     fail(`${hookScriptPath}: missing dispatch guard phrase "${phrase}".`);

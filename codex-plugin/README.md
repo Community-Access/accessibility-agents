@@ -58,11 +58,11 @@ The router layer is intentionally small. Specialist knowledge stays available wi
 The plugin includes Codex lifecycle hook files for the universal installer to
 register as a single user-level guard for UI work:
 
-- `UserPromptSubmit` detects UI and web prompts and injects the lead-dispatch requirement.
-- `SubagentStart` records when `accessibility-lead` and tracked web specialists have started for the current turn.
-- `SubagentStop` records when `accessibility-lead` and tracked web specialists have completed for the current turn.
-- `PreToolUse` blocks edits to UI files until `accessibility-lead` has been dispatched in that same turn.
-- `Stop` blocks final answers until `accessibility-lead` and required specialists have completed.
+- `UserPromptSubmit` classifies the workspace and task context, then injects the relevant routing requirement. It recognizes web, desktop/native Python, Office/PDF/EPUB, and markdown surfaces; an explicit task target takes precedence over ambient workspace evidence.
+- `SubagentStart` records when selected web, desktop, document, and markdown specialists have started for the current turn.
+- `SubagentStop` records when selected web, desktop, document, and markdown specialists have completed for the current turn.
+- `PreToolUse` blocks relevant web, desktop, document, or markdown edits until that surface's coordinator has been dispatched in the same turn.
+- `Stop` blocks final answers until the selected coordinator and required specialists have completed.
 
 This is intentionally paired with the router skill. The hook enforces the rule at the edit boundary, while the router still owns the dispatch plan and specialist selection. If Codex has lazy-loaded the subagent tool, the router must use `tool_search` before claiming subagents are unavailable.
 
@@ -179,11 +179,15 @@ After installing or updating Codex subagents or hooks, start a new Codex session
 
 If Codex shows a hooks review notice, open `/hooks`, review the Accessibility Agents entries that run `a11y-codex-dispatch-guard.mjs`, and trust them.
 
-The Codex hook guard now tracks the full UI review lifecycle. It injects the
-lead-plus-specialists requirement for UI prompts, records `SubagentStart` and
-`SubagentStop` for the lead and tracked web specialists, blocks UI edits until
-the lead has started, and blocks the final answer until the lead and required
-specialists have completed.
+The Codex hook guard now tracks the full accessibility-review lifecycle. It
+uses bounded workspace evidence (project manifests and a shallow file scan) to
+choose the matching router and specialists. Web projects retain the existing
+lead-plus-web-specialist coverage. Desktop Python projects use desktop,
+keyboard, and screen-reader testing specialists rather than web-only reviews;
+document and markdown projects route to their respective leads. It records
+`SubagentStart` and `SubagentStop`, blocks UI edits until the required review
+has started, and blocks the final answer until the required specialists have
+completed.
 
 ## Expected User Experience
 

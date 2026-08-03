@@ -13,7 +13,7 @@
     ],
     "SubagentStart": [
       {
-        "matcher": "^(accessibility-lead|aria-specialist|keyboard-navigator|contrast-master|forms-specialist|modal-specialist|live-region-controller|alt-text-headings|tables-data-specialist|link-checker|web-accessibility-wizard)$",
+        "matcher": "^(accessibility-lead|aria-specialist|keyboard-navigator|contrast-master|forms-specialist|modal-specialist|live-region-controller|alt-text-headings|tables-data-specialist|link-checker|web-accessibility-wizard|developer-hub|wxpython-specialist|nvda-addon-specialist|desktop-a11y-specialist|desktop-a11y-testing-coach|document-accessibility-wizard|word-accessibility|excel-accessibility|powerpoint-accessibility|pdf-accessibility|epub-accessibility|markdown-a11y-assistant)$",
         "hooks": [
           {
             "type": "command",
@@ -25,7 +25,7 @@
     ],
     "SubagentStop": [
       {
-        "matcher": "^(accessibility-lead|aria-specialist|keyboard-navigator|contrast-master|forms-specialist|modal-specialist|live-region-controller|alt-text-headings|tables-data-specialist|link-checker|web-accessibility-wizard)$",
+        "matcher": "^(accessibility-lead|aria-specialist|keyboard-navigator|contrast-master|forms-specialist|modal-specialist|live-region-controller|alt-text-headings|tables-data-specialist|link-checker|web-accessibility-wizard|developer-hub|wxpython-specialist|nvda-addon-specialist|desktop-a11y-specialist|desktop-a11y-testing-coach|document-accessibility-wizard|word-accessibility|excel-accessibility|powerpoint-accessibility|pdf-accessibility|epub-accessibility|markdown-a11y-assistant)$",
         "hooks": [
           {
             "type": "command",

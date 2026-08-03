@@ -109,6 +109,9 @@ if (fs.existsSync(codexHookPath)) {
     for (const phrase of [
       'a11y-codex-dispatch-guard.mjs',
       'modal-specialist',
+      'desktop-a11y-specialist',
+      'document-accessibility-wizard',
+      'markdown-a11y-assistant',
       'SubagentStop',
       'Stop',
       'apply_patch|Edit|Write',
@@ -130,7 +133,7 @@ if (fs.existsSync(codexHookScript)) {
   for (const phrase of [
     'Accessibility Agents Codex dispatch is required',
     'permissionDecision: "deny"',
-    'Spawn accessibility-lead first',
+    'turn.coordinator || "accessibility-lead"',
     'handleStop',
     'parent_thread_id',
     'hasAgentStateSince',
@@ -139,8 +142,13 @@ if (fs.existsSync(codexHookScript)) {
     'selectRequiredSpecialists',
     'modal-specialist',
     'tool_search',
-    'touchesUiFile',
+    'touchesRelevantFile',
     'looksLikeUiWork',
+    'detectProjectSurface',
+    'workspaceRoot',
+    'desktop-a11y-specialist',
+    'document-accessibility-wizard',
+    'markdown-a11y-assistant',
   ]) {
     if (!body.includes(phrase)) {
       fail(`codex-plugin/hooks/a11y-codex-dispatch-guard.mjs: missing dispatch guard phrase "${phrase}".`);
