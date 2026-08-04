@@ -869,7 +869,7 @@ function Test-NodeModuleAvailable {
         return $false
     }
 
-    $ModulePkgPath = Join-Path $WorkingDir "node_modules" $ModuleName "package.json"
+    $ModulePkgPath = Join-Path $WorkingDir "node_modules\$ModuleName\package.json"
     return (Test-Path $ModulePkgPath)
 }
 

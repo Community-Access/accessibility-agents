@@ -1,0 +1,859 @@
+﻿# Accessibility Agents Uninstaller (Windows PowerShell)
+# Built by Community Access - https://community-access.org
+#
+# Usage:
+#   irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.ps1 | iex
+#   powershell -File uninstall.ps1                Interactive mode
+#   powershell -File uninstall.ps1 --project      Uninstall from .claude\ in the current directory
+#   powershell -File uninstall.ps1 --global       Uninstall from ~\.claude\
+
+$ErrorActionPreference = "Stop"
+$ScriptDir = if ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } else { (Get-Location).Path }
+. (Join-Path $ScriptDir 'scripts\Installer.Common.ps1')
+
+$Check = $false
+function Write-UninstallSummaryFile {
+    param([string]$Path, [hashtable]$Data)
+    Write-A11ySummaryFile -Path $Path -Data $Data
+}
+
+function Stop-RunningMcpProcesses {
+    Write-Host ""
+    Write-Host "  Checking for running MCP server processes..."
+    
+    # Target common directories: global store and project directory
+    $GlobalMcp = Join-Path $env:USERPROFILE ".a11y-agent-team"
+    $ProjectMcp = if ($ProjectDir) { Join-Path $ProjectDir "mcp-server" } else { $null }
+
+    # Query running node processes to see if they are locking our MCP server
+    $NodeProcesses = Get-CimInstance Win32_Process -Filter "name = 'node.exe'" -ErrorAction SilentlyContinue
+    if ($NodeProcesses) {
+        foreach ($Proc in $NodeProcesses) {
+            $Cmd = $Proc.CommandLine
+            if ($Cmd -and ($Cmd -like "*server.js*")) {
+                $IsTarget = $false
+                if ($Cmd -like "*\.a11y-agent-team*") {
+                    $IsTarget = $true
+                } elseif ($ProjectMcp -and ($Cmd -like "*$ProjectMcp*")) {
+                    $IsTarget = $true
+                } elseif ($Cmd -like "*accessibility-agents\mcp-server*") {
+                    $IsTarget = $true
+                }
+                
+                if ($IsTarget) {
+                    try {
+                        Write-Host "    - Stopping running MCP server process (PID: $($Proc.ProcessId))..."
+                        Stop-Process -Id $Proc.ProcessId -Force -ErrorAction Stop
+                        Start-Sleep -Milliseconds 500
+                    } catch {
+                        Write-Host "    ! Could not stop process $($Proc.ProcessId): $_"
+                    }
+                }
+            }
+        }
+    }
+}
+
+# Parse CLI flags
+$Choice = ""
+$DryRun = $false
+$VsCodeStable = $false
+$VsCodeInsiders = $false
+$VsCodeBoth = $false
+$SummaryPath = $null
+$PendingSummaryPath = $false
+for ($index = 0; $index -lt $args.Count; $index++) {
+    $arg = $args[$index]
+
+    if ($PendingSummaryPath) {
+        $SummaryPath = $arg
+        $PendingSummaryPath = $false
+        continue
+    }
+
+    if (($arg -eq '-SummaryPath') -or ($arg -eq '-summary') -or ($arg -eq '-summaryPath')) {
+        $PendingSummaryPath = $true
+        continue
+    }
+
+    if ($arg -eq "--global")  { $Choice = "2" }
+    if ($arg -eq "--project") { $Choice = "1" }
+    if ($arg -eq "--check") { $Check = $true }
+    if ($arg -eq "--dry-run") { $DryRun = $true }
+    if ($arg -eq "--vscode-stable") { $VsCodeStable = $true }
+    if ($arg -eq "--vscode-insiders") { $VsCodeInsiders = $true }
+    if ($arg -eq "--vscode-both") { $VsCodeBoth = $true }
+    if ($arg -eq "--summary") {
+        $PendingSummaryPath = $true
+        continue
+    }
+    if (($arg -like "--summary=*") -or ($arg -like "-SummaryPath=*") -or ($arg -like "-summary=*") -or ($arg -like "-summaryPath=*")) {
+        $SummaryPath = ($arg -replace '^(--summary=|-SummaryPath=|-summary=|-summaryPath=)', '')
+        if ($SummaryPath -match '^[A-Za-z]$' -and ($index + 1) -lt $args.Count -and $args[$index + 1] -like '\*') {
+            $SummaryPath = "${SummaryPath}:$($args[$index + 1])"
+            $index++
+        }
+    }
+}
+
+if ($PendingSummaryPath) {
+    throw 'Missing value after --summary.'
+}
+
+if (-not $Choice) {
+    Write-Host ""
+    Write-Host "  Accessibility Agents Uninstaller"
+    Write-Host "  ================================="
+    Write-Host ""
+    Write-Host "  Where would you like to uninstall from?"
+    Write-Host ""
+    Write-Host "  1) Project   - Remove from .claude\ in the current directory"
+    Write-Host "  2) Global    - Remove from ~\.claude\"
+    Write-Host ""
+    $Choice = Read-Host "  Choose [1/2]"
+}
+
+switch ($Choice) {
+    "1" {
+        $TargetDir = Join-Path (Get-Location) ".claude"
+        $ProjectDir = (Get-Location).Path
+        Write-Host ""
+        Write-Host "  Uninstalling from project: $(Get-Location)"
+    }
+    "2" {
+        $TargetDir = Join-Path $env:USERPROFILE ".claude"
+        $ProjectDir = $null
+        Write-Host ""
+        Write-Host "  Uninstalling from: $TargetDir"
+    }
+    default {
+        Write-Host "  Invalid choice. Exiting."
+        exit 1
+    }
+}
+
+$VsCodeProfileMode = Get-RequestedProfileMode -Stable:$VsCodeStable -Insiders:$VsCodeInsiders -Both:$VsCodeBoth
+$SelectedVsCodeProfiles = @(Select-VSCodeProfiles -Profiles (Get-VSCodeProfiles) -Mode $VsCodeProfileMode)
+if (-not $SummaryPath) {
+    $SummaryName = if ($DryRun -or $Check) { '.a11y-agent-team-uninstall-plan.json' } else { '.a11y-agent-team-uninstall-summary.json' }
+    $SummaryRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
+    $SummaryPath = Join-Path $SummaryRoot $SummaryName
+}
+
+$OperationRoot = if ($Choice -eq '1') { (Get-Location).Path } else { $env:USERPROFILE }
+$BackupMetadataPath = Initialize-A11yOperationState -Operation 'uninstall' -Root $OperationRoot -SummaryPath $SummaryPath -DryRun $DryRun -CheckMode $Check -CandidatePaths @($TargetDir, (Join-Path $TargetDir '.a11y-agent-manifest'), (Join-Path $TargetDir '.a11y-agent-team-version'))
+
+$UninstallSummary = [ordered]@{
+    schemaVersion = '1.0'
+    timestampUtc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+    operation = 'uninstall'
+    dryRun = [bool]$DryRun
+    check = [bool]$Check
+    scope = if ($Choice -eq '1') { 'project' } else { 'global' }
+    targetDir = $TargetDir
+    vscodeProfileMode = $VsCodeProfileMode
+    requestedOptions = [ordered]@{
+        vscodeProfileMode = $VsCodeProfileMode
+    }
+    selectedVsCodeProfiles = @($SelectedVsCodeProfiles | ForEach-Object { $_.Path })
+    backupMetadataPath = $BackupMetadataPath
+    notes = @()
+}
+
+if ($Check) {
+    $UninstallSummary.notes += 'Check mode only. No files were removed.'
+    Write-Host ''
+    Write-Host '  Check mode only. No files will be removed.'
+    Write-Host "  Scope: $($UninstallSummary.scope)"
+    Write-Host "  Target: $TargetDir"
+    Write-Host "  Backup metadata: $BackupMetadataPath"
+    Write-UninstallSummaryFile -Path $SummaryPath -Data $UninstallSummary
+    Write-Host "  Summary file: $SummaryPath"
+    exit 0
+}
+
+if ($DryRun) {
+    Write-Host ''
+    Write-Host '  Dry run only. No files will be removed.'
+    Write-Host "  Scope: $($UninstallSummary.scope)"
+    Write-Host "  Target: $TargetDir"
+    if ($Choice -eq '2') {
+        if ($SelectedVsCodeProfiles.Count -gt 0) {
+            foreach ($Profile in $SelectedVsCodeProfiles) {
+                Write-Host "  Would clean VS Code profile: $($Profile.Path)"
+            }
+        }
+        else {
+            Write-Host '  No matching VS Code profiles detected for the requested filter.'
+        }
+    }
+    Write-UninstallSummaryFile -Path $SummaryPath -Data $UninstallSummary
+    Write-Host "  Summary file: $SummaryPath"
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+# Load manifest ΓÇö if missing, build a fallback list from the repo
+# ---------------------------------------------------------------------------
+$ManifestFile = Join-Path $TargetDir ".a11y-agent-manifest"
+$ManifestEntries = @()
+$FallbackUsed = $false
+
+if (Test-Path $ManifestFile) {
+    $ManifestEntries = @(Get-Content $ManifestFile | Where-Object { $_.Trim() -ne "" })
+    Write-Host "  Loaded manifest with $($ManifestEntries.Count) entries."
+} else {
+    Write-Host "  No manifest found ΓÇö building fallback list from repo..."
+    $FallbackUsed = $true
+    $TmpRepo = Join-Path ([IO.Path]::GetTempPath()) "a11y-agent-uninstall-$(Get-Random)"
+    try {
+        & git clone --quiet --depth 1 https://github.com/Community-Access/accessibility-agents.git $TmpRepo 2>&1 | Out-Null
+        if (Test-Path $TmpRepo) {
+            $RepoAgents = Get-ChildItem -Path (Join-Path $TmpRepo ".claude\agents") -Filter "*.md" -ErrorAction SilentlyContinue
+            foreach ($f in $RepoAgents) { $ManifestEntries += "agents/$($f.Name)" }
+
+            $RepoCopilotAgents = Get-ChildItem -Path (Join-Path $TmpRepo ".github\agents") -ErrorAction SilentlyContinue
+            foreach ($f in $RepoCopilotAgents) { $ManifestEntries += "copilot-agents/$($f.Name)" }
+
+            foreach ($SubDir in @("skills", "instructions", "prompts")) {
+                $SrcDir = Join-Path $TmpRepo ".github\$SubDir"
+                if (Test-Path $SrcDir) {
+                    Get-ChildItem -Path $SrcDir -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+                        $Rel = $_.FullName.Substring($SrcDir.Length + 1).Replace('\', '/')
+                        $ManifestEntries += "copilot-$SubDir/$Rel"
+                    }
+                }
+            }
+
+            foreach ($Cfg in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
+                if (Test-Path (Join-Path $TmpRepo ".github\$Cfg")) { $ManifestEntries += "copilot-config/$Cfg" }
+            }
+
+            if (Test-Path (Join-Path $TmpRepo ".codex\AGENTS.md")) {
+                $ManifestEntries += "codex/project"
+                $ManifestEntries += "codex/global"
+            }
+            if (Test-Path (Join-Path $TmpRepo ".codex\config.toml")) {
+                $ManifestEntries += "codex/config.toml"
+            }
+            $CodexRolesDir = Join-Path $TmpRepo ".codex\roles"
+            if (Test-Path $CodexRolesDir) {
+                Get-ChildItem -Path $CodexRolesDir -Filter "*.toml" -ErrorAction SilentlyContinue | ForEach-Object {
+                    $ManifestEntries += "codex/roles/$($_.Name)"
+                }
+            }
+
+            if (Test-Path (Join-Path $TmpRepo ".gemini\extensions\a11y-agents")) {
+                $ManifestEntries += "gemini/project"
+                $ManifestEntries += "gemini/global"
+            }
+
+            Remove-Item -Recurse -Force $TmpRepo -ErrorAction SilentlyContinue
+            Write-Host "  Built fallback manifest with $($ManifestEntries.Count) entries."
+        }
+    } catch {
+        Write-Host "  Warning: Could not download repo for fallback. Will use file-pattern matching."
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Helper: remove our section markers from a config file.
+# If no user content remains, delete the file. Otherwise keep user content.
+# ---------------------------------------------------------------------------
+function Remove-OurSection {
+    param([string]$Path)
+    if (-not (Test-Path $Path)) { return "absent" }
+    $Content = [IO.File]::ReadAllText($Path, [Text.Encoding]::UTF8)
+
+    # Choose markers based on file type
+    if ($Path -match '\.toml$') {
+        $Start       = '# a11y-agent-team: start'
+        $End         = '# a11y-agent-team: end'
+        $LegacyStart = '# accessibility-agents: start'
+        $LegacyEnd   = '# accessibility-agents: end'
+    } else {
+        $Start       = '<!-- a11y-agent-team: start -->'
+        $End         = '<!-- a11y-agent-team: end -->'
+        $LegacyStart = '<!-- accessibility-agents: start -->'
+        $LegacyEnd   = '<!-- accessibility-agents: end -->'
+    }
+
+    $Found = $false
+    foreach ($pair in @(@($Start, $End), @($LegacyStart, $LegacyEnd))) {
+        $Pattern = '(?s)' + [regex]::Escape($pair[0]) + '.*?' + [regex]::Escape($pair[1])
+        if ($Content -match [regex]::Escape($pair[0])) {
+            $Content = [regex]::Replace($Content, $Pattern, '')
+            $Found = $true
+        }
+    }
+    if (-not $Found) { return "skipped" }
+
+    $Content = $Content.Trim()
+    if ($Content -eq "") {
+        Remove-Item -Path $Path -Force
+        return "deleted"
+    } else {
+        [IO.File]::WriteAllText($Path, "$Content`n", [Text.Encoding]::UTF8)
+        return "cleaned"
+    }
+}
+
+# =============================================
+# 1. Remove Claude Code agents
+# =============================================
+Stop-RunningMcpProcesses
+
+Write-Host ""
+Write-Host "  Removing Claude Code agents..."
+$AgentsDir = Join-Path $TargetDir "agents"
+$RemovedAgents = 0
+if (Test-Path $AgentsDir) {
+    $AgentEntries = @($ManifestEntries | Where-Object { $_ -like "agents/*" })
+    if ($AgentEntries.Count -gt 0) {
+        foreach ($Entry in $AgentEntries) {
+            $FileName = $Entry -replace '^agents/', ''
+            $FilePath = Join-Path $AgentsDir $FileName
+            if (Test-Path $FilePath) {
+                Remove-Item -Path $FilePath -Force
+                Write-Host "    - $([IO.Path]::GetFileNameWithoutExtension($FileName))"
+                $RemovedAgents++
+            }
+        }
+    } elseif ($FallbackUsed) {
+        Get-ChildItem -Path $AgentsDir -Filter "*.md" -File -ErrorAction SilentlyContinue | ForEach-Object {
+            Remove-Item $_.FullName -Force
+            Write-Host "    - $($_.BaseName)"
+            $RemovedAgents++
+        }
+    } else {
+        Write-Host "    (no agent entries in manifest ΓÇö skipping)"
+    }
+}
+if ($RemovedAgents -eq 0) {
+    Write-Host "    (no agents found to remove)"
+}
+
+# =============================================
+# 2. Remove Copilot agents ΓÇö project
+# =============================================
+if ($Choice -eq "1" -and $ProjectDir) {
+    $CopilotDir = Join-Path $ProjectDir ".github\agents"
+    if (Test-Path $CopilotDir) {
+        Write-Host ""
+        Write-Host "  Removing Copilot agents..."
+        $CopilotEntries = @($ManifestEntries | Where-Object { $_ -like "copilot-agents/*" })
+        if ($CopilotEntries.Count -gt 0) {
+            foreach ($Entry in $CopilotEntries) {
+                $FileName = $Entry -replace '^copilot-agents/', ''
+                $FilePath = Join-Path $CopilotDir $FileName
+                if (Test-Path $FilePath) {
+                    Remove-Item -Path $FilePath -Force
+                    Write-Host "    - $([IO.Path]::GetFileNameWithoutExtension($FileName))"
+                }
+            }
+        } elseif ($FallbackUsed) {
+            Get-ChildItem -Path $CopilotDir -Filter "*.agent.md" -File -ErrorAction SilentlyContinue | ForEach-Object {
+                Remove-Item $_.FullName -Force
+                Write-Host "    - $($_.BaseName)"
+            }
+        } else {
+            Write-Host "    (no copilot-agents in manifest ΓÇö skipping)"
+        }
+        if ((Get-ChildItem -Path $CopilotDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+            Remove-Item -Path $CopilotDir -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    # Remove Copilot config files - removes our section markers, preserves user content
+    $GithubDir = Join-Path $ProjectDir ".github"
+    foreach ($Config in @("copilot-instructions.md", "copilot-review-instructions.md", "copilot-commit-message-instructions.md")) {
+        $ConfigPath = Join-Path $GithubDir $Config
+        $Result = Remove-OurSection -Path $ConfigPath
+        switch ($Result) {
+            "deleted" { Write-Host "    - $Config" }
+            "cleaned" { Write-Host "    ~ $Config (removed our section, kept your content)" }
+        }
+    }
+
+    # Remove Copilot asset subdirs (skills, instructions, prompts)
+    foreach ($SubDir in @("skills", "instructions", "prompts")) {
+        $AssetDir = Join-Path $GithubDir $SubDir
+        if (Test-Path $AssetDir) {
+            $SubDirEntries = @($ManifestEntries | Where-Object { $_ -like "copilot-$SubDir/*" })
+            $Removed = 0
+            if ($SubDirEntries.Count -gt 0) {
+                foreach ($Entry in $SubDirEntries) {
+                    $RelPath = $Entry -replace "^copilot-$SubDir/", ''
+                    $FilePath = Join-Path $AssetDir $RelPath
+                    if (Test-Path $FilePath) {
+                        Remove-Item -Path $FilePath -Force
+                        $Removed++
+                    }
+                }
+            }
+            # Clean up empty directories
+            Get-ChildItem -Path $AssetDir -Directory -Recurse -ErrorAction SilentlyContinue |
+                Sort-Object { $_.FullName.Length } -Descending |
+                Where-Object { (Get-ChildItem $_.FullName -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0 } |
+                ForEach-Object { Remove-Item $_.FullName -Force -ErrorAction SilentlyContinue }
+            if ((Get-ChildItem -Path $AssetDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+                Remove-Item -Path $AssetDir -Force -ErrorAction SilentlyContinue
+            }
+            if ($Removed -gt 0) { Write-Host "    - $SubDir/ ($Removed files)" }
+        }
+    }
+}
+
+# =============================================
+# 3. Remove Copilot agents ΓÇö global
+# =============================================
+if ($Choice -eq "2") {
+    foreach ($Profile in $SelectedVsCodeProfiles) {
+        $ProfileDir = $Profile.Path
+        if (-not (Test-Path $ProfileDir)) { continue }
+        $PromptsDir = Join-Path $ProfileDir "prompts"
+
+        # Remove agent, prompt, and instruction files
+        foreach ($Dir in @($ProfileDir, $PromptsDir)) {
+            if (-not (Test-Path $Dir)) { continue }
+            $AllFiles = @()
+            $AllFiles += @(Get-ChildItem -Path $Dir -Filter "*.agent.md" -ErrorAction SilentlyContinue)
+            $AllFiles += @(Get-ChildItem -Path $Dir -Filter "*.prompt.md" -ErrorAction SilentlyContinue)
+            $AllFiles += @(Get-ChildItem -Path $Dir -Filter "*.instructions.md" -ErrorAction SilentlyContinue)
+
+            if ($AllFiles.Count -gt 0) {
+                Write-Host ""
+                Write-Host "  Removing files from: $Dir"
+                foreach ($File in $AllFiles) {
+                    Remove-Item -Path $File.FullName -Force
+                    Write-Host "    - $($File.Name)"
+                }
+            }
+        }
+
+        # Remove prompts/ subdirectories that match our asset folders
+        foreach ($SubFolder in @("skills", "instructions")) {
+            $SubPath = Join-Path $PromptsDir $SubFolder
+            if (Test-Path $SubPath) {
+                Remove-Item -Path $SubPath -Recurse -Force -ErrorAction SilentlyContinue
+                Write-Host "    - prompts/$SubFolder/"
+            }
+        }
+
+        # Restore settings.json ΓÇö remove our chat.agentFilesLocations override
+        $SettingsFile = Join-Path $ProfileDir "settings.json"
+        if (Test-Path $SettingsFile) {
+            try {
+                $Settings = Get-Content $SettingsFile -Raw | ConvertFrom-Json
+                $Changed = $false
+                if ($Settings.PSObject.Properties.Name -contains 'chat.agentFilesLocations') {
+                    $Locations = $Settings.'chat.agentFilesLocations'
+                    foreach ($Key in @('.claude/agents', '.github/agents')) {
+                        if ($Locations.PSObject.Properties.Name -contains $Key) {
+                            $Locations.PSObject.Properties.Remove($Key)
+                            $Changed = $true
+                        }
+                    }
+                    if (($Locations.PSObject.Properties | Measure-Object).Count -eq 0) {
+                        $Settings.PSObject.Properties.Remove('chat.agentFilesLocations')
+                        $Changed = $true
+                    }
+                }
+
+                if ($Settings.PSObject.Properties.Name -contains 'mcp') {
+                    $Mcp = $Settings.mcp
+                    if ($Mcp -and $Mcp.PSObject.Properties.Name -contains 'servers') {
+                        $Servers = $Mcp.servers
+                        if ($Servers -and $Servers.PSObject.Properties.Name -contains 'a11y-agent-team') {
+                            $Servers.PSObject.Properties.Remove('a11y-agent-team')
+                            $Changed = $true
+                            if (($Servers.PSObject.Properties | Measure-Object).Count -eq 0) {
+                                $Mcp.PSObject.Properties.Remove('servers')
+                            }
+                            if (($Mcp.PSObject.Properties | Measure-Object).Count -eq 0) {
+                                $Settings.PSObject.Properties.Remove('mcp')
+                            }
+                        }
+                    }
+                }
+
+                if ($Changed) {
+                    $Settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsFile -Encoding UTF8
+                    Write-Host "    - Restored VS Code settings"
+                }
+            } catch {
+                Write-Host "    ! Could not update settings.json (edit manually if needed)"
+            }
+        }
+    }
+
+    # Remove central Copilot store
+    $CopilotCentral = Join-Path $env:USERPROFILE ".a11y-agent-team"
+    if (Test-Path $CopilotCentral) {
+        Write-Host ""
+        Write-Host "  Removing Copilot central store..."
+        try {
+            Remove-Item -Path $CopilotCentral -Recurse -Force
+            Write-Host "    - $CopilotCentral"
+        } catch {
+            Write-Host "    ! Could not remove directory $CopilotCentral. Error: $_"
+            Write-Host "      Please make sure you have closed any applications or terminal windows open in this folder, then run uninstall.ps1 again."
+        }
+    }
+}
+
+# =============================================
+# 4. Remove Codex CLI support
+# =============================================
+if ($Choice -eq "1") {
+    $CodexDir = Join-Path (Get-Location) ".codex"
+} else {
+    $CodexDir = Join-Path $env:USERPROFILE ".codex"
+}
+$CodexFile = Join-Path $CodexDir "AGENTS.md"
+if (Test-Path $CodexFile) {
+    $Result = Remove-OurSection -Path $CodexFile
+    switch ($Result) {
+        "deleted" {
+            Write-Host ""
+            Write-Host "  Removing Codex CLI support..."
+            if ((Get-ChildItem $CodexDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+                Remove-Item -Path $CodexDir -Force -ErrorAction SilentlyContinue
+            }
+            Write-Host "    - AGENTS.md (Codex removed)"
+        }
+        "cleaned" {
+            Write-Host ""
+            Write-Host "  Codex CLI:"
+            Write-Host "    ~ AGENTS.md (removed our section, kept your content)"
+        }
+    }
+}
+
+# Clean Codex config.toml (contains our role pointer section)
+$CodexConfigFile = Join-Path $CodexDir "config.toml"
+if (Test-Path $CodexConfigFile) {
+    $Result = Remove-OurSection -Path $CodexConfigFile
+    switch ($Result) {
+        "deleted" {
+            Write-Host ""
+            Write-Host "  Removing Codex experimental role config..."
+            Write-Host "    - config.toml (Codex role config removed)"
+        }
+        "cleaned" {
+            Write-Host ""
+            Write-Host "  Codex CLI:"
+            Write-Host "    ~ config.toml (removed our section, kept your content)"
+        }
+    }
+}
+
+# Clean Codex config paths tracked in manifest
+$ManifestEntries | Where-Object { $_ -like "codex-config/path:*" } | ForEach-Object {
+    $ConfigPath = $_ -replace '^codex-config/path:', ''
+    if (Test-Path $ConfigPath) {
+        $Result = Remove-OurSection -Path $ConfigPath
+        $BaseName = Split-Path $ConfigPath -Leaf
+        switch ($Result) {
+            "deleted" { Write-Host "    - $BaseName (removed)" }
+            "cleaned" { Write-Host "    ~ $BaseName (removed our section, kept your content)" }
+        }
+    }
+}
+
+# Remove Codex role files tracked in manifest
+$CodexRolePaths = @()
+$ManifestEntries | Where-Object { $_ -like "codex-role/path:*" } | ForEach-Object {
+    $CodexRolePaths += ($_ -replace '^codex-role/path:', '')
+}
+$ManifestEntries | Where-Object { $_ -like "codex/roles/*" } | ForEach-Object {
+    $CodexRolePaths += Join-Path $CodexDir ($_ -replace '^codex/', '')
+}
+foreach ($RolePath in ($CodexRolePaths | Select-Object -Unique)) {
+    if (Test-Path $RolePath) {
+        Remove-Item -Path $RolePath -Force
+        Write-Host "    - $(Split-Path $RolePath -Leaf)"
+    }
+}
+# Clean up empty roles directory
+$RolesDir = Join-Path $CodexDir "roles"
+if ((Test-Path $RolesDir) -and (Get-ChildItem $RolesDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+    Remove-Item -Path $RolesDir -Force -ErrorAction SilentlyContinue
+}
+# Clean up empty .codex directory
+if ((Test-Path $CodexDir) -and (Get-ChildItem $CodexDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+    Remove-Item -Path $CodexDir -Force -ErrorAction SilentlyContinue
+}
+
+# =============================================
+# 5. Remove Gemini CLI extension
+# =============================================
+$GeminiPaths = @()
+$GeminiPathEntry = $ManifestEntries | Where-Object { $_ -like "gemini/path:*" } | Select-Object -First 1
+if ($GeminiPathEntry) {
+    $GeminiPaths += ($GeminiPathEntry -replace '^gemini/path:', '')
+}
+if ($Choice -eq "1") {
+    $GeminiPaths += Join-Path (Get-Location) ".gemini\extensions\a11y-agents"
+} else {
+    $GeminiPaths += Join-Path $env:USERPROFILE ".gemini\extensions\a11y-agents"
+}
+$GeminiRemoved = $false
+foreach ($GeminiDir in ($GeminiPaths | Select-Object -Unique)) {
+    if (Test-Path $GeminiDir) {
+        Write-Host ""
+        Write-Host "  Removing Gemini CLI extension..."
+        Remove-Item -Path $GeminiDir -Recurse -Force
+        Write-Host "    - $GeminiDir"
+        $GeminiRemoved = $true
+        $Parent = Split-Path $GeminiDir
+        while ($Parent -and (Test-Path $Parent) -and ((Get-ChildItem $Parent -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0)) {
+            Remove-Item -Path $Parent -Force -ErrorAction SilentlyContinue
+            $Parent = Split-Path $Parent
+        }
+    }
+}
+
+# =============================================
+# 6. Remove Claude Code plugin (global only)
+# =============================================
+if ($Choice -eq "2") {
+    $PluginsJson = Join-Path $env:USERPROFILE ".claude\plugins\installed_plugins.json"
+    $SettingsJson = Join-Path $env:USERPROFILE ".claude\settings.json"
+    if (Test-Path $PluginsJson) {
+        try {
+            $PluginData = Get-Content $PluginsJson -Raw | ConvertFrom-Json
+            $RemovedKey = $null
+            foreach ($Key in @($PluginData.plugins.PSObject.Properties.Name)) {
+                if ($Key -like "a11y-agent-team@*" -or $Key -like "accessibility-agents@*") {
+                    $RemovedKey = $Key
+                    $PluginData.plugins.PSObject.Properties.Remove($Key)
+                    break
+                }
+            }
+            if ($RemovedKey) {
+                $PluginData | ConvertTo-Json -Depth 10 | Set-Content $PluginsJson -Encoding UTF8
+                Write-Host ""
+                Write-Host "  Removing Claude Code plugin..."
+                Write-Host "    - Removed from installed_plugins.json ($RemovedKey)"
+
+                if (Test-Path $SettingsJson) {
+                    $Settings = Get-Content $SettingsJson -Raw | ConvertFrom-Json
+                    if ($Settings.PSObject.Properties.Name -contains "enabledPlugins") {
+                        $Settings.enabledPlugins.PSObject.Properties.Remove($RemovedKey) 2>$null
+                        $Settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsJson -Encoding UTF8
+                        Write-Host "    - Removed from settings.json enabledPlugins"
+                    }
+                }
+
+                $PluginName = ($RemovedKey -split '@')[0]
+                $Namespace = ($RemovedKey -split '@')[1]
+                $PluginCache = Join-Path $env:USERPROFILE ".claude\plugins\cache\$Namespace\$PluginName"
+                if (Test-Path $PluginCache) {
+                    Remove-Item -Path $PluginCache -Recurse -Force
+                    Write-Host "    - Removed plugin cache"
+                }
+                $NsDir = Join-Path $env:USERPROFILE ".claude\plugins\cache\$Namespace"
+                if ((Test-Path $NsDir) -and ((Get-ChildItem $NsDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0)) {
+                    Remove-Item -Path $NsDir -Force -ErrorAction SilentlyContinue
+                }
+            }
+        } catch {
+            Write-Host "    ! Could not clean plugin registration (edit manually if needed)"
+        }
+    }
+}
+
+# =============================================
+# 7. Remove enforcement hooks (global only)
+# =============================================
+if ($Choice -eq "2") {
+    Write-Host ""
+    Write-Host "  Removing enforcement hooks..."
+    $HooksDir = Join-Path $env:USERPROFILE ".claude\hooks"
+    foreach ($Hook in @("a11y-team-eval.sh", "a11y-enforce-edit.sh", "a11y-mark-reviewed.sh")) {
+        $HookPath = Join-Path $HooksDir $Hook
+        if (Test-Path $HookPath) {
+            Remove-Item -Path $HookPath -Force
+            Write-Host "    - $Hook"
+        }
+    }
+    if ((Test-Path $HooksDir) -and ((Get-ChildItem $HooksDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0)) {
+        Remove-Item -Path $HooksDir -Force -ErrorAction SilentlyContinue
+    }
+
+    # Remove hook registrations from settings.json
+    $SettingsJson = Join-Path $env:USERPROFILE ".claude\settings.json"
+    if (Test-Path $SettingsJson) {
+        try {
+            $Settings = Get-Content $SettingsJson -Raw | ConvertFrom-Json
+            if ($Settings.PSObject.Properties.Name -contains "hooks") {
+                $Changed = $false
+                foreach ($EventName in @($Settings.hooks.PSObject.Properties.Name)) {
+                    $Entries = @($Settings.hooks.$EventName)
+                    $Original = $Entries.Count
+                    $Entries = @($Entries | Where-Object {
+                        $IsA11y = $false
+                        foreach ($h in $_.hooks) {
+                            if ($h.command -and $h.command -match "a11y-") { $IsA11y = $true; break }
+                        }
+                        -not $IsA11y
+                    })
+                    if ($Entries.Count -lt $Original) { $Changed = $true }
+                    if ($Entries.Count -eq 0) {
+                        $Settings.hooks.PSObject.Properties.Remove($EventName)
+                    } else {
+                        $Settings.hooks.$EventName = $Entries
+                    }
+                }
+                if (($Settings.hooks.PSObject.Properties | Measure-Object).Count -eq 0) {
+                    $Settings.PSObject.Properties.Remove("hooks")
+                }
+                if ($Changed) {
+                    $Settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsJson -Encoding UTF8
+                    Write-Host "    - Hook registrations removed from settings.json"
+                }
+            }
+        } catch {
+            Write-Host "    ! Could not clean hook registrations (edit manually if needed)"
+        }
+    }
+
+    # Clean up session markers
+    Get-ChildItem -Path $env:TEMP -Filter "a11y-reviewed-*" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+}
+
+# =============================================
+# 8. Remove auto-update (global only)
+# =============================================
+if ($Choice -eq "2") {
+    Write-Host ""
+    Write-Host "  Removing auto-update..."
+
+    foreach ($TaskName in @('AccessibilityAgentsUpdate', 'A11yAgentTeamUpdate')) {
+        $Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+        if ($Task) {
+            Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
+            Write-Host "    - Scheduled task '$TaskName' removed"
+        }
+    }
+
+    foreach ($File in @(".a11y-agent-team-update.ps1", ".a11y-agent-team-version", ".a11y-agent-team-update.log", ".accessibility-agents-update.ps1", ".accessibility-agents-version", ".accessibility-agents-update.log")) {
+        $FilePath = Join-Path $TargetDir $File
+        if (Test-Path $FilePath) { Remove-Item -Path $FilePath -Force }
+    }
+    $CacheDir = Join-Path $TargetDir ".a11y-agent-team-repo"
+    if (Test-Path $CacheDir) { Remove-Item -Path $CacheDir -Recurse -Force }
+    $LegacyCacheDir = Join-Path $TargetDir ".accessibility-agents-repo"
+    if (Test-Path $LegacyCacheDir) { Remove-Item -Path $LegacyCacheDir -Recurse -Force }
+    Write-Host "    - Update files cleaned up"
+}
+
+# =============================================
+# 9. Remove MCP server
+# =============================================
+$McpRemoved = $false
+if ($Choice -eq "1" -and $ProjectDir) {
+    $McpDir = Join-Path $ProjectDir "mcp-server"
+    if (Test-Path $McpDir) {
+        Write-Host ""
+        Write-Host "  Removing MCP server..."
+        try {
+            Remove-Item -Path $McpDir -Recurse -Force
+            Write-Host "    - $McpDir"
+            $McpRemoved = $true
+        } catch {
+            Write-Host "    ! Could not remove directory $McpDir. Error: $_"
+            Write-Host "      Please make sure you have closed any applications or terminal windows open in this folder, then run uninstall.ps1 again."
+        }
+    }
+    # Clean project .vscode/settings.json MCP entry
+    $VsCodeSettings = Join-Path $ProjectDir ".vscode\settings.json"
+    if (Test-Path $VsCodeSettings) {
+        try {
+            $Settings = Get-Content $VsCodeSettings -Raw | ConvertFrom-Json
+            if ($Settings.PSObject.Properties.Name -contains 'mcp') {
+                $Mcp = $Settings.mcp
+                if ($Mcp -and $Mcp.PSObject.Properties.Name -contains 'servers') {
+                    $Servers = $Mcp.servers
+                    if ($Servers -and $Servers.PSObject.Properties.Name -contains 'a11y-agent-team') {
+                        $Servers.PSObject.Properties.Remove('a11y-agent-team')
+                        if (($Servers.PSObject.Properties | Measure-Object).Count -eq 0) {
+                            $Mcp.PSObject.Properties.Remove('servers')
+                        }
+                        if (($Mcp.PSObject.Properties | Measure-Object).Count -eq 0) {
+                            $Settings.PSObject.Properties.Remove('mcp')
+                        }
+                        $Settings | ConvertTo-Json -Depth 10 | Set-Content $VsCodeSettings -Encoding UTF8
+                        Write-Host "    - Removed MCP entry from .vscode/settings.json"
+                    }
+                }
+            }
+        } catch {
+            Write-Host "    ! Could not update .vscode/settings.json (edit manually if needed)"
+        }
+    }
+} elseif ($Choice -eq "2") {
+    # Global MCP server is inside ~/.a11y-agent-team/ which is already removed
+    # by the global store cleanup in section 3, but confirm it is gone
+    $McpDir = Join-Path $env:USERPROFILE ".a11y-agent-team\mcp-server"
+    if (Test-Path $McpDir) {
+        Write-Host ""
+        Write-Host "  Removing MCP server..."
+        try {
+            Remove-Item -Path $McpDir -Recurse -Force
+            Write-Host "    - $McpDir"
+            $McpRemoved = $true
+        } catch {
+            Write-Host "    ! Could not remove directory $McpDir. Error: $_"
+            Write-Host "      Please make sure you have closed any applications or terminal windows open in this folder, then run uninstall.ps1 again."
+        }
+    }
+    # VS Code settings.json MCP entry is already cleaned in section 3
+}
+
+# =============================================
+# 10. Clean up manifest and empty directories
+# =============================================
+if (Test-Path $ManifestFile) { Remove-Item -Path $ManifestFile -Force }
+$VersionFile = Join-Path $TargetDir ".a11y-agent-team-version"
+if (Test-Path $VersionFile) { Remove-Item -Path $VersionFile -Force }
+
+$AgentsDir = Join-Path $TargetDir "agents"
+if ((Test-Path $AgentsDir) -and ((Get-ChildItem $AgentsDir -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0)) {
+    Remove-Item -Path $AgentsDir -Force -ErrorAction SilentlyContinue
+}
+
+# =============================================
+# Done
+# =============================================
+Write-Host ""
+Write-Host "  ========================="
+Write-Host "  Uninstall complete!"
+Write-Host ""
+Write-Host "  What was removed:"
+Write-Host "    - Claude Code agents from $TargetDir"
+if ($Choice -eq "1") {
+    Write-Host "    - Copilot agents, config, skills, instructions, prompts from .github/"
+} else {
+    Write-Host "    - Copilot agents from VS Code profiles"
+    Write-Host "    - Copilot central store (~\.a11y-agent-team\)"
+    Write-Host "    - Claude Code plugin registration"
+    Write-Host "    - Enforcement hooks (3 hooks)"
+}
+if ($GeminiRemoved) { Write-Host "    - Gemini CLI extension" }
+if ($McpRemoved) { Write-Host "    - MCP server (directory and VS Code settings)" }
+Write-Host ""
+Write-Host "  Next steps:"
+Write-Host "    1. Restart Claude Code, VS Code, and any open terminals"
+Write-Host "    2. Verify agents are gone: type '@' in Copilot Chat or '/agents' in Claude"
+Write-Host ""
+Write-Host "  If something was missed, see the manual uninstall guide:"
+Write-Host "    https://github.com/Community-Access/accessibility-agents/blob/main/UNINSTALL.md"
+Write-Host ""
+
+$UninstallSummary.completed = $true
+Write-UninstallSummaryFile -Path $SummaryPath -Data $UninstallSummary
+Write-Host "  Summary written to:"
+Write-Host "    $SummaryPath"
+Write-Host ""
