@@ -64,6 +64,13 @@ register as a single user-level guard for UI work:
 - `PreToolUse` blocks edits to UI files until `accessibility-lead` has been dispatched in that same turn.
 - `Stop` blocks final answers until `accessibility-lead` and required specialists have completed.
 
+Codex surfaces that provide collaboration agents without emitting custom-subagent
+lifecycle hooks can forward a review to the same guard over stdin using the
+`AccessibilityReviewReceipt` event. Set `receipt_source` to
+`codex-collaboration`, provide the tracked `agent_type`, and send `state` as
+`started` or `completed`. Send completion only after the agent returns its final
+result. Unknown sources, states, and agent types are ignored.
+
 This is intentionally paired with the router skill. The hook enforces the rule at the edit boundary, while the router still owns the dispatch plan and specialist selection. If Codex has lazy-loaded the subagent tool, the router must use `tool_search` before claiming subagents are unavailable.
 
 The Codex plugin manifest does not advertise hooks directly. The universal installer writes the hook guard into `~/.codex/hooks.json` because current Codex builds load normal hooks consistently while plugin-bundled hooks can also be loaded in some sessions, which would duplicate `UserPromptSubmit` context. Codex requires users to review and trust non-managed command hooks before they run. After the hook is trusted, users should not need to manually name every specialist for ordinary UI accessibility work.

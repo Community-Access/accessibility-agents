@@ -68,6 +68,7 @@ for (const phrase of [
   "look for",
   "selectRequiredSpecialists",
   "modal-specialist",
+  "AccessibilityReviewReceipt",
 ]) {
   if (!hookScript.includes(phrase)) {
     fail(`${hookScriptPath}: missing dispatch guard phrase "${phrase}".`);

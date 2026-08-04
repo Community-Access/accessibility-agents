@@ -17,10 +17,21 @@ if (eventName === "UserPromptSubmit") {
   handleSubagentLifecycle(input, "started");
 } else if (eventName === "SubagentStop") {
   handleSubagentLifecycle(input, "completed");
+} else if (eventName === "AccessibilityReviewReceipt") {
+  handleAccessibilityReviewReceipt(input);
 } else if (eventName === "PreToolUse") {
   handlePreToolUse(input);
 } else if (eventName === "Stop") {
   handleStop(input);
+}
+
+function handleAccessibilityReviewReceipt(input) {
+  const state = input.state === "started" ? "started" : input.state === "completed" ? "completed" : "";
+  const agentType = String(input.agent_type || "");
+  if (input.receipt_source !== "codex-collaboration" || !state || !isTrackedAgent(agentType)) {
+    return;
+  }
+  handleSubagentLifecycle(input, state);
 }
 
 async function readJsonFromStdin() {
