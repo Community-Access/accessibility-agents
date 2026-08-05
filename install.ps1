@@ -2003,8 +2003,8 @@ if (Test-Path $AntigravitySrc) {
 
         New-Item -ItemType Directory -Force -Path $AntigravityDst | Out-Null
 
-        # Copy plugin manifest and context files
-        foreach ($f in @("plugin.json", "antigravity-plugin.json", "antigravity-extension.json", "ANTIGRAVITY.md")) {
+        # Copy plugin manifest, context, MCP config, and hooks files
+        foreach ($f in @("plugin.json", "antigravity-plugin.json", "antigravity-extension.json", "ANTIGRAVITY.md", "mcp_config.json", "hooks.json")) {
             $Src = Join-Path $ScriptDir $f
             if (Test-Path $Src) {
                 Copy-Item -Path $Src -Destination (Join-Path $AntigravityDst $f) -Force
@@ -2039,6 +2039,28 @@ if (Test-Path $AntigravitySrc) {
                 }
             }
             Write-Host "    + skills\ ($Added new, $Skipped skipped)"
+        }
+
+        # Copy rules
+        $RulesSrc = Join-Path $AntigravitySrc "rules"
+        if (Test-Path $RulesSrc) {
+            $DstRules = Join-Path $AntigravityDst "rules"
+            New-Item -ItemType Directory -Force -Path $DstRules | Out-Null
+            Get-ChildItem -Path $RulesSrc -File | ForEach-Object {
+                Copy-Item $_.FullName (Join-Path $DstRules $_.Name) -Force
+            }
+            Write-Host "    + rules\"
+        }
+
+        # Copy scripts
+        $ScriptsSrc = Join-Path $AntigravitySrc "scripts"
+        if (Test-Path $ScriptsSrc) {
+            $DstScripts = Join-Path $AntigravityDst "scripts"
+            New-Item -ItemType Directory -Force -Path $DstScripts | Out-Null
+            Get-ChildItem -Path $ScriptsSrc -File | ForEach-Object {
+                Copy-Item $_.FullName (Join-Path $DstScripts $_.Name) -Force
+            }
+            Write-Host "    + scripts\"
         }
 
         $AntigravityInstalled = $true

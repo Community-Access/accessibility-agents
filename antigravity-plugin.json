@@ -10,5 +10,8 @@
   "repository": "https://github.com/Community-Access/accessibility-agents",
   "contextFileName": "ANTIGRAVITY.md",
   "agents": "./agents/",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "rules": "./rules/",
+  "hooks": "./hooks.json",
+  "mcp_config": "./mcp_config.json"
 }
