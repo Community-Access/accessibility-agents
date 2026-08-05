@@ -8,6 +8,8 @@ on:
       - ".github/skills/**"
       - ".claude/agents/**"
       - "claude-code-plugin/agents/**"
+      - "antigravity-plugin/agents/**"
+      - ".antigravity/agents/**"
       - "scripts/validate-agents.js"
   pull_request:
     paths:
@@ -15,6 +17,8 @@ on:
       - ".github/skills/**"
       - ".claude/agents/**"
       - "claude-code-plugin/agents/**"
+      - "antigravity-plugin/agents/**"
+      - ".antigravity/agents/**"
       - "scripts/validate-agents.js"
 
 jobs:

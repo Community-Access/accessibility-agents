@@ -166,6 +166,12 @@ const VALID_CLAUDE_TOOLS = new Set([
   'GitHub',
 ]);
 
+// Antigravity CLI tool names
+const VALID_ANTIGRAVITY_TOOLS = new Set([
+  'read', 'edit', 'search', 'agent', 'execute', 'web', 'askQuestions',
+  'Read', 'Edit', 'Grep', 'Glob', 'Bash', 'Task', 'MultiEdit', 'Write',
+]);
+
 // Claude MCP tool pattern: MCP(tool_name)
 const CLAUDE_MCP_PATTERN = /^MCP\(([\w_.-]+)\)$/;
 
@@ -704,6 +710,41 @@ function validateClaudeAgent(filePath) {
 }
 
 // ---------------------------------------------------------------------------
+// Antigravity CLI agent validator
+// ---------------------------------------------------------------------------
+function validateAntigravityAgent(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const frontmatter = parseFrontmatter(content);
+  const relativePath = path.relative(process.cwd(), filePath);
+
+  if (!frontmatter) {
+    errors.push(`${relativePath}: Missing YAML frontmatter`);
+    return;
+  }
+
+  for (const field of REQUIRED_FIELDS.agent) {
+    if (!frontmatter[field]) {
+      errors.push(`${relativePath}: Missing required field '${field}'`);
+    }
+  }
+
+  if (frontmatter.tools) {
+    let tools = frontmatter.tools;
+    if (typeof tools === 'string') {
+      tools = tools.split(',').map(t => t.trim()).filter(Boolean);
+    }
+    if (Array.isArray(tools)) {
+      for (const tool of tools) {
+        if (!VALID_ANTIGRAVITY_TOOLS.has(tool)
+            && !CANONICAL_TOOL_ALIASES[tool.toLowerCase()]) {
+          warnings.push(`${relativePath}: Unknown Antigravity tool '${tool}'`);
+        }
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main validation orchestrator
 // ---------------------------------------------------------------------------
 async function runPhase3Checks() {
@@ -790,6 +831,16 @@ async function validateAll() {
       if (!FLAG_QUIET) console.log(`Found ${files.length} Claude Code plugin agents`);
       for (const file of files) {
         validateClaudeAgent(path.join(pluginAgentsDir, file));
+      }
+    }
+
+    // Antigravity CLI agents (antigravity-plugin/agents/)
+    const antigravityAgentsDir = path.join(process.cwd(), 'antigravity-plugin', 'agents');
+    if (fs.existsSync(antigravityAgentsDir)) {
+      const files = fs.readdirSync(antigravityAgentsDir).filter(f => f.endsWith('.md'));
+      if (!FLAG_QUIET) console.log(`Found ${files.length} Antigravity CLI agents`);
+      for (const file of files) {
+        validateAntigravityAgent(path.join(antigravityAgentsDir, file));
       }
     }
   }

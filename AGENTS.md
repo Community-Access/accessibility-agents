@@ -2,7 +2,7 @@
 
 > AI agent guidance for this repository. Generated for AgentRC compatibility.
 
-This repository contains 80 accessibility-focused AI agents across multiple platforms (Copilot, Claude Code, Codex, Gemini). This file provides high-level guidance for AI coding assistants working in this codebase.
+This repository contains 80 accessibility-focused AI agents across multiple platforms (Copilot, Claude Code, Codex, Gemini, Antigravity). This file provides high-level guidance for AI coding assistants working in this codebase.
 
 ## Repository Writing Policy: No Emoji
 
@@ -27,6 +27,8 @@ Repository-wide hard rule: do not add emoji characters in generated, edited, or 
 | `.claude/agents/` | Claude Code agent definitions |
 | `.codex/` | Codex CLI configuration (11 roles) |
 | `.gemini/` | Gemini CLI extension |
+| `.antigravity/` | Antigravity CLI workspace configuration & agents |
+| `antigravity-plugin/` | Antigravity CLI plugin bundle (80 agents, 26 skills) |
 | `docs/` | Documentation site |
 | `mcp-server/` | HTTP-based MCP server (Streamable HTTP + stdio) |
 | `vscode-extension/` | VS Code extension (planned) |

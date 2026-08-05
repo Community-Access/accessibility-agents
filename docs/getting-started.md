@@ -1150,3 +1150,44 @@ rm -rf .gemini/extensions/a11y-agents/
 # Global install
 rm -rf ~/.gemini/extensions/a11y-agents/
 ```
+
+## Antigravity CLI Setup
+
+This section covers **Google Antigravity CLI (`agy`)**.
+
+### How It Works
+
+Antigravity CLI uses a plugin bundle architecture (`antigravity-plugin/` or `.antigravity/`). It provides 80 accessibility agents and 26 skills. The `ANTIGRAVITY.md` context file provides always-on WCAG AA enforcement rules loaded into `agy` sessions.
+
+### Installation
+
+Via PowerShell (Windows):
+
+```powershell
+.\install.ps1 -Antigravity
+```
+
+Via Bash (macOS / Linux):
+
+```bash
+./install.sh --antigravity
+```
+
+Manual copy:
+
+```bash
+# Global plugin install
+mkdir -p ~/.gemini/antigravity-cli/plugins/accessibility-agents
+cp -r antigravity-plugin/* ~/.gemini/antigravity-cli/plugins/accessibility-agents/
+
+# Project install
+cp -r .antigravity /path/to/project/.antigravity
+```
+
+### Usage with `agy`
+
+Inside `agy`, run `/agents` to open the Agent Manager Panel and select any of the 80 accessibility agents (e.g., `accessibility-lead`, `web-accessibility-wizard`, `aria-specialist`).
+
+```text
+/agent accessibility-lead "Audit this component for WCAG 2.2 AA compliance"
+```

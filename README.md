@@ -48,6 +48,7 @@ All agents run on:
 
 - **Claude Code** - Agents you invoke directly for accessibility evaluation
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
+- **Google Antigravity CLI (`agy`)** - Native plugin bundle (`antigravity-plugin/`) with 80 agents, 26 skills, `/agents` discovery, and always-on WCAG AA context via `ANTIGRAVITY.md`
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
 - **Codex CLI** - Native Codex plugin with small router skills, custom subagents, lazy specialist references, and extension-aware dispatch
 - **MCP Server** - HTTP-based server providing 24 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
@@ -268,11 +269,11 @@ If both VS Code and VS Code Insiders are installed, the installer copies Copilot
 Non-interactive install examples:
 
 ```bash
-bash install.sh --project --copilot --yes --no-auto-update --dry-run
+bash install.sh --project --copilot --antigravity --yes --no-auto-update --dry-run
 ```
 
 ```powershell
-.\install.ps1 -Project -Copilot -Yes -NoAutoUpdate -DryRun
+.\install.ps1 -Project -Copilot -Antigravity -Yes -NoAutoUpdate -DryRun
 ```
 
 See the full [Getting Started Guide](docs/getting-started.md) for all installation options, manual setup, global vs project install, auto-updates, and platform-specific details.
