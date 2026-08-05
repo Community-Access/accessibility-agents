@@ -1,0 +1,17 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "accessibility-agents",
+  "version": "6.0.0",
+  "description": "WCAG 2.2 AA accessibility auditing and remediation agents for Google Antigravity CLI.",
+  "author": {
+    "name": "Community-Access"
+  },
+  "homepage": "https://github.com/Community-Access/accessibility-agents",
+  "repository": "https://github.com/Community-Access/accessibility-agents",
+  "contextFileName": "ANTIGRAVITY.md",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "rules": "./rules/",
+  "hooks": "./hooks.json",
+  "mcp_config": "./mcp_config.json"
+}

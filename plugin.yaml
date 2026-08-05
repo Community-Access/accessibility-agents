@@ -133,6 +133,12 @@ platforms:
     status: "community-maintained"
     note: "Custom .SKILL.md format for Gemini"
 
+  - name: "Google Antigravity CLI"
+    agents: 80
+    skills: 25
+    status: "fully-supported"
+    note: "Dedicated antigravity-plugin bundle with 80 agents and 25 skills"
+
 # Metadata for marketplace
 marketplace:
   category: "AI Agents"

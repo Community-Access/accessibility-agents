@@ -161,6 +161,7 @@ COPILOT_FLAG=false
 COPILOT_CLI_FLAG=false
 CODEX_FLAG=false
 GEMINI_FLAG=false
+ANTIGRAVITY_FLAG=false
 DRY_RUN=false
 CHECK_MODE=false
 SUMMARY_PATH=""
@@ -177,6 +178,7 @@ for arg in "$@"; do
     --cli) COPILOT_CLI_FLAG=true ;;
     --codex) CODEX_FLAG=true ;;
     --gemini) GEMINI_FLAG=true ;;
+    --antigravity) ANTIGRAVITY_FLAG=true ;;
     --yes) AUTO_APPROVE=true ;;
     --no-auto-update) NO_AUTO_UPDATE=true ;;
     --check) CHECK_MODE=true ;;
@@ -192,7 +194,7 @@ for arg in "$@"; do
 done
 
 OPTIONAL_PLATFORM_FLAGS=false
-if [ "$COPILOT_FLAG" = true ] || [ "$COPILOT_CLI_FLAG" = true ] || [ "$CODEX_FLAG" = true ] || [ "$GEMINI_FLAG" = true ]; then
+if [ "$COPILOT_FLAG" = true ] || [ "$COPILOT_CLI_FLAG" = true ] || [ "$CODEX_FLAG" = true ] || [ "$GEMINI_FLAG" = true ] || [ "$ANTIGRAVITY_FLAG" = true ]; then
   OPTIONAL_PLATFORM_FLAGS=true
 fi
 
@@ -2343,6 +2345,68 @@ if [ "$install_gemini" = true ] && [ -d "$GEMINI_SRC" ]; then
   echo ""
   echo "  Gemini CLI will now enforce WCAG AA rules on all UI code."
   echo "  Run: gemini \"Build a login form\" — accessibility skills apply automatically."
+fi
+
+# ---------------------------------------------------------------------------
+# Antigravity CLI plugin
+# ---------------------------------------------------------------------------
+ANTIGRAVITY_SRC="$SCRIPT_DIR/antigravity-plugin"
+ANTIGRAVITY_INSTALLED=false
+
+install_antigravity=false
+if [ "$ANTIGRAVITY_FLAG" = true ]; then
+  install_antigravity=true
+elif [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && [ -d "$ANTIGRAVITY_SRC" ] && read_yes_no "Install Antigravity CLI support?" false; then
+  echo ""
+  echo "  Would you also like to install Antigravity CLI support?"
+  echo "  This installs 80 accessibility agents and skills for Antigravity CLI (agy)"
+  echo "  so agy automatically applies WCAG AA rules to all UI code."
+  install_antigravity=true
+fi
+
+if [ "$install_antigravity" = true ] && [ -d "$ANTIGRAVITY_SRC" ]; then
+  echo ""
+  echo "  Installing Antigravity CLI plugin..."
+
+  if [ "$choice" = "1" ]; then
+    ANTIGRAVITY_TARGET="$(pwd)/.antigravity"
+  else
+    ANTIGRAVITY_TARGET="$HOME/.gemini/antigravity-cli/plugins/accessibility-agents"
+  fi
+
+  mkdir -p "$ANTIGRAVITY_TARGET"
+
+  for f in plugin.json antigravity-plugin.json antigravity-extension.json ANTIGRAVITY.md; do
+    if [ -f "$SCRIPT_DIR/$f" ]; then
+      cp "$SCRIPT_DIR/$f" "$ANTIGRAVITY_TARGET/$f"
+      echo "    + $f"
+    fi
+  done
+
+  if [ -d "$ANTIGRAVITY_SRC/agents" ]; then
+    mkdir -p "$ANTIGRAVITY_TARGET/agents"
+    cp -r "$ANTIGRAVITY_SRC/agents"/* "$ANTIGRAVITY_TARGET/agents/" 2>/dev/null || true
+    echo "    + agents/"
+  fi
+
+  if [ -d "$ANTIGRAVITY_SRC/skills" ]; then
+    mkdir -p "$ANTIGRAVITY_TARGET/skills"
+    cp -r "$ANTIGRAVITY_SRC/skills"/* "$ANTIGRAVITY_TARGET/skills/" 2>/dev/null || true
+    echo "    + skills/"
+  fi
+
+  ANTIGRAVITY_INSTALLED=true
+  ANTIGRAVITY_DST="$ANTIGRAVITY_TARGET"
+  if [ "$choice" = "1" ]; then
+    add_manifest_entry "antigravity/project"
+  else
+    add_manifest_entry "antigravity/global"
+  fi
+  add_manifest_entry "antigravity/path:$ANTIGRAVITY_DST"
+
+  echo ""
+  echo "  Antigravity CLI (agy) will now enforce WCAG AA rules on all UI code."
+  echo "  Run: agy /agents -> select accessibility-lead to begin."
 fi
 
 # ---------------------------------------------------------------------------

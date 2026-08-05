@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "a11y-scanner": {
+      "command": "node",
+      "args": ["./mcp-server/stdio.js"],
+      "description": "Accessibility scanning tools (axe-core, Playwright, PDF, Office)"
+    }
+  }
+}

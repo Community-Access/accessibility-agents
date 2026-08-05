@@ -15,6 +15,7 @@ param(
     [switch]$Cli,
     [switch]$Codex,
     [switch]$Gemini,
+    [switch]$Antigravity,
     [switch]$Yes,
     [switch]$NoAutoUpdate,
     [switch]$Check,
@@ -31,7 +32,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $AutoApprove = $Yes.IsPresent
-$OptionalPlatformFlags = $Copilot.IsPresent -or $Cli.IsPresent -or $Codex.IsPresent -or $Gemini.IsPresent
+$OptionalPlatformFlags = $Copilot.IsPresent -or $Cli.IsPresent -or $Codex.IsPresent -or $Gemini.IsPresent -or $Antigravity.IsPresent
 
 # Determine source: running from repo clone or downloaded?
 $Downloaded = $false
@@ -1973,6 +1974,111 @@ if (Test-Path $GeminiSrc) {
 }
 
 # ---------------------------------------------------------------------------
+# Antigravity CLI plugin
+# ---------------------------------------------------------------------------
+$AntigravitySrc = Join-Path $ScriptDir "antigravity-plugin"
+$AntigravityInstalled = $false
+$AntigravityDst = ""
+$InstallAntigravity = $Antigravity.IsPresent
+
+if (Test-Path $AntigravitySrc) {
+    if ((-not $InstallAntigravity) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Antigravity CLI support?' -DefaultYes:$false)) {
+        Write-Host ""
+        Write-Host "  Would you also like to install Antigravity CLI support?"
+        Write-Host "  This installs 80 accessibility agents and skills for Antigravity CLI (agy)"
+        Write-Host "  so agy automatically applies WCAG AA rules to all UI code."
+        $InstallAntigravity = $true
+    }
+
+    if ($InstallAntigravity) {
+        Write-Host ""
+        Write-Host "  Installing Antigravity CLI plugin..."
+
+        if ($Choice -eq "1") {
+            $AntigravityDst = Join-Path (Get-Location) ".antigravity"
+        }
+        else {
+            $AntigravityDst = Join-Path $env:USERPROFILE ".gemini\antigravity-cli\plugins\accessibility-agents"
+        }
+
+        New-Item -ItemType Directory -Force -Path $AntigravityDst | Out-Null
+
+        # Copy plugin manifest, context, MCP config, and hooks files
+        foreach ($f in @("plugin.json", "antigravity-plugin.json", "antigravity-extension.json", "ANTIGRAVITY.md", "mcp_config.json", "hooks.json")) {
+            $Src = Join-Path $ScriptDir $f
+            if (Test-Path $Src) {
+                Copy-Item -Path $Src -Destination (Join-Path $AntigravityDst $f) -Force
+                Write-Host "    + $f"
+            }
+        }
+
+        # Copy agents
+        $AgentsSrc = Join-Path $AntigravitySrc "agents"
+        if (Test-Path $AgentsSrc) {
+            $DstAgents = Join-Path $AntigravityDst "agents"
+            New-Item -ItemType Directory -Force -Path $DstAgents | Out-Null
+            $Added = 0; $Skipped = 0
+            Get-ChildItem -Path $AgentsSrc -File | ForEach-Object {
+                $DstFile = Join-Path $DstAgents $_.Name
+                if (Test-Path $DstFile) { $Skipped++ } else { Copy-Item $_.FullName $DstFile; $Added++ }
+            }
+            Write-Host "    + agents\ ($Added new, $Skipped skipped)"
+        }
+
+        # Copy skills
+        $SkillsSrc = Join-Path $AntigravitySrc "skills"
+        if (Test-Path $SkillsSrc) {
+            $DstSkills = Join-Path $AntigravityDst "skills"
+            $Added = 0; $Skipped = 0
+            Get-ChildItem -Path $SkillsSrc -Directory | ForEach-Object {
+                $DstSkill = Join-Path $DstSkills $_.Name
+                New-Item -ItemType Directory -Force -Path $DstSkill | Out-Null
+                Get-ChildItem -Path $_.FullName -File | ForEach-Object {
+                    $DstFile = Join-Path $DstSkill $_.Name
+                    if (Test-Path $DstFile) { $Skipped++ } else { Copy-Item $_.FullName $DstFile; $Added++ }
+                }
+            }
+            Write-Host "    + skills\ ($Added new, $Skipped skipped)"
+        }
+
+        # Copy rules
+        $RulesSrc = Join-Path $AntigravitySrc "rules"
+        if (Test-Path $RulesSrc) {
+            $DstRules = Join-Path $AntigravityDst "rules"
+            New-Item -ItemType Directory -Force -Path $DstRules | Out-Null
+            Get-ChildItem -Path $RulesSrc -File | ForEach-Object {
+                Copy-Item $_.FullName (Join-Path $DstRules $_.Name) -Force
+            }
+            Write-Host "    + rules\"
+        }
+
+        # Copy scripts
+        $ScriptsSrc = Join-Path $AntigravitySrc "scripts"
+        if (Test-Path $ScriptsSrc) {
+            $DstScripts = Join-Path $AntigravityDst "scripts"
+            New-Item -ItemType Directory -Force -Path $DstScripts | Out-Null
+            Get-ChildItem -Path $ScriptsSrc -File | ForEach-Object {
+                Copy-Item $_.FullName (Join-Path $DstScripts $_.Name) -Force
+            }
+            Write-Host "    + scripts\"
+        }
+
+        $AntigravityInstalled = $true
+        if ($Choice -eq "1") {
+            Add-ManifestEntry "antigravity/project"
+        }
+        else {
+            Add-ManifestEntry "antigravity/global"
+        }
+        Add-ManifestEntry "antigravity/path:$AntigravityDst"
+        Save-Manifest
+        Write-Host ""
+        Write-Host "  Antigravity CLI (agy) will now enforce WCAG AA rules on all UI code."
+        Write-Host "  Run: agy /agents -> select accessibility-lead to begin."
+    }
+}
+
+# ---------------------------------------------------------------------------
 # Install enforcement hooks (global only)
 # ---------------------------------------------------------------------------
 if ($Choice -eq "2") {
@@ -2249,6 +2355,11 @@ if ($GeminiInstalled) {
     Write-Host "  Gemini CLI extension installed to:"
     Write-Host "    -> $GeminiDst"
 }
+if ($AntigravityInstalled) {
+    Write-Host ""
+    Write-Host "  Antigravity CLI plugin installed to:"
+    Write-Host "    -> $AntigravityDst"
+}
 if ($McpInstalled) {
     Write-Host ""
     Write-Host "  MCP server ready at:"
@@ -2321,22 +2432,24 @@ if (($McpProfileMode -ne 'auto') -and ($SelectedMcpProfiles.Count -eq 0) -and $M
 }
 
 $InstallSummary.installed = [ordered]@{
-    claude     = $true
-    plugin     = $false
-    copilot    = [bool]$CopilotInstalled
-    copilotCli = [bool]$CopilotCliInstalled
-    codex      = [bool]$CodexInstalled
-    gemini     = [bool]$GeminiInstalled
-    mcp        = [bool]$McpInstalled
-    autoUpdate = [bool]$AutoUpdateEnabled
+    claude      = $true
+    plugin      = $false
+    copilot     = [bool]$CopilotInstalled
+    copilotCli  = [bool]$CopilotCliInstalled
+    codex       = [bool]$CodexInstalled
+    gemini      = [bool]$GeminiInstalled
+    antigravity = [bool]$AntigravityInstalled
+    mcp         = [bool]$McpInstalled
+    autoUpdate  = [bool]$AutoUpdateEnabled
 }
 $InstallSummary.destinations = [ordered]@{
-    claude     = @($TargetDir)
-    copilot    = @($CopilotDestinations)
-    copilotCli = @($CliAgentsDst, $CliSkillsDst) | Where-Object { $_ }
-    codex      = @($CodexPluginDst, $CodexPluginSkillsDst, $CodexAgentsDst, $CodexExtensionDst, $CodexSkillsDst, $CodexConfigDst, $CodexRolesDst) | Where-Object { $_ }
-    gemini     = @($GeminiDst) | Where-Object { $_ }
-    mcp        = @($McpDest) | Where-Object { $_ }
+    claude      = @($TargetDir)
+    copilot     = @($CopilotDestinations)
+    copilotCli  = @($CliAgentsDst, $CliSkillsDst) | Where-Object { $_ }
+    codex       = @($CodexPluginDst, $CodexPluginSkillsDst, $CodexAgentsDst, $CodexExtensionDst, $CodexSkillsDst, $CodexConfigDst, $CodexRolesDst) | Where-Object { $_ }
+    gemini      = @($GeminiDst) | Where-Object { $_ }
+    antigravity = @($AntigravityDst) | Where-Object { $_ }
+    mcp         = @($McpDest) | Where-Object { $_ }
 }
 $InstallSummary.manifestPath = $ManifestPath
 Write-InstallSummaryFile -Path $SummaryPath -Data $InstallSummary
