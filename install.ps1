@@ -33,6 +33,24 @@ $ErrorActionPreference = "Stop"
 $AutoApprove = $Yes.IsPresent
 $OptionalPlatformFlags = $Copilot.IsPresent -or $Cli.IsPresent -or $Codex.IsPresent -or $Gemini.IsPresent
 
+function Invoke-NativeCommand {
+    # Native executables (git, npm, winget, choco, java, ...) routinely write
+    # non-fatal warnings to stderr. When that stderr is merged with 2>&1
+    # while $ErrorActionPreference = "Stop", PowerShell (most notably
+    # Windows PowerShell 5.1) treats each stderr line as a terminating
+    # NativeCommandError, even though the command itself exits 0. Run the
+    # command with EAP relaxed and let the caller keep checking $LASTEXITCODE.
+    param([Parameter(Mandatory = $true)] [scriptblock]$ScriptBlock)
+    $PrevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & $ScriptBlock
+    }
+    finally {
+        $ErrorActionPreference = $PrevEap
+    }
+}
+
 # Determine source: running from repo clone or downloaded?
 $Downloaded = $false
 $ScriptDir = if ($MyInvocation.MyCommand.Path) {
@@ -54,7 +72,7 @@ if (-not $ScriptDir -or -not (Test-Path (Join-Path $ScriptDir ".claude\agents"))
         exit 1
     }
 
-    git clone --quiet https://github.com/Community-Access/accessibility-agents.git $TmpDir 2>&1 | Out-Null
+    Invoke-NativeCommand { git clone --quiet https://github.com/Community-Access/accessibility-agents.git $TmpDir 2>&1 | Out-Null }
     if ($LASTEXITCODE -ne 0) {
         Write-Host "  Error: git clone failed. Check your network connection and try again."
         exit 1
@@ -326,7 +344,7 @@ function Get-CommandMajorVersion {
     # 2) Fallback: invoke the command and parse the first version-looking token.
     $Output = $null
     try {
-        $Output = & $Cmd.Source @VersionArgs 2>&1 | Out-String
+        $Output = Invoke-NativeCommand { & $Cmd.Source @VersionArgs 2>&1 | Out-String }
     }
     catch {
         return $null
@@ -460,7 +478,7 @@ function Install-VeraPdfDirect {
         [IO.File]::WriteAllText($XmlPath, $AutoInstallXml, [Text.UTF8Encoding]::new($false))
 
         Write-Host "    Running silent veraPDF install to $InstallDir..."
-        & java -jar $InstallerJar.FullName $XmlPath 2>&1 | Out-Null
+        Invoke-NativeCommand { & java -jar $InstallerJar.FullName $XmlPath 2>&1 | Out-Null }
         if ($LASTEXITCODE -ne 0) {
             Write-Host "    ! veraPDF installer exited with code $LASTEXITCODE."
             return $false
@@ -711,7 +729,7 @@ function Ensure-NodeJsRuntime {
         Write-Host "  The installer can install Node.js LTS with winget."
         if (Read-YesNo -Prompt 'Install Node.js LTS now?' -DefaultYes:$true) {
             try {
-                winget install --exact --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements 2>&1 | Out-Null
+                Invoke-NativeCommand { winget install --exact --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements 2>&1 | Out-Null }
                 if ($LASTEXITCODE -ne 0) { throw "winget install failed with exit code $LASTEXITCODE" }
                 Refresh-ProcessPath
             }
@@ -750,7 +768,7 @@ function Show-PdfDeepValidationReadiness {
 
     if ($JavaCmd) {
         try {
-            $JavaVersion = (& java -version 2>&1 | Select-Object -First 1)
+            $JavaVersion = Invoke-NativeCommand { & java -version 2>&1 | Select-Object -First 1 }
             if ($JavaMajor -ge 11) {
                 Write-Host "    [x] Java detected: $JavaVersion"
             }
@@ -773,7 +791,7 @@ function Show-PdfDeepValidationReadiness {
 
     if ($VeraPdfCmd) {
         try {
-            $VeraPdfVersion = (& verapdf --version 2>&1 | Select-Object -First 1)
+            $VeraPdfVersion = Invoke-NativeCommand { & verapdf --version 2>&1 | Select-Object -First 1 }
             Write-Host "    [x] veraPDF detected: $VeraPdfVersion"
         }
         catch {
@@ -883,7 +901,7 @@ function Test-PlaywrightChromiumReady {
 
     try {
         Push-Location $WorkingDir
-        $null = node -e "import('playwright').then(async ({ chromium }) => { const fs = await import('node:fs'); const exe = chromium.executablePath(); process.exit(exe && fs.existsSync(exe) ? 0 : 1); }).catch(() => process.exit(1))" 2>&1
+        Invoke-NativeCommand { $null = node -e "import('playwright').then(async ({ chromium }) => { const fs = await import('node:fs'); const exe = chromium.executablePath(); process.exit(exe && fs.existsSync(exe) ? 0 : 1); }).catch(() => process.exit(1))" 2>&1 }
         $Success = ($LASTEXITCODE -eq 0)
         Pop-Location
         return $Success
@@ -2027,7 +2045,7 @@ if (Test-Path $McpServerSrc) {
                 Write-Host "  Installing MCP server dependencies..."
                 try {
                     Push-Location $McpDest
-                    npm install --omit=dev 2>&1 | Out-Null
+                    Invoke-NativeCommand { npm install --omit=dev 2>&1 | Out-Null }
                     if ($LASTEXITCODE -ne 0) { throw "npm install failed with exit code $LASTEXITCODE" }
                     Pop-Location
                     Write-Host "    + MCP server dependencies installed"
@@ -2045,7 +2063,7 @@ if (Test-Path $McpServerSrc) {
                 Write-Host "  Setting up PDF form conversion tooling..."
                 try {
                     Push-Location $McpDest
-                    npm install pdf-lib 2>&1 | Out-Null
+                    Invoke-NativeCommand { npm install pdf-lib 2>&1 | Out-Null }
                     if ($LASTEXITCODE -ne 0) { throw "npm install pdf-lib failed with exit code $LASTEXITCODE" }
                     Pop-Location
                     Write-Host "    + pdf-lib installed"
@@ -2063,9 +2081,9 @@ if (Test-Path $McpServerSrc) {
                 Write-Host "  Setting up Playwright browser tooling..."
                 try {
                     Push-Location $McpDest
-                    npm install playwright @axe-core/playwright 2>&1 | Out-Null
+                    Invoke-NativeCommand { npm install playwright @axe-core/playwright 2>&1 | Out-Null }
                     if ($LASTEXITCODE -ne 0) { throw "npm install playwright failed with exit code $LASTEXITCODE" }
-                    npx playwright install chromium 2>&1 | Out-Null
+                    Invoke-NativeCommand { npx playwright install chromium 2>&1 | Out-Null }
                     if ($LASTEXITCODE -ne 0) { throw "npx playwright install chromium failed with exit code $LASTEXITCODE" }
                     Pop-Location
                     Write-Host "    + Playwright tooling and Chromium installed"
@@ -2142,7 +2160,7 @@ if (Test-Path $McpServerSrc) {
                 }
                 if (Read-YesNo -Prompt 'Install Java 21 JRE now with winget?' -DefaultYes:$false) {
                     try {
-                        winget install --exact --id EclipseAdoptium.Temurin.21.JRE --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
+                        Invoke-NativeCommand { winget install --exact --id EclipseAdoptium.Temurin.21.JRE --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null }
                         if ($LASTEXITCODE -ne 0) { throw "winget install failed with exit code $LASTEXITCODE" }
                         Write-Host "    + Java 21 JRE install requested through winget"
                         Write-Host "    ! Restart your terminal or VS Code after install so java is added to PATH"
@@ -2172,7 +2190,7 @@ if (Test-Path $McpServerSrc) {
                 Write-Host ""
                 if (Read-YesNo -Prompt 'Install veraPDF now with Chocolatey?' -DefaultYes:$false) {
                     try {
-                        choco install verapdf -y 2>&1 | Out-Null
+                        Invoke-NativeCommand { choco install verapdf -y 2>&1 | Out-Null }
                         if ($LASTEXITCODE -ne 0) { throw "choco install failed with exit code $LASTEXITCODE" }
                         Write-Host "    + veraPDF install requested through Chocolatey"
                         Write-Host "    ! Restart your terminal or VS Code after install so verapdf is added to PATH"
