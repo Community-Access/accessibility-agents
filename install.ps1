@@ -15,6 +15,8 @@ param(
     [switch]$Cli,
     [switch]$Codex,
     [switch]$Gemini,
+    [switch]$OpenCode,
+    [switch]$Freebuff,
     [switch]$Yes,
     [switch]$NoAutoUpdate,
     [switch]$Check,
@@ -31,7 +33,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $AutoApprove = $Yes.IsPresent
-$OptionalPlatformFlags = $Copilot.IsPresent -or $Cli.IsPresent -or $Codex.IsPresent -or $Gemini.IsPresent
+$OptionalPlatformFlags = $Copilot.IsPresent -or $Cli.IsPresent -or $Codex.IsPresent -or $Gemini.IsPresent -or $OpenCode.IsPresent -or $Freebuff.IsPresent
 
 # Determine source: running from repo clone or downloaded?
 $Downloaded = $false
@@ -74,6 +76,13 @@ $CodexConfigSrc = Join-Path $ScriptDir ".codex\config.toml"
 $CodexRolesSrc = Join-Path $ScriptDir ".codex\roles"
 $CodexSkillsSrc = Join-Path $ScriptDir "codex-skills"
 $CodexPluginSrc = Join-Path $ScriptDir "codex-plugin"
+$OpenCodeAgentsSrc = Join-Path $ScriptDir ".opencode\agent"
+$OpenCodeInstructionsSrc = Join-Path $ScriptDir ".opencode\AGENTS.md"
+$FreebuffInstructionsSrc = Join-Path $ScriptDir ".agents\AGENTS.md"
+# Router skills and specialist references are written once and shared by every
+# platform that loads them; they are not Codex-specific despite where they live.
+$RouterSkillsSrc = Join-Path $CodexPluginSrc "skills"
+$SpecialistReferenceSrc = Join-Path $CodexPluginSrc "references"
 
 # Auto-detect agents from source directory
 $Agents = @()
@@ -523,6 +532,8 @@ $InstallSummary = [ordered]@{
         copilotCli        = [bool]$Cli
         codex             = [bool]$Codex
         gemini            = [bool]$Gemini
+        opencode          = [bool]$OpenCode
+        freebuff          = [bool]$Freebuff
         autoApprove       = [bool]$Yes
         noAutoUpdate      = [bool]$NoAutoUpdate
         vscodeProfileMode = $VsCodeProfileMode
@@ -556,8 +567,8 @@ if ($Check) {
 }
 
 if ($DryRun) {
-    if (-not ($Copilot -or $Cli -or $Codex -or $Gemini)) {
-        $InstallSummary.notes += 'Optional platforms were not selected in dry-run mode. Use -Copilot, -Cli, -Codex, and/or -Gemini to preview them explicitly.'
+    if (-not ($Copilot -or $Cli -or $Codex -or $Gemini -or $OpenCode -or $Freebuff)) {
+        $InstallSummary.notes += 'Optional platforms were not selected in dry-run mode. Use -Copilot, -Cli, -Codex, -Gemini, -OpenCode, and/or -Freebuff to preview them explicitly.'
     }
     Write-Host ''
     Write-Host '  Dry run only. No files will be changed.'
@@ -1973,6 +1984,198 @@ if (Test-Path $GeminiSrc) {
 }
 
 # ---------------------------------------------------------------------------
+# Shared payload for platforms without a plugin container of their own.
+#
+# OpenCode and Freebuff both tell their agents to read the specialist reference
+# pack, so the pack is written to a neutral location rather than reached for
+# inside the Codex plugin directory. A machine that installs only OpenCode or
+# only Freebuff still has the files those agents are instructed to open.
+# ---------------------------------------------------------------------------
+function Install-A11yReferencePack {
+    param([string]$ReferenceRoot)
+
+    if (-not (Test-Path $SpecialistReferenceSrc)) {
+        return 0
+    }
+
+    $Copied = 0
+    Get-ChildItem -Path $SpecialistReferenceSrc -Recurse -File | ForEach-Object {
+        $Rel = $_.FullName.Substring($SpecialistReferenceSrc.Length).TrimStart('\')
+        $Dst = Join-Path $ReferenceRoot $Rel
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $Dst) | Out-Null
+        Copy-Item -Path $_.FullName -Destination $Dst -Force
+        Add-ManifestEntry "a11y-reference/path:$Dst"
+        $Copied++
+    }
+    return $Copied
+}
+
+function Install-A11yRouterSkills {
+    param([string]$SkillsRoot, [string]$ManifestKind)
+
+    if (-not (Test-Path $RouterSkillsSrc)) {
+        return 0
+    }
+
+    New-Item -ItemType Directory -Force -Path $SkillsRoot | Out-Null
+    $Copied = 0
+    Get-ChildItem -Path $RouterSkillsSrc -Directory | ForEach-Object {
+        $Dst = Join-Path $SkillsRoot $_.Name
+        New-Item -ItemType Directory -Force -Path $Dst | Out-Null
+        Copy-Item -Path (Join-Path $_.FullName "SKILL.md") -Destination (Join-Path $Dst "SKILL.md") -Force
+        Add-ManifestEntry "$ManifestKind/path:$(Join-Path $Dst 'SKILL.md')"
+        $Copied++
+    }
+    return $Copied
+}
+
+# ---------------------------------------------------------------------------
+# OpenCode support (agents, router skills, and global instructions)
+#
+# OpenCode reads subagents as markdown with YAML frontmatter, so the specialist
+# team installs as first-class agents rather than as prose the model has to be
+# talked into following.
+# ---------------------------------------------------------------------------
+$OpenCodeInstalled = $false
+$OpenCodeDst = ""
+$InstallOpenCode = $OpenCode.IsPresent
+
+if (Test-Path $OpenCodeAgentsSrc) {
+    if ((-not $InstallOpenCode) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install OpenCode support?' -DefaultYes:$false)) {
+        Write-Host ""
+        Write-Host "  Would you also like to install OpenCode support?"
+        Write-Host "  This installs the accessibility specialists as OpenCode subagents"
+        Write-Host "  plus the router skills and the WCAG AA instructions."
+        $InstallOpenCode = $true
+    }
+
+    if ($InstallOpenCode) {
+        Write-Host ""
+        Write-Host "  Installing OpenCode support..."
+
+        if ($Choice -eq "1") {
+            $OpenCodeDst = Join-Path (Get-Location) ".opencode"
+            $OpenCodeReferenceDst = Join-Path (Get-Location) ".a11y-agents\references"
+        }
+        else {
+            $OpenCodeDst = Join-Path $env:USERPROFILE ".config\opencode"
+            $OpenCodeReferenceDst = Join-Path $env:USERPROFILE ".a11y-agents\references"
+        }
+
+        $OpenCodeAgentsDst = Join-Path $OpenCodeDst "agent"
+        New-Item -ItemType Directory -Force -Path $OpenCodeAgentsDst | Out-Null
+        $OpenCodeAgentCount = 0
+        Get-ChildItem -Path $OpenCodeAgentsSrc -File -Filter "*.md" | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination (Join-Path $OpenCodeAgentsDst $_.Name) -Force
+            Add-ManifestEntry "opencode-agent/path:$(Join-Path $OpenCodeAgentsDst $_.Name)"
+            $OpenCodeAgentCount++
+        }
+        Write-Host "    + $OpenCodeAgentCount subagents installed to $OpenCodeAgentsDst"
+
+        $OpenCodeSkillsDst = Join-Path $OpenCodeDst "skills"
+        $OpenCodeSkillCount = Install-A11yRouterSkills -SkillsRoot $OpenCodeSkillsDst -ManifestKind "opencode-router-skill"
+        if ($OpenCodeSkillCount -gt 0) {
+            Write-Host "    + $OpenCodeSkillCount router skills installed to $OpenCodeSkillsDst"
+        }
+
+        $OpenCodeReferenceCount = Install-A11yReferencePack -ReferenceRoot $OpenCodeReferenceDst
+        if ($OpenCodeReferenceCount -gt 0) {
+            Write-Host "    + $OpenCodeReferenceCount specialist references installed to $OpenCodeReferenceDst"
+        }
+
+        if (Test-Path $OpenCodeInstructionsSrc) {
+            $OpenCodeInstructionsDst = Join-Path $OpenCodeDst "AGENTS.md"
+            Merge-ConfigFile -SrcFile $OpenCodeInstructionsSrc -DstFile $OpenCodeInstructionsDst -Label "AGENTS.md (accessibility rules)"
+            Add-ManifestEntry "opencode-instructions/path:$OpenCodeInstructionsDst"
+        }
+
+        $OpenCodeInstalled = $true
+        if ($Choice -eq "1") {
+            Add-ManifestEntry "opencode/project"
+        }
+        else {
+            Add-ManifestEntry "opencode/global"
+        }
+        Add-ManifestEntry "opencode/path:$OpenCodeDst"
+        Save-Manifest
+
+        Write-Host ""
+        Write-Host "  OpenCode will now load the accessibility specialist team."
+        Write-Host "  Run: opencode, then ask for '@accessibility-lead review this page'."
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Freebuff support (router skills, references, and global instructions)
+#
+# Freebuff defines custom agents as TypeScript generators, so the specialists
+# are not installed as spawnable subagents there. What it does read is the
+# shared ~/.agents/skills store and its global AGENTS.md, which is enough to run
+# the same review in a single session against the specialist references.
+# ---------------------------------------------------------------------------
+$FreebuffInstalled = $false
+$FreebuffDst = ""
+$InstallFreebuff = $Freebuff.IsPresent
+
+if ((Test-Path $RouterSkillsSrc) -or (Test-Path $FreebuffInstructionsSrc)) {
+    if ((-not $InstallFreebuff) -and (-not $OptionalPlatformFlags) -and (-not $AutoApprove) -and (Read-YesNo -Prompt 'Install Freebuff support?' -DefaultYes:$false)) {
+        Write-Host ""
+        Write-Host "  Would you also like to install Freebuff support?"
+        Write-Host "  This installs the accessibility router skills, the specialist"
+        Write-Host "  references, and the WCAG AA instructions Freebuff reads at startup."
+        $InstallFreebuff = $true
+    }
+
+    if ($InstallFreebuff) {
+        Write-Host ""
+        Write-Host "  Installing Freebuff support..."
+
+        if ($Choice -eq "1") {
+            $FreebuffDst = Join-Path (Get-Location) ".agents"
+            $FreebuffInstructionsDst = Join-Path (Get-Location) "AGENTS.md"
+            $FreebuffReferenceDst = Join-Path (Get-Location) ".a11y-agents\references"
+        }
+        else {
+            $FreebuffDst = Join-Path $env:USERPROFILE ".agents"
+            # Freebuff reads its user-level instructions from ~/.AGENTS.md, not
+            # from a file inside ~/.agents.
+            $FreebuffInstructionsDst = Join-Path $env:USERPROFILE ".AGENTS.md"
+            $FreebuffReferenceDst = Join-Path $env:USERPROFILE ".a11y-agents\references"
+        }
+
+        $FreebuffSkillsDst = Join-Path $FreebuffDst "skills"
+        $FreebuffSkillCount = Install-A11yRouterSkills -SkillsRoot $FreebuffSkillsDst -ManifestKind "freebuff-router-skill"
+        if ($FreebuffSkillCount -gt 0) {
+            Write-Host "    + $FreebuffSkillCount router skills installed to $FreebuffSkillsDst"
+        }
+
+        $FreebuffReferenceCount = Install-A11yReferencePack -ReferenceRoot $FreebuffReferenceDst
+        if ($FreebuffReferenceCount -gt 0) {
+            Write-Host "    + $FreebuffReferenceCount specialist references installed to $FreebuffReferenceDst"
+        }
+
+        if (Test-Path $FreebuffInstructionsSrc) {
+            Merge-ConfigFile -SrcFile $FreebuffInstructionsSrc -DstFile $FreebuffInstructionsDst -Label "AGENTS.md (accessibility rules)"
+            Add-ManifestEntry "freebuff-instructions/path:$FreebuffInstructionsDst"
+        }
+
+        $FreebuffInstalled = $true
+        if ($Choice -eq "1") {
+            Add-ManifestEntry "freebuff/project"
+        }
+        else {
+            Add-ManifestEntry "freebuff/global"
+        }
+        Add-ManifestEntry "freebuff/path:$FreebuffDst"
+        Save-Manifest
+
+        Write-Host ""
+        Write-Host "  Freebuff will now apply WCAG AA rules to UI work."
+        Write-Host "  Run: freebuff, then ask it to review a page for accessibility issues."
+    }
+}
+
+# ---------------------------------------------------------------------------
 # Install enforcement hooks (global only)
 # ---------------------------------------------------------------------------
 if ($Choice -eq "2") {
@@ -2327,6 +2530,8 @@ $InstallSummary.installed = [ordered]@{
     copilotCli = [bool]$CopilotCliInstalled
     codex      = [bool]$CodexInstalled
     gemini     = [bool]$GeminiInstalled
+    opencode   = [bool]$OpenCodeInstalled
+    freebuff   = [bool]$FreebuffInstalled
     mcp        = [bool]$McpInstalled
     autoUpdate = [bool]$AutoUpdateEnabled
 }
@@ -2336,6 +2541,8 @@ $InstallSummary.destinations = [ordered]@{
     copilotCli = @($CliAgentsDst, $CliSkillsDst) | Where-Object { $_ }
     codex      = @($CodexPluginDst, $CodexPluginSkillsDst, $CodexAgentsDst, $CodexExtensionDst, $CodexSkillsDst, $CodexConfigDst, $CodexRolesDst) | Where-Object { $_ }
     gemini     = @($GeminiDst) | Where-Object { $_ }
+    opencode   = @($OpenCodeDst) | Where-Object { $_ }
+    freebuff   = @($FreebuffDst) | Where-Object { $_ }
     mcp        = @($McpDest) | Where-Object { $_ }
 }
 $InstallSummary.manifestPath = $ManifestPath

@@ -35,7 +35,7 @@ AI coding tools generate inaccessible code by default. They forget ARIA rules, s
 
 ## The Solution
 
-**Accessibility Agents** provides seventy-nine specialized agents across eight teams and five platforms:
+**Accessibility Agents** provides seventy-nine specialized agents across eight teams and seven platforms:
 
 - **Web Accessibility team** - agents that enforce WCAG AA standards for web code, including i18n/RTL, WCAG AAA coverage, data visualization, email, media, web components, and performance accessibility
 - **Document Accessibility team** - agents for Office (DOCX, XLSX, PPTX), PDF, EPUB, and Markdown accessibility scanning and remediation
@@ -50,6 +50,8 @@ All agents run on:
 - **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
 - **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
 - **Codex CLI** - Native Codex plugin with small router skills, custom subagents, lazy specialist references, and extension-aware dispatch
+- **OpenCode** - Accessibility specialists install as OpenCode subagents, with router skills and WCAG AA instructions merged into the global config
+- **Freebuff** - Router skills and specialist references install to `~/.agents/`, with WCAG AA instructions merged into the Freebuff instruction file
 - **MCP Server** - HTTP-based server providing 24 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
 
 ## System Requirements

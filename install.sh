@@ -9,11 +9,15 @@
 #   bash install.sh --global --cli     Also install Copilot CLI agents to ~/.copilot/
 #   bash install.sh --global --codex   Also install Codex plugin, router skills, and subagents
 #   bash install.sh --global --gemini  Also install Gemini CLI extension
+#   bash install.sh --global --opencode Also install OpenCode subagents, router skills, and references
+#   bash install.sh --global --freebuff  Also install Freebuff router skills and references
 #   bash install.sh --project          Install to .claude/ in the current directory
 #   bash install.sh --project --copilot Also install Copilot agents to project
 #   bash install.sh --project --cli    Also install Copilot CLI agents to project
 #   bash install.sh --project --codex  Also install Codex plugin, router skills, and subagents
 #   bash install.sh --project --gemini Also install Gemini CLI extension
+#   bash install.sh --project --opencode Also install OpenCode subagents, router skills, and references
+#   bash install.sh --project --freebuff Also install Freebuff router skills and references
 #   bash install.sh --global --vscode-stable     Target VS Code stable only for Copilot assets
 #   bash install.sh --global --vscode-insiders   Target VS Code Insiders only for Copilot assets
 #   bash install.sh --global --mcp-profile-both  Configure MCP settings in both VS Code profiles
@@ -161,6 +165,8 @@ COPILOT_FLAG=false
 COPILOT_CLI_FLAG=false
 CODEX_FLAG=false
 GEMINI_FLAG=false
+OPENCODE_FLAG=false
+FREEBUFF_FLAG=false
 DRY_RUN=false
 CHECK_MODE=false
 SUMMARY_PATH=""
@@ -177,6 +183,8 @@ for arg in "$@"; do
     --cli) COPILOT_CLI_FLAG=true ;;
     --codex) CODEX_FLAG=true ;;
     --gemini) GEMINI_FLAG=true ;;
+    --opencode) OPENCODE_FLAG=true ;;
+    --freebuff) FREEBUFF_FLAG=true ;;
     --yes) AUTO_APPROVE=true ;;
     --no-auto-update) NO_AUTO_UPDATE=true ;;
     --check) CHECK_MODE=true ;;
@@ -192,7 +200,7 @@ for arg in "$@"; do
 done
 
 OPTIONAL_PLATFORM_FLAGS=false
-if [ "$COPILOT_FLAG" = true ] || [ "$COPILOT_CLI_FLAG" = true ] || [ "$CODEX_FLAG" = true ] || [ "$GEMINI_FLAG" = true ]; then
+if [ "$COPILOT_FLAG" = true ] || [ "$COPILOT_CLI_FLAG" = true ] || [ "$CODEX_FLAG" = true ] || [ "$GEMINI_FLAG" = true ] || [ "$OPENCODE_FLAG" = true ] || [ "$FREEBUFF_FLAG" = true ]; then
   OPTIONAL_PLATFORM_FLAGS=true
 fi
 
@@ -254,7 +262,7 @@ BACKUP_METADATA_PATH="$(initialize_operation_state install "$([ "$choice" = "1" 
 
 if [ "$CHECK_MODE" = true ]; then
   CHECK_NOTES=("Check mode only. No files were changed.")
-  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":true,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${CHECK_NOTES[@]}")}"
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":true,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"opencode\":$(json_bool "$OPENCODE_FLAG"),\"freebuff\":$(json_bool "$FREEBUFF_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${CHECK_NOTES[@]}")}"
   echo ""
   echo "  Check mode only. No files will be changed."
   echo "  Summary file: $SUMMARY_PATH"
@@ -271,8 +279,8 @@ if [ "$DRY_RUN" = true ]; then
   if [ "$NO_AUTO_UPDATE" = true ]; then
     DRY_RUN_NOTES+=("Auto-update setup would be skipped because --no-auto-update was supplied.")
   fi
-  if [ "$COPILOT_FLAG" = false ] && [ "$COPILOT_CLI_FLAG" = false ] && [ "$CODEX_FLAG" = false ] && [ "$GEMINI_FLAG" = false ]; then
-    DRY_RUN_NOTES+=("Optional platforms were not selected in dry-run mode. Use --copilot, --cli, --codex, and/or --gemini to preview them explicitly.")
+  if [ "$COPILOT_FLAG" = false ] && [ "$COPILOT_CLI_FLAG" = false ] && [ "$CODEX_FLAG" = false ] && [ "$GEMINI_FLAG" = false ] && [ "$OPENCODE_FLAG" = false ] && [ "$FREEBUFF_FLAG" = false ]; then
+    DRY_RUN_NOTES+=("Optional platforms were not selected in dry-run mode. Use --copilot, --cli, --codex, --gemini, --opencode, and/or --freebuff to preview them explicitly.")
   fi
   echo ""
   echo "  Dry run only. No files will be changed."
@@ -296,7 +304,7 @@ if [ "$DRY_RUN" = true ]; then
       echo "    -> none detected for the requested profile filter"
     fi
   fi
-  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":true,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${DRY_RUN_NOTES[@]}")}"
+  write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":true,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"opencode\":$(json_bool "$OPENCODE_FLAG"),\"freebuff\":$(json_bool "$FREEBUFF_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"notes\":$(json_array_from_notes "${DRY_RUN_NOTES[@]}")}"
   echo "  Summary file: $SUMMARY_PATH"
   [ "$DOWNLOADED" = true ] && rm -rf "$TMPDIR_DL"
   exit 0
@@ -2346,6 +2354,195 @@ if [ "$install_gemini" = true ] && [ -d "$GEMINI_SRC" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Shared payload for platforms without a plugin container of their own.
+#
+# OpenCode and Freebuff both tell their agents to read the specialist reference
+# pack, so the pack is written to a neutral location rather than reached for
+# inside the Codex plugin directory. A machine that installs only OpenCode or
+# only Freebuff still has the files those agents are instructed to open.
+# ---------------------------------------------------------------------------
+OPENCODE_AGENTS_SRC="$SCRIPT_DIR/.opencode/agent"
+OPENCODE_INSTRUCTIONS_SRC="$SCRIPT_DIR/.opencode/AGENTS.md"
+FREEBUFF_INSTRUCTIONS_SRC="$SCRIPT_DIR/.agents/AGENTS.md"
+A11Y_ROUTER_SKILLS_SRC="$CODEX_PLUGIN_SRC/skills"
+A11Y_SPECIALIST_REFERENCE_SRC="$CODEX_PLUGIN_SRC/references"
+
+install_a11y_reference_pack() {
+  local ref_root="$1"
+  local copied=0
+  [ -d "$A11Y_SPECIALIST_REFERENCE_SRC" ] || { echo 0; return; }
+  mkdir -p "$ref_root"
+  while IFS= read -r -d '' src_file; do
+    rel="${src_file#$A11Y_SPECIALIST_REFERENCE_SRC/}"
+    dst_file="$ref_root/$rel"
+    mkdir -p "$(dirname "$dst_file")"
+    cp "$src_file" "$dst_file"
+    add_manifest_entry "a11y-reference/path:$dst_file"
+    copied=$((copied + 1))
+  done < <(find "$A11Y_SPECIALIST_REFERENCE_SRC" -type f -print0)
+  echo "$copied"
+}
+
+install_a11y_router_skills() {
+  local skills_root="$1"
+  local manifest_kind="$2"
+  local copied=0
+  [ -d "$A11Y_ROUTER_SKILLS_SRC" ] || { echo 0; return; }
+  mkdir -p "$skills_root"
+  for skill_dir in "$A11Y_ROUTER_SKILLS_SRC"/*/; do
+    [ -d "$skill_dir" ] || continue
+    skill_name="$(basename "$skill_dir")"
+    dst_skill_dir="$skills_root/$skill_name"
+    mkdir -p "$dst_skill_dir"
+    cp "$skill_dir/SKILL.md" "$dst_skill_dir/SKILL.md"
+    add_manifest_entry "$manifest_kind/path:$dst_skill_dir/SKILL.md"
+    copied=$((copied + 1))
+  done
+  echo "$copied"
+}
+
+# ---------------------------------------------------------------------------
+# OpenCode support (subagents, router skills, references, and instructions)
+#
+# OpenCode reads subagents as markdown with YAML frontmatter, so the specialist
+# team installs as first-class agents rather than as prose the model has to be
+# talked into following.
+# ---------------------------------------------------------------------------
+OPENCODE_INSTALLED=false
+OPENCODE_DST=""
+
+install_opencode=false
+if [ "$OPENCODE_FLAG" = true ]; then
+  install_opencode=true
+elif [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && [ -d "$OPENCODE_AGENTS_SRC" ] && read_yes_no "Install OpenCode support?" false; then
+  echo ""
+  echo "  Would you also like to install OpenCode support?"
+  echo "  This installs the accessibility specialists as OpenCode subagents"
+  echo "  plus the router skills and the WCAG AA instructions."
+  install_opencode=true
+fi
+
+if [ "$install_opencode" = true ] && [ -d "$OPENCODE_AGENTS_SRC" ]; then
+  echo ""
+  echo "  Installing OpenCode support..."
+
+  if [ "$choice" = "1" ]; then
+    OPENCODE_DST="$(pwd)/.opencode"
+    OPENCODE_REFERENCE_DST="$(pwd)/.a11y-agents/references"
+  else
+    OPENCODE_DST="$HOME/.config/opencode"
+    OPENCODE_REFERENCE_DST="$HOME/.a11y-agents/references"
+  fi
+
+  OPENCODE_AGENTS_DST="$OPENCODE_DST/agent"
+  mkdir -p "$OPENCODE_AGENTS_DST"
+  opencode_agent_count=0
+  for src_file in "$OPENCODE_AGENTS_SRC"/*.md; do
+    [ -f "$src_file" ] || continue
+    cp "$src_file" "$OPENCODE_AGENTS_DST/$(basename "$src_file")"
+    add_manifest_entry "opencode-agent/path:$OPENCODE_AGENTS_DST/$(basename "$src_file")"
+    opencode_agent_count=$((opencode_agent_count + 1))
+  done
+  echo "    + $opencode_agent_count subagents installed to $OPENCODE_AGENTS_DST"
+
+  OPENCODE_SKILLS_DST="$OPENCODE_DST/skills"
+  opencode_skill_count="$(install_a11y_router_skills "$OPENCODE_SKILLS_DST" "opencode-router-skill")"
+  if [ "$opencode_skill_count" -gt 0 ]; then
+    echo "    + $opencode_skill_count router skills installed to $OPENCODE_SKILLS_DST"
+  fi
+
+  opencode_reference_count="$(install_a11y_reference_pack "$OPENCODE_REFERENCE_DST")"
+  if [ "$opencode_reference_count" -gt 0 ]; then
+    echo "    + $opencode_reference_count specialist references installed to $OPENCODE_REFERENCE_DST"
+  fi
+
+  if [ -f "$OPENCODE_INSTRUCTIONS_SRC" ]; then
+    OPENCODE_INSTRUCTIONS_DST="$OPENCODE_DST/AGENTS.md"
+    merge_config_file "$OPENCODE_INSTRUCTIONS_SRC" "$OPENCODE_INSTRUCTIONS_DST" "AGENTS.md (accessibility rules)"
+    add_manifest_entry "opencode-instructions/path:$OPENCODE_INSTRUCTIONS_DST"
+  fi
+
+  OPENCODE_INSTALLED=true
+  if [ "$choice" = "1" ]; then
+    add_manifest_entry "opencode/project"
+  else
+    add_manifest_entry "opencode/global"
+  fi
+  add_manifest_entry "opencode/path:$OPENCODE_DST"
+
+  echo ""
+  echo "  OpenCode will now load the accessibility specialist team."
+  echo "  Run: opencode, then ask for '@accessibility-lead review this page'."
+fi
+
+# ---------------------------------------------------------------------------
+# Freebuff support (router skills, references, and global instructions)
+#
+# Freebuff defines custom agents as TypeScript generators, so the specialists
+# are not installed as spawnable subagents there. What it does read is the
+# shared ~/.agents/skills store and its global AGENTS.md, which is enough to run
+# the same review in a single session against the specialist references.
+# ---------------------------------------------------------------------------
+FREEBUFF_INSTALLED=false
+FREEBUFF_DST=""
+
+install_freebuff=false
+if [ "$FREEBUFF_FLAG" = true ]; then
+  install_freebuff=true
+elif [ "$OPTIONAL_PLATFORM_FLAGS" = false ] && [ "$AUTO_APPROVE" = false ] && { [ -d "$A11Y_ROUTER_SKILLS_SRC" ] || [ -f "$FREEBUFF_INSTRUCTIONS_SRC" ]; } && read_yes_no "Install Freebuff support?" false; then
+  echo ""
+  echo "  Would you also like to install Freebuff support?"
+  echo "  This installs the accessibility router skills, the specialist"
+  echo "  references, and the WCAG AA instructions Freebuff reads at startup."
+  install_freebuff=true
+fi
+
+if [ "$install_freebuff" = true ] && { [ -d "$A11Y_ROUTER_SKILLS_SRC" ] || [ -f "$FREEBUFF_INSTRUCTIONS_SRC" ]; }; then
+  echo ""
+  echo "  Installing Freebuff support..."
+
+  if [ "$choice" = "1" ]; then
+    FREEBUFF_DST="$(pwd)/.agents"
+    FREEBUFF_INSTRUCTIONS_DST="$(pwd)/AGENTS.md"
+    FREEBUFF_REFERENCE_DST="$(pwd)/.a11y-agents/references"
+  else
+    FREEBUFF_DST="$HOME/.agents"
+    # Freebuff reads its user-level instructions from ~/.AGENTS.md, not from a
+    # file inside ~/.agents.
+    FREEBUFF_INSTRUCTIONS_DST="$HOME/.AGENTS.md"
+    FREEBUFF_REFERENCE_DST="$HOME/.a11y-agents/references"
+  fi
+
+  FREEBUFF_SKILLS_DST="$FREEBUFF_DST/skills"
+  freebuff_skill_count="$(install_a11y_router_skills "$FREEBUFF_SKILLS_DST" "freebuff-router-skill")"
+  if [ "$freebuff_skill_count" -gt 0 ]; then
+    echo "    + $freebuff_skill_count router skills installed to $FREEBUFF_SKILLS_DST"
+  fi
+
+  freebuff_reference_count="$(install_a11y_reference_pack "$FREEBUFF_REFERENCE_DST")"
+  if [ "$freebuff_reference_count" -gt 0 ]; then
+    echo "    + $freebuff_reference_count specialist references installed to $FREEBUFF_REFERENCE_DST"
+  fi
+
+  if [ -f "$FREEBUFF_INSTRUCTIONS_SRC" ]; then
+    merge_config_file "$FREEBUFF_INSTRUCTIONS_SRC" "$FREEBUFF_INSTRUCTIONS_DST" "AGENTS.md (accessibility rules)"
+    add_manifest_entry "freebuff-instructions/path:$FREEBUFF_INSTRUCTIONS_DST"
+  fi
+
+  FREEBUFF_INSTALLED=true
+  if [ "$choice" = "1" ]; then
+    add_manifest_entry "freebuff/project"
+  else
+    add_manifest_entry "freebuff/global"
+  fi
+  add_manifest_entry "freebuff/path:$FREEBUFF_DST"
+
+  echo ""
+  echo "  Freebuff will now apply WCAG AA rules to UI work."
+  echo "  Run: freebuff, then ask it to review a page for accessibility issues."
+fi
+
+# ---------------------------------------------------------------------------
 # Guided MCP server setup
 # Copies the open-source MCP server to a stable location, installs npm
 # dependencies when available, and can configure VS Code to use it.
@@ -2856,7 +3053,7 @@ if [ "$MCP_INSTALLED" = true ] && [ "$MCP_PROFILE_MODE" != "auto" ] && [ -z "$SE
   INSTALL_NOTES+=("The requested MCP profile filter did not match any installed VS Code profile.")
 fi
 
-write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}")}"
+write_summary_file "$SUMMARY_PATH" "{\"schemaVersion\":\"1.0\",\"timestampUtc\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"operation\":\"install\",\"dryRun\":false,\"check\":false,\"scope\":\"$([ \"$choice\" = \"1\" ] && echo project || echo global)\",\"targetDir\":\"$(json_escape "$TARGET_DIR")\",\"requestedOptions\":{\"copilot\":$(json_bool "$COPILOT_FLAG"),\"copilotCli\":$(json_bool "$COPILOT_CLI_FLAG"),\"codex\":$(json_bool "$CODEX_FLAG"),\"gemini\":$(json_bool "$GEMINI_FLAG"),\"opencode\":$(json_bool "$OPENCODE_FLAG"),\"freebuff\":$(json_bool "$FREEBUFF_FLAG"),\"autoApprove\":$(json_bool "$AUTO_APPROVE"),\"noAutoUpdate\":$(json_bool "$NO_AUTO_UPDATE"),\"vscodeProfileMode\":\"$VSCODE_PROFILE_MODE\",\"mcpProfileMode\":\"$MCP_PROFILE_MODE\"},\"selectedCopilotProfiles\":$(json_array_from_profiles "$SELECTED_COPILOT_PROFILES" path),\"selectedMcpProfiles\":$(json_array_from_profiles "$SELECTED_MCP_PROFILES" settings),\"backupMetadataPath\":\"$(json_escape "$BACKUP_METADATA_PATH")\",\"installed\":{\"claude\":true,\"plugin\":$(json_bool "$PLUGIN_INSTALL"),\"copilot\":$(json_bool "$COPILOT_INSTALLED"),\"copilotCli\":$(json_bool "$COPILOT_CLI_INSTALLED"),\"codex\":$(json_bool "$CODEX_INSTALLED"),\"gemini\":$(json_bool "$GEMINI_INSTALLED"),\"opencode\":$(json_bool "$OPENCODE_INSTALLED"),\"freebuff\":$(json_bool "$FREEBUFF_INSTALLED"),\"mcp\":$(json_bool "$MCP_INSTALLED"),\"autoUpdate\":$(json_bool "$AUTO_UPDATE_ENABLED")},\"notes\":$(json_array_from_notes "${INSTALL_NOTES[@]}")}"
 
 echo ""
 echo "  Summary written to:"

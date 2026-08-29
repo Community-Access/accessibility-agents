@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **OpenCode support** in the universal installer: accessibility specialists install as OpenCode subagents, router skills install to the OpenCode skills directory, and the WCAG AA instructions merge into the OpenCode instruction file.
+- **OpenCode agent generator** (`scripts/generate-opencode-agents.js`) that derives OpenCode subagents from the existing Claude Code and Codex agent definitions.
+- **Freebuff support** in the universal installer: router skills install to `~/.agents/skills/`, specialist references install to `~/.a11y-agents/references/`, and the WCAG AA instructions merge into the Freebuff instruction file.
+
 ## [6.0.0] - 2026-06-15
 
 ### Added
