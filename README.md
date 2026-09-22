@@ -86,7 +86,7 @@ docs/                    conformance dossier, guides, release notes
 npm run verify
 ```
 
-Fourteen gates, each naming the standard it checks and what a failure would
+Fifteen gates, each naming the standard it checks and what a failure would
 cost, including live sessions on Claude Code, Codex and Copilot.
 The evidence, measured results and the one documented deviation from the Agent
 Skills specification are in

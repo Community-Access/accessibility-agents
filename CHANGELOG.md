@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.1] - 2026-09-21
+
+Closes every high-severity dependency advisory on the default branch, and adds
+the gate that should have caught them. Details in
+[docs/standards/dependencies.md](docs/standards/dependencies.md).
+
+### Added
+
+- **Dependency gate** (`npm run verify:deps`, the fifteenth gate in
+  `npm run verify`). Audits all three dependency trees against the npm advisory
+  database and fails on high or critical. The runtime tree and the CI tooling
+  are fatal; the deprecated extension is reported only. Offline exits 2 rather
+  than printing a pass it has not earned.
+- **`docs/standards/dependencies.md`**, describing the three trees, why their
+  thresholds differ, and each override with the range its parent asks for.
+
+### Fixed
+
+- 24 high-severity advisories, all of them transitive.
+- `mcp-server`: eight runtime advisories in `fast-uri` (five), `hono` and
+  `ip-address`. The MCP SDK moved from 1.27.1 to 1.30.0, which was not enough,
+  so each is pinned under `overrides` to its first patched release, inside the
+  range its parent asks for.
+- `mcp-server`: three further advisories in `@hono/node-server`,
+  `body-parser` and `qs`, cleared by `npm audit fix`.
+- `vscode-extension`: sixteen advisories in the packaging toolchain
+  (`undici`, `js-yaml`, `form-data`, `linkify-it`, `brace-expansion`,
+  `fast-uri`), all build-time, cleared by `npm audit fix`.
+
+All three trees now report zero vulnerabilities at every severity, and the MCP
+server's 71 tests still pass.
+
 ## [7.0.0] - 2026-09-21
 
 One package on the open agent standards, replacing six hand-maintained

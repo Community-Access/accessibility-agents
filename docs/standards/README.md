@@ -12,6 +12,7 @@ rather than asserted, and any deviation, plainly.
 | [Model Context Protocol](mcp.md) | the 39 scanner tools | a real client over stdio, `npm run verify:mcp` |
 | [WCAG 2.2](wcag.md) | every criterion a finding cites | `npm run verify:findings` |
 | [Hooks, by client](hooks-by-client.md) | the enforcement gate | 22 tests, `node --test hooks/guard.test.mjs` |
+| [Dependency supply chain](dependencies.md) | three dependency trees | the npm advisory database, `npm run verify:deps` |
 
 The [conformance dossier](conformance.md) collects the gates, the measured
 results, the defects found on the way, and the live-client evidence.

@@ -1,6 +1,6 @@
 {
   "name": "@a11y-agent-team/mcp-server",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "Server-based MCP server for the A11y Agent Team. Provides accessibility scanning tools over HTTP (Streamable HTTP transport with SSE fallback). Works with Claude Desktop, VS Code Copilot, and any MCP-compatible client.",
   "type": "module",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "prepublishOnly": "npm test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "express": "^5.1.0",
     "playwright-core": "^1.58.2",
     "zod": "^3.25.0"
@@ -55,5 +55,11 @@
     "@axe-core/playwright": "^4.11.1",
     "pdf-lib": "^1.17.1",
     "playwright": "^1.58.2"
+  },
+  "//overrides": "Transitive dependencies pinned to their first patched release. Each is within the range its parent asks for, so this raises a floor rather than forcing an incompatible version. Remove an entry once the parent ships a range that cannot resolve below it.",
+  "overrides": {
+    "fast-uri": "^3.1.6",
+    "hono": "^4.12.25",
+    "ip-address": "^10.3.1"
   }
 }

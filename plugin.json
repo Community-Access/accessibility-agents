@@ -1,13 +1,24 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "accessibility-agents",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "WCAG 2.2 AA enforcement across web UI, Office and PDF documents, markdown and desktop apps. Six router skills dispatch a hundred specialist and reference skills, with hooks that block UI edits until the accessibility lead has reviewed.",
-  "author": { "name": "Community Access" },
+  "author": {
+    "name": "Community Access"
+  },
   "license": "MIT",
   "homepage": "https://github.com/Community-Access/accessibility-agents",
   "repository": "https://github.com/Community-Access/accessibility-agents",
-  "keywords": ["accessibility", "a11y", "wcag", "aria", "audit", "remediation", "pdf-ua", "section-508"],
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "aria",
+    "audit",
+    "remediation",
+    "pdf-ua",
+    "section-508"
+  ],
   "skills": "./skills/",
   "mcp": "./mcp.json"
 }

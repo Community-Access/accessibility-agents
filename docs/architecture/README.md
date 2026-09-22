@@ -107,7 +107,7 @@ session.
 
 `skills/a11y-core/scripts/measure-context.mjs` reports what the package costs
 per client; `budgets.json` holds the ceilings; CI fails on regression.
-`scripts/verify.mjs` runs fourteen gates, each of which names the standard it
+`scripts/verify.mjs` runs fifteen gates, each of which names the standard it
 checks and what a failure would cost a person. The evidence is in
 [the conformance dossier](../standards/conformance.md).
 

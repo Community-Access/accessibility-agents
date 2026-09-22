@@ -10,7 +10,7 @@ npm install
 npm run verify
 ```
 
-Last full run: 2026-09-21. All 14 gates pass, including live sessions on Claude Code, Codex and Copilot.
+Last full run: 2026-09-21. All 15 gates pass, including live sessions on Claude Code, Codex and Copilot.
 
 ---
 
@@ -73,7 +73,7 @@ failures                0
 
 ## 3. The gates
 
-Fourteen gates. Each says what it proves in terms of what breaks without it.
+Fifteen gates. Each says what it proves in terms of what breaks without it.
 
 | Gate | Standard | What a failure would cost |
 |---|---|---|
@@ -90,6 +90,7 @@ Fourteen gates. Each says what it proves in terms of what breaks without it.
 | Version consistency | one version per release | A user unable to tell which build they are running |
 | Dispatch matrices | generated from skill frontmatter | A new specialist that no router can reach |
 | Generated documentation | reference pages derived from source | A catalog that lists skills which no longer exist |
+| Dependency advisories | the npm advisory database | Shipping a known-vulnerable dependency to every user |
 | Live client session | what Claude Code, Codex and Copilot actually load | The whole cost reduction resting on a field a client might ignore |
 
 ### Reproducing any one of them
@@ -105,6 +106,7 @@ npm run verify:mcp          # MCP server, 71 tests
 npm run verify:markdown     # markdown accessibility
 npm run verify:scanner      # the linter's own tests
 npm run verify:release      # version consistency
+npm run verify:deps         # dependency advisories
 npm run verify:live         # a real Claude Code session
 node --test hooks/guard.test.mjs
 ```

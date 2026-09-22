@@ -119,6 +119,14 @@ const GATES = [
     proves: 'The skills catalog and MCP tools reference describe what is actually shipped.',
   },
   {
+    id: 'dependencies',
+    name: 'Dependency advisories',
+    standard: 'no known-vulnerable dependency ships',
+    command: [NODE, ['scripts/verify-dependencies.mjs']],
+    proves: 'None of the three dependency trees carries a high or critical advisory, checked against the registry rather than assumed.',
+    optional: true,
+  },
+  {
     id: 'live',
     name: 'Live client session',
     standard: 'what Claude Code actually loads',

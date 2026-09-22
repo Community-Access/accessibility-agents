@@ -11,7 +11,7 @@
       "name": "accessibility-agents",
       "source": ".",
       "description": "WCAG 2.2 AA enforcement as Agent Skills. Six router skills dispatch a specialist team across web, document, markdown, desktop and GitHub work; hooks block edits to user-facing files until the accessibility lead has reviewed; an MCP server supplies the scanners.",
-      "version": "7.0.0",
+      "version": "7.0.1",
       "author": {
         "name": "Community Access"
       },
