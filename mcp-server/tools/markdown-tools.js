@@ -219,7 +219,8 @@ export function registerMarkdownTools(server) {
     "scan_markdown_document",
     {
       title: "Scan Markdown Document",
-      description: "Scan a markdown (.md) file for accessibility issues. Checks heading hierarchy (single H1, no skipped levels), image alt text (presence and quality), link text quality (detects ambiguous text like 'click here' or 'read more'), and basic document structure. Optionally writes a markdown report.",
+      description:
+        "Scan a markdown file for link text, alt text, heading order, table and emoji accessibility issues.",
       inputSchema: z.object({
         filePath: z.string().describe("Absolute path to the .md file"),
         reportPath: z.string().optional().describe("Optional path to write a markdown accessibility report"),

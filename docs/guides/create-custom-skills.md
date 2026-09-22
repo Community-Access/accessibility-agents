@@ -486,4 +486,4 @@ Once published, your skill is:
 
 - [Authoritative Sources Guide](./authoritative-sources.md) - Citing sources correctly
 - [Context Management Guide](./context-management.md) - Managing conversation context
-- [Agent Architecture](../architecture.md) - How agents are structured
+- [Agent Architecture](../architecture/README.md) - How agents are structured

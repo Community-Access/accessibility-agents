@@ -7,6 +7,137 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0] - 2026-09-21
+
+One package on the open agent standards, replacing six hand-maintained
+per-client trees. Always-on context cost falls 84 to 93 percent depending on
+client; dispatching a specialist falls from 26,929 tokens to 100.
+
+Full detail in [modern.md](./docs/history/2026-09-modernization.md); evidence in
+[docs/MODERNIZATION-CONFORMANCE.md](./docs/standards/conformance.md).
+
+### Added
+
+- **One skills package** at `skills/`, 108 skills conforming to the Agent Skills
+  specification and read natively by Claude Code, Codex, Copilot, Gemini and
+  Antigravity. Four tiers: six model-invocable routers, 57 specialists, 16
+  helpers, 29 reference skills. Only the routers cost the model anything.
+- **Findings schema** at `skills/a11y-core/schemas/findings.schema.json`. Every
+  scanning skill returns JSON against it, so a finding means the same thing
+  whichever skill produced it.
+- **Report renderer** (`render-report.mjs`) producing all seven required
+  sections, the score and grade, and a delta against the previous run. Reports
+  embed their merged findings so the next comparison is free.
+- **WCAG 2.2 criterion list** (`wcag22-criteria.json`) checked against every
+  finding, so an audit cannot cite a criterion that does not exist or claim the
+  wrong conformance level. The obsoleted 4.1.1 Parsing is caught specifically.
+- **One enforcement guard** (`hooks/guard.mjs`) with four client manifests,
+  replacing four scripts in three languages. Twenty-two tests.
+- **MCP tool annotations and output schemas** on all 39 tools. Twenty-nine
+  read-only scanners can now be auto-approved, so a bulk scan stops asking once
+  per document.
+- **`render_accessibility_report` MCP tool**, so clients without a shell produce
+  byte-identical reports.
+- **Eleven verification gates** behind `npm run verify`, each naming the
+  standard it checks and what a failure would cost a person.
+- **Context measurement** (`measure-context.mjs`) reporting per-client cost,
+  with budgets enforced in continuous integration.
+- **New installer** (`scripts/install.mjs`), 8 KB replacing 215 KB of shell and
+  PowerShell. Detects installed clients, refuses to overwrite a hooks file or a
+  skill the user has edited.
+
+- **Live gates on three clients.** `npm run verify:live` now measures Claude
+  Code, Codex and Copilot in real sessions, reading what each client emits
+  rather than asking a model. All three show exactly the six routers.
+- **Generated dispatch matrices.** Each router's roster is derived from skill
+  frontmatter by `scripts/build-dispatch-matrices.mjs`; CI fails if one drifts,
+  so adding a specialist cannot leave it unreachable.
+- **Generated reference pages.** The skills catalog and the MCP tools table are
+  built from source by `scripts/build-docs.mjs` and checked in CI.
+- **`scripts/new-skill.mjs`** scaffolds a skill that passes every gate on its
+  first run, including the Codex policy file and an example findings payload.
+- **`scripts/dev-link.mjs`** points a checkout's `.agents/skills` at `skills/`
+  so every client reads edits directly, with a copy fallback where the volume
+  allows neither junctions nor symlinks.
+- **Documentation framework.** `docs/` now has an index and six sections:
+  getting started, guides, reference, standards, architecture and history.
+  Every standard the package conforms to has its own page with version,
+  clauses, checks and deviations. One hundred historical documents moved to
+  `docs/history/` with a banner; no present-tense page references a deleted
+  directory.
+- **`ROADMAP.md`** rewritten for what comes after 7.0, with the reservations
+  about 7.0 stated first.
+- **Table descriptions** for 707 tables, written from each table's own column
+  headers so a screen reader user knows what a row is before entering table
+  navigation.
+
+### Changed
+
+- **`AGENTS.md` is the only always-on instruction file.** `CLAUDE.md` is one
+  line importing it. `GEMINI.md` and `copilot-instructions.md` are gone.
+- **Routers dispatch by name, not by pasting.** A router previously read a
+  specialist's body into its own context and pasted it into the prompt, paying
+  for it twice.
+- **The edit gate opens on the lead's completion, not its launch.** A cancelled
+  review previously unlocked every edit for the rest of the session.
+- **The reminder injects once per session**, capped at sixty words, rather than
+  roughly 570 tokens on every prompt.
+- **The MCP server reads its version from its manifest.** It had hard-coded
+  "4.6.0" in three places while its manifest said 6.0.0.
+- **Nine tool descriptions cut to one sentence**, which is what a client shows
+  in a picker.
+- **Copilot's path-scoped instruction files** survive as `kb-path-instructions`,
+  one reference each, opened only when working on a matching file.
+
+### Fixed
+
+- 21 agents carried a paragraph or section verbatim twice, from copy drift.
+- 16 skill bodies carried multiple H1 headings.
+- 279 bare URLs where a descriptive link was meant.
+- 53 links that resolved to nothing from either the old or the new location.
+- 2 unquoted YAML descriptions containing a colon, which a strict parser
+  rejects, found by the specification's own validator.
+- 2 MCP tools marked local that call a remote service.
+- Build output, tests and dependencies were gated as if they were a user's
+  interface.
+- Codex child-session and parent-thread identifiers are now treated as one
+  session, so a valid review is no longer invisible to the edit gate.
+- Codex listed all 29 reference skills in its model catalog because they had
+  no `agents/openai.yaml`; Codex decides catalog membership from that file, not
+  from frontmatter. Found by the live probe. Every non-router now carries it.
+- The Codex context budget was counted by user-invocability and overstated by
+  about 1,300 tokens; it is now counted by the policy file, and Codex carries
+  the same 1,500-token target as every other client.
+- The markdown linter scanned the editor's local history, a gitignored private
+  directory, inflating its findings by 228 duplicates of files already checked
+  at their real paths.
+- 63 code fences closed with a `text` info string, which opens a new block
+  rather than closing the old one, so everything after them was read as code.
+- 24 headings carried emoji, which a screen reader announces by Unicode name
+  before the words that matter.
+- The `md-table-desc` rule demanded markdown that GitHub does not render as a
+  table. Fixing it cleared 939 false warnings without editing a document.
+
+### Removed
+
+- `.claude/agents`, `.claude/specialists`, `.claude/hooks`, `claude-code-plugin`,
+  `codex-skills`, `codex-plugin`, `.codex`, `.gemini`, `.github/agents`,
+  `.github/skills`, `.github/prompts`, `.github/instructions`, `.github/hooks`:
+  843 files, every one a copy of something now in `skills/`.
+- `gemini-extension.json`, `GEMINI.md`, `plugin.yaml`,
+  `.github/copilot-instructions.md`, `.a11y-agent-manifest`.
+- 21 scripts and workflows whose subject no longer exists, including
+  `check-platform-parity.js` (one tree replaced six), `install.sh` and
+  `install.ps1`.
+- Eight continuous integration workflows, folded into one.
+- Root clutter: generated lint output, a 282 KB results file, three scratch
+  files, a stray file named `C`, and two sample audit outputs.
+
+### Deprecated
+
+- `vscode-extension/` is superseded by native Agent Plugins support in VS Code.
+  The source is kept so a final version can point existing users at the package.
+
 ## [6.0.0] - 2026-06-15
 
 ### Added

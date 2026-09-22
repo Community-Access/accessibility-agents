@@ -1,576 +1,128 @@
 # Accessibility Agents
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/community-access/accessibility-agents?include_prereleases)](https://github.com/Community-Access/accessibility-agents/releases)
-[![GitHub stars](https://img.shields.io/github/stars/community-access/accessibility-agents)](https://github.com/Community-Access/accessibility-agents/stargazers)
-[![GitHub contributors](https://img.shields.io/github/contributors/community-access/accessibility-agents)](https://github.com/Community-Access/accessibility-agents/graphs/contributors)
-[![WCAG 2.2 AA](https://img.shields.io/badge/WCAG-2.2_AA-green.svg)](https://www.w3.org/TR/WCAG22/)
+WCAG 2.2 AA enforcement for agentic coding, as a set of Agent Skills. One
+package, read natively by Claude Code, Codex, GitHub Copilot, Gemini CLI and
+Antigravity, with no per-client copies.
 
-> **AI and automated tools are not perfect.** They miss things, make mistakes, and cannot replace testing with real screen readers and assistive technology. Always verify with VoiceOver, NVDA, JAWS, and keyboard-only navigation. This tooling is a helpful starting point, not a substitute for real accessibility testing.
+Models forget accessibility while generating code. This package makes that
+harder: it routes the work to the right specialist, blocks edits to user-facing
+files until the accessibility lead has reviewed, and renders audit reports from
+structured findings rather than from memory.
 
-**A community-driven open-source project automating accessibility, efficiency, and productivity through AI-based agents, skills, custom instructions, and prompts.**
-
-A sincere thanks goes out to [Taylor Arndt](https://github.com/taylorarndt) and [Jeff Bishop](https://github.com/jeffreybishop) for leading the charge in building this community project. It started because LLMs consistently forget accessibility - skills get ignored, instructions drift out of context, ARIA gets misused, focus management gets skipped, color contrast fails silently. They got tired of fighting it and built an agent team that will not let it slide. Now we want to make more magic together.
-
-> **We want more contributors!** If you care about making software accessible to blind and low vision users, please consider [submitting a PR](CONTRIBUTING.md). Every improvement to these agents helps developers ship more inclusive software for the people who need it most.
-
-## Support Hub
-
-For troubleshooting, Q&A, and community support across workshop and agent ecosystems, use the Community Access support repository:
-
-- Home: https://github.com/Community-Access/support
-- Discussions: https://github.com/Community-Access/support/discussions
-- Issues: https://github.com/Community-Access/support/issues
-
-Related repositories:
-
-- Workshop curriculum: https://github.com/Community-Access/git-going-with-github
-- Accessibility Agents source: https://github.com/Community-Access/accessibility-agents
-
----
-
-## The Problem
-
-AI coding tools generate inaccessible code by default. They forget ARIA rules, skip keyboard navigation, ignore contrast ratios, and produce modals that trap screen reader users. Even with skills and CLAUDE.md instructions, accessibility context gets deprioritized or dropped entirely.
-
-## The Solution
-
-**Accessibility Agents** provides seventy-nine specialized agents across eight teams and five platforms:
-
-- **Web Accessibility team** - agents that enforce WCAG AA standards for web code, including i18n/RTL, WCAG AAA coverage, data visualization, email, media, web components, and performance accessibility
-- **Document Accessibility team** - agents for Office (DOCX, XLSX, PPTX), PDF, EPUB, and Markdown accessibility scanning and remediation
-- **GitHub Workflow team** - twenty agents that manage repositories, triage issues, review PRs, manage project boards, CI/CD workflows, security alerts, releases, notifications, and wiki pages
-- **Developer Tools team** - agents for Python, wxPython, desktop accessibility, NVDA addon development, and accessibility tool building
-- **Education & Standards** - screen reader simulation, WCAG 3.0 preview, WCAG AAA auditing
-- **Cross-cutting** - CI/CD accessibility pipelines, compliance mapping, accessibility statements, regression detection, and orchestrators that route work across teams
-
-All agents run on:
-
-- **Claude Code** - Agents you invoke directly for accessibility evaluation
-- **GitHub Copilot** (VS Code and CLI) - Agents + workspace instructions that ensure accessibility guidance in every conversation
-- **Gemini CLI** - Skills-based extension with always-on WCAG AA context via GEMINI.md
-- **Codex CLI** - Native Codex plugin with small router skills, custom subagents, lazy specialist references, and extension-aware dispatch
-- **MCP Server** - HTTP-based server providing 24 accessibility scanning tools to any MCP-compatible client (Claude Desktop, VS Code, CI/CD pipelines)
-
-## System Requirements
-
-> **CRITICAL:** To remain current with Accessibility Agents and ensure proper functionality, you **must** keep all tools updated to their latest versions. New platform capabilities, API changes, accessibility features, and bug fixes directly impact agent behavior.
-
-### Required Tools (Latest Versions)
-
-**For GitHub Copilot (VS Code):**
-
-- **VS Code:** Latest stable release and/or VS Code Insiders ([Download](https://code.visualstudio.com/))
-- **GitHub Copilot Extension:** Latest version from VS Code Marketplace
-- **GitHub Copilot Chat Extension:** Latest version from VS Code Marketplace
-- **Node.js:** v18.0.0 or higher (for CLI tools like axe-core)
-
-**For Claude Code:**
-
-- **Claude Code CLI:** Latest version ([Installation](https://docs.anthropic.com/en/docs/claude-code))
-- **Claude Subscription:** Pro, Max, or Team plan
-
-**For Gemini CLI:**
-
-- **Gemini CLI:** Latest version ([Installation](https://github.com/google-gemini/gemini-cli))
-- **Google AI Studio API Key:** Active key ([Get Started](https://ai.google.dev/))
-
-**Operating Systems:**
-
-- **macOS:** 10.15 (Catalina) or later
-- **Windows:** Windows 10/11 with PowerShell 5.1+ (pre-installed)
-
-### Why Version Currency Matters
-
-1. **Platform API Changes** - VS Code Copilot, Claude Code, and other platforms add new capabilities (tool use, context windows, model selection) that agents rely on
-2. **Accessibility Features** - New platform features directly improve agent effectiveness (browser tools, screenshot analysis, DOM inspection)
-3. **Bug Fixes** - Critical fixes for tool invocation, context handling, and agent orchestration
-4. **Security Updates** - Important security patches for API access, authentication, and data handling
-5. **WCAG Evolution** - As standards evolve (WCAG 2.2, 3.0), agents update to reflect current best practices
-
-### Keeping Tools Updated
-
-**Automatic Updates (Recommended):**
+## Install
 
 ```bash
-# Update the skill itself
-gh extension upgrade gh-skill
-
-# Pull latest repository changes when working from source
-cd accessibility-agents
-git pull origin main
+npm install
+node scripts/install.mjs
 ```
 
-**Manual Updates:**
+That copies the skills to `~/.agents/skills`, the shared location Codex,
+Copilot, Gemini and Antigravity read, and writes the hook manifest for whichever
+clients are present. It never overwrites a hooks file or a skill you have
+edited. Add `--dry-run` to see what it would do.
+
+As a plugin, which wires the hooks for you:
+
+```text
+Claude Code   /plugin marketplace add Community-Access/accessibility-agents
+Copilot       copilot plugin install accessibility-agents
+Codex         /plugins, then add this repository
+```
+
+## How to use it
+
+Describe the problem. Six entry points route the rest.
+
+| You are working on | Skill |
+|---|---|
+| HTML, JSX, TSX, Vue, Svelte, CSS, or a server template | `accessibility-lead` |
+| A full site or app audit rather than one change | `web-accessibility-wizard` |
+| Word, Excel, PowerPoint, PDF or ePub files | `document-accessibility-wizard` |
+| Markdown documentation | `markdown-a11y-assistant` |
+| Python, wxPython, desktop apps, NVDA add-ons, accessibility tooling | `developer-hub` |
+| Issues, pull requests, releases, projects, actions, security, teams, wikis | `github-hub` |
+
+Those six dispatch a further 102 specialist, helper and reference skills by
+name. The other 102 are invisible to the model until a router names one, which
+is why the whole package costs about 1,100 tokens before you have said anything.
+
+## What it does
+
+- **Reviews web UI** across ARIA, keyboard, focus, forms, contrast, modals, live
+  regions, headings, tables, links, cognitive load, internationalisation,
+  performance, mobile, email, data visualisation and web components.
+- **Scans documents** for Office, PDF and ePub accessibility, one file or a
+  whole tree, and generates remediation scripts.
+- **Audits markdown** for link text, alt text, heading order, tables, emoji and
+  diagrams.
+- **Blocks unreviewed edits.** A hook refuses a write to a user-facing file
+  until the accessibility lead completes, on every client that supports hooks.
+- **Renders reports.** Findings are JSON; a script writes the report, computes
+  the score, and shows the delta against the previous run.
+- **Supplies scanners over MCP.** Thirty-nine tools: axe-core, Office, PDF,
+  ePub, markdown, veraPDF, Playwright behavioural scans, audit history and
+  report rendering.
+
+## Layout
+
+```text
+AGENTS.md                the always-on contract, under 1,200 tokens
+CLAUDE.md                one line, importing AGENTS.md
+plugin.json              Agent Plugins 1.0 manifest
+mcp.json                 MCP server registration
+skills/                  108 skills
+  a11y-core/             shared contract, findings schema, scripts
+  <router>/              the six entry points
+  <specialist>/          one domain each, dispatched by a router
+  kb-<domain>/           reference data: rule tables, URL registries, formulas
+hooks/                   one guard script, four client manifests
+mcp-server/              the scanners
+docs/                    conformance dossier, guides, release notes
+```
+
+## Verify
 
 ```bash
-# Update Accessibility Agents
-cd accessibility-agents
-git pull origin main
-
-# Update VS Code
-# Help → Check for Updates (or auto-updates if enabled in settings)
-
-# Update GitHub Copilot Extensions
-# Extensions → @installed → Click update icon next to GitHub Copilot extensions
-
-# Update Claude Code CLI
-claude code update
-
-# Update Node.js tools
-npm update -g @axe-core/cli
-npm update -g pa11y
+npm run verify
 ```
 
-**Version Checks:**
+Fourteen gates, each naming the standard it checks and what a failure would
+cost, including live sessions on Claude Code, Codex and Copilot.
+The evidence, measured results and the one documented deviation from the Agent
+Skills specification are in
+[the conformance dossier](./docs/standards/conformance.md).
 
 ```bash
-# Check current versions
-code --version                    # VS Code
-claude code --version            # Claude Code CLI
-node --version                   # Node.js
-npm list -g --depth=0            # Global npm packages
+npm run measure           # what the package costs, per client
+npm run measure:dispatch  # what dispatching a specialist costs
+npm run probe:mcp         # the MCP tool surface
 ```
 
-### Compatibility Note
-
-Accessibility Agents are tested against the **latest stable releases** of all supported platforms. While older versions may work, we cannot guarantee compatibility or support issues arising from outdated tooling. If you encounter unexpected behavior, update all tools before reporting issues.
-
-### VS Code 1.113 Highlights
-
-VS Code 1.113 is currently the most relevant baseline for GitHub Copilot users of this repo. The release added several changes that improve Accessibility Agents workflows directly:
-
-- **MCP across agent types** - MCP servers configured in VS Code now bridge into Copilot CLI and Claude agents, which makes this repo's MCP guidance more consistent across local, CLI, and Claude workflows.
-- **Chat Customizations editor** - `Chat: Open Chat Customizations` gives you one place to inspect and manage instructions, prompt files, agents, skills, MCP servers, and plugins.
-- **Broader Agent Debug coverage** - Agent Debug Logs now cover Copilot CLI and Claude agent sessions in addition to local sessions.
-- **Integrated browser improvements** - local HTTPS testing with self-signed certificates is easier, and browser tab management is better for accessibility testing workflows.
-- **Nested subagents** - VS Code now supports nested subagent delegation. For this repo, that is treated as an optional platform capability, not a default architecture choice. We favor explicit coordinator-worker flows and keep nested subagents disabled by default.
-
-Subagent stance for this repo:
-
-- **Reward:** bounded subagents improve specialization, parallel analysis, and audit structure.
-- **Risk:** unrestricted or nested subagents can increase duplicate findings, wrong-agent selection, token cost, and debugging complexity.
-- **Recommendation:** use explicit, allowlisted specialist delegation; avoid recursive subagent chains unless a workflow is intentionally designed for them.
-
-For official details, see the VS Code 1.113 release notes: `https://code.visualstudio.com/updates/v1_113`.
-
-### Authoritative Sources and Currency
-
-This project bases platform-specific guidance on official vendor documentation and release notes, not secondary summaries.
-
-Primary references:
-
-- VS Code release notes: `https://code.visualstudio.com/updates`
-- VS Code Copilot customization docs: `https://code.visualstudio.com/docs/copilot/customization/custom-instructions`
-- VS Code custom agents docs: `https://code.visualstudio.com/docs/copilot/customization/custom-agents`
-- VS Code prompt files docs: `https://code.visualstudio.com/docs/copilot/customization/prompt-files`
-- GitHub Copilot product docs: `https://docs.github.com/copilot`
-
-Attribution policy:
-
-- Platform claims in this repo should cite at least one official source link.
-- New behavior tied to a specific release should include the release note URL.
-- When settings keys are documented, link to the official settings/docs page where possible.
-
-## Optional Customization
-
-## GitHub Skills Rollout Guides
-
-For the GitHub Skills specification rollout and release-readiness workflows, see:
-
-- docs/guides/GITHUB-SKILLS-CLI-READINESS.md
-- docs/guides/SKILLS-RELEASE-READINESS-TEST-PLAN.md
-- .github/workflows/skills-cli-readiness.yml
-- .github/workflows/skills-release-readiness.yml
-
-### VS Code 1.113 Workflow Tips
-
-If you are using Accessibility Agents in VS Code 1.113, these settings and commands are the most useful starting point:
-
-```json
-{
-  "chat.useCustomizationsInParentRepositories": true,
-  "github.copilot.chat.agentDebugLog.enabled": true,
-  "github.copilot.chat.agentDebugLog.fileLogging.enabled": true,
-  "chat.imageSupport.enabled": true
-}
-```
-
-- Run `Chat: Open Chat Customizations` to inspect loaded instructions, agents, skills, MCP servers, and plugins.
-- Use `/troubleshoot` when a customization is not loading or an expected tool is missing.
-- Keep `chat.subagents.allowInvocationsFromSubagents` disabled unless you are intentionally experimenting with recursive orchestration patterns.
-
-That last point is a repo recommendation, not a VS Code limitation.
-
-### Custom Thinking Phrases (VS Code 1.110+)
-
-**VS Code users:** Personalize the loading text that appears while agents think with accessibility-themed phrases.
-
-**Add to VS Code Settings (settings.json):**
-
-```jsonc
-{
-  "chat.agent.thinking.phrases": {
-    "mode": "append",  // Adds to default phrases
-    "phrases": [
-      "Checking contrast ratios...",
-      "Testing with screen readers...",
-      "Verifying keyboard navigation...",
-      "Reviewing ARIA patterns...",
-      "Scanning for accessibility barriers...",
-      "Consulting WCAG 2.2..."
-    ]
-  }
-}
-```
-
-**Options:**
-
-- `"mode": "append"` - Adds your phrases to VS Code's default list (recommended)
-- `"mode": "replace"` - Only shows your custom phrases
-
-**Why This Matters:**
-
-- Reinforces accessibility focus during agent work
-- Reminds team members that accessibility is actively considered
-- Optional fun enhancement to make wait time more engaging
-
-**How to Add:**
-
-1. Open VS Code Settings (Ctrl/Cmd + ,)
-2. Click "Open Settings (JSON)" icon in top-right
-3. Add the `chat.agent.thinking.phrases` setting
-4. Reload window (Command Palette → "Developer: Reload Window")
-
-**Community Contributions:**
-Have a great accessibility-themed thinking phrase? Submit a PR to add it to our recommended list in [CONTRIBUTING.md](CONTRIBUTING.md)!
-
-## Quick Start
-
-### One-liner install
-
-**Windows (PowerShell):**
-
-```powershell
-irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.ps1 | iex
-```
-
-**macOS / Linux:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/install.sh | bash
-```
-
-The shell installer requires a real `bash` environment. On Windows, use PowerShell by default; use the shell installer only from Git Bash, WSL, or another environment that provides `bash`.
-
-If both VS Code and VS Code Insiders are installed, the installer copies Copilot assets into both profiles automatically.
-
-Non-interactive install examples:
-
-```bash
-bash install.sh --project --copilot --yes --no-auto-update --dry-run
-```
-
-```powershell
-.\install.ps1 -Project -Copilot -Yes -NoAutoUpdate -DryRun
-```
-
-See the full [Getting Started Guide](docs/getting-started.md) for all installation options, manual setup, global vs project install, auto-updates, and platform-specific details.
-
-Accessibility Agents v6 also introduces extension packs for company, team, framework, regional, and design-system standards. Installed extensions can contribute first-class agents and rules to the same router workflows as the bundled core agents.
-
-### One-liner uninstall
-
-**Windows (PowerShell):**
-
-```powershell
-irm https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.ps1 | iex
-```
-
-**macOS / Linux:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/uninstall.sh | bash
-```
-
-The uninstaller removes all agents, config sections, assets, extensions, and auto-update tasks across every platform (Claude Code, Copilot, Codex, Gemini). For step-by-step manual removal instructions, see [UNINSTALL.md](UNINSTALL.md).
-
-### Safe installation — your files are never overwritten
-
-The setup flow is designed to be additive and non-destructive:
-
-- **Agent files** (`~/.claude/agents/`, `.github/agents/`) - existing files are skipped, not replaced. A message tells you which agents were skipped so you know what you already have.
-- **Config files** (`copilot-instructions.md`, `copilot-review-instructions.md`, `copilot-commit-message-instructions.md`) - our content is wrapped in `<!-- a11y-agent-team: start/end -->` markers and merged into your existing file. Your content above and below the markers is always preserved. If the file does not exist, it is created.
-- **Asset directories** (`skills/`, `instructions/`, `prompts/`) - copied file-by-file; files that already exist are skipped.
-- **Manifest file** (`.a11y-agent-manifest`) - tracks every file we installed. Repair and update flows use this list to ensure they only touch files we own, never user-created agents. When contributors add new agents to the repo, those files are installed on the next setup/repair pass and added to the manifest.
-
-**Updates are equally safe** - maintenance flows never delete user agent files. If a file is not in the manifest (meaning you created it yourself), it will not be modified or removed.
-
-To reinstall a specific agent from scratch, delete it first and rerun setup or repair.
-
-## Post-Install Validation
-
-After installation, run a validation and self-repair pass. This verifies that all installed surfaces are intact, MCP base dependencies are present, and Playwright is functional if installed.
-
-You can also run it manually at any time:
-
-**PowerShell (Windows) — validate only:**
-
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/repair-install.ps1 -SummaryPath .a11y-agent-team-install-summary.json
-```
-
-**PowerShell (Windows) — validate and auto-repair:**
-
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/repair-install.ps1 -SummaryPath .a11y-agent-team-install-summary.json -Repair
-```
-
-**Shell (macOS / Linux / Git Bash) — validate only:**
-
-```bash
-bash scripts/repair-install.sh --summary=.a11y-agent-team-install-summary.json --validate-only
-```
-
-**Shell (macOS / Linux / Git Bash) — validate and auto-repair:**
-
-```bash
-bash scripts/repair-install.sh --summary=.a11y-agent-team-install-summary.json
-```
-
-VS Code users can run these via the **Terminal > Run Task** menu: look for the `Repair:` task group.
-
-The repair pass checks and fixes:
-
-- **Destination paths** — every installed surface (Claude, Copilot, Codex, Gemini, MCP) exists on disk
-- **MCP base dependencies** — `@modelcontextprotocol/sdk` and `zod` are present; runs `npm install --omit=dev` if missing
-- **Playwright** — `playwright-core` is installed; Chromium is functional; re-runs setup if broken
-- **Copilot profile root cleanup** — removes stray agent/prompt/instruction files placed directly in VS Code profile roots instead of the expected subdirectories
-
-Findings are appended to the install summary JSON and a separate `.a11y-agent-team-repair-summary.json` is written next to it. See [Troubleshooting](docs/troubleshooting.md) for symptom-specific guidance.
-
-## Install from VS Code Marketplace (Coming Soon)
-
-**GitHub Copilot users (VS Code):** A VS Code extension is in development that will allow one-click install from the Extensions marketplace. Until then, use the **one-liner install** above or the manual steps in [Getting Started](docs/getting-started.md).
-
-**What the extension will include:**
-
-- Complete: 59 fully-integrated agents in GitHub Copilot (VS Code and CLI)
-- Complete: 18 reusable accessibility skills (WCAG rules, severity scoring, scanning patterns)
-- Complete: 106 custom prompts for web audits, document audits, GitHub workflows, and developer tooling
-- Complete: 6 workspace instructions (automatic WCAG AA enforcement on every chat)
-- Complete: 100% source citation coverage (all agents cite authoritative standards)
-- Complete: Auto-update mechanism (new agents and features arrive automatically)
-
-For other platforms (Claude Code, Gemini, Claude Desktop, Codex), see [Getting Started](docs/getting-started.md).
-
-## The Team
-
-The following agents make up the accessibility enforcement team, each owning one domain.
-
-| Agent | Role |
-|-------|------|
-| **accessibility-lead** | Orchestrator. Decides which specialists to invoke and runs the final review. |
-| **aria-specialist** | ARIA roles, states, properties, widget patterns. Enforces the first rule of ARIA. |
-| **modal-specialist** | Dialogs, drawers, popovers, alerts. Focus trapping, focus return, escape behavior. |
-| **contrast-master** | Color contrast ratios, dark mode, focus indicators, color independence. |
-| **keyboard-navigator** | Tab order, focus management, skip links, arrow key patterns, SPA route changes. |
-| **live-region-controller** | Dynamic content announcements, toasts, loading states, search results. |
-| **forms-specialist** | Labels, errors, validation, fieldsets, autocomplete, multi-step wizards. |
-| **alt-text-headings** | Alt text, SVGs, icons, heading hierarchy, landmarks, page titles. |
-| **tables-data-specialist** | Table markup, scope, caption, headers, sortable columns, ARIA grids. |
-| **link-checker** | Ambiguous link text, "click here" detection, missing new-tab warnings. |
-| **accessibility-wizard** | Interactive guided web audit across all eleven accessibility domains. |
-| **testing-coach** | Screen reader testing, keyboard testing, automated testing guidance. |
-| **wcag-guide** | WCAG 2.2 criteria in plain language, conformance levels, what changed. |
-| **word-accessibility** | Microsoft Word (DOCX) document accessibility scanning. |
-| **excel-accessibility** | Microsoft Excel (XLSX) spreadsheet accessibility scanning. |
-| **powerpoint-accessibility** | Microsoft PowerPoint (PPTX) presentation accessibility scanning. |
-| **office-scan-config** | Office scan rule configuration and preset profiles. |
-| **pdf-accessibility** | PDF conformance per PDF/UA and the Matterhorn Protocol. |
-| **pdf-scan-config** | PDF scan rule configuration and preset profiles. |
-| **document-accessibility-wizard** | Guided document audit with cross-document analysis, VPAT export, and CSV export with help links. |
-| **markdown-a11y-assistant** | Markdown documentation audit — links, alt text, headings, tables, emoji, diagrams, em-dashes, anchors. |
-| **text-quality-reviewer** | Catches invisible text quality issues: template variables in alt text, code syntax as accessible names, empty labels, duplicate control labels. |
-
-### Developer Tools Agents
-
-The following agents support Python, wxPython, desktop accessibility, NVDA addon development, and accessibility tool building.
-
-| Agent | Role |
-|-------|------|
-| **developer-hub** | Orchestrator. Routes development tasks to the right specialist from plain English. |
-| **python-specialist** | Python debugging, packaging (PyInstaller/Nuitka/cx_Freeze), testing, type checking, async, optimization. |
-| **wxpython-specialist** | wxPython GUI — sizer layouts, event handling, AUI, custom controls, threading, desktop accessibility. |
-| **desktop-a11y-specialist** | Platform accessibility APIs (UI Automation, MSAA/IAccessible2, NSAccessibility), screen reader Name/Role/Value/State, focus management. |
-| **desktop-a11y-testing-coach** | Screen reader testing with NVDA, JAWS, Narrator, and VoiceOver. Automated UIA testing, keyboard-only testing flows. |
-| **a11y-tool-builder** | Build accessibility scanning tools, rule engines, document parsers, report generators, and audit automation. |
-| **nvda-addon-specialist** | NVDA screen reader addon development — globalPlugins, appModules, synthDrivers, braille tables, Add-on Store submission, grounded in official NVDA source. |
-
-### GitHub Workflow Agents
-
-The following agents handle GitHub repository management, triage, and workflow automation.
-
-| Agent | Role |
-|-------|------|
-| **github-hub** | Orchestrator. Routes GitHub management tasks to the right specialist from plain English. |
-| **daily-briefing** | Morning overview - open issues, PR queue, CI status, security alerts in one report. |
-| **pr-review** | PR diff analysis with confidence per finding, delta tracking, and inline comments. |
-| **issue-tracker** | Issue triage - priority scoring, duplicate detection, action inference, project board sync. |
-| **analytics** | Repository health scoring (0-100/A-F), velocity metrics, bottleneck detection. |
-| **insiders-a11y-tracker** | Track accessibility changes in VS Code Insiders and custom repos with WCAG mapping. |
-| **repo-admin** | Collaborator management, branch protection rules, access audits. |
-| **team-manager** | Onboarding, offboarding, org team membership, permission management. |
-| **contributions-hub** | Discussions, community health metrics, first-time contributor insights. |
-| **template-builder** | Guided wizard for issue/PR/discussion templates - no YAML knowledge required. |
-| **repo-manager** | Repository scaffolding - labels, CI, CONTRIBUTING, SECURITY, issue templates. |
-
-See the [Agent Reference Guide](docs/agents/README.md) for deep dives on every agent, example prompts, behavioral constraints, and instructor-led walkthroughs.
-
-## Documentation
-
-### Accessibility Docs
-
-The following guides cover web and document accessibility features.
-
-| Guide | What It Covers |
-|-------|---------------|
-| [Getting Started](docs/getting-started.md) | Installation for Claude Code, Copilot (VS Code and CLI), Gemini CLI, Claude Desktop, and Codex CLI |
-| [User Guide](docs/USER_GUIDE.md) | Comprehensive ecosystem guide with per-platform walkthroughs, all agents, skills, prompts, and recipes |
-| [Agent Reference](docs/agents/README.md) | All 80 agents with invocation syntax, examples, and deep dives |
-| [MCP Tools](docs/tools/mcp-tools.md) | Static analysis tools: heading structure, link text, form labels |
-| [axe-core Integration](docs/tools/axe-core-integration.md) | Runtime scanning, agent workflow, CI/CD setup |
-| [VPAT Generation](docs/tools/vpat-generation.md) | VPAT 2.5 / ACR compliance report generation |
-| [Office Scanning](docs/scanning/office-scanning.md) | DOCX, XLSX, PPTX scanning with 46 built-in rules |
-| [PDF Scanning](docs/scanning/pdf-scanning.md) | PDF/UA scanning with 56 built-in rules |
-| [Scan Configuration](docs/scanning/scan-configuration.md) | Config files, preset profiles, CI/CD templates |
-| [Custom Prompts](docs/scanning/custom-prompts.md) | Nine pre-built prompts for one-click document workflows |
-| [Markdown Accessibility](docs/prompts/README.md#markdown-accessibility-prompts) | Four prompts for markdown auditing, quick checks, fix mode, and audit comparison |
-| [Configuration](docs/configuration.md) | Character budget, troubleshooting |
-| [Architecture](docs/architecture.md) | Project structure, why agents over skills/MCP, design philosophy |
-| [Subagent Architecture](docs/subagent-architecture.md) | Coordinator-worker patterns, delegation rules, allowlist validation, nested subagent policy |
-| [Codex Subagents](docs/guides/codex-experimental-multi-agent.md) | Native Codex plugin, router skills, subagents, lazy references, and extension-aware dispatch |
-| [Accessibility Agents Extensions](docs/guides/accessibility-agent-extensions.md) | Built-in and custom extension packs, authoring format, marketplace submission, and review rules |
-| [Troubleshooting](docs/troubleshooting.md) | MCP server issues, agent configuration, performance, platform-specific debugging |
-
-### GitHub Workflow Docs
-
-The following guide covers all GitHub workflow agents and their invocation syntax.
-
-| Guide | What It Covers |
-|-------|---------------|
-| [GitHub Workflow Agents](docs/agents/README.md#github-workflow-agents) | All 10 workflow agents with invocation syntax, examples, and instructor-led walkthroughs |
-
-### Advanced Guides
-
-The following guides cover advanced configuration, cross-platform handoff, and distribution.
-
-| Guide | What It Covers |
-|-------|---------------|
-| [Cross-Platform Handoff](docs/advanced/cross-platform-handoff.md) | Seamless handoff between Claude Code and Copilot |
-| [Advanced Scanning Patterns](docs/advanced/advanced-scanning-patterns.md) | Background scanning, worktree isolation, large libraries |
-| [Metadata and Markup Conventions](docs/guides/metadata-markup-conventions.md) | Recommended metadata fields and markdown structure conventions for agents, skills, and instructions |
-| [Plugin Packaging](docs/advanced/plugin-packaging.md) | Packaging and distributing agents for different environments |
-| [Platform References](docs/advanced/platform-references.md) | External documentation sources with feature-to-source mapping |
-| [Playwright High-Impact Checks](docs/guides/playwright-high-impact-checks.md) | High-impact runtime accessibility checks for keyboard traps, serious violations, and viewport risk |
-| [CI Integrity Guards](docs/guides/ci-integrity-guards.md) | Guard rails for workflow invariants, config/schema drift, and documentation version pin checks |
-| [Release Communications Checklist](docs/guides/release-communications-checklist.md) | Repeatable release messaging checklist for changelog, notes, publish, and announcements |
-| [Research Sources](docs/RESEARCH-SOURCES.md) | Authoritative sources (W3C APG, WebAIM, WCAG 2.2, Deque) that informed every agent rule |
-
-## What This Covers
-
-- WCAG 2.1 Level AA compliance
-- WCAG 2.2 Level A and AA criteria (VPAT/ACR generation)
-- Screen reader compatibility (VoiceOver, NVDA, JAWS)
-- Keyboard-only navigation
-- Focus management for SPAs, modals, and dynamic content
-- Color contrast verification with automated calculation
-- User preference media queries (`prefers-reduced-motion`, `prefers-contrast`, `prefers-color-scheme`, `forced-colors`, `prefers-reduced-transparency`)
-- Live region implementation for dynamic updates
-- Semantic HTML enforcement
-- Static analysis of headings, link text, and form labels
-- VPAT 2.5 / Accessibility Conformance Report generation
-- Office document accessibility scanning (DOCX, XLSX, PPTX) with 46 built-in rules
-- PDF document accessibility scanning per PDF/UA and the Matterhorn Protocol with 56 built-in rules
-- Markdown documentation accessibility scanning across 9 domains (links, alt text, headings, tables, emoji, diagrams, em-dashes, anchors, plain language)
-- SARIF 2.1.0 output for CI/CD integration
-- CSV export with help documentation links for web and document audit findings
-- Common framework pitfalls (React conditional rendering, Tailwind contrast failures)
-- NVDA screen reader addon development (globalPlugins, appModules, synthDrivers, braille tables, Add-on Store submission)
-- Desktop application accessibility (UI Automation, MSAA/IAccessible2, NSAccessibility)
-
-## Source Citation Policy
-
-Every agent follows a formal source citation policy. AI giving accessibility advice must be held to a higher standard -- wrong guidance creates real barriers for real people.
-
-- **No source, no claim.** If an agent cannot cite an authoritative source, it explicitly flags the recommendation as experience-based.
-- **Inline citations.** Every factual claim includes a link to the source.
-- **Six-tier authority hierarchy.** Normative specs (WCAG, ARIA) > Informative guidance > Platform vendor docs > AT vendor docs > Peer-reviewed experts > Government/legal.
-- **Machine-readable source registry.** `SOURCE_REGISTRY.json` maps every agent domain to its designated primary authorities.
-- **Automated freshness checks.** A weekly GitHub Actions workflow verifies source URLs are still live and opens issues when documentation drifts.
-
-See [CITATION_POLICY.md](.github/agents/CITATION_POLICY.md) for the full policy.
-
-## Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for what is planned, in progress, and shipped. Track individual items on the [roadmap issues board](https://github.com/Community-Access/accessibility-agents/issues?q=label%3Aroadmap).
-
-## What This Does Not Cover
-
-- Mobile native accessibility (iOS/Android). A separate agent team for that is [planned](https://github.com/Community-Access/accessibility-agents/issues/8).
-- WCAG AAA compliance (agents target AA as the standard). An AAA agent is [planned](https://github.com/Community-Access/accessibility-agents/issues/12).
-
-## Example Project
-
-The `example/` directory contains a deliberately broken web page with 20+ intentional accessibility violations. Use it to practice with the agents and see how they catch real issues. See the [example README](example/README.md) for details.
+## Standards
+
+Each standard, with what it governs.
+
+| Standard | Governs |
+|---|---|
+| [Agent Skills](https://agentskills.io/specification) | every skill |
+| [AGENTS.md](https://agents.md/) | the always-on contract |
+| [Agent Plugins 1.0](https://agent-plugins.org/) | packaging |
+| [Model Context Protocol](https://modelcontextprotocol.io/) | the scanners |
+| [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | every criterion a finding cites |
 
 ## Contributing
 
-This project exists because the community shows up. Every feature in v2.5 -- the NVDA Addon Specialist, the Text Quality Reviewer, the source citation policy, the wxPython screen reader documentation -- started as a community conversation. Not a roadmap item. A real person saying "this is what I need."
+Edit `skills/<name>/SKILL.md`, keep the body under 6 KiB, put the long tail in
+`references/`, and run `npm run verify`. Details in
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
-Whether you are a developer, accessibility specialist, screen reader user, or just someone who cares about inclusive software - there is a place for you here.
+## History
 
-- **Found an agent gap?** [Open an issue](https://github.com/Community-Access/accessibility-agents/issues/new?template=agent_gap.yml) describing what the agent missed or got wrong.
-- **Know a pattern we should catch?** Open a PR. Agent files are plain Markdown - no special tooling required.
-- **Building for the blind and low vision community?** Your lived experience and domain knowledge are exactly what makes these agents better. We would love your involvement.
+Version 7.0 replaced six hand-maintained per-client trees with this one package.
+The plan, the phases and the measured impact are in
+[the modernization record](docs/history/2026-09-modernization.md). What comes
+next is in [ROADMAP.md](ROADMAP.md).
 
-See the [Contributing Guide](CONTRIBUTING.md) for full details, guidelines, and how to get started.
+## Licence
 
-If you find this project useful, please [star the repo](https://github.com/Community-Access/accessibility-agents) and watch for releases so you know when updates drop.
-
-## Contributors
-
-A sincere thanks to [Taylor Arndt](https://github.com/taylorarndt) and [Jeff Bishop](https://github.com/jeffreybishop) for leading the charge, and to every community member who has contributed to making AI coding tools more accessible.
-
-<a href="https://github.com/Community-Access/accessibility-agents/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=community-access/accessibility-agents" alt="Contributors to Accessibility Agents" />
-</a>
-
-## Resources
-
-- [Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/)
-- [WCAG 2.2 Understanding Documents](https://www.w3.org/WAI/WCAG22/Understanding/)
-- [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
-- [WAI-ARIA 1.2 Specification](https://www.w3.org/TR/wai-aria-1.2/)
-- [Deque axe-core Rules](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
-- [NVDA User Guide](https://www.nvaccess.org/files/nvda/documentation/userGuide.html)
-- [VoiceOver User Guide](https://support.apple.com/guide/voiceover/welcome/mac)
-- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
-- [WebAIM Screen Reader User Survey](https://webaim.org/projects/screenreadersurvey10/)
-- [A11y Project Checklist](https://www.a11yproject.com/checklist/)
-- [Inclusive Components](https://inclusive-components.design/)
-- [Research Sources and Attribution](docs/RESEARCH-SOURCES.md) - All authoritative sources consulted to build and strengthen agent rules
-
-## Related Projects
-
-**[Swift Agent Team](https://github.com/taylorarndt/swift-agent-team)** - 9 specialized Swift agents for Claude Code. Swift 6.2 concurrency, Apple Foundation Models, on-device AI, SwiftUI, accessibility, security, testing, and App Store compliance.
-
-## License
-
-MIT
-
-## About This Project
-
-**Accessibility Agents** was founded by [Taylor Arndt](https://github.com/taylorarndt) (COO at [Techopolis](https://github.com/techopolis-group)) and [Jeff Bishop](https://github.com/jeffreybishop) because accessibility is how they work, not something bolted on at the end. When AI coding tools consistently failed at accessibility, they built the team they wished existed - and opened it to the world.
-
-This is a community project. The more perspectives, lived experiences, and domain knowledge that go into it, the better it serves the blind and low vision community. If you have ideas, open a discussion. If you have fixes, open a PR. Every contribution matters.
+MIT. See [LICENSE](./LICENSE).

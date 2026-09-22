@@ -1,0 +1,21 @@
+{
+  "skill": "contrast-master",
+  "scope": [
+    "src/styles/theme.css"
+  ],
+  "findings": [
+    {
+      "rule": "CONTRAST-001",
+      "wcag": "1.4.3 AA",
+      "severity": "serious",
+      "confidence": "high",
+      "location": "src/styles/theme.css:44",
+      "summary": "Body text on the muted surface measures 3.1 to 1.",
+      "fix": "Darken --text-muted from #8a8a8a to #6b6b6b, which measures 4.6 to 1 on --surface-muted.",
+      "evidence": "--text-muted: #8a8a8a on --surface-muted: #f2f2f2"
+    }
+  ],
+  "passed": [
+    "Focus indicator meets 3 to 1 against both adjacent colours"
+  ]
+}

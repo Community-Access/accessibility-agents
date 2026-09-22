@@ -1,1 +1,48 @@
-{}
+{
+  "$comment": "Project settings for developing this repository in Claude Code. The hooks are the same four behaviours the shipped package installs, pointed at this checkout, so the gate is exercised on its own source: an edit to a user-facing file here is refused until accessibility-lead has run. Everything else about the package is discovered by running with --plugin-dir . or by installing it as a plugin.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/guard.mjs --behaviour detect --client claude", "timeout": 10 }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "node hooks/guard.mjs --behaviour gate --client claude", "timeout": 10 }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/guard.mjs --behaviour mark --client claude", "timeout": 10 }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/guard.mjs --behaviour persist --client claude", "timeout": 10 }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/guard.mjs --behaviour persist --client claude", "timeout": 10 }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/guard.mjs --behaviour finalize --client claude", "timeout": 15 }
+        ]
+      }
+    ]
+  }
+}

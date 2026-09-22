@@ -1,6 +1,0 @@
-{
-  "name": "a11y-agents-codex",
-  "version": "6.0.0",
-  "description": "Accessibility Agents for Codex: router skills, custom subagents, and extension-aware accessibility standards.",
-  "skills": "./skills/"
-}

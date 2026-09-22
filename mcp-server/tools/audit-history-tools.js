@@ -68,9 +68,7 @@ export function registerAuditHistoryTools(server) {
     {
       title: "Save Audit Result",
       description:
-        "Persist an accessibility scan result to the audit history (.a11y-history/). " +
-        "Stores results in SARIF-compatible JSON format, git-trackable for compliance evidence. " +
-        "Auto-prunes old results when retention limit is exceeded.",
+        "Save a scan result to the audit history so later runs can show a delta and compliance evidence stays in the repository.",
       inputSchema: z.object({
         type: z
           .enum(["web", "office", "pdf", "epub", "markdown"])

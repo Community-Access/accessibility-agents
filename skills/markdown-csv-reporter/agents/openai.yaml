@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Markdown CSV Reporter"
+  short_description: "Internal helper: export markdown findings to CSV with rule links."
+policy:
+  allow_implicit_invocation: false

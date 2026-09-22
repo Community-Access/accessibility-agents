@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Document Accessibility Wizard"
+  short_description: "Guided accessibility audit of Word, Excel, PowerPoint, PDF and ePub files, one at a time or by the folder, with a scored report."
+policy:
+  allow_implicit_invocation: true

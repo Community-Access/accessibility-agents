@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "GitHub Hub"
+  short_description: "Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis."
+policy:
+  allow_implicit_invocation: true

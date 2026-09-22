@@ -20,6 +20,7 @@ import express from "express";
 import { randomUUID } from "node:crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createServer } from "./server-core.js";
+import { SERVER_NAME, SERVER_VERSION } from "./version.js";
 
 const PORT = parseInt(process.env.PORT || "3100", 10);
 const HOST = process.env.A11Y_MCP_HOST || "127.0.0.1";
@@ -131,7 +132,7 @@ if (STATELESS) {
 
 // ---- Health check ----
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", name: "a11y-agent-team", version: "4.6.0", mode: STATELESS ? "stateless" : "stateful" });
+  res.json({ status: "ok", name: SERVER_NAME, version: SERVER_VERSION, mode: STATELESS ? "stateless" : "stateful" });
 });
 
 if (HOST !== "127.0.0.1" && HOST !== "localhost" && HOST !== "::1") {

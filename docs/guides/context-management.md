@@ -324,6 +324,6 @@ After compaction, agent has the summary. You can:
 
 **See also:**
 
-- [Web Accessibility Wizard](../agents/web-accessibility-wizard.md) - guidance per-phase
-- [Document Accessibility Wizard](../agents/document-accessibility-wizard.md) - document-specific
-- [Markdown Accessibility](../agents/markdown-a11y-assistant.md) - markdown audits
+- [Web Accessibility Wizard](../reference/skills/web-accessibility-wizard.md) - guidance per-phase
+- [Document Accessibility Wizard](../reference/skills/document-accessibility-wizard.md) - document-specific
+- [Markdown Accessibility](../reference/skills/markdown-a11y-assistant.md) - markdown audits

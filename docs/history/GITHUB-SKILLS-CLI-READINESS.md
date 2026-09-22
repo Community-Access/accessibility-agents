@@ -1,0 +1,73 @@
+# GitHub Skills CLI Readiness Guide
+
+> **Historical.** This document describes the repository as it was before
+> version 7.0, when agents lived in six per-client directories. It is kept
+> for the record and is not maintained. The current layout is one `skills/`
+> directory; start at [the documentation index](../README.md).
+> Original path: `docs/guides/GITHUB-SKILLS-CLI-READINESS.md`.
+
+This guide documents the Phase 5 implementation for CLI readiness.
+
+## Purpose
+
+Ensure skills are structurally valid, packaged into deterministic artifacts, and ready for GitHub CLI-based distribution workflows.
+
+## CI Workflow
+
+Workflow file:
+
+- .github/workflows/skills-cli-readiness.yml
+
+What it does:
+
+1. Runs validator with Phase 3 checks:
+   - --strict
+   - --validate-wcag
+   - --validate-urls
+   - --skip-url-checks
+2. Runs description quality gate:
+   - `node scripts/check-skill-description-quality.js`
+   - Fails if any skill description quality score is below threshold
+3. Generates:
+   - artifacts/skills-manifest.json
+   - artifacts/skills-sbom.cdx.json
+   - artifacts/skills-manifest.sig.json
+4. Verifies artifacts are present and non-empty.
+
+## Local Execution
+
+Run the same sequence locally:
+
+powershell
+node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks
+node scripts/check-skill-description-quality.js
+node scripts/generate-skills-manifest.js
+node scripts/generate-skills-sbom.js
+node scripts/sign-skills-manifest.js
+node scripts/check-skills-artifacts.js
+
+## Signing Behavior
+
+The signature step uses GH_SKILLS_SIGNING_KEY when provided.
+
+- PR/feature runs can operate unsigned (best effort).
+- Main branch supply-chain workflow can enforce signing via REQUIRE_SIGNING=true.
+
+## Expected Outputs
+
+- Deterministic manifest with SHA-256 hashes per skill file
+- CycloneDX 1.5 SBOM
+- Signature payload describing signed/unsigned state
+
+## Troubleshooting
+
+If artifact verification fails:
+
+1. Confirm scripts executed successfully.
+2. Confirm artifacts directory exists.
+3. Re-run each generator script individually.
+
+If signing fails on main:
+
+1. Ensure GH_SKILLS_SIGNING_KEY is set in repository secrets.
+2. Confirm workflow has permission to read secrets.

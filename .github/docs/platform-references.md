@@ -43,6 +43,8 @@ Base URL: `https://code.claude.com/docs/en/`
 
 ### VS Code Custom Agents
 
+Each topic, with URL and what we learned.
+
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
 | **Custom agents** | <https://code.visualstudio.com/docs/copilot/customization/custom-agents> | `.agent.md` file format. YAML frontmatter: `description`, `name`, `tools`, `agents`, `model`, `user-invokable`, `disable-model-invocation`, `target`, `mcp-servers`, `handoffs`. Handoff configuration (`label`, `agent`, `prompt`, `send`, `model`). VS Code also detects `.md` files in `.claude/agents/` for cross-platform compatibility. Claude agent format support with comma-separated tools. Organization-level agent sharing. |
@@ -55,6 +57,8 @@ Base URL: `https://code.claude.com/docs/en/`
 
 ### GitHub Copilot Documentation
 
+Each topic, with URL and what we learned.
+
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
 | **Custom instructions** | <https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions> | Three types: repository-wide (`copilot-instructions.md`), path-specific (`*.instructions.md` with `applyTo` frontmatter), agent instructions (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`). `excludeAgent` frontmatter for targeting specific agents. Priority: personal > repository > organization. |
@@ -66,6 +70,8 @@ Base URL: `https://code.claude.com/docs/en/`
 
 ## Model Context Protocol (MCP)
 
+Each topic, with URL and what we learned.
+
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
 | **MCP specification** | <https://modelcontextprotocol.io/> | Open protocol for LLM-to-tool communication. Tools, resources, prompts, and sampling primitives. JSON-RPC 2.0 transport. |
@@ -76,6 +82,8 @@ Base URL: `https://code.claude.com/docs/en/`
 ---
 
 ## Accessibility Standards
+
+Each topic, with URL and what we learned.
 
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|

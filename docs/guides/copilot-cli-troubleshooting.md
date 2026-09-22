@@ -36,7 +36,7 @@ Run these commands in Copilot CLI to diagnose loading issues:
 
 ```bash
 # Repository-level agents
-ls -la .github/agents/*.agent.md
+ls -la skills/*.agent.md
 
 # User-level agents (global)
 ls -la ~/.copilot/agents/*.agent.md
@@ -105,7 +105,7 @@ Agent files must be UTF-8 encoded. Windows users: ensure your editor saves as UT
 Each skill must be a folder containing `SKILL.md`:
 
 ```text
-.github/skills/
+skills/
 ├── accessibility-rules/
 │   └── SKILL.md
 ├── web-scanning/

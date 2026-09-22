@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Web Component Specialist"
+  short_description: "Custom elements and shadow DOM: ElementInternals, cross-shadow ARIA, focus."
+policy:
+  allow_implicit_invocation: false

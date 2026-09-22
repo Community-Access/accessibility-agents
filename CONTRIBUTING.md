@@ -8,9 +8,9 @@ A sincere thanks goes out to [Taylor Arndt](https://github.com/taylorarndt) and 
 
 Use the Community Access support hub for cross-project troubleshooting and Q&A:
 
-- Support hub home: https://github.com/Community-Access/support
-- Discussions: https://github.com/Community-Access/support/discussions
-- Issues: https://github.com/Community-Access/support/issues
+- [Support hub home](https://github.com/Community-Access/support)
+- [Support discussions](https://github.com/Community-Access/support/discussions)
+- [Support issues](https://github.com/Community-Access/support/issues)
 
 Use this repository issue tracker for Accessibility Agents-specific bugs and feature requests.
 
@@ -22,12 +22,53 @@ The most valuable contributions are **agent gap reports** - cases where an agent
 
 ### Improve agent instructions
 
-Each agent is a Markdown file with a system prompt. If you know a pattern an agent should catch, or a rule it enforces incorrectly, open a PR with the fix. Agent files live in:
+Every agent is an Agent Skill at `skills/<name>/`, readable by Claude Code, Codex, Copilot, Gemini and Antigravity without a per-client copy. If you know a pattern an agent should catch, or a rule it enforces incorrectly, open a PR against that skill.
 
-- `.claude/agents/` - Claude Code agents
-- `.github/agents/` - GitHub Copilot agents
+- `skills/<name>/SKILL.md` - the core instructions. Keep the body under 6 KiB.
+- `skills/<name>/references/*.md` - the long tail, opened only when a task reaches it.
+- `skills/<name>/agents/openai.yaml` - the Codex interface and invocation policy.
+- `skills/a11y-core/` - the shared dispatch contract, findings schema and sources.
+- `skills/kb-*/` - reference data cited by skills: rule tables, URL registries, scoring formulas.
 
-When updating an agent, update both the Claude Code and Copilot versions to keep them in sync.
+Before opening the PR:
+
+```bash
+node scripts/validate-skills.mjs
+node skills/a11y-core/scripts/measure-context.mjs --check budgets.json
+```
+
+### Adding a skill
+
+```bash
+node scripts/new-skill.mjs focus-order-reviewer --tier specialist --domain web --title "Focus Order Reviewer"
+```
+
+That writes a skeleton that already passes every gate: quoted description,
+correct tier metadata, the Codex policy file, a reference stub and an example
+findings payload. Write the body, replace the example, then:
+
+```bash
+node scripts/build-dispatch-matrices.mjs   # so a router can reach it
+node scripts/build-docs.mjs                # so the catalog lists it
+npm run verify
+```
+
+The dispatch matrices and the skills catalog are generated from frontmatter.
+Do not edit them by hand; CI fails if they drift from the skills they describe.
+
+### Working on the checkout
+
+`node scripts/dev-link.mjs` makes `.agents/skills` point at `skills/`, so
+Codex, Copilot and Gemini read your edits directly. Claude Code needs no link;
+run it with `--plugin-dir .`. The enforcement gate runs on this repository's
+own source through `.claude/settings.json`, so an edit to a user-facing file
+here is refused until `accessibility-lead` has run.
+
+### Where things went
+
+Before 7.0 every agent existed in six per-client copies. They are gone, and
+everything about that migration is in
+[docs/history/2026-09-modernization.md](docs/history/2026-09-modernization.md).
 
 ### Add framework-specific patterns
 
@@ -132,7 +173,7 @@ Source verification:
 
 ## Code of Conduct
 
-This project follows a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to uphold it. Be kind, be respectful, and remember that accessibility is about including everyone.
+This project follows a [Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you agree to uphold it. Be kind, be respectful, and remember that accessibility is about including everyone.
 
 ## Questions?
 

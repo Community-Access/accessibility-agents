@@ -20,6 +20,8 @@ Add one step to any workflow:
 
 ## Inputs
 
+Each input, with its default and description.
+
 | Input | Default | Description |
 |-------|---------|-------------|
 | `scan-type` | `web` | What to scan: `web`, `office`, `pdf`, or `all` |
@@ -30,6 +32,8 @@ Add one step to any workflow:
 | `upload-sarif` | `true` | Upload SARIF to GitHub Code Scanning |
 
 ## Outputs
+
+Each output, with its description.
 
 | Output | Description |
 |--------|-------------|
@@ -129,6 +133,8 @@ Scans `.pdf` files via the MCP server. Covers tagged structure, language, alt te
 ---
 
 ## Profiles
+
+Each profile, with its included severities.
 
 | Profile | Included Severities |
 |---------|-------------------|

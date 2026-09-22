@@ -461,7 +461,8 @@ export function registerEpubTools(server) {
     "scan_epub_document",
     {
       title: "Scan EPUB Document",
-      description: "Scan an EPUB file for accessibility issues. Checks metadata (schema.org accessibility properties, dc:title, dc:language), navigation (nav document, NCX), content structure (headings, alt text, tables), and EPUB Accessibility 1.1 conformance markers. Optionally writes a markdown report or SARIF output.",
+      description:
+        "Scan an .epub for EPUB Accessibility 1.1 conformance, reading order, navigation and metadata.",
       inputSchema: z.object({
         filePath: z.string().describe("Absolute path to the .epub file"),
         reportPath: z.string().optional().describe("Optional path to write a markdown accessibility report"),

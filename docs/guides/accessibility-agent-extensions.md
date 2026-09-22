@@ -88,8 +88,6 @@ Extension findings should be labeled by extension name. Public-standard findings
 
 ## Extension Manifest
 
-Each extension directory includes `extension.json`.
-
 ```json
 {
   "name": "acme-accessibility-standards",
@@ -287,7 +285,7 @@ Private extensions should use the same manifest format so they can be installed 
 Extensions use one manifest model, then each platform maps it into the platform's native surface:
 
 - Claude Code: agents or specialists under the Claude plugin or `.claude/` structure
-- GitHub Copilot: `.github/agents/`, `.github/skills/`, prompts, and instructions
+- GitHub Copilot: `skills/`, `skills/`, prompts, and instructions
 - Codex: plugin references, router skills, and `.codex/agents/` custom subagents
 - Gemini: Gemini extension files and instruction surfaces
 
@@ -356,10 +354,10 @@ Check this wxPython app with the developer tools extension, including desktop ac
 
 Before releasing extension changes:
 
-- run `node scripts/validate-codex-plugin.js`
+- run `node scripts/validate-skills/.js`
 - run `node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks`
 - run `node scripts/check-skill-description-quality.js`
-- run `bash -n install.sh`
+- run `bash -n scripts/install.mjs`
 - run PowerShell syntax checks when `pwsh` is available
 - run Go tests when `go` is available
 - verify the universal installer still installs built-in extension manifests

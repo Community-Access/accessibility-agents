@@ -1,46 +1,51 @@
 #!/bin/sh
 #
-# Pre-commit hook: validates agent/skill files and staged Markdown before allowing commit.
+# Pre-commit hook: the fast gates, on what is staged.
 #
-# Checks staged .agent.md, SKILL.md, and Claude agent files against the
-# official GitHub Copilot custom-agents configuration schema, and runs
-# markdownlint on staged Markdown files across the repository.
+# Two checks, both under ten seconds:
+#   1. If anything under skills/ is staged, the package validator runs. It checks
+#      the Agent Skills frontmatter rules, the tier model, the dispatch contract
+#      and that every specialist is reachable. It runs on the whole package
+#      because those checks are cross-file: a router's matrix is only right in
+#      relation to every other skill.
+#   2. Staged Markdown is linted with markdownlint-cli2, using the local install
+#      when present so the hook does not need the network.
 #
-# Install: node scripts/install-hooks.js
-#          — or —  copy this file to .git/hooks/pre-commit
+# The slow gates (the specification validator, live client sessions, the MCP
+# suite) run in CI through `npm run verify`, not here.
 #
-# To bypass (emergency only): git commit --no-verify
+# Install: node scripts/install-hooks.js, or copy this file to .git/hooks/pre-commit
+# Bypass (emergency only): git commit --no-verify
 
-# Find staged agent/skill files
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(agent\.md|md)$' | grep -E '(\.github/agents/|\.github/skills/|\.claude/agents/|claude-code-plugin/agents/)' || true)
-STAGED_MARKDOWN=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.md$' | grep -Ev '(^|/)(node_modules|\.git|\.history|\.claude|\.gemini)(/|$)' || true)
+STAGED_SKILLS=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^skills/' || true)
+STAGED_MARKDOWN=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.md$' | grep -Ev '(^|/)(node_modules|\.git|\.history|\.agents)(/|$)' || true)
 
-if [ -z "$STAGED_FILES" ] && [ -z "$STAGED_MARKDOWN" ]; then
-  # No relevant files staged — nothing to validate
+if [ -z "$STAGED_SKILLS" ] && [ -z "$STAGED_MARKDOWN" ]; then
   exit 0
 fi
 
 echo ""
 echo "============================================================"
-echo "  Pre-commit: Validating staged repository content..."
+echo "  Pre-commit: validating staged content"
 echo "============================================================"
-echo ""
 
-if [ -n "$STAGED_FILES" ]; then
-  echo "  Validating agent and skill files..."
-
-  # Run validator on only the staged files (--strict treats warnings as errors)
-  node scripts/validate-agents.js --strict --files $STAGED_FILES
-  RESULT=$?
-
-  if [ $RESULT -ne 0 ]; then
+if [ -n "$STAGED_SKILLS" ]; then
+  echo ""
+  echo "  skills/ changed; running the package validator..."
+  if ! node scripts/validate-skills.mjs --no-shadow-trees; then
     echo ""
     echo "============================================================"
-    echo "  COMMIT BLOCKED: Fix the agent/skill errors above before committing."
-    echo ""
-    echo "  To bypass (not recommended): git commit --no-verify"
-    echo "  To run validator manually:   node scripts/validate-agents.js"
+    echo "  COMMIT BLOCKED: fix the skill errors above."
+    echo "  Run by hand:  node scripts/validate-skills.mjs"
+    echo "  Bypass (not recommended):  git commit --no-verify"
     echo "============================================================"
+    echo ""
+    exit 1
+  fi
+  if ! node scripts/build-dispatch-matrices.mjs --check; then
+    echo ""
+    echo "  COMMIT BLOCKED: a dispatch matrix is stale."
+    echo "  Run:  node scripts/build-dispatch-matrices.mjs   and stage the result."
     echo ""
     exit 1
   fi
@@ -48,30 +53,24 @@ fi
 
 if [ -n "$STAGED_MARKDOWN" ]; then
   echo ""
-  echo "  Linting staged Markdown files..."
-
-  if ! command -v npx >/dev/null 2>&1; then
+  echo "  Linting staged Markdown..."
+  if [ -x node_modules/.bin/markdownlint-cli2 ]; then
+    LINT="node_modules/.bin/markdownlint-cli2"
+  elif command -v npx >/dev/null 2>&1; then
+    LINT="npx -y markdownlint-cli2"
+  else
     echo ""
-    echo "============================================================"
-    echo "  COMMIT BLOCKED: npx is required to validate staged Markdown files."
-    echo ""
-    echo "  Install Node.js and npm, then retry the commit."
-    echo "  To bypass (not recommended): git commit --no-verify"
-    echo "============================================================"
+    echo "  COMMIT BLOCKED: markdownlint-cli2 is not installed. Run: npm install"
     echo ""
     exit 1
   fi
-
-  npx -y markdownlint-cli2 $STAGED_MARKDOWN
-  RESULT=$?
-
-  if [ $RESULT -ne 0 ]; then
+  # shellcheck disable=SC2086
+  if ! $LINT $STAGED_MARKDOWN; then
     echo ""
     echo "============================================================"
-    echo "  COMMIT BLOCKED: Fix the Markdown issues above before committing."
-    echo ""
-    echo "  To bypass (not recommended): git commit --no-verify"
-    echo "  To run manually:             npx -y markdownlint-cli2 <files>"
+    echo "  COMMIT BLOCKED: fix the Markdown issues above."
+    echo "  Most are whitespace; try:  $LINT --fix <files>"
+    echo "  Bypass (not recommended):  git commit --no-verify"
     echo "============================================================"
     echo ""
     exit 1
@@ -79,6 +78,6 @@ if [ -n "$STAGED_MARKDOWN" ]; then
 fi
 
 echo ""
-echo "  Validation passed — proceeding with commit."
-  echo ""
+echo "  Pre-commit checks passed."
+echo ""
 exit 0

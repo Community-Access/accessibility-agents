@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Community-Access/accessibility-agents/schemas/findings.schema.json",
+  "title": "Accessibility Agents findings",
+  "description": "What every scanning skill returns. Routers merge these; scripts render reports, CSV, VPAT and statements from them. One shape, so nothing downstream has to parse prose.",
+  "type": "object",
+  "required": ["skill", "scope", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "skill": {
+      "type": "string",
+      "description": "Name of the skill that produced this payload, matching its directory.",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "scope": {
+      "type": "array",
+      "description": "Files, URLs or components examined. Empty means nothing was in scope.",
+      "items": { "type": "string" }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule", "wcag", "severity", "location", "summary", "fix"],
+        "additionalProperties": false,
+        "properties": {
+          "rule": {
+            "type": "string",
+            "description": "Stable rule identifier, for example ARIA-002 or PDFUA.7.1.",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "wcag": {
+            "type": "string",
+            "description": "WCAG 2.2 success criterion number and level, for example '1.3.1 A'. Use 'n/a' for findings outside WCAG.",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "severity": {
+            "enum": ["critical", "serious", "moderate", "minor"]
+          },
+          "confidence": {
+            "enum": ["high", "medium", "low"],
+            "description": "How sure the skill is without runtime verification. Omit when high."
+          },
+          "location": {
+            "type": "string",
+            "description": "file.ext:line, a CSS selector, a slide or page number, or a URL. Must point somewhere a person can open.",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "summary": {
+            "type": "string",
+            "description": "One sentence naming the defect.",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "fix": {
+            "type": "string",
+            "description": "What to change, concretely enough to act on without re-reading the file.",
+            "minLength": 1,
+            "maxLength": 480
+          },
+          "evidence": {
+            "type": "string",
+            "description": "The offending markup, value or measurement. Keep it short.",
+            "maxLength": 480
+          },
+          "component": {
+            "type": "string",
+            "description": "Component or template this belongs to, when the same defect repeats across pages.",
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "passed": {
+      "type": "array",
+      "description": "Checks run that found nothing. Reports need these to distinguish 'clean' from 'not checked'.",
+      "items": { "type": "string" }
+    },
+    "notes": {
+      "type": "array",
+      "description": "Anything a person must decide, and anything the skill could not check. Not findings.",
+      "items": { "type": "string" }
+    }
+  }
+}

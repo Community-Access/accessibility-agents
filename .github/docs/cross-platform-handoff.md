@@ -4,6 +4,8 @@ Guide for seamless handoff between Claude Code and GitHub Copilot agent environm
 
 ## Platform Comparison
 
+Each capability, with its claude code and GitHub copilot.
+
 | Capability | Claude Code | GitHub Copilot |
 |-----------|------------|----------------|
 | Agent format | `.claude/agents/*.md` | `.github/agents/*.agent.md` |

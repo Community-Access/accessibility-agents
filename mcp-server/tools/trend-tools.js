@@ -109,9 +109,7 @@ export function registerTrendTools(server) {
     {
       title: "Get Audit Score Trend",
       description:
-        "Compute score progression and issue velocity for a specific target " +
-        "from stored audit history. Shows direction (improving/stable/declining), " +
-        "score delta, average, best/worst scores, and finding velocity.",
+        "Return the score history for one target, with direction, delta and finding velocity, so a trend can be reported.",
       inputSchema: z.object({
         target: z
           .string()

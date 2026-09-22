@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "accessibility-agents": {
+      "command": "node",
+      "args": ["./mcp-server/stdio.js"],
+      "env": {},
+      "description": "Accessibility scanning and remediation tools: axe-core, Office and PDF and ePub scanners, veraPDF, Playwright behavioural scans, audit history and report rendering."
+    }
+  }
+}

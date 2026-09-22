@@ -1,0 +1,9 @@
+# Codex interface for this skill.
+# Reference skills are lookup data cited by other skills, never chosen by the
+# model on its own. Without this file Codex lists them in its catalog, which a
+# live probe showed put all 29 into the model prompt.
+interface:
+  display_name: "Report Generation"
+  short_description: "Reference data, not a reviewer. Format accessibility audit reports with severity scoring (0-100, A-F grades), scorecard computation, and compliance exports including VPAT/ACR and remediation priorities."
+policy:
+  allow_implicit_invocation: false

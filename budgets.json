@@ -1,0 +1,92 @@
+{
+  "$comment": [
+    "Context budgets for Accessibility Agents, checked by",
+    "skills/a11y-core/scripts/measure-context.mjs --check budgets.json.",
+    "",
+    "always_on_total_max is a ceiling: it starts at the 2026-09-21 measurement",
+    "plus five percent so the tree passes today and fails the moment cost",
+    "regresses. Lower it as each phase removes a legacy surface.",
+    "",
+    "always_on_current_target is the Phase 6 end state for the standard package",
+    "alone. It is reported as a note, not a failure, until the legacy trees are",
+    "gone and the ceiling can be dropped onto it.",
+    "",
+    "Numbers are chars/4 token estimates from estimateTokens() in that script.",
+    "",
+    "Phase 1 (2026-09-21) lowered every ceiling onto the post-migration",
+    "measurement plus five percent. docs/context-baseline-2026-09.json holds the",
+    "pre-migration numbers; docs/context-after-phase-1.json holds these.",
+    "",
+    "Phase 6 (2026-09-21) removed every legacy tree, so the ceiling is now the",
+    "standard package alone plus ten percent headroom. The Codex target is higher",
+    "than the others because Codex lists user-invocable skills in its catalog,",
+    "which the other clients do not; 63 entries at roughly 95 characters is the",
+    "floor for that client, not slack.",
+    "",
+    "The Codex target was 2700 while the catalog was counted by user-invocability.",
+    "A live probe showed Codex lists by agents/openai.yaml policy instead, so it",
+    "sees the same six routers as every other client and carries the same target."
+  ],
+  "baseline": {
+    "measured": "2026-09-21",
+    "commit": "161c60c",
+    "report": "docs/context-baseline-2026-09.json",
+    "phase_1_report": "docs/context-after-phase-1.json",
+    "phase_6_report": "docs/context-after-phase-6.json"
+  },
+  "clients": {
+    "claude": {
+      "label": "Claude Code",
+      "always_on_total_max": 1250,
+      "always_on_current_target": 1500,
+      "measured_after_phase_1": 9149,
+      "measured_after_phase_6": 1136
+    },
+    "codex": {
+      "label": "Codex",
+      "always_on_total_max": 2659,
+      "always_on_current_target": 1500,
+      "measured_after_phase_1": 15003,
+      "measured_after_phase_6": 2417
+    },
+    "copilot": {
+      "label": "Copilot",
+      "always_on_total_max": 1250,
+      "always_on_current_target": 1500,
+      "measured_after_phase_1": 15995,
+      "measured_after_phase_6": 1136
+    },
+    "gemini": {
+      "label": "Gemini / Antigravity",
+      "always_on_total_max": 1250,
+      "always_on_current_target": 3000,
+      "measured_after_phase_1": 11496,
+      "measured_after_phase_6": 1136
+    }
+  },
+  "package": {
+    "$comment": [
+      "largest_body_bytes_max is the Agent Skills guidance of a body under",
+      "5000 tokens, expressed in bytes and rounded to 6 KiB. Phase 1 splits",
+      "every agent to meet it; Phase 2 makes the splits semantic.",
+      "codex_catalog_chars_max is Codex's hard 2 percent catalog cap.",
+      "dispatch_tokens_max is the router-side cost of dispatching one",
+      "specialist: a pointer prompt, not a pasted body."
+    ],
+    "largest_body_bytes_max": 6144,
+    "codex_catalog_chars_max": 8000,
+    "dispatch_tokens_max": 300,
+    "dispatch_tokens_target": 300,
+    "measured_after_phase_1": {
+      "largest_dispatchable_body_bytes": 6131,
+      "catalog_chars": 5995,
+      "dispatch_max_tokens": 26346
+    },
+    "measured_after_phase_6": {
+      "largest_dispatchable_body_bytes": 6131,
+      "catalog_chars": 5995,
+      "dispatch_max_tokens": 100,
+      "skills": 108
+    }
+  }
+}

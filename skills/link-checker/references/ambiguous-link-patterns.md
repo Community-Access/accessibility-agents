@@ -1,0 +1,218 @@
+# Link Checker reference: Ambiguous Link Patterns
+
+Part of the `link-checker` skill. Read this only when the task reaches these sections.
+
+## Ambiguous Link Patterns
+
+### Flagged as Violations
+
+These link texts are always ambiguous and must be rewritten:
+
+| Ambiguous Text | Problem | Better Alternative |
+|----------------|---------|-------------------|
+| "Click here" | Action-focused, not purpose-focused | "Download the annual report" |
+| "Here" | No purpose at all | "View our pricing plans" |
+| "Read more" | More about what? | "Read more about our accessibility policy" |
+| "Learn more" | Learn more about what? | "Learn more about WCAG 2.2 changes" |
+| "More" | More what? | "More articles about web accessibility" |
+| "More info" | Info about what? | "More info about screen reader support" |
+| "Link" | Describes the element, not the destination | "Annual accessibility audit results" |
+| "Details" | Details about what? | "Details about the January release" |
+| "Info" | Info about what? | "Information about our return policy" |
+| "Go" | Go where? | "Go to account settings" |
+| "See more" | See more of what? | "See more customer reviews" |
+| "Continue" | Continue to what? | "Continue to payment" |
+| "Start" | Start what? | "Start your free trial" |
+| "Submit" | For links (not form buttons) | "Submit your application" |
+| "Download" | Download what? | "Download the 2025 annual report (PDF, 2.4 MB)" |
+| "View" | View what? | "View your order history" |
+| "Open" | Open what? | "Open the accessibility settings" |
+| URL as text | URLs are not descriptive | "Visit the W3C accessibility guidelines" |
+
+### Flagged as Warnings
+
+These patterns are context-dependent and may or may not be accessible:
+
+- **"Read more" inside a card/article** -- Acceptable ONLY if `aria-label` or `aria-labelledby` provides the full context
+- **"View details" in a table row** -- Acceptable ONLY if `aria-label` includes the row context (e.g., `aria-label="View details for Order #1234"`)
+- **Icon-only links** -- Acceptable ONLY if `aria-label` is present and descriptive
+
+## Detection Rules
+
+### Rule 1: Exact Match on Known Ambiguous Strings
+
+Flag any link whose **visible text content** (trimmed, case-insensitive) exactly matches one of the ambiguous patterns listed above.
+
+```html
+<!-- FLAGGED: Exact match on "click here" -->
+<a href="/pricing">Click here</a>
+
+<!-- FLAGGED: Exact match on "read more" -->
+<a href="/blog/post-1">Read more</a>
+
+<!-- NOT FLAGGED: Descriptive text -->
+<a href="/pricing">View our pricing plans</a>
+```
+
+### Rule 2: Starts With Ambiguous Prefix
+
+Flag any link whose text starts with an ambiguous prefix followed by minimal content.
+
+```html
+<!-- FLAGGED: Starts with "click here" -->
+<a href="/report">Click here to download</a>
+
+<!-- BETTER: Purpose-first -->
+<a href="/report">Download the 2025 annual report</a>
+```
+
+### Rule 3: Repeated Identical Link Text
+
+Flag when multiple links on the same page have identical text but point to different destinations.
+
+```html
+<!-- FLAGGED: Three "Read more" links going to different pages -->
+<a href="/blog/post-1">Read more</a>
+<a href="/blog/post-2">Read more</a>
+<a href="/blog/post-3">Read more</a>
+
+<!-- FIXED: Each link is unique -->
+<a href="/blog/post-1">Read more about accessible forms</a>
+<a href="/blog/post-2">Read more about ARIA best practices</a>
+<a href="/blog/post-3">Read more about focus management</a>
+
+<!-- ALSO ACCEPTABLE: Using aria-label for uniqueness -->
+<a href="/blog/post-1" aria-label="Read more about accessible forms">Read more</a>
+<a href="/blog/post-2" aria-label="Read more about ARIA best practices">Read more</a>
+<a href="/blog/post-3" aria-label="Read more about focus management">Read more</a>
+```
+
+### Rule 4: URL as Link Text
+
+Flag links where the visible text is a URL.
+
+```html
+<!-- FLAGGED: URL is not descriptive -->
+<a href="https://www.w3.org/TR/WCAG22/">https://www.w3.org/TR/WCAG22/</a>
+
+<!-- FIXED: Descriptive text with URL available -->
+<a href="https://www.w3.org/TR/WCAG22/">WCAG 2.2 specification</a>
+```
+
+### Rule 5: Adjacent Duplicate Links
+
+Flag when an image and a text link sit next to each other and go to the same destination. These should be combined into a single link.
+
+```html
+<!-- FLAGGED: Two separate links to the same destination -->
+<a href="/product/123"><img src="widget.jpg" alt="Widget Pro"></a>
+<a href="/product/123">Widget Pro</a>
+
+<!-- FIXED: Single combined link -->
+<a href="/product/123">
+  <img src="widget.jpg" alt="">
+  Widget Pro
+</a>
+```
+
+### Rule 6: Links Opening in New Windows
+
+Flag links that open in a new window/tab without warning the user.
+
+```html
+<!-- FLAGGED: No indication of new window -->
+<a href="https://example.com" target="_blank">Example Site</a>
+
+<!-- FIXED: User is warned -->
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
+  Example Site (opens in new tab)
+</a>
+
+<!-- ALSO ACCEPTABLE: Using aria-label or visually hidden text -->
+<a href="https://example.com" target="_blank" rel="noopener noreferrer"
+   aria-label="Example Site (opens in new tab)">
+  Example Site
+  <span class="visually-hidden">(opens in new tab)</span>
+</a>
+```
+
+### Rule 7: Links to Non-HTML Resources
+
+Flag links to PDFs, Word docs, spreadsheets, or other non-HTML resources that do not indicate the file type.
+
+```html
+<!-- FLAGGED: No indication this is a PDF -->
+<a href="/reports/annual-2025.pdf">Annual Report</a>
+
+<!-- FIXED: File type and size indicated -->
+<a href="/reports/annual-2025.pdf">Annual Report 2025 (PDF, 2.4 MB)</a>
+```
+
+## Fixing Ambiguous Links
+
+### Strategy 1: Rewrite the Link Text
+
+The simplest and best approach. Make the link text describe the destination or action.
+
+```html
+<!-- Before -->
+<p>To learn about our services, <a href="/services">click here</a>.</p>
+
+<!-- After -->
+<p><a href="/services">Learn about our services</a>.</p>
+```
+
+### Strategy 2: Use aria-label for Context
+
+When you cannot change the visible text (e.g., design constraints), use `aria-label` to provide the full context to screen readers.
+
+```html
+<!-- Visible text is short, aria-label provides context -->
+<article>
+  <h3>Accessible Forms Guide</h3>
+  <p>Learn how to build forms that work for everyone...</p>
+  <a href="/guides/forms" aria-label="Read more about accessible forms">Read more</a>
+</article>
+```
+
+**Important:** `aria-label` completely replaces the visible text for screen readers. Ensure the `aria-label` includes the visible text to maintain consistency (WCAG 2.5.3 Label in Name).
+
+### Strategy 3: Use aria-labelledby for Composed Labels
+
+When the link purpose comes from a combination of elements:
+
+```html
+<article>
+  <h3 id="post-title">Accessible Forms Guide</h3>
+  <p>Learn how to build forms that work for everyone...</p>
+  <a href="/guides/forms" aria-labelledby="post-title read-more-1">
+    <span id="read-more-1">Read more</span>
+  </a>
+</article>
+```
+
+### Strategy 4: Use Visually Hidden Text
+
+Add context that is hidden visually but read by screen readers:
+
+```html
+<a href="/guides/forms">
+  Read more<span class="visually-hidden"> about accessible forms</span>
+</a>
+```
+
+CSS for visually hidden:
+
+```css
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+```

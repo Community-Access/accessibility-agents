@@ -26,7 +26,7 @@ CRITICAL: {description}
 **Suggested fix:**
 ```suggestion
 {code}
-```text
+```
 
 ```text
 
@@ -117,6 +117,8 @@ When a PR is targeted for an upcoming release:
 
 ## Risk Assessment Matrix
 
+Each factor, with its high risk, medium risk and low risk.
+
 | Factor | High Risk | Medium Risk | Low Risk |
 |--------|-----------|-------------|----------|
 | **Scope** | Core business logic, auth, payments | Shared utilities, API contracts | Tests, docs, config |
@@ -130,6 +132,8 @@ When a PR is targeted for an upcoming release:
 ---
 
 ## Review Verdicts
+
+Each verdict, with when to use and GitHub action.
 
 | Verdict | When to Use | GitHub Action |
 |---------|-------------|---------------|

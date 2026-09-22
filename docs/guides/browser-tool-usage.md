@@ -54,6 +54,8 @@ Or add to `.vscode/settings.json`:
 
 ## Available Browser Tools
 
+Each tool, with its purpose and example.
+
 | Tool | Purpose | Example |
 |------|---------|---------|
 | `open_browser_page(url)` | Navigate to URL in integrated browser | `open_browser_page('http://localhost:3000')` |
@@ -317,7 +319,7 @@ Browser verification results are included in audit reports:
 **Fix Applied:**
 ```tsx
 <img src="/logo.png" alt="Company logo" />
-```text
+```
 
 **Verification:** ✅ PASS
 
@@ -348,6 +350,8 @@ In addition to VS Code's built-in browser tools, the agent ecosystem includes **
 
 ### Playwright vs Browser Tools
 
+Each capability, with its VS code browser tools and playwright.
+
 | Capability | VS Code Browser Tools | Playwright |
 |------------|----------------------|------------|
 | Visual screenshots | Yes | No (text-based output) |
@@ -369,7 +373,7 @@ npm install -D playwright @axe-core/playwright
 npx playwright install chromium
 ```
 
-See [Playwright Integration](../tools/playwright-integration.md) for full documentation.
+See [Playwright Integration](../reference/tools/playwright-integration.md) for full documentation.
 
 ## Future Enhancements
 
@@ -384,7 +388,7 @@ Planned improvements to browser-assisted verification:
 
 ## See Also
 
-- [Web Accessibility Wizard](../agents/web-accessibility-wizard.md) — Full audit workflow
-- [Web Issue Fixer](../agents/web-issue-fixer.md) — Fix application with verification
+- [Web Accessibility Wizard](../reference/skills/web-accessibility-wizard.md) — Full audit workflow
+- [Web Issue Fixer](../reference/skills/web-issue-fixer.md) — Fix application with verification
 - [Context Management](./context-management.md) — Managing long audit conversations
 - [WCAG 2.2 Understanding](https://www.w3.org/WAI/WCAG22/Understanding/) — Official WCAG guidance

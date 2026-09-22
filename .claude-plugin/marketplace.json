@@ -4,16 +4,16 @@
     "name": "Community Access"
   },
   "metadata": {
-    "description": "Accessibility enforcement plugins for Claude Code"
+    "description": "Accessibility enforcement for agentic coding clients"
   },
   "plugins": [
     {
       "name": "accessibility-agents",
-      "source": "./claude-code-plugin",
-      "description": "WCAG AA accessibility enforcement for Claude Code. 80 specialist agents, 25 commands, and enforcement hooks that delegate to accessibility-lead for UI code review. Includes Playwright integration, veraPDF, PDF form converter, end-user documentation, scan config templates, example project, and three-hook enforcement gate.",
-      "version": "3.2.0",
+      "source": ".",
+      "description": "WCAG 2.2 AA enforcement as Agent Skills. Six router skills dispatch a specialist team across web, document, markdown, desktop and GitHub work; hooks block edits to user-facing files until the accessibility lead has reviewed; an MCP server supplies the scanners.",
+      "version": "7.0.0",
       "author": {
-        "name": "Taylor Arndt"
+        "name": "Community Access"
       },
       "category": "accessibility",
       "homepage": "https://github.com/Community-Access/accessibility-agents"

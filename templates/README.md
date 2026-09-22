@@ -26,6 +26,8 @@ cp templates/pdf-config-minimal.json .a11y-pdf-config.json
 
 ## Profiles
 
+Each profile, with severities and best for.
+
 | Profile | Severities | Best For |
 |---------|-----------|----------|
 | **Strict** | Error + Warning + Tip | Public-facing documents, government (Section 508, EN 301 549), legal compliance |

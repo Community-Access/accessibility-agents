@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "$comment": "Copilot coding agent hooks. Copilot exposes no Stop or compaction event, so the edit gate is the enforcement point here; see docs/MODERNIZATION-CONFORMANCE.md for the per-client coverage table.",
+  "hooks": {
+    "userPromptSubmitted": [
+      { "type": "command", "bash": "node hooks/guard.mjs --behaviour detect --client copilot", "powershell": "node hooks/guard.mjs --behaviour detect --client copilot", "timeoutSec": 10 }
+    ],
+    "preToolUse": [
+      { "type": "command", "bash": "node hooks/guard.mjs --behaviour gate --client copilot", "powershell": "node hooks/guard.mjs --behaviour gate --client copilot", "timeoutSec": 10 }
+    ],
+    "postToolUse": [
+      { "type": "command", "bash": "node hooks/guard.mjs --behaviour mark --client copilot", "powershell": "node hooks/guard.mjs --behaviour mark --client copilot", "timeoutSec": 10 }
+    ]
+  }
+}

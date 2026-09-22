@@ -1,0 +1,60 @@
+name: Verify
+
+# One workflow replaces eight. Each of those gated a per-client tree that no
+# longer exists; this gates the one package that replaced them. What every
+# check proves is printed by the run itself, in scripts/verify.mjs.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: All gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Install the validation toolchain
+        run: npm ci --no-audit --no-fund
+
+      - name: Install the MCP server dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: mcp-server
+
+      - name: Run every gate
+        run: npm run verify
+
+      - name: Report context cost
+        if: always()
+        run: |
+          npm run measure
+          npm run measure:dispatch
+
+      - name: Report the MCP tool surface
+        if: always()
+        working-directory: mcp-server
+        run: node scripts/probe-tools.mjs
+
+      - name: Save the verification report
+        if: always()
+        run: node scripts/verify.mjs --json > verify-report.json || true
+
+      - name: Upload the verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-report
+          path: verify-report.json
+          if-no-files-found: ignore

@@ -1,0 +1,9 @@
+# Codex interface for this skill.
+# Reference skills are lookup data cited by other skills, never chosen by the
+# model on its own. Without this file Codex lists them in its catalog, which a
+# live probe showed put all 29 into the model prompt.
+interface:
+  display_name: "Github Workflow Standards"
+  short_description: "Reference data, not a reviewer. Core standards for GitHub workflow agents: authentication, repository discovery, dual MD+HTML output, accessibility compliance, safety rules, and parallel execution patterns."
+policy:
+  allow_implicit_invocation: false

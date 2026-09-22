@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "WCAG Guide"
+  short_description: "Explain WCAG 2.2 criteria, conformance levels and what changed."
+policy:
+  allow_implicit_invocation: false

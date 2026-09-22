@@ -55,7 +55,7 @@ export function registerPlaywrightTools(server) {
     {
       title: "Run axe-core Accessibility Scan",
       description:
-        "Run an axe-core accessibility scan against a live URL using Playwright. Returns all WCAG 2.x AA violations with element selectors and remediation guidance. Requires Playwright and @axe-core/playwright.",
+        "Run an axe-core scan against a URL or HTML file and return the violations as findings.",
       inputSchema: z.object({
         url: z.string().describe("URL to scan (http or https)"),
         tags: z

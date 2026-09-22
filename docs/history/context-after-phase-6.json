@@ -1,0 +1,159 @@
+{
+  "generated": "2026-09-21",
+  "estimator": "chars/4",
+  "package": {
+    "skills": 108,
+    "model_invocable": 6,
+    "routers": 6,
+    "specialists": 57,
+    "helpers": 16,
+    "references": 29,
+    "largest_body_bytes": 22018,
+    "largest_body_skill": "kb-github-shared-instructions",
+    "largest_dispatchable_body_bytes": 6131,
+    "bodies_over_6144": 0,
+    "catalog_chars_model_invocable": 871,
+    "catalog_chars_all": 5995,
+    "codex_catalog_cap_chars": 8000,
+    "codex_catalog_within_cap": true
+  },
+  "clients": {
+    "claude": {
+      "label": "Claude Code",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "CLAUDE.md (pointer)",
+          "tokens": 0
+        },
+        {
+          "item": "skills/ catalog (6 of 108 skills)",
+          "tokens": 218,
+          "chars": 871
+        }
+      ],
+      "legacy": [],
+      "hook": {
+        "rel": "hooks/guard.mjs",
+        "tokens": 87
+      },
+      "always_on_current": 1136,
+      "always_on_legacy": 0,
+      "always_on_total": 1136
+    },
+    "codex": {
+      "label": "Codex",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "skills/ catalog (63 of 108 skills)",
+          "tokens": 1499,
+          "chars": 5995
+        }
+      ],
+      "legacy": [],
+      "hook": {
+        "rel": "hooks/guard.mjs",
+        "tokens": 87
+      },
+      "always_on_current": 2417,
+      "always_on_legacy": 0,
+      "always_on_total": 2417
+    },
+    "copilot": {
+      "label": "Copilot",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "skills/ catalog (6 of 108 skills)",
+          "tokens": 218,
+          "chars": 871
+        }
+      ],
+      "legacy": [],
+      "hook": {
+        "rel": "hooks/guard.mjs",
+        "tokens": 87
+      },
+      "always_on_current": 1136,
+      "always_on_legacy": 0,
+      "always_on_total": 1136
+    },
+    "gemini": {
+      "label": "Gemini / Antigravity",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "skills/ catalog (6 of 108 skills)",
+          "tokens": 218,
+          "chars": 871
+        }
+      ],
+      "legacy": [],
+      "hook": {
+        "rel": "hooks/guard.mjs",
+        "tokens": 87
+      },
+      "always_on_current": 1136,
+      "always_on_legacy": 0,
+      "always_on_total": 1136
+    }
+  },
+  "dispatch_max_tokens": 100,
+  "dispatch": [
+    {
+      "router": "skills/developer-hub/SKILL.md",
+      "kind": "package",
+      "tokens": 100,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/markdown-a11y-assistant/SKILL.md",
+      "kind": "package",
+      "tokens": 89,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/github-hub/SKILL.md",
+      "kind": "package",
+      "tokens": 86,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/document-accessibility-wizard/SKILL.md",
+      "kind": "package",
+      "tokens": 83,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/accessibility-lead/SKILL.md",
+      "kind": "package",
+      "tokens": 82,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/web-accessibility-wizard/SKILL.md",
+      "kind": "package",
+      "tokens": 82,
+      "why": "pointer dispatch prompt"
+    }
+  ],
+  "legacy_trees": {
+    "skills": {
+      "files": 335,
+      "bytes": 1479896
+    }
+  }
+}

@@ -24,8 +24,6 @@ Scan these 4 document types in parallel:
 Wait for all tasks to complete, then merge results.
 ```
 
-Each task runs in its own context window, scanning independently. The orchestrator collects results and merges them.
-
 **Limitations:**
 
 - Tasks share the same filesystem - no isolation between tasks

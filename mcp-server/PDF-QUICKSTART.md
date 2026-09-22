@@ -68,6 +68,8 @@ If `node --version` reports a version older than 18, upgrade Node.js before runn
 
 ### Prerequisite Matrix
 
+Each class, with requirement, needed for and required.
+
 | Class | Requirement | Needed For | Required? |
 |------|-------------|------------|-----------|
 | Runtime | Node.js 18+ | Running the MCP server | Yes |

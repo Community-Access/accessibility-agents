@@ -1,0 +1,290 @@
+{
+  "generated": "2026-09-21",
+  "estimator": "chars/4",
+  "package": {
+    "skills": 107,
+    "model_invocable": 6,
+    "routers": 6,
+    "specialists": 57,
+    "helpers": 16,
+    "references": 28,
+    "largest_body_bytes": 22018,
+    "largest_body_skill": "kb-github-shared-instructions",
+    "largest_dispatchable_body_bytes": 6131,
+    "bodies_over_6144": 0,
+    "catalog_chars_model_invocable": 871,
+    "catalog_chars_all": 5995,
+    "codex_catalog_cap_chars": 8000,
+    "codex_catalog_within_cap": true
+  },
+  "clients": {
+    "claude": {
+      "label": "Claude Code",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "CLAUDE.md (pointer)",
+          "tokens": 0
+        },
+        {
+          "item": "skills/ catalog (6 of 107 skills)",
+          "tokens": 218,
+          "chars": 871
+        }
+      ],
+      "legacy": [
+        {
+          "item": ".claude/agents (7)",
+          "tokens": 803,
+          "chars": 3212
+        },
+        {
+          "item": "claude-code-plugin/agents (80)",
+          "tokens": 6697,
+          "chars": 26786
+        },
+        {
+          "item": "claude-code-plugin/commands (17)",
+          "tokens": 46,
+          "chars": 184
+        }
+      ],
+      "hook": {
+        "rel": "codex-plugin/hooks/a11y-codex-dispatch-guard.mjs",
+        "tokens": 571
+      },
+      "always_on_current": 1620,
+      "always_on_legacy": 7546,
+      "always_on_total": 9166
+    },
+    "codex": {
+      "label": "Codex",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "skills/ catalog (63 of 107 skills)",
+          "tokens": 1499,
+          "chars": 5995
+        }
+      ],
+      "legacy": [
+        {
+          "item": "codex-plugin/agents (80)",
+          "tokens": 5262,
+          "chars": 21048
+        },
+        {
+          "item": "codex-plugin/skills (5)",
+          "tokens": 247,
+          "chars": 988
+        },
+        {
+          "item": "codex-skills (80)",
+          "tokens": 6610,
+          "chars": 26440
+        }
+      ],
+      "hook": {
+        "rel": "codex-plugin/hooks/a11y-codex-dispatch-guard.mjs",
+        "tokens": 571
+      },
+      "always_on_current": 2901,
+      "always_on_legacy": 12119,
+      "always_on_total": 15020
+    },
+    "copilot": {
+      "label": "Copilot",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "skills/ catalog (6 of 107 skills)",
+          "tokens": 218,
+          "chars": 871
+        }
+      ],
+      "legacy": [
+        {
+          "item": ".github/copilot-instructions.md",
+          "tokens": 6659
+        },
+        {
+          "item": ".github/agents (80)",
+          "tokens": 6571,
+          "chars": 26284
+        },
+        {
+          "item": ".github/skills (26)",
+          "tokens": 1162,
+          "chars": 4648
+        }
+      ],
+      "hook": {
+        "rel": "codex-plugin/hooks/a11y-codex-dispatch-guard.mjs",
+        "tokens": 571
+      },
+      "always_on_current": 1620,
+      "always_on_legacy": 14392,
+      "always_on_total": 16012
+    },
+    "gemini": {
+      "label": "Gemini / Antigravity",
+      "current": [
+        {
+          "item": "AGENTS.md",
+          "tokens": 831
+        },
+        {
+          "item": "skills/ catalog (6 of 107 skills)",
+          "tokens": 218,
+          "chars": 871
+        }
+      ],
+      "legacy": [
+        {
+          "item": "GEMINI.md",
+          "tokens": 2307
+        },
+        {
+          "item": ".gemini skills (101)",
+          "tokens": 7586,
+          "chars": 30343
+        }
+      ],
+      "hook": {
+        "rel": "codex-plugin/hooks/a11y-codex-dispatch-guard.mjs",
+        "tokens": 571
+      },
+      "always_on_current": 1620,
+      "always_on_legacy": 9893,
+      "always_on_total": 11513
+    }
+  },
+  "dispatch_max_tokens": 26346,
+  "dispatch": [
+    {
+      "router": ".claude/agents/github-hub.md",
+      "kind": "legacy",
+      "tokens": 26346,
+      "why": "templated read-and-paste, worst named specialist pr-review (52691 bytes, counted twice)"
+    },
+    {
+      "router": ".claude/agents/nexus.md",
+      "kind": "legacy",
+      "tokens": 26346,
+      "why": "templated read-and-paste, worst named specialist pr-review (52691 bytes, counted twice)"
+    },
+    {
+      "router": ".claude/agents/accessibility-lead.md",
+      "kind": "legacy",
+      "tokens": 14242,
+      "why": "templated read-and-paste, worst named specialist alt-text-headings (28484 bytes, counted twice)"
+    },
+    {
+      "router": ".claude/agents/web-accessibility-wizard.md",
+      "kind": "legacy",
+      "tokens": 14242,
+      "why": "templated read-and-paste, worst named specialist alt-text-headings (28484 bytes, counted twice)"
+    },
+    {
+      "router": ".claude/agents/document-accessibility-wizard.md",
+      "kind": "legacy",
+      "tokens": 10150,
+      "why": "templated read-and-paste, worst named specialist document-csv-reporter (20300 bytes, counted twice)"
+    },
+    {
+      "router": ".claude/agents/markdown-a11y-assistant.md",
+      "kind": "legacy",
+      "tokens": 7328,
+      "why": "templated read-and-paste, worst named specialist markdown-scanner (14656 bytes, counted twice)"
+    },
+    {
+      "router": "skills/markdown-a11y-assistant/SKILL.md",
+      "kind": "package",
+      "tokens": 7328,
+      "why": "templated read-and-paste, worst named specialist markdown-scanner (14656 bytes, counted twice)"
+    },
+    {
+      "router": ".claude/agents/developer-hub.md",
+      "kind": "legacy",
+      "tokens": 7008,
+      "why": "templated read-and-paste, worst named specialist nvda-addon-specialist (14016 bytes, counted twice)"
+    },
+    {
+      "router": "skills/developer-hub/SKILL.md",
+      "kind": "package",
+      "tokens": 7008,
+      "why": "templated read-and-paste, worst named specialist nvda-addon-specialist (14016 bytes, counted twice)"
+    },
+    {
+      "router": "skills/accessibility-lead/SKILL.md",
+      "kind": "package",
+      "tokens": 82,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/document-accessibility-wizard/SKILL.md",
+      "kind": "package",
+      "tokens": 82,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/github-hub/SKILL.md",
+      "kind": "package",
+      "tokens": 82,
+      "why": "pointer dispatch prompt"
+    },
+    {
+      "router": "skills/web-accessibility-wizard/SKILL.md",
+      "kind": "package",
+      "tokens": 82,
+      "why": "pointer dispatch prompt"
+    }
+  ],
+  "legacy_trees": {
+    ".claude/agents": {
+      "files": 7,
+      "bytes": 205200
+    },
+    ".claude/specialists": {
+      "files": 73,
+      "bytes": 838168
+    },
+    "claude-code-plugin/agents": {
+      "files": 80,
+      "bytes": 1009444
+    },
+    "codex-skills": {
+      "files": 80,
+      "bytes": 1045493
+    },
+    "codex-plugin/references/specialists": {
+      "files": 81,
+      "bytes": 1080024
+    },
+    ".gemini/extensions/a11y-agents/skills": {
+      "files": 101,
+      "bytes": 1093802
+    },
+    ".github/agents": {
+      "files": 85,
+      "bytes": 1348314
+    },
+    ".github/prompts": {
+      "files": 129,
+      "bytes": 340929
+    },
+    "skills": {
+      "files": 309,
+      "bytes": 1365560
+    }
+  }
+}

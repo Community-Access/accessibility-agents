@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "CI Accessibility"
+  short_description: "Set up and debug accessibility CI: baselines, SARIF and PR gating."
+policy:
+  allow_implicit_invocation: false

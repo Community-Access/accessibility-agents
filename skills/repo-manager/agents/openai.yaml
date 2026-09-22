@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Repository Manager"
+  short_description: "Scaffold a repo: templates, contributing guides, CI, labels, licenses."
+policy:
+  allow_implicit_invocation: false

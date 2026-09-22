@@ -12,19 +12,38 @@ import { join, relative, extname, dirname } from "node:path";
 import { execSync } from "node:child_process";
 
 const EXTENSIONS = new Set([".md", ".mdx"]);
+/**
+ * Directories this linter does not scan.
+ *
+ * Three kinds, and the reason matters because a warning about a file nobody
+ * edits is a warning nobody will ever clear:
+ *
+ *   Not ours          dependencies and vendored code
+ *   Not source        build output, coverage, generated artifacts
+ *   Not the repo's    the editor's local history, which is gitignored and is a
+ *                     private record of the user's keystrokes
+ *
+ * `.history` was the largest single source of findings in this repository:
+ * 228 of 934, every one a duplicate of a file that is also scanned at its real
+ * path. Scanning it inflated the count by a quarter and pointed every fix at a
+ * snapshot instead of the document.
+ */
 const DEFAULT_IGNORED_DIRS = [
+  // Not ours
   "node_modules",
+  "vendor",
   ".git",
+  // Not source
   "dist",
   "build",
+  "out",
   ".next",
   ".nuxt",
   "coverage",
-  "vendor",
-  "codex-skills",
-  ".claude",
-  ".gemini",
-  "desktop-extension",
+  "artifacts",
+  // Not the repository's
+  ".history",
+  ".vscode-test",
 ];
 
 const DEFAULT_RULES = {
@@ -399,19 +418,29 @@ function checkFile(filePath, root, rulesConfig) {
       addIssue(rel, lineNum, "md-bare-url", "Bare URL in prose; wrap in descriptive link text", rulesConfig);
     }
 
-    if (/^\|/.test(trimmedLine) && i > 0) {
-      const prevLine = lines[i - 1];
-      if (prevLine !== undefined && !/^\|/.test(prevLine.trim())) {
-        const prevTrimmed = prevLine.trim();
-        if (prevTrimmed === "" || /^#{1,6}\s/.test(prevTrimmed)) {
-          addIssue(
-            rel,
-            lineNum,
-            "md-table-desc",
-            "Table without preceding description; add a one-sentence summary before the table",
-            rulesConfig
-          );
-        }
+    // A table needs a sentence introducing it, so a screen reader user knows
+    // what the grid holds before entering table navigation.
+    //
+    // Look back past blank lines to find that sentence. GitHub Flavored
+    // Markdown does not recognise a table that interrupts a paragraph, so the
+    // blank line between the description and the table is required, not a
+    // defect: checking only the immediately preceding line asked authors for
+    // markdown that would not render as a table at all.
+    if (/^\|/.test(trimmedLine) && i > 0 && !/^\|/.test((lines[i - 1] || "").trim())) {
+      let j = i - 1;
+      while (j >= 0 && lines[j].trim() === "") j -= 1;
+
+      const introducer = j >= 0 ? lines[j].trim() : "";
+      const isProse = introducer !== "" && !/^#{1,6}\s/.test(introducer);
+
+      if (!isProse) {
+        addIssue(
+          rel,
+          lineNum,
+          "md-table-desc",
+          "Table without preceding description; add a one-sentence summary before the table",
+          rulesConfig
+        );
       }
     }
   }

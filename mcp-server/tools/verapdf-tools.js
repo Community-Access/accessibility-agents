@@ -258,7 +258,7 @@ export function registerVeraPdfTools(server) {
     {
       title: "Run veraPDF PDF/UA Scan",
       description:
-        "Run a veraPDF PDF/UA-1 conformance scan against a local PDF file. Returns validation results in text format by default, or SARIF 2.1.0 when sarifPath is provided. Requires veraPDF CLI installed on the system.",
+        "Validate a PDF against PDF/UA with veraPDF and return the failed checks as findings.",
       inputSchema: z.object({
         filePath: z.string().describe("Absolute path to the PDF file"),
         flavour: z

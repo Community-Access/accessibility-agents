@@ -1,262 +1,72 @@
-# AGENTS.md
-
-> AI agent guidance for this repository. Generated for AgentRC compatibility.
-
-This repository contains 80 accessibility-focused AI agents across multiple platforms (Copilot, Claude Code, Codex, Gemini). This file provides high-level guidance for AI coding assistants working in this codebase.
-
-## Repository Writing Policy: No Emoji
+# Accessibility Agents
 
-Repository-wide hard rule: do not add emoji characters in generated, edited, or reviewed content.
-
-- Applies to release notes, changelog entries, docs, prompts, instructions, agent files, issue/PR text, and chat-generated copy intended for repository publication.
-- Replace emoji with plain text labels.
-- If existing content contains emoji and you are touching that content, remove emoji as part of the update.
+WCAG 2.2 AA enforcement for web UI, Office and PDF documents, markdown, desktop
+apps and the GitHub workflows around them. The package is a set of Agent Skills
+in `skills/`, readable by Claude Code, Codex, Copilot, Gemini and Antigravity
+without per-client copies.
 
-## Repository Purpose
+## The rule
 
-**A11y Agent Team** is a collection of accessibility-focused AI agents that enforce WCAG 2.2 AA standards across web, document, and mobile development. The agents work together as specialized teams to catch accessibility issues that LLMs typically miss during code generation.
+Accessibility review is not optional and is not something to remember at the
+end. Before you write or change any of the following, dispatch the router named
+beside it and let it finish. The table pairs each kind of work with the one
+skill that owns it.
 
-## Key Directories
+| You are about to touch | Dispatch |
+|---|---|
+| HTML, JSX, TSX, Vue, Svelte, Astro, CSS, or a server template (.leaf, .ejs, .erb, .hbs, .jinja, .twig) | `accessibility-lead` |
+| A full site or app audit rather than one change | `web-accessibility-wizard` |
+| .docx, .xlsx, .pptx, .pdf, .epub | `document-accessibility-wizard` |
+| Markdown documentation | `markdown-a11y-assistant` |
+| Python, wxPython, a desktop app, an NVDA add-on, or accessibility tooling | `developer-hub` |
+| Issues, pull requests, releases, projects, actions, security alerts, teams, wikis | `github-hub` |
 
-| Path | Purpose |
-|------|---------|
-| `.github/agents/` | Copilot agent definitions (80 agents) |
-| `.github/skills/` | Copilot reusable skills (25 skills) |
-| `.github/prompts/` | One-click workflow prompts |
-| `.github/instructions/` | Always-on instruction files |
-| `.claude/agents/` | Claude Code agent definitions |
-| `.codex/` | Codex CLI configuration (11 roles) |
-| `.gemini/` | Gemini CLI extension |
-| `docs/` | Documentation site |
-| `mcp-server/` | HTTP-based MCP server (Streamable HTTP + stdio) |
-| `vscode-extension/` | VS Code extension (planned) |
-| `scripts/` | Build and validation scripts |
-| `templates/` | Scan configuration templates |
+Enforcement hooks back this up: UI edits are blocked until `accessibility-lead`
+has run in the session. If an edit is refused, that is why.
 
-## Agent Teams
+This applies to user-facing content. Backend logic, build scripts and database
+work are out of scope.
 
-### Web Accessibility Team
-
-Led by `accessibility-lead`, coordinates specialists for comprehensive web audits:
-
-- `aria-specialist` - ARIA roles, states, properties
-- `keyboard-navigator` - Tab order, focus management
-- `contrast-master` - Color contrast, visual accessibility
-- `forms-specialist` - Form labeling, validation, errors
-- `modal-specialist` - Dialog focus trapping, escape behavior
-- `live-region-controller` - Dynamic content announcements
-- `alt-text-headings` - Images, SVGs, heading hierarchy
-- `tables-data-specialist` - Data table accessibility
-- `link-checker` - Ambiguous link text detection
-- `text-quality-reviewer` - Non-visual text quality review
-- `i18n-accessibility` - Internationalization, RTL, and multilingual accessibility
+## Routers
 
-### Document Accessibility Team
+Six skills are model-invocable. Everything else is dispatched by one of them.
 
-Led by `document-accessibility-wizard`, handles Office and PDF audits:
+- `accessibility-lead` - picks specialists for a web change and merges findings
+- `web-accessibility-wizard` - guided, phased WCAG audit with a scored report
+- `document-accessibility-wizard` - Office, PDF and ePub audits, file or folder
+- `markdown-a11y-assistant` - markdown audit: links, alt text, headings, tables
+- `developer-hub` - Python, wxPython, desktop and NVDA work
+- `github-hub` - GitHub workflows. Also answers to the older name `nexus`
 
-- `word-accessibility` - Microsoft Word (.docx)
-- `excel-accessibility` - Microsoft Excel (.xlsx)
-- `powerpoint-accessibility` - Microsoft PowerPoint (.pptx)
-- `pdf-accessibility` - PDF/UA conformance
-- `epub-accessibility` - ePub accessibility
-- `pdf-remediator` - Programmatic and manual PDF remediation
-- `office-remediator` - Programmatic Office document (Word/Excel/PowerPoint) remediation
+Routers dispatch by pointer, never by pasting instructions. The contract, the
+findings schema and the report rules are in `skills/a11y-core/SKILL.md`.
 
-### GitHub Workflow Team
+## Standards that do not get traded away
 
-Led by `github-hub` / `nexus`, manages repository operations:
+- Semantic HTML before ARIA. A `button` element beats `div role="button"`.
+- One H1 per page. Never skip heading levels.
+- Every interactive element reachable and operable by keyboard.
+- Text contrast 4.5:1. UI component and graphical object contrast 3:1.
+- No information carried by color alone.
+- Focus managed on route change, dynamic content and deletion.
+- Dialogs trap focus and return it on close.
+- Dynamic content updates are announced.
 
-- `daily-briefing` - Morning overview of issues, PRs, CI status
-- `pr-review` - Code review with accessibility focus
-- `issue-tracker` - Issue triage and priority scoring
-- `analytics` - Repository health metrics
-- `repo-admin` - Collaborator and branch protection management
-- `team-manager` - Organization team membership
-- `contributions-hub` - Contributor activity tracking and recognition
-- `insiders-a11y-tracker` - VS Code Insiders accessibility regression tracking
-- `template-builder` - Issue and PR template generation
-- `repo-manager` - Repository settings, labels, and workflow management
-- `projects-manager` - GitHub Projects v2 boards, views, custom fields, and iterations
-- `actions-manager` - GitHub Actions workflow runs, logs, re-runs, and CI debugging
-- `security-dashboard` - Dependabot, code scanning, and secret scanning alert triage
-- `release-manager` - Releases, tags, assets, and release note generation
-- `notifications-manager` - Notification inbox management, filtering, and subscriptions
-- `wiki-manager` - Wiki page creation, editing, search, and organization
-
-### Developer Tools Team
+## Before an audit
 
-Led by `developer-hub`, handles desktop and Python development:
-
-- `python-specialist` - Python debugging, packaging, testing
-- `wxpython-specialist` - wxPython GUI development
-- `nvda-addon-specialist` - NVDA screen reader addon development
-- `desktop-a11y-specialist` - Desktop accessibility APIs
-- `a11y-tool-builder` - Building accessibility scanning tools
-
-Desktop accessibility standards quick links:
-
-- Windows UIA desktop announcement standards: `.github/agents/accessibility-lead.agent.md` (Desktop Notification Standards)
-- Python desktop implementation standards: `.github/agents/python-specialist.agent.md` (Desktop Accessibility Standards (Python))
-- wxPython implementation standards: `.github/agents/wxpython-specialist.agent.md` (wxPython Accessibility Notification Standards (Windows))
-
-### CI/CD & Education
-
-Specialist agents for CI pipelines, standards education, and screen reader simulation:
-
-- `ci-accessibility` - CI/CD accessibility pipeline setup and management
-- `screen-reader-lab` - Interactive screen reader simulation for education
-- `wcag3-preview` - WCAG 3.0 draft education and transition planning
-- `wcag-aaa` - WCAG AAA conformance auditing
+Read any `.a11y-office-config.json`, `.a11y-pdf-config.json`,
+`.a11y-epub-config.json` or `.a11y-web-config.json` in the workspace root and
+honour it rather than defaults. If a previous `*-ACCESSIBILITY-AUDIT.md` exists,
+offer delta mode so the user can see what moved.
 
-## Coding Conventions
+## House style
 
-### Agent File Format
+No emoji, anywhere. No decorative Unicode, box drawing or icon bullets. Plain
+ASCII punctuation and hyphen bullets. This is an accessibility project and its
+own output is read aloud.
 
-Copilot agents (`.github/agents/*.agent.md`):
+## More
 
-```yaml
----
-name: Agent Name
-description: What this agent does (required)
-tools: ['read', 'edit', 'search', 'runInTerminal', 'askQuestions']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
----
-
-Agent instructions in markdown...
-```
-
-Claude Code agents (`.claude/agents/*.md`):
-
-```yaml
----
-name: agent-name
-description: What this agent does
-tools:
-  - Read
-  - Edit
-  - Grep
-  - Task
----
-
-Agent instructions in markdown...
-```
-
-### Tool Name Conventions
-
-| Platform | Read | Edit | Search | Shell | Sub-agent |
-|----------|------|------|--------|-------|-----------|
-| Copilot CLI | `read` | `edit` | `search` | `runInTerminal` | `agent` |
-| Claude Code | `Read` | `Edit` | `Grep`/`Glob` | `Bash` | `Task` |
-
-### Skill File Format
-
-Skills must have `SKILL.md` with YAML frontmatter:
-
-```yaml
----
-name: skill-name
-description: What this skill provides
----
-
-Skill content in markdown...
-```
-
-### Recommended Metadata (2026)
-
-Use `metadata` for stable machine-readable attributes that improve routing, validation, and release reporting.
-
-Agent frontmatter example:
-
-```yaml
----
-name: agent-name
-description: What this agent does
-tools: ['read', 'edit', 'search']
-metadata:
-  owner: accessibility-team
-  domain: web|document|github|developer
-  maturity: stable|beta|experimental
-  release-phase: ga|preview
-  capability-tags: ["wcag-2.2", "keyboard", "forms"]
-  dispatch-contract: required|optional
----
-```
-
-Skill frontmatter example:
-
-```yaml
----
-name: skill-name
-description: What this skill provides
-metadata:
-  spec-version: "2026-05"
-  model-compatibility: ["copilot", "claude", "gemini"]
-  scoring-model: "v2"
-  compliance-profiles: ["wcag-2.2-aa", "en-301-549"]
----
-```
-
-Instruction markup guidance:
-
-- Keep one H1 per file.
-- Use explicit `## Decision Matrix` and `## Non-Negotiable Standards` headings for scanners.
-- Prefer checklist-style acceptance criteria sections for automation (`## Acceptance Criteria`).
-- Keep line-based examples in fenced code blocks with explicit language tags.
-
-## Build & Test
-
-No build step required - agents are markdown files.
-
-**Validation:**
-
-```bash
-# Check agent YAML frontmatter
-node scripts/validate-agents.js
-
-# Run AgentRC readiness check
-npx github:microsoft/agentrc readiness
-```
-
-**Local testing:**
-
-```bash
-# Install to local Copilot CLI
-gh skill install Community-Access/accessibility-agents
-gh skill setup Community-Access/accessibility-agents
-
-# Verify agents load
-copilot /agent
-```
-
-## CI/CD
-
-| Workflow | Purpose |
-|----------|---------|
-| `a11y-check.yml` | Lint HTML/JSX/CSS for accessibility |
-| `verify-sources.yml` | Validate URLs in documentation |
-| `update-manifest.yml` | Generate installation manifest |
-| `sync-docs-site.yml` | Deploy documentation |
-
-## Contributing
-
-1. Agent changes go in both `.github/agents/` AND `.claude/agents/`
-2. Use platform-specific tool names (see conventions above)
-3. Every agent needs a `description` field
-4. Run validation before committing
-5. Update CHANGELOG.md for user-facing changes
-
-## Architecture Decisions
-
-- **Parallel agent definitions**: Each platform has its own agent files because tool names and capabilities differ
-- **Skills for reusable knowledge**: Common patterns (WCAG rules, scoring formulas) are in skills, not duplicated in agents
-- **Wizard orchestrators**: Complex workflows use wizard agents that delegate to specialists
-- **Read-only scanners**: Scanner agents never modify files - they only report findings
-- **Fixer agents require confirmation**: Agents that modify code always ask before applying changes
-
-## External Dependencies
-
-- **axe-core**: Web accessibility rule engine
-- **Playwright**: Browser automation for behavioral testing
-- **markdownlint**: Markdown accessibility linting
-- **veraPDF** (planned): PDF/UA validation
+- Full agent roster, knowledge domains and decision matrix: `docs/agent-reference.md`
+- How to write and build files in this repository: `docs/repository-conventions.md`
+- Shared contract, findings schema, report requirements: `skills/a11y-core/SKILL.md`

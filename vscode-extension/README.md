@@ -23,6 +23,8 @@ That's it. The Accessibility Lead agent responds by default. Use a slash command
 
 ### Web Accessibility
 
+Each command, with what it covers.
+
 | Command | What it covers |
 |---------|---------------|
 | `/accessibility-lead` | Team lead and orchestrator — coordinates specialists, final review |
@@ -42,12 +44,16 @@ That's it. The Accessibility Lead agent responds by default. Use a slash command
 
 ### Desktop Accessibility
 
+Each command, with what it covers.
+
 | Command | What it covers |
 |---------|---------------|
 | `/desktop-a11y-specialist` | Platform APIs — UI Automation, MSAA/IAccessible2, NSAccessibility |
 | `/desktop-a11y-testing-coach` | Testing with NVDA, JAWS, Narrator, and VoiceOver |
 
 ### Document & Markdown Accessibility
+
+Each command, with what it covers.
 
 | Command | What it covers |
 |---------|---------------|
@@ -61,6 +67,8 @@ That's it. The Accessibility Lead agent responds by default. Use a slash command
 
 ### WCAG & Testing
 
+Each command, with what it covers.
+
 | Command | What it covers |
 |---------|---------------|
 | `/wcag-guide` | WCAG 2.2 AA reference — criteria explanations, conformance |
@@ -69,6 +77,8 @@ That's it. The Accessibility Lead agent responds by default. Use a slash command
 
 ### Developer Tools
 
+Each command, with what it covers.
+
 | Command | What it covers |
 |---------|---------------|
 | `/developer-hub` | Developer command center — Python, wxPython, desktop, routing |
@@ -76,6 +86,8 @@ That's it. The Accessibility Lead agent responds by default. Use a slash command
 | `/wxpython-specialist` | wxPython GUI — sizers, events, AUI, threading, desktop a11y |
 
 ### GitHub Workflows
+
+Each command, with what it covers.
 
 | Command | What it covers |
 |---------|---------------|

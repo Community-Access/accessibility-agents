@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Document Inventory"
+  short_description: "Internal helper: discover documents, build an inventory, detect changes."
+policy:
+  allow_implicit_invocation: false

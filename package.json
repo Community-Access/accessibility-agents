@@ -1,0 +1,46 @@
+{
+  "name": "accessibility-agents",
+  "version": "7.0.0",
+  "private": true,
+  "description": "WCAG 2.2 AA enforcement as Agent Skills, readable by Claude Code, Codex, Copilot, Gemini and Antigravity without per-client copies.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Community-Access/accessibility-agents.git"
+  },
+  "scripts": {
+    "verify": "node scripts/verify.mjs",
+    "verify:skills": "node scripts/validate-skills.mjs",
+    "verify:spec": "node scripts/verify-spec.mjs",
+    "verify:budgets": "node skills/a11y-core/scripts/measure-context.mjs --check budgets.json",
+    "verify:findings": "node skills/a11y-core/scripts/test-findings-contract.mjs",
+    "verify:report": "node skills/a11y-core/scripts/render-report.mjs --self-test",
+    "verify:conformance": "node scripts/check-skill-conformance.mjs",
+    "verify:markdown": "node .github/scripts/markdown-a11y-lint.mjs . --fail-on error",
+    "verify:markdownlint": "markdownlint-cli2 \"**/*.md\"",
+    "verify:mcp": "node --test mcp-server/server-core.test.js mcp-server/mcp-conformance.test.js",
+    "verify:scanner": "node scripts/test-markdown-scanner.mjs",
+    "measure": "node skills/a11y-core/scripts/measure-context.mjs",
+    "measure:dispatch": "node skills/a11y-core/scripts/measure-context.mjs --dispatch",
+    "probe:mcp": "node mcp-server/scripts/probe-tools.mjs",
+    "serve:mcp": "node mcp-server/server.js",
+    "verify:release": "node scripts/check-release-consistency.js",
+    "install": "node scripts/install.mjs",
+    "verify:live": "node scripts/verify-live.mjs",
+    "fix:tables": "node scripts/describe-tables.mjs --apply",
+    "fix:emoji": "node scripts/strip-heading-emoji.mjs --apply",
+    "build:docs": "node scripts/build-docs.mjs",
+    "build:matrices": "node scripts/build-dispatch-matrices.mjs",
+    "new-skill": "node scripts/new-skill.mjs",
+    "dev-link": "node scripts/dev-link.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/cli": "^4.13.0",
+    "markdownlint-cli2": "^0.23.3",
+    "skills-ref": "^0.1.5"
+  }
+}

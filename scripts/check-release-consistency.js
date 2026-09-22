@@ -1,121 +1,102 @@
 #!/usr/bin/env node
-
 /**
- * check-release-consistency.js
- * 
- * Verifies that all release manifest files have matching version numbers.
- * Useful as a pre-release CI check to prevent version drift.
- * 
- * Files checked:
- * - CHANGELOG.md (version from first heading, e.g., "## 4.5.0")
- * - plugin.yaml (version: field)
- * - mcp-server/package.json (version field)
- * - gemini-extension.json (version field)
- * - manifest.json (version field)
- * 
- * Exit codes:
- * - 0: All versions match
- * - 1: Version mismatch or file not found
+ * check-release-consistency.js - one version, everywhere it is published.
+ *
+ * Before 7.0 this compared five manifests across five per-client trees, and it
+ * still missed the MCP server hard-coding "4.6.0" in three places while its own
+ * package.json said 6.0.0. There are now four manifests and one server, and the
+ * server reads its version from its manifest rather than repeating it.
+ *
+ * A mismatch here means a user cannot tell which build they are running, which
+ * is the difference between "this bug is fixed" and "this bug is fixed in a
+ * version you may or may not have".
+ *
+ * Usage:
+ *   node scripts/check-release-consistency.js
+ *   node scripts/check-release-consistency.js --json
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const REPO_ROOT = path.join(__dirname, '..');
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '..');
 
-// Files to check
-const FILES_TO_CHECK = [
-  { file: 'CHANGELOG.md', type: 'changelog' },
-  { file: 'plugin.yaml', type: 'yaml' },
-  { file: 'mcp-server/package.json', type: 'json' },
-  { file: 'gemini-extension.json', type: 'json' },
-  { file: 'manifest.json', type: 'json' },
+/** Every file that states the package version, and how to read it out. */
+const SOURCES = [
+  { file: 'package.json', read: (t) => JSON.parse(t).version, why: 'the package manifest' },
+  { file: 'plugin.json', read: (t) => JSON.parse(t).version, why: 'the Agent Plugins 1.0 manifest' },
+  { file: '.claude-plugin/plugin.json', read: (t) => JSON.parse(t).version, why: 'what Claude Code and VS Code read' },
+  { file: '.codex-plugin/plugin.json', read: (t) => JSON.parse(t).version, why: 'what Codex reads' },
+  { file: 'mcp-server/package.json', read: (t) => JSON.parse(t).version, why: 'the MCP server, which reports this at its handshake' },
 ];
 
-// Extract version from CHANGELOG.md
-// Expects format: ## [4.5.0] or ## 4.5.0
-function extractChangelogVersion() {
-  const filePath = path.join(REPO_ROOT, 'CHANGELOG.md');
+/** Version strings that must not be hard-coded anywhere. */
+const NO_HARDCODED = [
+  { dir: 'mcp-server', files: ['server.js', 'server-core.js', 'stdio.js'] },
+];
+
+const problems = [];
+const found = [];
+
+for (const source of SOURCES) {
+  const abs = path.join(ROOT, source.file);
+  if (!fs.existsSync(abs)) {
+    problems.push(`${source.file} is missing (${source.why})`);
+    continue;
+  }
   try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    const match = content.match(/^##\s+\[?([\d.]+)\]?/m);
-    if (match) {
-      return match[1];
-    }
-  } catch (err) {
-    throw new Error(`Failed to read CHANGELOG.md: ${err.message}`);
-  }
-  throw new Error('CHANGELOG.md: No version found (expected format: ## [4.5.0] or ## 4.5.0)');
-}
-
-// Extract version from YAML file
-function extractYamlVersion() {
-  const filePath = path.join(REPO_ROOT, 'plugin.yaml');
-  try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    const match = content.match(/^version:\s*["']?([\d.]+)["']?$/m);
-    if (match) {
-      return match[1];
-    }
-  } catch (err) {
-    throw new Error(`Failed to read plugin.yaml: ${err.message}`);
-  }
-  throw new Error('plugin.yaml: No version found (expected format: version: 4.5.0)');
-}
-
-// Extract version from JSON file
-function extractJsonVersion(filePath) {
-  const fullPath = path.join(REPO_ROOT, filePath);
-  try {
-    const content = fs.readFileSync(fullPath, 'utf8');
-    const json = JSON.parse(content);
-    if (json.version) {
-      return json.version;
-    }
-  } catch (err) {
-    throw new Error(`Failed to read ${filePath}: ${err.message}`);
-  }
-  throw new Error(`${filePath}: No "version" field found`);
-}
-
-// Main check
-function main() {
-  const versions = {};
-  let hasError = false;
-
-  for (const { file, type } of FILES_TO_CHECK) {
-    try {
-      let version;
-      if (type === 'changelog') {
-        version = extractChangelogVersion();
-      } else if (type === 'yaml') {
-        version = extractYamlVersion();
-      } else if (type === 'json') {
-        version = extractJsonVersion(file);
-      }
-      versions[file] = version;
-      console.log(`✓ ${file}: ${version}`);
-    } catch (err) {
-      console.error(`✗ ${file}: ${err.message}`);
-      hasError = true;
-    }
-  }
-
-  // Check consistency
-  const uniqueVersions = new Set(Object.values(versions));
-  if (uniqueVersions.size === 1 && !hasError) {
-    const version = [...uniqueVersions][0];
-    console.log(`\n✅ All versions aligned: ${version}`);
-    process.exit(0);
-  } else {
-    if (!hasError) {
-      console.error(`\n❌ Version mismatch detected:`);
-      for (const [file, version] of Object.entries(versions)) {
-        console.error(`   ${file}: ${version}`);
-      }
-    }
-    process.exit(1);
+    const version = source.read(fs.readFileSync(abs, 'utf8'));
+    if (!version) problems.push(`${source.file} states no version`);
+    else found.push({ file: source.file, version, why: source.why });
+  } catch (e) {
+    problems.push(`${source.file} could not be read: ${e.message}`);
   }
 }
 
-main();
+const versions = [...new Set(found.map((f) => f.version))];
+if (versions.length > 1) {
+  problems.push(`versions disagree: ${found.map((f) => `${f.file}=${f.version}`).join(', ')}`);
+}
+
+// A hard-coded version drifts the moment someone bumps the manifest and
+// forgets the source file. This is exactly how the server came to advertise a
+// version that had not existed for two releases.
+for (const group of NO_HARDCODED) {
+  for (const file of group.files) {
+    const abs = path.join(ROOT, group.dir, file);
+    if (!fs.existsSync(abs)) continue;
+    const text = fs.readFileSync(abs, 'utf8');
+    // Only a value assigned to a `version` key. Matching every dotted triple
+    // flagged the SARIF schema version and WCAG criterion numbers, which are
+    // not this package's version and must not be rewritten.
+    for (const m of text.matchAll(/\bversion\s*[:=]\s*["'](\d+\.\d+\.\d+)["']/g)) {
+      if (m[1] === '2.1.0') continue; // SARIF schema version, fixed by that spec
+      problems.push(
+        `${group.dir}/${file} hard-codes version "${m[1]}"; import SERVER_VERSION from version.js instead`,
+      );
+    }
+  }
+}
+
+if (process.argv.includes('--json')) {
+  console.log(JSON.stringify({ version: versions[0] || null, sources: found, problems }, null, 2));
+  process.exit(problems.length ? 1 : 0);
+}
+
+console.log('Release version consistency');
+console.log('');
+for (const f of found) {
+  console.log(`  ${f.version.padEnd(10)} ${f.file.padEnd(30)} ${f.why}`);
+}
+console.log('');
+
+if (problems.length) {
+  console.error(`Problems (${problems.length})`);
+  for (const p of problems) console.error('  - ' + p);
+  process.exit(1);
+}
+
+console.log(`All ${found.length} manifests agree on ${versions[0]}, and nothing hard-codes it.`);
+process.exit(0);

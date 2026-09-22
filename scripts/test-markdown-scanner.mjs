@@ -263,6 +263,28 @@ function testRegressionFlag() {
   );
 }
 
+// ── 15. Table description looks past the blank line ──────────────────────────
+function testTableDescription() {
+  console.log("\n15. Table description");
+
+  // GitHub Flavored Markdown does not recognise a table that interrupts a
+  // paragraph, so the blank line between the sentence and the table is
+  // required. A described table must pass with it in place.
+  const ok = makeDir("table-ok");
+  write(
+    ok,
+    "ok.md",
+    `# Title\n\nThe table lists each tier and who may start it.\n\n| Tier | Who |\n|---|---|\n| router | model |\n`,
+  );
+  const okOut = runScanner(ok).stdout;
+  assert(!okOut.includes("md-table-desc"), "described table passes with a blank line before it");
+
+  const bad = makeDir("table-bad");
+  write(bad, "bad.md", `# Title\n\n## Tiers\n\n| Tier | Who |\n|---|---|\n| router | model |\n`);
+  const badOut = runScanner(bad).stdout;
+  assert(badOut.includes("md-table-desc"), "table introduced only by a heading is still reported");
+}
+
 // ── run all ───────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -283,6 +305,7 @@ async function main() {
     testFrontMatterSkip();
     testConfigSchemaWarnsUnknownKey();
     testRegressionFlag();
+    testTableDescription();
   } finally {
     teardown();
   }

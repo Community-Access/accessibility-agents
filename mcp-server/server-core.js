@@ -18,6 +18,8 @@
  *   Caching:   check_audit_cache, update_audit_cache
  *   EPUB:     scan_epub_document
  *   Markdown: scan_markdown_document
+ *   GLOW:     glow_health_check, glow_audit_document, glow_fix_document,
+ *             glow_convert_document, glow_generate_report
  *   Advanced:  run_axe_scan (Playwright), run_playwright_keyboard_scan,
  *              run_playwright_contrast_scan, run_verapdf_scan (veraPDF CLI),
  *              convert_pdf_form_to_html (pdf-lib)
@@ -56,6 +58,10 @@ import { registerEpubTools } from "./tools/epub-tools.js";
 import { registerMarkdownTools } from "./tools/markdown-tools.js";
 import { registerAuditHistoryTools } from "./tools/audit-history-tools.js";
 import { registerTrendTools, registerTrendResource } from "./tools/trend-tools.js";
+import { registerReportTools } from "./tools/report-tools.js";
+import { withToolMetadata } from "./tool-metadata.js";
+import { SERVER_VERSION } from "./version.js";
+import { registerGlowTools } from "./tools/glow-tools.js";
 
 /** Maximum file size accepted for document scanning (100 MB). */
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -698,7 +704,7 @@ function buildPdfSarif(filePath, findings) {
     $schema: "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0.json",
     version: "2.1.0",
     runs: [{
-      tool: { driver: { name: "a11y-agent-team-pdf-scanner", version: "4.6.0" } },
+      tool: { driver: { name: "a11y-agent-team-pdf-scanner", version: SERVER_VERSION } },
       results: findings.map(f => ({
         ruleId: f.ruleId,
         level: f.severity === "error" ? "error" : f.severity === "warning" ? "warning" : "note",
@@ -812,10 +818,16 @@ Always use the native <dialog> element. Never build modals from <div> elements.
 // ========================== MCP SERVER SETUP ===============================
 
 export function createServer() {
-  const server = new McpServer({
-    name: "a11y-agent-team",
-    version: "4.6.0",
-  });
+  // withToolMetadata attaches annotations and output schemas from one table, so
+  // a client can tell a read-only scan from a write without interrupting a
+  // person, and can parse a result instead of pattern-matching prose.
+  // See tool-metadata.js for the table and the reasoning.
+  const server = withToolMetadata(
+    new McpServer({
+      name: "a11y-agent-team",
+      version: SERVER_VERSION,
+    }),
+  );
 
   // ---- Tool: check_contrast ----
   server.registerTool(
@@ -865,11 +877,10 @@ export function createServer() {
     "check_apca_contrast",
     {
       title: "Check APCA Contrast (WCAG 3.0 Draft)",
+      // One sentence: a client shows this in a picker. WCAG 3 is still a draft,
+      // so the caveat stays in the description rather than only in the docs.
       description:
-        "Calculate APCA (Accessible Perceptual Contrast Algorithm) Lightness Contrast " +
-        "between text and background colors. APCA is the candidate contrast method for " +
-        "WCAG 3.0 and provides perceptually uniform results. Returns Lc value and " +
-        "recommended minimum font sizes. EXPERIMENTAL: WCAG 3.0 is still in draft.",
+        "Calculate APCA lightness contrast between two colours, the perceptual algorithm drafted for WCAG 3 and not yet normative.",
       inputSchema: z.object({
         foreground: z.string().describe('Text color as hex (e.g. "#1a1a1a" or "#fff")'),
         background: z.string().describe('Background color as hex (e.g. "#ffffff" or "#000")'),
@@ -1230,8 +1241,10 @@ export function createServer() {
   registerPdfFormTools(server);
   registerEpubTools(server);
   registerMarkdownTools(server);
+  registerGlowTools(server);
   registerAuditHistoryTools(server);
   registerTrendTools(server);
+  registerReportTools(server);
 
   // ---- Tool: fix_document_metadata ----
   server.registerTool(
@@ -1377,7 +1390,8 @@ export function createServer() {
     "check_audit_cache",
     {
       title: "Check Audit Cache",
-      description: "Check the component audit cache (.a11y-cache.json) to determine which files have changed since the last scan and need re-auditing. Supports content hashing for reliable change detection and configurable expiry. Returns lists of changed, new, expired, and unchanged files plus cache statistics.",
+      description:
+        "Check whether a cached audit result exists and is still fresh for this target.",
       inputSchema: z.object({
         filePaths: z.array(z.string()).max(MAX_BATCH_FILES).describe("Array of file paths to check against the cache"),
         cacheFile: z.string().optional().describe("Path to cache file (default: .a11y-cache.json in project root)"),
@@ -1571,23 +1585,23 @@ export function createServer() {
       try {
         const parseHex = (hex) => {
           hex = hex.replace("#", "");
-          if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-          return [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+          if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+          return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
         };
 
         // Brettel et al. simulation matrices (simplified)
         const matrices = {
-          protanopia:    [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]],
-          deuteranopia:  [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047414], [-0.011820, 0.042940, 0.968881]],
-          tritanopia:    [[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.303900]],
+          protanopia: [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]],
+          deuteranopia: [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047414], [-0.011820, 0.042940, 0.968881]],
+          tritanopia: [[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.303900]],
           achromatopsia: [[0.2126, 0.7152, 0.0722], [0.2126, 0.7152, 0.0722], [0.2126, 0.7152, 0.0722]],
         };
 
         const simulate = (rgb, matrix) => {
           return [
-            Math.round(Math.max(0, Math.min(255, matrix[0][0]*rgb[0] + matrix[0][1]*rgb[1] + matrix[0][2]*rgb[2]))),
-            Math.round(Math.max(0, Math.min(255, matrix[1][0]*rgb[0] + matrix[1][1]*rgb[1] + matrix[1][2]*rgb[2]))),
-            Math.round(Math.max(0, Math.min(255, matrix[2][0]*rgb[0] + matrix[2][1]*rgb[1] + matrix[2][2]*rgb[2]))),
+            Math.round(Math.max(0, Math.min(255, matrix[0][0] * rgb[0] + matrix[0][1] * rgb[1] + matrix[0][2] * rgb[2]))),
+            Math.round(Math.max(0, Math.min(255, matrix[1][0] * rgb[0] + matrix[1][1] * rgb[1] + matrix[1][2] * rgb[2]))),
+            Math.round(Math.max(0, Math.min(255, matrix[2][0] * rgb[0] + matrix[2][1] * rgb[1] + matrix[2][2] * rgb[2]))),
           ];
         };
 
@@ -1627,7 +1641,8 @@ export function createServer() {
     "check_reading_level",
     {
       title: "Check Reading Level",
-      description: "Analyze text readability using Flesch-Kincaid Grade Level, Flesch Reading Ease, and Gunning Fog Index. Helps ensure content meets WCAG 3.1.5 (AAA) reading level guidance and cognitive accessibility best practices.",
+      description:
+        "Estimate the reading level of a passage and report whether it meets the requested grade.",
       inputSchema: z.object({
         text: z.string().min(1).max(50000).describe("Text content to analyze"),
       }),
@@ -1741,7 +1756,7 @@ export function createServer() {
               const words = cueText.split(/\s+/).filter(w => w.length > 0 && !w.startsWith("<")).length;
               const wps = words / duration;
               if (wps > 3.5) {
-                issues.push({ severity: "moderate", message: `Cue ${cueCount}: caption rate ${Math.round(wps*10)/10} words/sec exceeds recommended 3.5`, cue: cueCount });
+                issues.push({ severity: "moderate", message: `Cue ${cueCount}: caption rate ${Math.round(wps * 10) / 10} words/sec exceeds recommended 3.5`, cue: cueCount });
               }
             }
             prevEnd = end;

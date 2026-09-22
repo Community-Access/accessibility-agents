@@ -55,6 +55,8 @@ For a PDF-only walkthrough, see [PDF-QUICKSTART.md](PDF-QUICKSTART.md).
 
 ## Prerequisite Matrix
 
+Each class, with requirement, needed for and required.
+
 | Class | Requirement | Needed For | Required? |
 |------|-------------|------------|-----------|
 | Runtime | Node.js 18+ | Running the MCP server | Yes |
@@ -82,6 +84,8 @@ You can run this MCP server either locally on your own machine or as a shared HT
 For most users, start locally first. The default HTTP binding is `127.0.0.1`, so it is not exposed to the network unless you deliberately change the host.
 
 ## Configuration
+
+Each environment variable, with its default and description.
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
@@ -136,6 +140,46 @@ For most users, start locally first. The default HTTP binding is `127.0.0.1`, so
 }
 ```
 
+## Using GLOW Bridge Tools
+
+The GLOW bridge tools are part of this MCP server. You do not register a second MCP server for GLOW.
+
+### Default behavior
+
+- The bridge targets `https://letitglow.app/mcp` by default.
+- You can call `glow_health_check` immediately after starting this server.
+
+### Use a different GLOW endpoint
+
+Option 1: set server environment variable before startup:
+
+```bash
+# Linux/macOS
+export GLOW_API_BASE_URL="https://letitglow.app/mcp"
+npm start
+```
+
+```powershell
+# Windows PowerShell
+$env:GLOW_API_BASE_URL = "https://letitglow.app/mcp"
+npm start
+```
+
+Option 2: pass `baseUrl` per tool call (for one-off testing):
+
+- `glow_health_check` with `baseUrl`
+- `glow_audit_document` with `baseUrl`
+- `glow_fix_document` with `baseUrl`
+- `glow_convert_document` with `baseUrl`
+- `glow_generate_report` with `baseUrl`
+
+### Example prompts after connection
+
+- `Run glow_health_check`
+- `Audit ./docs/sample.md with glow_audit_document using format markdown`
+- `Convert ./docs/sample.md from markdown to html with glow_convert_document`
+- `Generate an html report for ./docs/sample.md with glow_generate_report`
+
 ## PDF-Only Quick Start
 
 If your immediate goal is only PDF accessibility scanning, this is the smallest working path:
@@ -165,6 +209,8 @@ If you also want the chat workflow layer, add:
 
 ### Core Tools
 
+Each tool, with its description.
+
 | Tool | Description |
 |------|-------------|
 | `check_contrast` | Calculate WCAG contrast ratio between two colors |
@@ -174,6 +220,8 @@ If you also want the chat workflow layer, add:
 | `check_form_labels` | Check form inputs for accessible labels |
 
 ### Document Tools
+
+Each tool, with its description.
 
 | Tool | Description |
 |------|-------------|
@@ -185,7 +233,21 @@ If you also want the chat workflow layer, add:
 | `fix_document_metadata` | Fix document metadata (title, language, author) |
 | `fix_document_headings` | Fix heading structure in documents |
 
+### GLOW Bridge Tools
+
+Each tool, with its description.
+
+| Tool | Description |
+|------|-------------|
+| `glow_health_check` | Check health of a GLOW endpoint (default: `https://letitglow.app/mcp`) |
+| `glow_audit_document` | Upload a markdown/html/docx file to GLOW and run `/audit` |
+| `glow_fix_document` | Upload a markdown/html/docx file to GLOW and run `/fix` |
+| `glow_convert_document` | Upload a markdown/html/docx file to GLOW and run `/convert` |
+| `glow_generate_report` | Upload a markdown/html/docx file to GLOW and run `/report` |
+
 ### Advanced Tools (Optional Dependencies)
+
+Each tool, with its requires and description.
 
 | Tool | Requires | Description |
 |------|----------|-------------|
@@ -199,11 +261,15 @@ If you also want the chat workflow layer, add:
 
 ### Markdown Tools
 
+Each tool, with its description.
+
 | Tool | Description |
 |------|-------------|
 | `lint_markdown` | Lint markdown files for accessibility issues (links, alt text, headings, tables, emoji) |
 
 ### Caching Tools
+
+Each tool, with its description.
 
 | Tool | Description |
 |------|-------------|

@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Security Dashboard"
+  short_description: "Triage Dependabot, code scanning and secret scanning alerts."
+policy:
+  allow_implicit_invocation: false

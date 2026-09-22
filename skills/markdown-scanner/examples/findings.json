@@ -1,0 +1,24 @@
+{
+  "skill": "markdown-scanner",
+  "scope": [
+    "docs/getting-started.md"
+  ],
+  "findings": [
+    {
+      "rule": "MD-LINK-001",
+      "wcag": "2.4.4 A",
+      "severity": "moderate",
+      "confidence": "high",
+      "location": "docs/getting-started.md:22",
+      "summary": "Link text is \"click here\".",
+      "fix": "Replace with the destination, for example \"the installation guide\"."
+    }
+  ],
+  "passed": [
+    "Every image has alt text",
+    "Heading levels do not skip"
+  ],
+  "notes": [
+    "Two emoji in headings need the user to choose remove or translate."
+  ]
+}

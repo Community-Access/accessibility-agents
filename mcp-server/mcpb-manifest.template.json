@@ -1,0 +1,74 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/manifest.schema.json",
+  "manifest_version": "0.2",
+  "name": "a11y-agent-team",
+  "display_name": "A11y Agent Team",
+  "version": "5.4.0",
+  "description": "Accessibility scanning and remediation tools for WCAG 2.2 compliance. Provides 37 MCP tools for contrast checking (WCAG 2.x and APCA), Office/PDF/EPUB scanning, markdown linting, Playwright-based browser testing, veraPDF SARIF output, audit history with trend tracking, and W3C/EU accessibility statement generation. Runs locally; no remote services or credentials required.",
+  "long_description": "The A11y Agent Team MCP Server brings the full accessibility specialist team into any MCP-compatible client. It packages an axe-core driven web scanner, veraPDF-based PDF validation, openxml-based Office document scanning, EPUB Accessibility 1.1 checks, markdown linting, captions/audio description validation, color contrast (WCAG 2.x and WCAG 3.0 draft APCA), color blindness simulation, reading level analysis, and persistent audit history with trend computation. All processing happens on the user's machine. See PRIVACY.md for the full data handling policy.",
+  "author": {
+    "name": "Community-Access",
+    "url": "https://github.com/Community-Access"
+  },
+  "homepage": "https://github.com/Community-Access/accessibility-agents/tree/main/mcp-server#readme",
+  "documentation": "https://github.com/Community-Access/accessibility-agents/tree/main/mcp-server#readme",
+  "support": "https://github.com/Community-Access/accessibility-agents/issues",
+  "license": "MIT",
+  "icon": "icon.png",
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "axe-core",
+    "veraPDF",
+    "playwright",
+    "audit"
+  ],
+  "categories": [
+    "accessibility",
+    "testing",
+    "developer-tools"
+  ],
+  "privacy_policies": [
+    {
+      "name": "A11y Agent Team Privacy Policy",
+      "url": "https://github.com/Community-Access/accessibility-agents/blob/main/PRIVACY.md"
+    }
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "server/stdio.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/stdio.js"
+      ],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "tools_generated": true,
+  "prompts_generated": true,
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "claude_desktop": ">=0.10.0",
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "_build_notes": {
+    "_comment": "This file is a template. Generate the final manifest.json by running `mcpb init` and `mcpb pack` from the staged bundle directory. See https://claude.com/docs/connectors/building/mcpb for the full build workflow.",
+    "staging_steps": [
+      "1. Create a clean bundle directory (e.g., ./mcpb-build/)",
+      "2. Copy mcp-server/{server.js,server-core.js,stdio.js,tools/,package.json,package-lock.json} into ./mcpb-build/server/",
+      "3. Run `npm ci --omit=dev --prefix ./mcpb-build/server`",
+      "4. Copy this template to ./mcpb-build/manifest.json and remove the _build_notes block",
+      "5. Copy a 512x512 PNG icon to ./mcpb-build/icon.png",
+      "6. Copy PRIVACY.md to ./mcpb-build/PRIVACY.md (optional, the privacy_policies URL is canonical)",
+      "7. Run `mcpb pack ./mcpb-build/ a11y-agent-team-5.4.0.mcpb`",
+      "8. Test locally by dragging the .mcpb file into Claude Desktop",
+      "9. Submit via https://clau.de/desktop-extention-submission"
+    ],
+    "auto_update": "Auto-update for MCPB extensions in Claude Desktop follows the Claude Desktop release channel. Version bumps should be coordinated with the @a11y-agent-team/mcp-server npm package version."
+  }
+}

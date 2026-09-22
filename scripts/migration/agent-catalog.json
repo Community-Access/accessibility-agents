@@ -1,0 +1,544 @@
+{
+  "$comment": [
+    "Hand-authored catalog for the 7.0 standard skills package.",
+    "",
+    "tier   router | specialist | helper",
+    "domain web | documents | markdown | github | developer | desktop | cross-cutting",
+    "output report | findings | guidance | artifact",
+    "effort high | medium | low",
+    "",
+    "Descriptions are written trigger-first and kept short on purpose: Codex",
+    "trims the skill catalog to two percent of the context window (about 8,000",
+    "characters) and shortens descriptions under pressure. Helpers are neither",
+    "user- nor model-invocable, so they never enter a catalog and may run a",
+    "little longer. Routers are the only entries the model sees by default.",
+    "",
+    "aliases are names that used to exist as separate agents and now resolve to",
+    "this skill. They are documented in AGENTS.md, not shipped as directories."
+  ],
+  "defaults": {
+    "router": { "effort": "high", "output": "report" },
+    "specialist": { "effort": "medium", "output": "findings" },
+    "helper": { "effort": "low", "output": "findings" }
+  },
+  "skills": {
+    "accessibility-lead": {
+      "tier": "router",
+      "domain": "web",
+      "title": "Accessibility Lead",
+      "description": "Web UI accessibility lead. Use before writing or changing HTML, JSX, TSX, Vue, Svelte, CSS or templates. Picks specialists and merges their findings."
+    },
+    "web-accessibility-wizard": {
+      "tier": "router",
+      "domain": "web",
+      "title": "Web Accessibility Wizard",
+      "description": "Guided WCAG 2.2 audit of a web app or site, phase by phase, with severity scores, a written report and optional fixes."
+    },
+    "document-accessibility-wizard": {
+      "tier": "router",
+      "domain": "documents",
+      "title": "Document Accessibility Wizard",
+      "description": "Guided accessibility audit of Word, Excel, PowerPoint, PDF and ePub files, one at a time or by the folder, with a scored report."
+    },
+    "markdown-a11y-assistant": {
+      "tier": "router",
+      "domain": "markdown",
+      "title": "Markdown Accessibility Assistant",
+      "description": "Guided WCAG audit of markdown docs: link text, alt text, heading order, tables, emoji, diagrams and anchors."
+    },
+    "developer-hub": {
+      "tier": "router",
+      "domain": "developer",
+      "title": "Developer Hub",
+      "description": "Start here for Python, wxPython, desktop app, NVDA add-on and accessibility tooling work. Routes to the right specialist."
+    },
+    "github-hub": {
+      "tier": "router",
+      "domain": "github",
+      "title": "GitHub Hub",
+      "description": "Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis.",
+      "aliases": ["nexus"]
+    },
+
+    "aria-specialist": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "ARIA Specialist",
+      "description": "ARIA roles, states and properties for custom widgets and dynamic content."
+    },
+    "keyboard-navigator": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Keyboard Navigator",
+      "description": "Tab order, focus management, shortcuts, skip links and focus visibility."
+    },
+    "forms-specialist": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Forms Specialist",
+      "description": "Labels, validation, error handling, multi-step wizards and autocomplete."
+    },
+    "contrast-master": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Contrast Master",
+      "description": "Color contrast, themes, dark mode, non-text contrast and color-only meaning."
+    },
+    "modal-specialist": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Modal Specialist",
+      "description": "Dialogs, drawers, popovers and overlays: focus trap, return and dismissal."
+    },
+    "live-region-controller": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Live Region Controller",
+      "description": "Announce dynamic updates: live regions, toasts, loading states and results."
+    },
+    "alt-text-headings": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Alt Text and Headings",
+      "description": "Alt text, SVGs, figures, charts, heading order, page titles and landmarks."
+    },
+    "tables-data-specialist": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Tables and Data Specialist",
+      "description": "Data tables and grids: headers, scope, captions, sorting and complex tables."
+    },
+    "link-checker": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Link Checker",
+      "description": "Find vague link text such as click here, read more or a bare URL."
+    },
+    "text-quality-reviewer": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Text Quality Reviewer",
+      "description": "Catch weak alt text, aria-labels and button names, and template leftovers."
+    },
+    "cognitive-accessibility": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Cognitive Accessibility",
+      "description": "Plain language, WCAG 2.2 cognitive criteria, COGA guidance and auth UX."
+    },
+    "design-system-auditor": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Design System Auditor",
+      "description": "Check color, focus ring, spacing and motion tokens before they reach UI."
+    },
+    "web-component-specialist": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Web Component Specialist",
+      "description": "Custom elements and shadow DOM: ElementInternals, cross-shadow ARIA, focus."
+    },
+    "data-visualization-accessibility": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Data Visualization Accessibility",
+      "description": "Charts, graphs and dashboards: SVG ARIA, table alternatives, safe palettes."
+    },
+    "media-accessibility": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Media Accessibility",
+      "description": "Captions, transcripts, audio description and accessible media players."
+    },
+    "email-accessibility": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Email Accessibility",
+      "description": "HTML email accessibility under email client rendering constraints."
+    },
+    "i18n-accessibility": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Internationalization Accessibility",
+      "description": "Right-to-left and language: dir, lang tags, bidi text, icon mirroring."
+    },
+    "performance-accessibility": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Performance Accessibility",
+      "description": "Lazy loading, skeletons, layout shift and loading states for AT users."
+    },
+    "mobile-accessibility": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Mobile Accessibility",
+      "description": "React Native, Expo, iOS and Android: labels, roles and touch targets."
+    },
+    "screen-reader-lab": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Screen Reader Lab",
+      "output": "guidance",
+      "description": "Simulate screen reader narration of HTML or JSX, step by step."
+    },
+    "testing-coach": {
+      "tier": "specialist",
+      "domain": "web",
+      "title": "Testing Coach",
+      "output": "guidance",
+      "description": "How to test: screen readers, keyboard passes, automated checks and CI."
+    },
+    "wcag-guide": {
+      "tier": "specialist",
+      "domain": "cross-cutting",
+      "title": "WCAG Guide",
+      "output": "guidance",
+      "description": "Explain WCAG 2.2 criteria, conformance levels and what changed."
+    },
+    "wcag-aaa": {
+      "tier": "specialist",
+      "domain": "cross-cutting",
+      "title": "WCAG AAA",
+      "description": "WCAG 2.2 Level AAA criteria that go beyond the AA target."
+    },
+    "wcag3-preview": {
+      "tier": "specialist",
+      "domain": "cross-cutting",
+      "title": "WCAG 3.0 Preview",
+      "output": "guidance",
+      "description": "WCAG 3.0 preview: outcomes, APCA contrast and functional needs."
+    },
+    "compliance-mapping": {
+      "tier": "specialist",
+      "domain": "cross-cutting",
+      "title": "Compliance Mapping",
+      "output": "artifact",
+      "description": "Map findings to Section 508, EN 301 549, EAA, ADA, AODA; build a VPAT."
+    },
+    "accessibility-statement": {
+      "tier": "specialist",
+      "domain": "cross-cutting",
+      "title": "Accessibility Statement",
+      "output": "artifact",
+      "description": "Generate a W3C or EU model accessibility statement from audit results."
+    },
+    "accessibility-regression-detector": {
+      "tier": "specialist",
+      "domain": "cross-cutting",
+      "title": "Accessibility Regression Detector",
+      "description": "Compare audits across commits to find new, fixed and regressed issues."
+    },
+    "ci-accessibility": {
+      "tier": "specialist",
+      "domain": "cross-cutting",
+      "title": "CI Accessibility",
+      "output": "guidance",
+      "description": "Set up and debug accessibility CI: baselines, SARIF and PR gating."
+    },
+    "a11y-tool-builder": {
+      "tier": "specialist",
+      "domain": "developer",
+      "title": "Accessibility Tool Builder",
+      "output": "guidance",
+      "description": "Build accessibility scanners, rule engines, parsers and report generators."
+    },
+
+    "word-accessibility": {
+      "tier": "specialist",
+      "domain": "documents",
+      "title": "Word Accessibility",
+      "description": "Scan and fix .docx files: title, headings, alt text, table headers."
+    },
+    "excel-accessibility": {
+      "tier": "specialist",
+      "domain": "documents",
+      "title": "Excel Accessibility",
+      "description": "Scan and fix .xlsx files: sheet names, table headers, alt text, merges."
+    },
+    "powerpoint-accessibility": {
+      "tier": "specialist",
+      "domain": "documents",
+      "title": "PowerPoint Accessibility",
+      "description": "Scan and fix .pptx files: slide titles, alt text and reading order."
+    },
+    "pdf-accessibility": {
+      "tier": "specialist",
+      "domain": "documents",
+      "title": "PDF Accessibility",
+      "description": "Scan and fix PDFs: PDF/UA, Matterhorn checks, tags and reading order."
+    },
+    "epub-accessibility": {
+      "tier": "specialist",
+      "domain": "documents",
+      "title": "ePub Accessibility",
+      "description": "Scan and fix .epub files: EPUB Accessibility 1.1, reading order, nav."
+    },
+    "office-remediator": {
+      "tier": "specialist",
+      "domain": "documents",
+      "title": "Office Remediator",
+      "output": "artifact",
+      "description": "Fix .docx, .xlsx and .pptx programmatically via python-docx and friends."
+    },
+    "pdf-remediator": {
+      "tier": "specialist",
+      "domain": "documents",
+      "title": "PDF Remediator",
+      "output": "artifact",
+      "description": "Fix PDFs by script or Acrobat: title, language, reading order, tags."
+    },
+
+    "python-specialist": {
+      "tier": "specialist",
+      "domain": "developer",
+      "title": "Python Specialist",
+      "output": "guidance",
+      "description": "Python debugging, packaging, testing, typing, async and performance."
+    },
+    "wxpython-specialist": {
+      "tier": "specialist",
+      "domain": "developer",
+      "title": "wxPython Specialist",
+      "output": "guidance",
+      "description": "wxPython GUI: sizers, events, AUI, custom controls and threading."
+    },
+    "nvda-addon-specialist": {
+      "tier": "specialist",
+      "domain": "desktop",
+      "title": "NVDA Add-on Specialist",
+      "output": "guidance",
+      "description": "NVDA add-ons: plugin types, manifest, events, scripts and packaging."
+    },
+    "desktop-a11y-specialist": {
+      "tier": "specialist",
+      "domain": "desktop",
+      "title": "Desktop Accessibility Specialist",
+      "description": "Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility."
+    },
+    "desktop-a11y-testing-coach": {
+      "tier": "specialist",
+      "domain": "desktop",
+      "title": "Desktop Accessibility Testing Coach",
+      "output": "guidance",
+      "description": "Test desktop apps with NVDA, JAWS, Narrator, VoiceOver and UIA tooling."
+    },
+
+    "issue-tracker": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Issue Tracker",
+      "output": "report",
+      "description": "GitHub issues: find, triage, review and respond, with written reports."
+    },
+    "pr-review": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Pull Request Review",
+      "output": "report",
+      "description": "Review pull requests: diffs, comments, context and written review docs."
+    },
+    "actions-manager": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Actions Manager",
+      "output": "guidance",
+      "description": "GitHub Actions: workflow runs, logs, re-runs and CI failure triage."
+    },
+    "release-manager": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Release Manager",
+      "output": "artifact",
+      "description": "GitHub releases: create, edit and manage releases and their assets."
+    },
+    "projects-manager": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Projects Manager",
+      "output": "guidance",
+      "description": "GitHub Projects v2: boards, views, fields, iterations, item workflows."
+    },
+    "repo-manager": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Repository Manager",
+      "output": "artifact",
+      "description": "Scaffold a repo: templates, contributing guides, CI, labels, licenses."
+    },
+    "repo-admin": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Repository Admin",
+      "output": "guidance",
+      "description": "Repo admin: collaborators, branch protection, webhooks and labels."
+    },
+    "team-manager": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Team Manager",
+      "output": "guidance",
+      "description": "GitHub org teams: create, staff, onboard, offboard and audit access."
+    },
+    "security-dashboard": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Security Dashboard",
+      "output": "report",
+      "description": "Triage Dependabot, code scanning and secret scanning alerts."
+    },
+    "notifications-manager": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Notifications Manager",
+      "output": "guidance",
+      "description": "GitHub notifications: read, filter, triage and manage from the editor."
+    },
+    "contributions-hub": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Contributions Hub",
+      "output": "guidance",
+      "description": "GitHub community: discussions, moderation, contributor health, CLAs."
+    },
+    "wiki-manager": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Wiki Manager",
+      "output": "artifact",
+      "description": "GitHub wikis: create, edit, organize and search pages from the editor."
+    },
+    "template-builder": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Template Builder",
+      "output": "artifact",
+      "description": "Build GitHub issue, PR and discussion templates from a guided wizard."
+    },
+    "analytics": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Analytics",
+      "output": "report",
+      "description": "GitHub metrics: velocity, review turnaround, churn and bottlenecks."
+    },
+    "daily-briefing": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Daily Briefing",
+      "output": "report",
+      "description": "Daily GitHub briefing: issues, PRs, reviews, releases and discussions."
+    },
+    "insiders-a11y-tracker": {
+      "tier": "specialist",
+      "domain": "github",
+      "title": "Insiders Accessibility Tracker",
+      "output": "report",
+      "description": "Track accessibility changes in VS Code and other repos you follow."
+    },
+
+    "document-inventory": {
+      "tier": "helper",
+      "domain": "documents",
+      "title": "Document Inventory",
+      "description": "Internal helper: discover documents, build an inventory, detect changes."
+    },
+    "cross-document-analyzer": {
+      "tier": "helper",
+      "domain": "documents",
+      "title": "Cross-Document Analyzer",
+      "description": "Internal helper: cross-document patterns, severity scoring, templates."
+    },
+    "cross-page-analyzer": {
+      "tier": "helper",
+      "domain": "web",
+      "title": "Cross-Page Analyzer",
+      "description": "Internal helper: cross-page patterns, severity scoring, scorecards."
+    },
+    "web-issue-fixer": {
+      "tier": "helper",
+      "domain": "web",
+      "title": "Web Issue Fixer",
+      "output": "artifact",
+      "description": "Internal helper: apply approved web accessibility fixes to source."
+    },
+    "markdown-scanner": {
+      "tier": "helper",
+      "domain": "markdown",
+      "title": "Markdown Scanner",
+      "description": "Internal helper: scan one markdown file across all nine domains."
+    },
+    "markdown-fixer": {
+      "tier": "helper",
+      "domain": "markdown",
+      "title": "Markdown Fixer",
+      "output": "artifact",
+      "description": "Internal helper: apply approved markdown fixes, surface judgment calls."
+    },
+    "markdown-csv-reporter": {
+      "tier": "helper",
+      "domain": "markdown",
+      "title": "Markdown CSV Reporter",
+      "output": "artifact",
+      "description": "Internal helper: export markdown findings to CSV with rule links."
+    },
+    "web-csv-reporter": {
+      "tier": "helper",
+      "domain": "web",
+      "title": "Web CSV Reporter",
+      "output": "artifact",
+      "description": "Internal helper: export web findings to CSV with Deque University links."
+    },
+    "document-csv-reporter": {
+      "tier": "helper",
+      "domain": "documents",
+      "title": "Document CSV Reporter",
+      "output": "artifact",
+      "description": "Internal helper: export document findings to CSV with help links."
+    },
+    "office-scan-config": {
+      "tier": "helper",
+      "domain": "documents",
+      "title": "Office Scan Config",
+      "output": "artifact",
+      "description": "Internal helper: manage .a11y-office-config.json scan settings."
+    },
+    "pdf-scan-config": {
+      "tier": "helper",
+      "domain": "documents",
+      "title": "PDF Scan Config",
+      "output": "artifact",
+      "description": "Internal helper: manage .a11y-pdf-config.json scan settings."
+    },
+    "epub-scan-config": {
+      "tier": "helper",
+      "domain": "documents",
+      "title": "ePub Scan Config",
+      "output": "artifact",
+      "description": "Internal helper: manage .a11y-epub-config.json scan settings."
+    },
+    "scanner-bridge": {
+      "tier": "helper",
+      "domain": "web",
+      "title": "Scanner Bridge",
+      "description": "Internal helper: read GitHub Accessibility Scanner issues into findings."
+    },
+    "lighthouse-bridge": {
+      "tier": "helper",
+      "domain": "web",
+      "title": "Lighthouse Bridge",
+      "description": "Internal helper: read Lighthouse CI accessibility audits into findings."
+    },
+    "playwright-scanner": {
+      "tier": "helper",
+      "domain": "web",
+      "title": "Playwright Scanner",
+      "description": "Internal helper: behavioral scans via Playwright for keyboard and state."
+    },
+    "playwright-verifier": {
+      "tier": "helper",
+      "domain": "web",
+      "title": "Playwright Verifier",
+      "description": "Internal helper: re-run targeted scans to confirm a fix works at runtime."
+    }
+  }
+}

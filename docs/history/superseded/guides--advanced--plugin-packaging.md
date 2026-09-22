@@ -1,0 +1,197 @@
+# Plugin Packaging Guide
+
+How to package, distribute, and install a11y-agent-team agents in different environments.
+
+## Distribution Formats
+
+### 1. Git Clone (Recommended)
+
+The primary distribution method. All agents, skills, and configuration are stored in the repository.
+
+**Install:**
+
+```bash
+gh skill install Community-Access/accessibility-agents
+gh skill setup Community-Access/accessibility-agents
+```
+
+**Update:**
+
+```bash
+gh extension upgrade gh-skill
+gh skill setup Community-Access/accessibility-agents
+```
+
+**Advantages:**
+
+- Full agent set with all configuration
+- Update support via `gh skill` commands
+- Works for Claude Code, Copilot, Claude Desktop, and Codex CLI simultaneously
+- Git-based versioning and rollback
+
+### 2. Per-Project Install (Copilot)
+
+Copy only the GitHub Copilot files into an existing project:
+
+```bash
+# Copy agents
+cp -r skills/ /path/to/project/skills/
+
+# Copy workspace instructions
+cp .github/copilot-instructions.md /path/to/project/.github/
+
+# Copy skills (optional)
+cp -r skills/ /path/to/project/skills/
+
+# Copy prompts (optional)
+cp -r .github/prompts/ /path/to/project/.github/prompts/
+
+# Copy VS Code config
+cp -r .vscode/ /path/to/project/.vscode/
+```
+
+**Minimal install (agents only):**
+
+```bash
+cp -r skills/ /path/to/project/skills/
+cp .github/copilot-instructions.md /path/to/project/.github/
+```
+
+### 3. Per-Project Install (Claude Code)
+
+Copy only the Claude Code files into an existing project:
+
+```bash
+# Copy agents
+cp -r skills/ /path/to/project/skills/
+```
+
+### 4. Per-Project Install (Gemini CLI)
+
+Copy the Gemini CLI extension into an existing project:
+
+```bash
+# Copy extension (includes manifest, context file, and all skills)
+cp -r .gemini/extensions/a11y-agents/ /path/to/project/.gemini/extensions/a11y-agents/
+```
+
+**Global install (available in all projects):**
+
+```bash
+cp -r .gemini/extensions/a11y-agents/ ~/.gemini/extensions/a11y-agents/
+```
+
+**What's included:**
+
+- `plugin.json` -- extension manifest
+- `GEMINI.md` -- always-on accessibility context loaded into every conversation
+- `skills/` -- 80 agent skills + 18 knowledge domain skills, each as `SKILL.md` with YAML frontmatter
+
+## Creating Custom Agent Packages
+
+### Subset Packages
+
+Create a focused package with only the agents you need:
+
+**Web-only package** (no document agents):
+
+```text
+skills/
+  accessibility-lead.agent.md
+  aria-specialist.agent.md
+  modal-specialist.agent.md
+  contrast-master.agent.md
+  keyboard-navigator.agent.md
+  live-region-controller.agent.md
+  forms-specialist.agent.md
+  alt-text-headings.agent.md
+  tables-data-specialist.agent.md
+  link-checker.agent.md
+  accessibility-wizard.agent.md
+  testing-coach.agent.md
+  wcag-guide.agent.md
+```
+
+**Document-only package:**
+
+```text
+skills/
+  document-accessibility-wizard.agent.md
+  document-inventory.agent.md
+  cross-document-analyzer.agent.md
+  word-accessibility.agent.md
+  excel-accessibility.agent.md
+  powerpoint-accessibility.agent.md
+  pdf-accessibility.agent.md
+  office-scan-config.agent.md
+  pdf-scan-config.agent.md
+skills/
+  accessibility-rules/SKILL.md
+  document-scanning/SKILL.md
+  report-generation/SKILL.md
+```
+
+**PDF-only package:**
+
+```text
+skills/
+  pdf-accessibility.agent.md
+  pdf-scan-config.agent.md
+templates/
+  pdf-config-moderate.json
+mcp-server/
+  package.json
+  README.md
+  PDF-QUICKSTART.md
+  server.js
+  server-core.js
+  stdio.js
+  tools/
+```
+
+This is the smallest package in this repository that provides both the guided PDF chat workflow and the open-source scanning implementation.
+
+### Custom Agent Extensions
+
+To add organization-specific rules or agents:
+
+1. Fork the repository
+2. Add custom agents in `skills/` or `skills/`
+3. Update `copilot-instructions.md` with your custom agents
+4. Add organization-specific scan configuration in `templates/`
+5. Distribute the fork URL to your team
+
+## Version Management
+
+### Pinning to a Version
+
+Use git tags for specific versions:
+
+```bash
+git clone --branch v1.0.0 https://github.com/Community-Access/accessibility-agents.git
+```
+
+### Auto-Update
+
+`gh skill` follows the installed skill source. To pin, install from a tagged checkout:
+
+```bash
+git clone --branch v1.0.0 https://github.com/Community-Access/accessibility-agents.git
+cd accessibility-agents
+gh skill install .
+```
+
+## File Size Reference
+
+Approximate sizes for planning distribution:
+
+| Component | Files | Size |
+|-----------|-------|------|
+| Claude Code agents | 20 `.md` files | ~350 KB |
+| Copilot agents | 22 `.agent.md` files | ~400 KB |
+| Agent Skills | 3 `SKILL.md` files | ~30 KB |
+| Prompts | 9 `.prompt.md` files | ~15 KB |
+| Templates | 7 config files | ~10 KB |
+| VS Code config | 4 files | ~5 KB |
+| Documentation | Various | ~120 KB |
+| **Total** | **~65 files** | **~900 KB** |
