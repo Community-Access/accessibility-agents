@@ -1,6 +1,6 @@
 {
   "name": "accessibility-agents",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "private": true,
   "description": "WCAG 2.2 AA enforcement as Agent Skills, readable by Claude Code, Codex, Copilot, Gemini and Antigravity without per-client copies.",
   "license": "MIT",
@@ -37,7 +37,9 @@
     "build:matrices": "node scripts/build-dispatch-matrices.mjs",
     "new-skill": "node scripts/new-skill.mjs",
     "dev-link": "node scripts/dev-link.mjs",
-    "verify:deps": "node scripts/verify-dependencies.mjs"
+    "verify:deps": "node scripts/verify-dependencies.mjs",
+    "audit:fixture": "node scripts/audit-fixture.mjs",
+    "audit:recall": "node scripts/audit-recall.mjs"
   },
   "devDependencies": {
     "@axe-core/cli": "^4.13.0",

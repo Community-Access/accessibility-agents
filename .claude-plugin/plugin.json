@@ -1,6 +1,6 @@
 {
   "name": "accessibility-agents",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "WCAG 2.2 AA enforcement. Six router skills dispatch the specialist team; hooks block UI edits until the accessibility lead has reviewed.",
   "author": {
     "name": "Community Access"

@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.2] - 2026-09-21
+
+The first end-to-end audit, and the defect it found. Full record in
+[docs/history/2026-09-first-real-audit.md](docs/history/2026-09-first-real-audit.md).
+
+### Fixed
+
+- **The merge deduplicated nothing across skills.** It keyed on rule identifier
+  plus location, and every specialist invents its own rule namespace, so nine
+  specialists produced 141 findings and none merged. One div used as a button
+  was reported eight times at the same line, under eight rule ids, and the
+  report asked the reader to fix it eight times. Thirty-three locations carried
+  more than one finding.
+- `collapseSameDefect` now compares co-located findings on what they say. The
+  same run yields 103 findings with 27 clusters merged. A merged finding keeps
+  the worst severity and records every skill and rule id that contributed, and
+  the similarity bar is high enough that two genuinely different defects on one
+  line stay separate.
+
+### Added
+
+- **`scripts/audit-fixture.mjs`**, which strips the fixture's answer key and
+  emits a line map, so an audit of it measures detection rather than reading.
+- **`scripts/audit-recall.mjs`**, which grades an audit against the planted
+  defects. Approximate by design and described as such.
+- Eight findings-contract tests covering the collapse, taken from the real run,
+  including the case that must not merge.
+
 ## [7.0.1] - 2026-09-21
 
 Closes every high-severity dependency advisory on the default branch, and adds

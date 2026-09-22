@@ -17,7 +17,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validatePayload, mergeFindings, score, SCHEMA_PATH } from './merge-findings.mjs';
+import { validatePayload, mergeFindings, score, collapseSameDefect, SCHEMA_PATH } from './merge-findings.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SKILLS = path.resolve(HERE, '..', '..');
@@ -138,6 +138,90 @@ function checkCriterion(where, wcag) {
 
 check('the WCAG criterion list parses', Object.keys(WCAG.criteria).length > 80, `${Object.keys(WCAG.criteria).length} criteria`);
 check('the obsoleted 4.1.1 Parsing is recorded', Boolean(WCAG.obsoleted['4.1.1']));
+
+// 6b. Co-located findings that describe the same defect collapse to one.
+//
+// Every specialist invents its own rule identifier, so keying the merge on
+// rule plus location merges nothing across skills. A real audit of a 156-line
+// page returned 141 findings for roughly 60 distinct defects: one div used as
+// a button came back eight times under eight rule ids. These cases are taken
+// from that run.
+const asFinding = (over) => ({
+  rule: 'X-1',
+  wcag: '4.1.2 A',
+  severity: 'serious',
+  location: 'index.html:103',
+  summary: 'placeholder',
+  fix: 'placeholder',
+  ...over,
+});
+
+const sameDefect = [
+  asFinding({
+    rule: 'ARIA-006',
+    severity: 'critical',
+    skill: 'aria-specialist',
+    summary: 'The Subscribe control is a div with onclick, so it is announced as plain text.',
+    fix: 'Replace the div with a button element.',
+  }),
+  asFinding({
+    rule: 'FORM-007',
+    skill: 'forms-specialist',
+    summary: 'The Subscribe control is a div with an onclick handler and no button semantics.',
+    fix: 'Use a button element so it is announced and operable.',
+  }),
+  asFinding({
+    rule: 'KBD-003',
+    skill: 'keyboard-navigator',
+    summary: 'The Subscribe div with onclick cannot be reached or operated by keyboard.',
+    fix: 'Replace the div with a button element, which is focusable by default.',
+  }),
+];
+
+const collapsedSame = collapseSameDefect(sameDefect);
+check('three reports of one defect collapse to one finding', collapsedSame.length === 1, `got ${collapsedSame.length}`);
+if (collapsedSame.length === 1) {
+  const only = collapsedSame[0];
+  check('the collapsed finding keeps the worst severity', only.severity === 'critical', `kept ${only.severity}`);
+  check('the collapsed finding records every rule id', (only.alsoReportedAs || []).length === 2, JSON.stringify(only.alsoReportedAs));
+  check('the collapsed finding records every reporting skill', (only.foundBy || []).length === 3, JSON.stringify(only.foundBy));
+}
+
+// One line legitimately carries several different defects. The phone input in
+// that audit had no label and a positive tabindex; merging them would hide one.
+const differentDefects = [
+  asFinding({
+    rule: 'SEM-011',
+    severity: 'critical',
+    skill: 'aria-specialist',
+    location: 'index.html:91',
+    summary: 'The phone field has no label element and is identified only by a placeholder.',
+    fix: 'Add a label element associated with the input.',
+  }),
+  asFinding({
+    rule: 'SEM-013',
+    skill: 'aria-specialist',
+    location: 'index.html:91',
+    summary: 'Positive tabindex of 5 on the phone field pulls it out of document order.',
+    fix: 'Remove the tabindex and rely on source order.',
+  }),
+];
+
+check('different defects on one line stay separate', collapseSameDefect(differentDefects).length === 2);
+
+// Collapsing must not invent or lose severity.
+const before = countOf(sameDefect.concat(differentDefects));
+const after = countOf(collapseSameDefect(sameDefect.concat(differentDefects)));
+check('collapsing never raises a count', Object.keys(after).every((k) => after[k] <= before[k]));
+
+function countOf(list) {
+  const c = { critical: 0, serious: 0, moderate: 0, minor: 0 };
+  for (const f of list) c[f.severity] += 1;
+  return c;
+}
+
+check('a single finding passes through untouched', collapseSameDefect([sameDefect[0]]).length === 1);
+check('an empty set collapses to nothing', collapseSameDefect([]).length === 0);
 
 // 7. Every example a skill ships must validate.
 let examples = 0;

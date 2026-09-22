@@ -30,22 +30,41 @@ two do not.** Claude Code, Codex and Copilot were verified in real sessions.
 Gemini CLI and Antigravity were not, because neither is installed here. Their
 behaviour is inferred from documentation, which is weaker evidence.
 
-**The findings pipeline has not seen a real audit.** Merge, score, delta and
-render all pass their self-tests. No audit of an actual site has run through
-them end to end. The first one will find things.
+**The findings pipeline has now seen one real audit, and it found something.**
+Merge, score, delta and render worked first time on nine parallel specialists,
+but the merge was deduplicating nothing because specialists do not share rule
+identifiers. Fixed, and recorded in
+[docs/history/2026-09-first-real-audit.md](docs/history/2026-09-first-real-audit.md).
+The audit was a fixture with planted defects; a real site will find more.
 
 ---
 
 ## 2. Next, in order
 
-### 2.1 Run one real audit end to end
+### 2.1 Run one real audit end to end - DONE 2026-09-21
 
-Before anything else. Pick a real project, run `web-accessibility-wizard`
-through every phase on Claude Code, then `document-accessibility-wizard` on a
-folder of real documents, and record what broke. Fix that first.
+Nine specialists against the `example/` fixture, in parallel, through the whole
+pipeline: dispatch, schema validation, merge, score, render, delta. Recall was
+49 of 49 planted defects.
 
-Costs a day. Proven by a committed `.a11y-history/` run and a report that a
-human accessibility reviewer signs off as usable.
+It found the defect it was meant to find. The merge keyed on rule identifier
+plus location, and specialists do not share rule namespaces, so 141 findings
+deduplicated to 141: one div used as a button was reported eight times and the
+report told the reader to fix it eight times. `collapseSameDefect` now compares
+co-located findings on content, bringing that run to 103 findings with 27
+clusters merged, and eight tests hold the behaviour.
+
+The full record, including the two defects in the grader itself, is in
+[docs/history/2026-09-first-real-audit.md](docs/history/2026-09-first-real-audit.md).
+
+### 2.1a Audit something nobody planted
+
+A fixture's defects are the ones its author thought of. Run the wizard against
+a real site or application, ideally one this project did not write, and record
+what the specialists miss when the defects are behind interaction, inside
+framework output, or only present in a signed-in state.
+
+Costs a day. Proven by a committed run and a note saying what was missed.
 
 ### 2.2 A semantic pass over the specialists
 
