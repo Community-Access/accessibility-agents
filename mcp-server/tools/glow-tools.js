@@ -9,6 +9,7 @@ import { z } from "zod";
 import { basename } from "node:path";
 import { readFile as fsReadFile } from "node:fs/promises";
 import { validateFilePath } from "../server-core.js";
+import { okResult, errorResult, findingsResult, mapSeverity } from "../results.js";
 
 const DEFAULT_GLOW_BASE_URL =
     process.env.GLOW_API_BASE_URL || "https://letitglow.app/mcp";
@@ -107,9 +108,13 @@ export function registerGlowTools(server) {
                     baseUrl,
                     timeoutMs,
                 });
-                return { content: [{ type: "text", text: toMcpText("GLOW health response", payload) }] };
+                const status = payload && typeof payload === "object" ? payload.status : String(payload);
+                return okResult(toMcpText("GLOW health response", payload), {
+                    ok: status === "ok",
+                    detail: `GLOW reports status "${status || "unknown"}".`,
+                });
             } catch (err) {
-                return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+                return errorResult(`Error: ${err.message}`);
             }
         }
     );
@@ -137,16 +142,29 @@ export function registerGlowTools(server) {
                     timeoutMs,
                     formData: form,
                 });
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: toMcpText(`GLOW audit completed for ${upload.fileName}`, payload),
-                        },
-                    ],
-                };
+                // The /audit endpoint returns the GLOW JSON report:
+                // { score, grade, passed, summary, findings: [{rule_id,
+                //   severity, message, description, location, reference}] }.
+                const glowFindings = Array.isArray(payload?.findings) ? payload.findings : [];
+                const structured = glowFindings.map((f) => ({
+                    rule: f.rule_id || "glow",
+                    wcag: f.reference || "n/a",
+                    severity: mapSeverity(f.severity),
+                    location: f.location || upload.fileName,
+                    summary: f.message || "",
+                    fix: f.description || f.message || "",
+                }));
+                const notes = payload && typeof payload === "object" && payload.score != null
+                    ? [`GLOW score ${payload.score}${payload.grade ? ` (${payload.grade})` : ""}.`]
+                    : undefined;
+                return findingsResult(
+                    toMcpText(`GLOW audit completed for ${upload.fileName}`, payload),
+                    [filePath],
+                    structured,
+                    { notes },
+                );
             } catch (err) {
-                return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+                return errorResult(`Error: ${err.message}`);
             }
         }
     );
@@ -174,16 +192,13 @@ export function registerGlowTools(server) {
                     timeoutMs,
                     formData: form,
                 });
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: toMcpText(`GLOW fix completed for ${upload.fileName}`, payload),
-                        },
-                    ],
-                };
+                return okResult(toMcpText(`GLOW fix completed for ${upload.fileName}`, payload), {
+                    ok: !(payload && typeof payload === "object" && payload.error),
+                    detail: `GLOW fix completed for ${upload.fileName}; response payload in the text content.`,
+                    path: filePath,
+                });
             } catch (err) {
-                return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+                return errorResult(`Error: ${err.message}`);
             }
         }
     );
@@ -215,16 +230,13 @@ export function registerGlowTools(server) {
                     timeoutMs,
                     formData: form,
                 });
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: toMcpText(`GLOW convert completed for ${upload.fileName}`, payload),
-                        },
-                    ],
-                };
+                return okResult(toMcpText(`GLOW convert completed for ${upload.fileName}`, payload), {
+                    ok: !(payload && typeof payload === "object" && payload.error),
+                    detail: `Converted ${upload.fileName} from ${fromFormat} to ${toFormat}; response payload in the text content.`,
+                    path: filePath,
+                });
             } catch (err) {
-                return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+                return errorResult(`Error: ${err.message}`);
             }
         }
     );
@@ -259,16 +271,13 @@ export function registerGlowTools(server) {
                     timeoutMs,
                     formData: form,
                 });
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: toMcpText(`GLOW report generated for ${upload.fileName}`, payload),
-                        },
-                    ],
-                };
+                return okResult(toMcpText(`GLOW report generated for ${upload.fileName}`, payload), {
+                    ok: !(payload && typeof payload === "object" && payload.error),
+                    detail: `Generated a ${reportType || "json"} report for ${upload.fileName}; report in the text content.`,
+                    path: filePath,
+                });
             } catch (err) {
-                return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+                return errorResult(`Error: ${err.message}`);
             }
         }
     );

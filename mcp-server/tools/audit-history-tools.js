@@ -17,6 +17,7 @@ import { existsSync } from "node:fs";
 import { join, basename, resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { validateFilePath } from "../server-core.js";
+import { okResult, errorResult, findingsResult, mapSeverity } from "../results.js";
 
 /** Default max audits to retain per target. */
 const DEFAULT_RETENTION = 30;
@@ -183,9 +184,13 @@ export function registerAuditHistoryTools(server) {
         if (pruned > 0) {
           lines.push(`Pruned: ${pruned} old audit(s) beyond retention limit of ${maxRetention}`);
         }
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        return okResult(lines.join("\n"), {
+          ok: true,
+          detail: `Saved ${type} audit of ${target} with ${findingCount} findings${pruned > 0 ? `; pruned ${pruned} old audit(s)` : ""}.`,
+          path: safePath,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error saving audit: ${err.message}` }] };
+        return errorResult(`Error saving audit: ${err.message}`);
       }
     }
   );
@@ -219,14 +224,14 @@ export function registerAuditHistoryTools(server) {
       try {
         const historyDir = join(process.cwd(), HISTORY_DIR);
         if (!existsSync(historyDir)) {
-          return { content: [{ type: "text", text: "No audit history found. Run a scan and save results first." }] };
+          return okResult("No audit history found. Run a scan and save results first.", { items: [], total: 0 });
         }
 
         const allFiles = await readdir(historyDir);
         const jsonFiles = allFiles.filter((f) => f.endsWith(".json")).sort().reverse();
 
         if (jsonFiles.length === 0) {
-          return { content: [{ type: "text", text: "Audit history directory is empty." }] };
+          return okResult("Audit history directory is empty.", { items: [], total: 0 });
         }
 
         let targetHash;
@@ -266,7 +271,7 @@ export function registerAuditHistoryTools(server) {
         }
 
         if (results.length === 0) {
-          return { content: [{ type: "text", text: "No matching audits found." }] };
+          return okResult("No matching audits found.", { items: [], total: jsonFiles.length });
         }
 
         const lines = [
@@ -285,9 +290,9 @@ export function registerAuditHistoryTools(server) {
           lines.push("", `Showing ${results.length} of ${totalFiles} total audits.`);
         }
 
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        return okResult(lines.join("\n"), { items: results, total: totalFiles });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error listing history: ${err.message}` }] };
+        return errorResult(`Error listing history: ${err.message}`);
       }
     }
   );
@@ -335,9 +340,21 @@ export function registerAuditHistoryTools(server) {
           }
         }
 
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        const structured = (record.findings || []).map((f) => ({
+          rule: f.ruleId || "unknown",
+          wcag: f.wcagCriterion || "n/a",
+          severity: mapSeverity(f.severity),
+          location: f.location || record.target || "unspecified",
+          summary: f.message || "",
+          fix: f.message || "",
+        }));
+        return findingsResult(lines.join("\n"), [record.target || auditId], structured, {
+          notes: [
+            `Stored ${record.type} audit from ${record.timestamp}, score ${record.score ?? "N/A"}, grade ${record.grade ?? "N/A"}.`,
+          ],
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error retrieving audit: ${err.message}` }] };
+        return errorResult(`Error retrieving audit: ${err.message}`);
       }
     }
   );
@@ -363,7 +380,7 @@ export function registerAuditHistoryTools(server) {
       try {
         const historyDir = join(process.cwd(), HISTORY_DIR);
         if (!existsSync(historyDir)) {
-          return { content: [{ type: "text", text: "No audit history found." }] };
+          return okResult("No audit history found.", { ok: true, detail: "No audit history directory exists, so nothing was pruned." });
         }
 
         const maxRetention = retention ?? DEFAULT_RETENTION;
@@ -398,19 +415,21 @@ export function registerAuditHistoryTools(server) {
           }
         }
 
-        return {
-          content: [{
-            type: "text",
-            text: [
-              `Prune complete: ${pruned} old audit(s) removed`,
-              `Targets tracked: ${targets}`,
-              `Retention: ${maxRetention} audits per target`,
-              `Remaining files: ${jsonFiles.length - pruned}`,
-            ].join("\n"),
-          }],
-        };
+        return okResult(
+          [
+            `Prune complete: ${pruned} old audit(s) removed`,
+            `Targets tracked: ${targets}`,
+            `Retention: ${maxRetention} audits per target`,
+            `Remaining files: ${jsonFiles.length - pruned}`,
+          ].join("\n"),
+          {
+            ok: true,
+            detail: `Removed ${pruned} audit(s) across ${targets} target(s); ${jsonFiles.length - pruned} remain.`,
+            path: historyDir,
+          },
+        );
       } catch (err) {
-        return { content: [{ type: "text", text: `Error pruning history: ${err.message}` }] };
+        return errorResult(`Error pruning history: ${err.message}`);
       }
     }
   );

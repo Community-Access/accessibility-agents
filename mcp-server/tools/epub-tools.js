@@ -17,6 +17,7 @@ import { basename, dirname, join } from "node:path";
 import { readFile as fsReadFile, writeFile as fsWriteFile } from "node:fs/promises";
 import { inflateRawSync } from "node:zlib";
 import { validateFilePath } from "../server-core.js";
+import { errorResult, findingsResult, scannerFinding } from "../results.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 
@@ -471,20 +472,24 @@ export function registerEpubTools(server) {
     },
     async ({ filePath, reportPath, sarifPath }) => {
       if (!filePath.toLowerCase().endsWith(".epub")) {
-        return { content: [{ type: "text", text: "File must be a .epub file." }] };
+        return errorResult("File must be a .epub file.");
       }
 
       let buf;
       try {
         const safe = validateFilePath(filePath);
         buf = await fsReadFile(safe);
-        if (buf.length > MAX_FILE_BYTES) return { content: [{ type: "text", text: "File too large." }] };
+        if (buf.length > MAX_FILE_BYTES) return errorResult("File too large.");
       } catch (err) {
-        return { content: [{ type: "text", text: `Cannot read file: ${err.message}` }] };
+        return errorResult(`Cannot read file: ${err.message}`);
       }
 
       const config = await loadEpubConfig(filePath);
-      if (config.enabled === false) return { content: [{ type: "text", text: "EPUB scanning disabled in configuration." }] };
+      if (config.enabled === false) {
+        return findingsResult("EPUB scanning disabled in configuration.", [filePath], [], {
+          notes: ["EPUB scanning disabled in configuration; nothing was checked."],
+        });
+      }
 
       const { findings, info } = scanEpub(buf, config);
 
@@ -504,13 +509,14 @@ export function registerEpubTools(server) {
         } catch (err) { reportNote += `\nFailed to write SARIF: ${err.message}`; }
       }
 
+      const notes = reportNote ? [reportNote.trim()] : undefined;
       if (findings.length === 0) {
-        return {
-          content: [{
-            type: "text",
-            text: `EPUB scan complete: ${basename(filePath)}\n\nNo issues found.\nVersion: ${info.epubVersion} | Title: ${info.title || "Not set"} | Language: ${info.language || "Not set"}\nContent files: ${info.contentFiles} | Images: ${info.imageCount} | Nav: ${info.hasNav ? "Yes" : "No"}${reportNote}`,
-          }],
-        };
+        return findingsResult(
+          `EPUB scan complete: ${basename(filePath)}\n\nNo issues found.\nVersion: ${info.epubVersion} | Title: ${info.title || "Not set"} | Language: ${info.language || "Not set"}\nContent files: ${info.contentFiles} | Images: ${info.imageCount} | Nav: ${info.hasNav ? "Yes" : "No"}${reportNote}`,
+          [filePath],
+          [],
+          { passed: ["epub-scan"], notes },
+        );
       }
 
       const errors = findings.filter(f => f.severity === "error").length;
@@ -526,7 +532,7 @@ export function registerEpubTools(server) {
       ];
       for (const f of findings) lines.push(`[${f.severity.toUpperCase()}] ${f.ruleId}: ${f.message}`);
       if (reportNote) lines.push(reportNote);
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return findingsResult(lines.join("\n"), [filePath], findings.map((f) => scannerFinding(f)), { notes });
     }
   );
 }

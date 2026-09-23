@@ -16,6 +16,7 @@ import { readFile as fsReadFile, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
+import { okResult, errorResult } from "../results.js";
 
 const HISTORY_DIR = ".a11y-history";
 
@@ -126,14 +127,10 @@ export function registerTrendTools(server) {
       try {
         const records = await loadAllAudits();
         if (records.length === 0) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: "No audit history found. Run scans and save results with save_audit_result first.",
-              },
-            ],
-          };
+          return okResult(
+            "No audit history found. Run scans and save results with save_audit_result first.",
+            { items: [], total: 0 },
+          );
         }
 
         const targetHash = createHash("sha256")
@@ -146,14 +143,7 @@ export function registerTrendTools(server) {
           .slice(0, maxResults);
 
         if (targetAudits.length === 0) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: `No audit history found for target: ${target}`,
-              },
-            ],
-          };
+          return okResult(`No audit history found for target: ${target}`, { items: [], total: 0 });
         }
 
         const trend = computeTrend(targetAudits);
@@ -196,13 +186,22 @@ export function registerTrendTools(server) {
           }
         }
 
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        // The timeline is the list; the computed trend travels as its first
+        // entry so a client gets direction and delta without recomputing them.
+        const items = [
+          { kind: "trend", ...trend },
+          ...targetAudits.map((a) => ({
+            kind: "scan",
+            timestamp: a.timestamp,
+            score: a.score ?? null,
+            grade: a.grade ?? null,
+            findings: a.summary?.findings ?? 0,
+            errors: a.summary?.errors ?? 0,
+          })),
+        ];
+        return okResult(lines.join("\n"), { items, total: targetAudits.length });
       } catch (err) {
-        return {
-          content: [
-            { type: "text", text: `Error computing trend: ${err.message}` },
-          ],
-        };
+        return errorResult(`Error computing trend: ${err.message}`);
       }
     }
   );

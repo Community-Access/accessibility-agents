@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "accessibility-agents",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "description": "WCAG 2.2 AA enforcement across web UI, Office and PDF documents, markdown and desktop apps. Six router skills dispatch a hundred specialist and reference skills, with hooks that block UI edits until the accessibility lead has reviewed.",
   "author": {
     "name": "Community Access"

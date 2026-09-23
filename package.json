@@ -1,6 +1,6 @@
 {
   "name": "accessibility-agents",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "private": true,
   "description": "WCAG 2.2 AA enforcement as Agent Skills, readable by Claude Code, Codex, Copilot, Gemini and Antigravity without per-client copies.",
   "license": "MIT",

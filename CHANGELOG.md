@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.3] - 2026-09-23
+
+Every MCP tool failed on invocation in 7.0.2. Reported as
+[#205](https://github.com/Community-Access/accessibility-agents/issues/205).
+
+### Fixed
+
+- **All 39 MCP tools returned an error when called.** 7.0.0 gave every tool an
+  `outputSchema`; 7.0.1 moved the SDK to 1.30.0, which validates handler output
+  against that schema and requires `structuredContent` alongside the text. The
+  handlers returned text only, so the server's own SDK rejected every result
+  with `MCP error -32602: Output validation error`. The server started, handshook
+  and listed all 39 tools correctly, which is why it looked healthy. Every
+  handler now returns a payload matching its declared schema.
+- Results are built through `mcp-server/results.js` rather than assembled at each
+  call site, so the schema in `tool-metadata.js` and the shape a handler returns
+  cannot drift apart silently again. Failures return `isError`, which the SDK
+  exempts from output validation.
+- **`fix_document_headings` called an undefined function.** It used `parseZipCd`,
+  which does not exist, so every call ended in `ReferenceError` regardless of
+  input. It now uses `readZipEntries`, the parser the rest of the server uses.
+- Three tools declared a document-shaped output schema but return their output
+  inline rather than writing a file. `convert_pdf_form_to_html`,
+  `generate_accessibility_statement` and `glow_generate_report` now declare the
+  status shape they actually produce.
+
+### Added
+
+- **An end-to-end `tools/call` gate**, covering all 36 tools that can be called
+  without changing state on disk. This is the test whose absence let the defect
+  ship: the existing suite exercised handler functions directly and read
+  `tools/list`, so nothing ever put a result through the SDK's output
+  validation. The gate asserts on the error text, not just `isError` - the SDK's
+  rejection arrives as `isError` and is otherwise indistinguishable from a
+  handler's own error.
+- `mcp-server` now runs the conformance test as part of `npm test`, not only
+  through the repository's `verify:mcp`.
+
 ## [7.0.2] - 2026-09-21
 
 The first end-to-end audit, and the defect it found. Full record in

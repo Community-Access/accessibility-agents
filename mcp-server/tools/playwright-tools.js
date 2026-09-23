@@ -13,6 +13,7 @@
  */
 
 import { z } from "zod";
+import { errorResult, findingsResult, mapSeverity } from "../results.js";
 
 let _playwrightAvailable = null;
 
@@ -74,7 +75,7 @@ export function registerPlaywrightTools(server) {
     },
     async ({ url, tags, include, exclude }) => {
       if (!(await isPlaywrightAvailable())) {
-        return { content: [{ type: "text", text: NOT_INSTALLED_MSG }] };
+        return errorResult(NOT_INSTALLED_MSG);
       }
       const safeUrl = validateUrl(url);
       const axeTags = tags || ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
@@ -95,9 +96,17 @@ export function registerPlaywrightTools(server) {
           const violations = results.violations || [];
 
           if (violations.length === 0) {
-            return {
-              content: [{ type: "text", text: `axe-core scan complete: ${safeUrl}\n\nNo WCAG AA violations found.\nPasses: ${(results.passes || []).length} | Incomplete: ${(results.incomplete || []).length}` }],
-            };
+            return findingsResult(
+              `axe-core scan complete: ${safeUrl}\n\nNo WCAG AA violations found.\nPasses: ${(results.passes || []).length} | Incomplete: ${(results.incomplete || []).length}`,
+              [safeUrl],
+              [],
+              {
+                passed: (results.passes || []).map((p) => p.id),
+                notes: (results.incomplete || []).length
+                  ? [`${results.incomplete.length} checks were incomplete and need manual review.`]
+                  : undefined,
+              },
+            );
           }
 
           const lines = [
@@ -122,12 +131,26 @@ export function registerPlaywrightTools(server) {
             lines.push("");
           }
 
-          return { content: [{ type: "text", text: lines.join("\n") }] };
+          const structured = violations.map((v) => {
+            const wcagTags = (v.tags || []).filter((t) => t.startsWith("wcag"));
+            const firstNode = (v.nodes || [])[0];
+            const out = {
+              rule: v.id,
+              wcag: wcagTags.length ? wcagTags.join(", ") : "n/a",
+              severity: mapSeverity(v.impact),
+              location: firstNode ? (firstNode.target || []).join(" > ") : safeUrl,
+              summary: v.help || v.id,
+              fix: v.helpUrl ? `${v.help || v.id}. See ${v.helpUrl}` : (v.help || v.id),
+            };
+            if (firstNode && firstNode.failureSummary) out.evidence = firstNode.failureSummary.slice(0, 500);
+            return out;
+          });
+          return findingsResult(lines.join("\n"), [safeUrl], structured);
         } finally {
           await browser.close();
         }
       } catch (err) {
-        return { content: [{ type: "text", text: `axe-core scan failed: ${err.message}` }] };
+        return errorResult(`axe-core scan failed: ${err.message}`);
       }
     }
   );
@@ -145,7 +168,7 @@ export function registerPlaywrightTools(server) {
     },
     async ({ url, root }) => {
       if (!(await isPlaywrightAvailable())) {
-        return { content: [{ type: "text", text: NOT_INSTALLED_MSG }] };
+        return errorResult(NOT_INSTALLED_MSG);
       }
       const safeUrl = validateUrl(url);
       try {
@@ -156,12 +179,14 @@ export function registerPlaywrightTools(server) {
           await page.goto(safeUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
           const locator = root ? page.locator(root) : page;
           const snapshot = await locator.ariaSnapshot();
-          return { content: [{ type: "text", text: `Accessibility Tree: ${safeUrl}\n\n${snapshot}` }] };
+          return findingsResult(`Accessibility Tree: ${safeUrl}\n\n${snapshot}`, [safeUrl], [], {
+            notes: ["Accessibility tree snapshot captured; the tree itself is in the text content."],
+          });
         } finally {
           await browser.close();
         }
       } catch (err) {
-        return { content: [{ type: "text", text: `Failed to capture a11y tree: ${err.message}` }] };
+        return errorResult(`Failed to capture a11y tree: ${err.message}`);
       }
     }
   );
@@ -179,7 +204,7 @@ export function registerPlaywrightTools(server) {
     },
     async ({ url, maxTabs }) => {
       if (!(await isPlaywrightAvailable())) {
-        return { content: [{ type: "text", text: NOT_INSTALLED_MSG }] };
+        return errorResult(NOT_INSTALLED_MSG);
       }
       const safeUrl = validateUrl(url);
       const limit = Math.min(maxTabs || 50, 200);
@@ -217,17 +242,41 @@ export function registerPlaywrightTools(server) {
 
           const lines = [`Keyboard Navigation: ${safeUrl}`, `Interactive elements found: ${focusOrder.length}`, ""];
           if (trapped) lines.push("⚠ KEYBOARD TRAP DETECTED - focus cycles through fewer than 3 elements", "");
+          const structured = [];
+          if (trapped) {
+            structured.push({
+              rule: "keyboard-trap",
+              wcag: "2.1.2 A",
+              severity: "critical",
+              location: safeUrl,
+              summary: "Focus cycles through fewer than 3 elements; keyboard users cannot leave the trap.",
+              fix: "Ensure focus can move through and out of every component using Tab and Shift+Tab.",
+            });
+          }
           for (let i = 0; i < focusOrder.length; i++) {
             const f = focusOrder[i];
             const vis = f.outline === "none" ? " [NO VISIBLE FOCUS]" : "";
             lines.push(`${i + 1}. <${f.tag}${f.role ? ` role="${f.role}"` : ""}> "${f.label}"${vis}`);
+            if (f.outline === "none") {
+              structured.push({
+                rule: "focus-visible",
+                wcag: "2.4.7 AA",
+                severity: "serious",
+                location: f.selector || `${safeUrl} tab stop ${i + 1}`,
+                summary: `Focused element <${f.tag}> "${f.label}" has no visible focus indicator.`,
+                fix: "Give the element a visible focus style (for example an outline) instead of outline: none.",
+              });
+            }
           }
-          return { content: [{ type: "text", text: lines.join("\n") }] };
+          return findingsResult(lines.join("\n"), [safeUrl], structured, {
+            passed: structured.length === 0 ? ["keyboard-trap", "focus-visible"] : undefined,
+            notes: [`${focusOrder.length} interactive elements traversed.`],
+          });
         } finally {
           await browser.close();
         }
       } catch (err) {
-        return { content: [{ type: "text", text: `Keyboard scan failed: ${err.message}` }] };
+        return errorResult(`Keyboard scan failed: ${err.message}`);
       }
     }
   );
@@ -244,7 +293,7 @@ export function registerPlaywrightTools(server) {
     },
     async ({ url }) => {
       if (!(await isPlaywrightAvailable())) {
-        return { content: [{ type: "text", text: NOT_INSTALLED_MSG }] };
+        return errorResult(NOT_INSTALLED_MSG);
       }
       const safeUrl = validateUrl(url);
       try {
@@ -297,7 +346,12 @@ export function registerPlaywrightTools(server) {
           });
 
           if (elements.length === 0) {
-            return { content: [{ type: "text", text: `Contrast scan: ${safeUrl}\n\nNo contrast failures detected in sampled elements.` }] };
+            return findingsResult(
+              `Contrast scan: ${safeUrl}\n\nNo contrast failures detected in sampled elements.`,
+              [safeUrl],
+              [],
+              { passed: ["contrast"], notes: ["Sampled up to 100 text elements with resolvable colours."] },
+            );
           }
 
           const lines = [`Contrast scan: ${safeUrl}`, `Failures: ${elements.length}`, ""];
@@ -307,12 +361,21 @@ export function registerPlaywrightTools(server) {
             lines.push(`  Selector: ${e.selector}`);
             lines.push("");
           }
-          return { content: [{ type: "text", text: lines.join("\n") }] };
+          const structured = elements.map((e) => ({
+            rule: "contrast",
+            wcag: "1.4.3 AA",
+            severity: "serious",
+            location: e.selector,
+            summary: `<${e.tag}> "${e.text}" has contrast ${e.ratio}:1 but needs ${e.required}:1${e.isLarge ? " (large text)" : ""}.`,
+            fix: `Adjust the colours so the ratio reaches at least ${e.required}:1.`,
+            evidence: `${e.fgColor} on ${e.bgColor}`,
+          }));
+          return findingsResult(lines.join("\n"), [safeUrl], structured);
         } finally {
           await browser.close();
         }
       } catch (err) {
-        return { content: [{ type: "text", text: `Contrast scan failed: ${err.message}` }] };
+        return errorResult(`Contrast scan failed: ${err.message}`);
       }
     }
   );
@@ -329,7 +392,7 @@ export function registerPlaywrightTools(server) {
     },
     async ({ url }) => {
       if (!(await isPlaywrightAvailable())) {
-        return { content: [{ type: "text", text: NOT_INSTALLED_MSG }] };
+        return errorResult(NOT_INSTALLED_MSG);
       }
       const safeUrl = validateUrl(url);
       try {
@@ -356,12 +419,24 @@ export function registerPlaywrightTools(server) {
             const status = r.hasHScroll ? "FAIL — horizontal scroll detected" : "PASS";
             lines.push(`${r.width}px: ${status} (content: ${r.bodyWidth}px)`);
           }
-          return { content: [{ type: "text", text: lines.join("\n") }] };
+          const structured = results
+            .filter((r) => r.hasHScroll)
+            .map((r) => ({
+              rule: "reflow",
+              wcag: "1.4.10 AA",
+              severity: "serious",
+              location: `${safeUrl} at ${r.width}px viewport`,
+              summary: `Content is ${r.bodyWidth}px wide in a ${r.width}px viewport, forcing horizontal scrolling.`,
+              fix: "Let the content reflow to the viewport width instead of overflowing horizontally.",
+            }));
+          return findingsResult(lines.join("\n"), [safeUrl], structured, {
+            passed: structured.length === 0 ? ["reflow"] : undefined,
+          });
         } finally {
           await browser.close();
         }
       } catch (err) {
-        return { content: [{ type: "text", text: `Viewport test failed: ${err.message}` }] };
+        return errorResult(`Viewport test failed: ${err.message}`);
       }
     }
   );

@@ -152,7 +152,9 @@ export const TOOL_METADATA = {
   check_verapdf_installation: T("Check veraPDF is installed", READ_LOCAL, STATUS_OUTPUT_SCHEMA),
   glow_health_check: T("Check Glow availability", READ_NETWORK, STATUS_OUTPUT_SCHEMA),
   glow_audit_document: T("Audit a document with Glow", READ_NETWORK, FINDINGS_OUTPUT_SCHEMA, 60000),
-  glow_generate_report: T("Generate a Glow report", READ_NETWORK, DOCUMENT_OUTPUT_SCHEMA),
+  // Returns the report inline rather than writing a file, so its result is a
+  // status, not a document.
+  glow_generate_report: T("Generate a Glow report", READ_NETWORK, STATUS_OUTPUT_SCHEMA),
 
   // ---- audit history ----
   list_audit_history: T("List audit history", READ_LOCAL, LISTING_OUTPUT_SCHEMA),
@@ -166,12 +168,14 @@ export const TOOL_METADATA = {
   prune_audit_history: T("Prune audit history", DELETE_LOCAL, STATUS_OUTPUT_SCHEMA),
 
   // ---- writers and remediators ----
-  convert_pdf_form_to_html: T("Convert a PDF form to accessible HTML", WRITE_LOCAL, DOCUMENT_OUTPUT_SCHEMA),
-  generate_accessibility_statement: T("Generate an accessibility statement", WRITE_LOCAL, DOCUMENT_OUTPUT_SCHEMA),
+  // These two return their output inline (HTML, markdown) rather than writing
+  // a file, so a status shape fits what the handlers actually produce.
+  convert_pdf_form_to_html: T("Convert a PDF form to accessible HTML", WRITE_LOCAL, STATUS_OUTPUT_SCHEMA),
+  generate_accessibility_statement: T("Generate an accessibility statement", WRITE_LOCAL, STATUS_OUTPUT_SCHEMA),
   fix_document_metadata: T("Fix document metadata in place", OVERWRITE_LOCAL, STATUS_OUTPUT_SCHEMA),
   fix_document_headings: T("Fix document headings in place", OVERWRITE_LOCAL, STATUS_OUTPUT_SCHEMA),
   glow_fix_document: T("Fix a document with Glow", OVERWRITE_NETWORK, STATUS_OUTPUT_SCHEMA),
-  glow_convert_document: T("Convert a document with Glow", WRITE_NETWORK, DOCUMENT_OUTPUT_SCHEMA),
+  glow_convert_document: T("Convert a document with Glow", WRITE_NETWORK, STATUS_OUTPUT_SCHEMA),
 
   // ---- report rendering ----
   render_accessibility_report: T("Render an accessibility report", WRITE_LOCAL, DOCUMENT_OUTPUT_SCHEMA),

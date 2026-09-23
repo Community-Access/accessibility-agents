@@ -13,6 +13,7 @@ import { promisify } from "node:util";
 import { basename } from "node:path";
 import { writeFile as fsWriteFile } from "node:fs/promises";
 import { validateFilePath } from "../server-core.js";
+import { okResult, errorResult, findingsResult } from "../results.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -63,6 +64,23 @@ function parseVeraPdfMrr(xml) {
     });
   }
   return findings;
+}
+
+/**
+ * One parsed veraPDF rule failure as a findings-schema entry. PDF/UA clauses
+ * are not WCAG criteria, so wcag stays "n/a" and the clause travels in the
+ * location instead.
+ */
+function toSchemaFinding(f) {
+  return {
+    rule: f.ruleId,
+    wcag: "n/a",
+    severity: "serious",
+    location: `${f.specification} clause ${f.clause}${f.testNumber ? ` test ${f.testNumber}` : ""}`,
+    summary: f.description || `Failed ${f.specification} clause ${f.clause}.`,
+    fix: f.description || "Correct the document so it satisfies this PDF/UA clause.",
+    evidence: `${f.failedChecks} failed check(s)`,
+  };
 }
 
 /**
@@ -156,7 +174,11 @@ export function registerVeraPdfInstallerTools(server) {
           "The run_verapdf_scan tool is ready to use.",
           "Example: run_verapdf_scan with a PDF file path for PDF/UA-1 validation.",
         ];
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        return okResult(lines.join("\n"), {
+          ok: true,
+          detail: "veraPDF is installed and available on PATH.",
+          version,
+        });
       }
 
       // veraPDF is NOT installed - provide platform-specific guidance
@@ -247,7 +269,11 @@ export function registerVeraPdfInstallerTools(server) {
         "veraPDF provides deeper PDF/UA conformance validation.",
       );
 
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      // Not-installed is the answer this tool exists to give, not a failure.
+      return okResult(lines.join("\n"), {
+        ok: false,
+        detail: `veraPDF is not installed or not on PATH; Java ${java ? "is" : "is not"} available. Installation steps are in the text content.`,
+      });
     }
   );
 }
@@ -273,23 +299,20 @@ export function registerVeraPdfTools(server) {
     },
     async ({ filePath, flavour, sarifPath }) => {
       if (!(await isVeraPdfAvailable())) {
-        return {
-          content: [{
-            type: "text",
-            text: "veraPDF is not installed or not on PATH.\n\nBaseline PDF scanning still works with `scan_pdf_document`. For deeper PDF/UA validation through `run_verapdf_scan`, install Java 11+ and veraPDF.\n\nWindows:\n  Java:    winget install --exact --id EclipseAdoptium.Temurin.21.JRE\n  veraPDF: choco install verapdf\n  Manual:  https://docs.verapdf.org/install/\n\nmacOS:\n  brew install verapdf\n\nLinux:\n  snap install verapdf\n\nAfter installation, restart your terminal or editor so `verapdf` is on PATH.",
-          }],
-        };
+        return errorResult(
+          "veraPDF is not installed or not on PATH.\n\nBaseline PDF scanning still works with `scan_pdf_document`. For deeper PDF/UA validation through `run_verapdf_scan`, install Java 11+ and veraPDF.\n\nWindows:\n  Java:    winget install --exact --id EclipseAdoptium.Temurin.21.JRE\n  veraPDF: choco install verapdf\n  Manual:  https://docs.verapdf.org/install/\n\nmacOS:\n  brew install verapdf\n\nLinux:\n  snap install verapdf\n\nAfter installation, restart your terminal or editor so `verapdf` is on PATH.",
+        );
       }
 
       let safePath;
       try {
         safePath = validateFilePath(filePath);
       } catch (err) {
-        return { content: [{ type: "text", text: `Path error: ${err.message}` }] };
+        return errorResult(`Path error: ${err.message}`);
       }
 
       if (!safePath.toLowerCase().endsWith(".pdf")) {
-        return { content: [{ type: "text", text: "File must be a .pdf file." }] };
+        return errorResult("File must be a .pdf file.");
       }
 
       const profile = flavour || "ua1";
@@ -330,7 +353,10 @@ export function registerVeraPdfTools(server) {
             }
             if (findings.length > 20) lines.push(`  ... and ${findings.length - 20} more`);
           }
-          return { content: [{ type: "text", text: lines.join("\n") }] };
+          return findingsResult(lines.join("\n"), [filePath], findings.map(toSchemaFinding), {
+            passed: findings.length === 0 ? [`verapdf-${profile}`] : undefined,
+            notes: [sarifNote.trim()],
+          });
         }
 
         const lines = [
@@ -339,10 +365,14 @@ export function registerVeraPdfTools(server) {
           "",
           output.trim(),
         ];
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        // Without MRR output there is nothing structured to parse, so the
+        // findings list stays empty and the veraPDF text is carried as a note.
+        return findingsResult(lines.join("\n"), [filePath], [], {
+          notes: [`veraPDF ${profile} text output is in the text content; request sarifPath for parsed findings.`],
+        });
       } catch (err) {
         const output = err.stdout || err.stderr || err.message;
-        return { content: [{ type: "text", text: `veraPDF scan completed with issues:\n\n${output}` }] };
+        return errorResult(`veraPDF scan completed with issues:\n\n${output}`);
       }
     }
   );

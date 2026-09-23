@@ -60,6 +60,7 @@ import { registerAuditHistoryTools } from "./tools/audit-history-tools.js";
 import { registerTrendTools, registerTrendResource } from "./tools/trend-tools.js";
 import { registerReportTools } from "./tools/report-tools.js";
 import { withToolMetadata } from "./tool-metadata.js";
+import { okResult, errorResult, findingsResult, scannerFinding } from "./results.js";
 import { SERVER_VERSION } from "./version.js";
 import { registerGlowTools } from "./tools/glow-tools.js";
 
@@ -865,9 +866,16 @@ export function createServer() {
           lines.push(``, `To pass normal text AA, you need a ratio of at least 4.5:1.`);
           lines.push(`Current ratio ${rounded}:1 is ${ratio >= 3.0 ? "only sufficient for large text and UI components" : "insufficient for all WCAG AA levels"}.`);
         }
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        return okResult(lines.join("\n"), {
+          value: rounded,
+          unit: "contrast ratio",
+          threshold: 4.5,
+          passes: ratio >= 4.5,
+          level: "AA",
+          detail: `${fg} on ${bg}: normal text ${ratio >= 4.5 ? "passes" : "fails"}, large text and UI components ${ratio >= 3.0 ? "pass" : "fail"}.`,
+        });
       } catch {
-        return { content: [{ type: "text", text: `Error: Could not parse colors. Use hex format like "#1a1a1a" or "#fff".` }] };
+        return errorResult(`Error: Could not parse colors. Use hex format like "#1a1a1a" or "#fff".`);
       }
     }
   );
@@ -943,9 +951,18 @@ export function createServer() {
           `Note: APCA is part of the WCAG 3.0 Working Draft and is not yet a W3C Recommendation.`,
           `Current WCAG 2.2 AA still uses the traditional contrast ratio method.`,
         ];
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        // APCA has no single pass mark; Lc 60 (large text) is the lowest
+        // threshold at which the pair is usable for any text content.
+        return okResult(lines.join("\n"), {
+          value: absLc,
+          unit: "Lc",
+          threshold: 60,
+          passes: absLc >= 60,
+          level: "WCAG 3.0 draft",
+          detail: `${polarity}. ${recommendation}`,
+        });
       } catch {
-        return { content: [{ type: "text", text: `Error: Could not parse colors. Use hex format like "#1a1a1a" or "#fff".` }] };
+        return errorResult(`Error: Could not parse colors. Use hex format like "#1a1a1a" or "#fff".`);
       }
     }
   );
@@ -962,8 +979,8 @@ export function createServer() {
     },
     async ({ component }) => {
       const g = GUIDELINES[component];
-      if (!g) return { content: [{ type: "text", text: `No guidelines found for "${component}".` }] };
-      return { content: [{ type: "text", text: g }] };
+      if (!g) return errorResult(`No guidelines found for "${component}".`);
+      return okResult(g, { ok: true, detail: `WCAG AA guidelines for ${component} components; full text in the text content.` });
     }
   );
 
@@ -979,13 +996,27 @@ export function createServer() {
     },
     async ({ html }) => {
       const { headings, issues } = extractHeadings(html);
-      if (headings.length === 0) return { content: [{ type: "text", text: "No headings found in the provided HTML." }] };
+      const toFindings = (list) => list.map((issue) => ({
+        rule: "heading-structure",
+        wcag: "1.3.1 A",
+        severity: "serious",
+        location: "provided HTML",
+        summary: issue,
+        fix: issue,
+      }));
+      if (headings.length === 0) {
+        return findingsResult("No headings found in the provided HTML.", ["provided HTML"], toFindings(issues), {
+          notes: ["No headings found in the provided HTML."],
+        });
+      }
       const lines = ["Heading Structure:", ""];
       for (const h of headings) lines.push(`  ${h.tag.toUpperCase()}: ${h.text}`);
       lines.push("");
       if (issues.length === 0) lines.push("No heading issues found.");
       else { lines.push(`Issues (${issues.length}):`); for (const i of issues) lines.push(`  - ${i}`); }
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return findingsResult(lines.join("\n"), ["provided HTML"], toFindings(issues), {
+        passed: issues.length === 0 ? ["heading-structure"] : undefined,
+      });
     }
   );
 
@@ -1001,11 +1032,25 @@ export function createServer() {
     },
     async ({ html }) => {
       const { links, issues } = extractLinks(html);
-      if (links.length === 0) return { content: [{ type: "text", text: "No links found in the provided HTML." }] };
+      const toFindings = (list) => list.map((issue) => ({
+        rule: "link-text",
+        wcag: "2.4.4 A",
+        severity: "serious",
+        location: "provided HTML",
+        summary: issue,
+        fix: issue,
+      }));
+      if (links.length === 0) {
+        return findingsResult("No links found in the provided HTML.", ["provided HTML"], [], {
+          notes: ["No links found in the provided HTML."],
+        });
+      }
       const lines = [`Found ${links.length} links.`, ""];
       if (issues.length === 0) lines.push("No link text issues found.");
       else { lines.push(`Issues (${issues.length}):`); for (const i of issues) lines.push(`  - ${i}`); }
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return findingsResult(lines.join("\n"), ["provided HTML"], toFindings(issues), {
+        passed: issues.length === 0 ? ["link-text"] : undefined,
+      });
     }
   );
 
@@ -1021,11 +1066,25 @@ export function createServer() {
     },
     async ({ html }) => {
       const { inputs, issues } = extractFormLabels(html);
-      if (inputs.length === 0) return { content: [{ type: "text", text: "No form inputs found in the provided HTML." }] };
+      const toFindings = (list) => list.map((issue) => ({
+        rule: "form-labels",
+        wcag: "3.3.2 A",
+        severity: "serious",
+        location: "provided HTML",
+        summary: issue,
+        fix: issue,
+      }));
+      if (inputs.length === 0) {
+        return findingsResult("No form inputs found in the provided HTML.", ["provided HTML"], [], {
+          notes: ["No form inputs found in the provided HTML."],
+        });
+      }
       const lines = [`Found ${inputs.length} form inputs.`, ""];
       if (issues.length === 0) lines.push("All inputs have accessible labels.");
       else { lines.push(`Issues (${issues.length}):`); for (const i of issues) lines.push(`  - ${i}`); }
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return findingsResult(lines.join("\n"), ["provided HTML"], toFindings(issues), {
+        passed: issues.length === 0 ? ["form-labels"] : undefined,
+      });
     }
   );
 
@@ -1042,23 +1101,32 @@ export function createServer() {
     async ({ filePath }) => {
       const ext = extname(filePath).toLowerCase();
       if (![".docx", ".xlsx", ".pptx"].includes(ext)) {
-        return { content: [{ type: "text", text: `Unsupported file type. Expected .docx, .xlsx, or .pptx.` }] };
+        return errorResult(`Unsupported file type. Expected .docx, .xlsx, or .pptx.`);
       }
       let buf;
       try {
         const safe = validateFilePath(filePath);
         buf = await fsReadFile(safe);
-        if (buf.length > MAX_FILE_BYTES) return { content: [{ type: "text", text: `File too large (max ${MAX_FILE_BYTES / 1024 / 1024} MB).` }] };
+        if (buf.length > MAX_FILE_BYTES) return errorResult(`File too large (max ${MAX_FILE_BYTES / 1024 / 1024} MB).`);
       } catch (err) {
-        return { content: [{ type: "text", text: `Cannot read file: ${err.message}` }] };
+        return errorResult(`Cannot read file: ${err.message}`);
       }
       const config = await loadOfficeConfig(filePath);
-      if (config.enabled === false) return { content: [{ type: "text", text: "Office scanning disabled in configuration." }] };
+      if (config.enabled === false) {
+        return findingsResult("Office scanning disabled in configuration.", [filePath], [], {
+          notes: ["Office scanning disabled in configuration; nothing was checked."],
+        });
+      }
       const { findings } = scanOfficeDocument(buf, ext, config);
-      if (findings.length === 0) return { content: [{ type: "text", text: `No accessibility issues found in ${basename(filePath)}.` }] };
+      const structured = findings.map((f) => scannerFinding(f));
+      if (findings.length === 0) {
+        return findingsResult(`No accessibility issues found in ${basename(filePath)}.`, [filePath], [], {
+          passed: ["office-scan"],
+        });
+      }
       const lines = [`Scan complete: ${basename(filePath)}`, `Issues: ${findings.length}`, ""];
       for (const f of findings) lines.push(`[${f.severity.toUpperCase()}] ${f.ruleId}: ${f.message}`);
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return findingsResult(lines.join("\n"), [filePath], structured);
     }
   );
 
@@ -1076,21 +1144,25 @@ export function createServer() {
     },
     async ({ filePath, reportPath, sarifPath }) => {
       if (!filePath.toLowerCase().endsWith(".pdf")) {
-        return { content: [{ type: "text", text: "File must be a .pdf file." }] };
+        return errorResult("File must be a .pdf file.");
       }
       let buf;
       try {
         const safe = validateFilePath(filePath);
         buf = await fsReadFile(safe);
-        if (buf.length > MAX_FILE_BYTES) return { content: [{ type: "text", text: `File too large.` }] };
+        if (buf.length > MAX_FILE_BYTES) return errorResult(`File too large.`);
       } catch (err) {
-        return { content: [{ type: "text", text: `Cannot read file: ${err.message}` }] };
+        return errorResult(`Cannot read file: ${err.message}`);
       }
       const header = buf.toString("latin1", 0, 8);
-      if (!header.startsWith("%PDF-")) return { content: [{ type: "text", text: "Not a valid PDF." }] };
+      if (!header.startsWith("%PDF-")) return errorResult("Not a valid PDF.");
 
       const config = await loadPdfConfig(filePath);
-      if (config.enabled === false) return { content: [{ type: "text", text: "PDF scanning disabled in configuration." }] };
+      if (config.enabled === false) {
+        return findingsResult("PDF scanning disabled in configuration.", [filePath], [], {
+          notes: ["PDF scanning disabled in configuration; nothing was checked."],
+        });
+      }
       const { findings, info } = scanPdf(buf, config);
 
       let reportNote = "";
@@ -1109,13 +1181,19 @@ export function createServer() {
         } catch (err) { reportNote += `\nFailed to write SARIF: ${err.message}`; }
       }
 
+      const notes = reportNote ? [reportNote.trim()] : undefined;
       if (findings.length === 0) {
-        return { content: [{ type: "text", text: `PDF scan complete: ${basename(filePath)}\n\nNo issues found.\nPages: ${info.pageCount} | Tagged: ${info.isTagged ? "Yes" : "No"} | Language: ${info.lang || "Not set"}${reportNote}` }] };
+        return findingsResult(
+          `PDF scan complete: ${basename(filePath)}\n\nNo issues found.\nPages: ${info.pageCount} | Tagged: ${info.isTagged ? "Yes" : "No"} | Language: ${info.lang || "Not set"}${reportNote}`,
+          [filePath],
+          [],
+          { passed: ["pdf-scan"], notes },
+        );
       }
       const lines = [`PDF scan complete: ${basename(filePath)}`, `Pages: ${info.pageCount} | Tagged: ${info.isTagged ? "Yes" : "No"} | Language: ${info.lang || "Not set"}`, `Issues: ${findings.length}`, ""];
       for (const f of findings) lines.push(`[${f.severity.toUpperCase()}] ${f.ruleId}: ${f.message}`);
       if (reportNote) lines.push(reportNote);
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return findingsResult(lines.join("\n"), [filePath], findings.map((f) => scannerFinding(f)), { notes });
     }
   );
 
@@ -1132,15 +1210,15 @@ export function createServer() {
     async ({ filePath }) => {
       const ext = extname(filePath).toLowerCase();
       if (![".docx", ".xlsx", ".pptx", ".pdf"].includes(ext)) {
-        return { content: [{ type: "text", text: `Unsupported file type: ${ext}` }] };
+        return errorResult(`Unsupported file type: ${ext}`);
       }
       let buf;
       try {
         const safe = validateFilePath(filePath);
         buf = await fsReadFile(safe);
-        if (buf.length > MAX_FILE_BYTES) return { content: [{ type: "text", text: `File too large.` }] };
+        if (buf.length > MAX_FILE_BYTES) return errorResult(`File too large.`);
       } catch (err) {
-        return { content: [{ type: "text", text: `Cannot read file: ${err.message}` }] };
+        return errorResult(`Cannot read file: ${err.message}`);
       }
 
       if (ext === ".pdf") {
@@ -1155,12 +1233,16 @@ export function createServer() {
           `  Tagged: ${info.isTagged ? "PASS" : "FAIL"} | Structure: ${info.hasStructureTree ? "PASS" : "FAIL"}`,
           `  Text: ${info.hasText ? "PASS" : "FAIL"}`,
         ];
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        return okResult(lines.join("\n"), {
+          ok: info.hasTitle && info.hasLang && info.isTagged && info.hasStructureTree && info.hasText,
+          detail: `PDF, ${info.pageCount} pages. Title ${info.hasTitle ? "set" : "not set"}, language ${info.hasLang ? "set" : "not set"}, ${info.isTagged ? "tagged" : "not tagged"}.`,
+          path: filePath,
+        });
       }
 
       let entries;
       try { entries = readZipEntries(buf); } catch (err) {
-        return { content: [{ type: "text", text: `Cannot parse as Office file: ${err.message}` }] };
+        return errorResult(`Cannot parse as Office file: ${err.message}`);
       }
       const core = getZipXml(buf, entries, "docProps/core.xml");
       const title = (xmlText(core, "dc:title")[0] || "").trim();
@@ -1174,7 +1256,11 @@ export function createServer() {
         `Accessibility Health:`,
         `  Title: ${title ? "PASS" : "FAIL"} | Author: ${creator ? "PASS" : "FAIL"} | Language: ${language ? "PASS" : "FAIL"}`,
       ];
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return okResult(lines.join("\n"), {
+        ok: Boolean(title && creator && language),
+        detail: `${ext.slice(1).toUpperCase()}. Title ${title ? "set" : "not set"}, author ${creator ? "set" : "not set"}, language ${language ? "set" : "not set"}.`,
+        path: filePath,
+      });
     }
   );
 
@@ -1189,10 +1275,12 @@ export function createServer() {
       }),
     },
     async ({ filePaths }) => {
-      if (filePaths.length === 0) return { content: [{ type: "text", text: "No files provided." }] };
-      if (filePaths.length > MAX_BATCH_FILES) return { content: [{ type: "text", text: `Too many files. Maximum: ${MAX_BATCH_FILES}` }] };
+      if (filePaths.length === 0) return errorResult("No files provided.");
+      if (filePaths.length > MAX_BATCH_FILES) return errorResult(`Too many files. Maximum: ${MAX_BATCH_FILES}`);
 
       const results = [];
+      const structured = [];
+      const notes = [];
       let totalIssues = 0;
       let errorCount = 0;
 
@@ -1200,12 +1288,17 @@ export function createServer() {
         const ext = extname(fp).toLowerCase();
         if (![".docx", ".xlsx", ".pptx", ".pdf"].includes(ext)) {
           results.push(`SKIP ${basename(fp)}: unsupported type`);
+          notes.push(`Skipped ${basename(fp)}: unsupported type.`);
           continue;
         }
         try {
           const safe = validateFilePath(fp);
           const buf = await fsReadFile(safe);
-          if (buf.length > MAX_FILE_BYTES) { results.push(`SKIP ${basename(fp)}: too large`); continue; }
+          if (buf.length > MAX_FILE_BYTES) {
+            results.push(`SKIP ${basename(fp)}: too large`);
+            notes.push(`Skipped ${basename(fp)}: too large.`);
+            continue;
+          }
           let findings;
           if (ext === ".pdf") {
             const config = await loadPdfConfig(fp);
@@ -1219,8 +1312,12 @@ export function createServer() {
           const warnings = findings.filter(f => f.severity === "warning").length;
           errorCount += errors;
           results.push(`${findings.length === 0 ? "PASS" : "FAIL"} ${basename(fp)}: ${errors} errors, ${warnings} warnings`);
+          for (const f of findings) {
+            structured.push(scannerFinding(f, { location: `${basename(fp)} - ${f.location}` }));
+          }
         } catch (err) {
           results.push(`ERROR ${basename(fp)}: ${err.message}`);
+          notes.push(`Could not scan ${basename(fp)}: ${err.message}`);
         }
       }
 
@@ -1230,7 +1327,9 @@ export function createServer() {
         "",
         ...results,
       ];
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      return findingsResult(lines.join("\n"), filePaths, structured, {
+        notes: notes.length ? notes : undefined,
+      });
     }
   );
 
@@ -1264,11 +1363,11 @@ export function createServer() {
         const safe = validateFilePath(filePath);
         const ext = extname(safe).toLowerCase();
         if (![".docx", ".xlsx", ".pptx"].includes(ext)) {
-          return { content: [{ type: "text", text: "Unsupported format. Supported: .docx, .xlsx, .pptx" }] };
+          return errorResult("Unsupported format. Supported: .docx, .xlsx, .pptx");
         }
         const fstat = await stat(safe);
         if (fstat.size > MAX_FILE_BYTES) {
-          return { content: [{ type: "text", text: "File too large." }] };
+          return errorResult("File too large.");
         }
 
         const changes = [];
@@ -1277,7 +1376,7 @@ export function createServer() {
         if (author) changes.push(`Author: "${author}"`);
 
         if (changes.length === 0) {
-          return { content: [{ type: "text", text: "No changes specified. Provide at least one of: title, language, author." }] };
+          return errorResult("No changes specified. Provide at least one of: title, language, author.");
         }
 
         // Read the OOXML package and update core.xml properties
@@ -1303,9 +1402,13 @@ export function createServer() {
         lines.push("", "Alternatively, open the file in the Office application:");
         lines.push("  File → Info → Properties → Title/Author/Language");
 
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        return okResult(lines.join("\n"), {
+          ok: true,
+          detail: `Prepared ${changes.length} metadata change(s) for ${basename(filePath)}; apply them via the instructions in the text content.`,
+          path: filePath,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );
@@ -1325,19 +1428,19 @@ export function createServer() {
         const safe = validateFilePath(filePath);
         const ext = extname(safe).toLowerCase();
         if (ext !== ".docx") {
-          return { content: [{ type: "text", text: "Heading structure analysis currently supports .docx files only." }] };
+          return errorResult("Heading structure analysis currently supports .docx files only.");
         }
         const fstat = await stat(safe);
         if (fstat.size > MAX_FILE_BYTES) {
-          return { content: [{ type: "text", text: "File too large." }] };
+          return errorResult("File too large.");
         }
 
         const buf = await fsReadFile(safe);
         // Parse document.xml from the OOXML ZIP package to extract heading styles
-        const entries = parseZipCd(buf);
+        const entries = readZipEntries(buf);
         const text = getZipXml(buf, entries, "word/document.xml");
         if (!text) {
-          return { content: [{ type: "text", text: "Could not extract document.xml from the .docx archive." }] };
+          return errorResult("Could not extract document.xml from the .docx archive.");
         }
         const headingPattern = /w:pStyle w:val="Heading(\d)"/gi;
         const headings = [];
@@ -1378,9 +1481,16 @@ export function createServer() {
         lines.push("  2. Start with Heading 1, then Heading 2, etc. — never skip levels");
         lines.push("  3. Do not use bold/font-size to simulate headings");
 
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        const problems = lines.filter((l) => l.startsWith("ERROR") || l.startsWith("WARNING")).length;
+        return okResult(lines.join("\n"), {
+          ok: problems === 0,
+          detail: problems === 0
+            ? `Heading structure looks correct (${headings.length} headings).`
+            : `${problems} heading structure problem(s) found; remediation steps in the text content.`,
+          path: filePath,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );
@@ -1483,9 +1593,13 @@ export function createServer() {
           `  Total cached findings: ${totalFindings}`,
         );
 
-        return { content: [{ type: "text", text: lines.join("\n") }] };
+        return okResult(lines.join("\n"), {
+          ok: true,
+          detail: `${needsScan} of ${filePaths.length} files need scanning (${newFiles.length} new, ${changed.length} changed, ${expired.length} expired, ${unchanged.length} unchanged).`,
+          path: cachePath,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );
@@ -1555,14 +1669,16 @@ export function createServer() {
         const totalEntries = Object.keys(cache).length;
         const totalFindings = Object.values(cache).reduce((sum, e) => sum + (e.findings || 0), 0);
 
-        return {
-          content: [{
-            type: "text",
-            text: `Audit cache updated: ${updated} entries written to ${basename(cachePath)}\nTotal cached: ${totalEntries} files, ${totalFindings} findings`,
-          }],
-        };
+        return okResult(
+          `Audit cache updated: ${updated} entries written to ${basename(cachePath)}\nTotal cached: ${totalEntries} files, ${totalFindings} findings`,
+          {
+            ok: true,
+            detail: `${updated} entries written; ${totalEntries} files and ${totalFindings} findings cached.`,
+            path: safeCachePath,
+          },
+        );
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );
@@ -1629,9 +1745,20 @@ export function createServer() {
           results[type] = pairs;
         }
 
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        const allPairs = Object.values(results).flat();
+        const worst = allPairs.reduce((min, p) => Math.min(min, p.deltaE), Infinity);
+        const indistinct = allPairs.filter((p) => !p.distinguishable).length;
+        return okResult(JSON.stringify(results, null, 2), {
+          value: Number.isFinite(worst) ? worst : 0,
+          unit: "delta-E (simulated)",
+          threshold: 20,
+          passes: indistinct === 0,
+          detail: indistinct === 0
+            ? "All colour pairs stay distinguishable under every simulated colour vision deficiency."
+            : `${indistinct} colour pair comparison(s) become indistinguishable under simulated colour vision deficiency; details in the text content.`,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );
@@ -1701,9 +1828,16 @@ export function createServer() {
           },
         };
 
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+        return okResult(JSON.stringify(result, null, 2), {
+          value: round(fleschKincaid),
+          unit: "Flesch-Kincaid grade",
+          threshold: 9,
+          passes: wcagAAA,
+          level: "AAA (3.1.5)",
+          detail: `${easeLabel}. Gunning Fog ${round(gunningFog)}.`,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );
@@ -1778,7 +1912,7 @@ export function createServer() {
             prevEnd = end;
           }
         } else {
-          return { content: [{ type: "text", text: "Error: Unsupported file format. Use .vtt or .srt" }] };
+          return errorResult("Error: Unsupported file format. Use .vtt or .srt");
         }
 
         const hasSpeakerIds = /(?:<v\s|>>|[A-Z]+:)/.test(content);
@@ -1800,9 +1934,21 @@ export function createServer() {
           valid: issues.filter(i => i.severity === "critical" || i.severity === "serious").length === 0,
         };
 
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+        return findingsResult(
+          JSON.stringify(result, null, 2),
+          [filePath],
+          issues.map((i) => ({
+            rule: "caption-validation",
+            wcag: "1.2.2 A",
+            severity: i.severity,
+            location: i.cue ? `${basename(safePath)}, cue ${i.cue}` : basename(safePath),
+            summary: i.message,
+            fix: i.message,
+          })),
+          { passed: issues.length === 0 ? ["caption-validation"] : undefined },
+        );
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );
@@ -1901,9 +2047,12 @@ export function createServer() {
           md += `This accessibility statement will be reviewed and updated annually, or after significant website changes.\n`;
         }
 
-        return { content: [{ type: "text", text: md }] };
+        return okResult(md, {
+          ok: true,
+          detail: `Generated a ${fmt === "eu" ? "EU model" : "W3C"} accessibility statement for ${organization} (WCAG 2.2 ${level}, ${statusText}); full markdown in the text content.`,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `Error: ${err.message}` }] };
+        return errorResult(`Error: ${err.message}`);
       }
     }
   );

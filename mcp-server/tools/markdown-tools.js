@@ -13,6 +13,7 @@ import { z } from "zod";
 import { basename, dirname, join } from "node:path";
 import { readFile as fsReadFile, writeFile as fsWriteFile } from "node:fs/promises";
 import { validateFilePath } from "../server-core.js";
+import { errorResult, findingsResult, scannerFinding } from "../results.js";
 
 // ---------------------------------------------------------------------------
 // Markdown scanner
@@ -228,7 +229,7 @@ export function registerMarkdownTools(server) {
     },
     async ({ filePath, reportPath }) => {
       if (!filePath.toLowerCase().endsWith(".md")) {
-        return { content: [{ type: "text", text: "File must be a .md file." }] };
+        return errorResult("File must be a .md file.");
       }
 
       let text;
@@ -236,11 +237,15 @@ export function registerMarkdownTools(server) {
         const safe = validateFilePath(filePath);
         text = await fsReadFile(safe, "utf-8");
       } catch (err) {
-        return { content: [{ type: "text", text: `Cannot read file: ${err.message}` }] };
+        return errorResult(`Cannot read file: ${err.message}`);
       }
 
       const config = await loadMarkdownConfig(filePath);
-      if (config.enabled === false) return { content: [{ type: "text", text: "Markdown scanning disabled in configuration." }] };
+      if (config.enabled === false) {
+        return findingsResult("Markdown scanning disabled in configuration.", [filePath], [], {
+          notes: ["Markdown scanning disabled in configuration; nothing was checked."],
+        });
+      }
 
       const { findings, info } = scanMarkdown(text, config);
 
@@ -253,13 +258,14 @@ export function registerMarkdownTools(server) {
         } catch (err) { reportNote = `\nFailed to write report: ${err.message}`; }
       }
 
+      const notes = reportNote ? [reportNote.trim()] : undefined;
       if (findings.length === 0) {
-        return {
-          content: [{
-            type: "text",
-            text: `Markdown scan complete: ${basename(filePath)}\nNo issues found. ${info.lineCount} lines, ${info.headingCount} headings.${reportNote}`,
-          }],
-        };
+        return findingsResult(
+          `Markdown scan complete: ${basename(filePath)}\nNo issues found. ${info.lineCount} lines, ${info.headingCount} headings.${reportNote}`,
+          [filePath],
+          [],
+          { passed: ["markdown-scan"], notes },
+        );
       }
 
       const errors = findings.filter(f => f.severity === "error").length;
@@ -274,7 +280,10 @@ export function registerMarkdownTools(server) {
       ];
       for (const f of findings) output.push(`[${f.severity.toUpperCase()}] ${f.ruleId} (line ${f.line}): ${f.message}`);
       if (reportNote) output.push(reportNote);
-      return { content: [{ type: "text", text: output.join("\n") }] };
+      const structured = findings.map((f) =>
+        scannerFinding(f, { location: `${basename(filePath)}:${f.line}` }),
+      );
+      return findingsResult(output.join("\n"), [filePath], structured, { notes });
     }
   );
 }

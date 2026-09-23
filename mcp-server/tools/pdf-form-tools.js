@@ -9,6 +9,7 @@ import { z } from "zod";
 import { readFile as fsReadFile } from "node:fs/promises";
 import { basename } from "node:path";
 import { validateFilePath } from "../server-core.js";
+import { okResult, errorResult } from "../results.js";
 
 let _pdfLibAvailable = null;
 
@@ -36,23 +37,18 @@ export function registerPdfFormTools(server) {
     },
     async ({ filePath }) => {
       if (!(await isPdfLibAvailable())) {
-        return {
-          content: [{
-            type: "text",
-            text: "pdf-lib is not installed. Install with:\n  npm install pdf-lib",
-          }],
-        };
+        return errorResult("pdf-lib is not installed. Install with:\n  npm install pdf-lib");
       }
 
       let safePath;
       try {
         safePath = validateFilePath(filePath);
       } catch (err) {
-        return { content: [{ type: "text", text: `Path error: ${err.message}` }] };
+        return errorResult(`Path error: ${err.message}`);
       }
 
       if (!safePath.toLowerCase().endsWith(".pdf")) {
-        return { content: [{ type: "text", text: "File must be a .pdf file." }] };
+        return errorResult("File must be a .pdf file.");
       }
 
       try {
@@ -63,7 +59,11 @@ export function registerPdfFormTools(server) {
         const fields = form.getFields();
 
         if (fields.length === 0) {
-          return { content: [{ type: "text", text: `No form fields found in ${basename(filePath)}.` }] };
+          return okResult(`No form fields found in ${basename(filePath)}.`, {
+            ok: false,
+            detail: `No form fields found in ${basename(filePath)}; nothing to convert.`,
+            path: filePath,
+          });
         }
 
         const htmlParts = [
@@ -131,13 +131,13 @@ export function registerPdfFormTools(server) {
         );
 
         const html = htmlParts.join("\n");
-        return {
-          content: [
-            { type: "text", text: `Converted ${fields.length} form fields from ${basename(filePath)}:\n\n${html}` },
-          ],
-        };
+        return okResult(`Converted ${fields.length} form fields from ${basename(filePath)}:\n\n${html}`, {
+          ok: true,
+          detail: `Converted ${fields.length} form fields from ${basename(filePath)} to accessible HTML; the markup is in the text content.`,
+          path: filePath,
+        });
       } catch (err) {
-        return { content: [{ type: "text", text: `PDF form conversion failed: ${err.message}` }] };
+        return errorResult(`PDF form conversion failed: ${err.message}`);
       }
     }
   );
