@@ -13,6 +13,16 @@
       "summary": "Validation errors are shown in colour only and are not linked to their fields.",
       "fix": "Set aria-describedby on each input to the id of its error text, set aria-invalid, and put the error in a live region.",
       "component": "SignupForm"
+    },
+    {
+      "rule": "FORM-003",
+      "wcag": "4.1.2 A",
+      "severity": "minor",
+      "location": "src/components/SignupForm.tsx:12",
+      "summary": "The email field has both a label and a placeholder, so screen readers announce the name twice.",
+      "fix": "Remove the placeholder; the label already names the field. If the example text helps, move it to visible help text and point aria-describedby at it.",
+      "evidence": "<input id=\"email\" type=\"email\" placeholder=\"you@example.com\">",
+      "component": "SignupForm"
     }
   ],
   "passed": [

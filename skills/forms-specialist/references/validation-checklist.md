@@ -23,6 +23,7 @@ Part of the `forms-specialist` skill. Read this only when the task reaches these
 ## Common Mistakes You Must Catch
 
 - `placeholder` used as the only label (disappears on input, poor contrast)
+- `placeholder` left on a field that already has a label (browsers expose it as a second child node, so the field name is voiced twice)
 - Error messages not associated with `aria-describedby`
 - Missing `aria-invalid` on error fields
 - Radio/checkbox groups without `<fieldset>` and `<legend>`

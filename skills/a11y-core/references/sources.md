@@ -76,6 +76,9 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [WCAG 1.3.5 Identify Input Purpose](https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose.html)
 - [HTML Living Standard - Forms](https://html.spec.whatwg.org/multipage/forms.html)
 - [WAI-ARIA 1.2 Specification](https://www.w3.org/TR/wai-aria-1.2/)
+- [WCAG 4.1.2 Name, Role, Value](https://www.w3.org/TR/WCAG22/#name-role-value)
+- [Chrome DevTools accessibility tree reference](https://developer.chrome.com/docs/devtools/accessibility/reference)
+- [Freedom Scientific standards-support issue tracker](https://github.com/freedomScientific/standards-support/issues) (placeholder on a labelled textarea)
 
 ### contrast-master
 

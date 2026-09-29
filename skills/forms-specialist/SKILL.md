@@ -164,7 +164,7 @@ For each finding:
 
 Read one only when the task reaches it. Do not read them all up front.
 
-- `references/labels-the-foundation.md` - Labels -- The Foundation
+- `references/labels-the-foundation.md` - Labels -- The Foundation, Placeholder Is Not a Label
 - `references/required-fields.md` - Required Fields, Grouping with Fieldset and Legend, Error Handling, Autocomplete
 - `references/password-fields.md` - Password Fields
 - `references/multi-step-forms-wizards.md` - Multi-Step Forms / Wizards, Search Forms

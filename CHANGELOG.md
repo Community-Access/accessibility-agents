@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`forms-specialist` now treats a placeholder on an already-labelled field as a defect.** Combines the existing "placeholder is not a label" guidance with the case where a real name exists: the browser exposes the placeholder as a second child node of the field, so JAWS and VoiceOver announce the name twice. Adds `FORM-003` and a `validation-checklist` catch. Based on Chrome's accessibility tree and the Freedom Scientific standards-support tracker.
+
 ## [7.0.3] - 2026-09-23
 
 Every MCP tool failed on invocation in 7.0.2. Reported as

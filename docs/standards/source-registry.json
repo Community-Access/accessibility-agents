@@ -204,8 +204,27 @@
       "version": "ISO 14289-1",
       "agents": ["pdf-accessibility", "document-accessibility-wizard"],
       "checkFrequency": "quarterly"
+    },
+    {
+      "id": "chrome-accessibility-tree",
+      "url": "https://developer.chrome.com/docs/devtools/accessibility/reference",
+      "type": "platform-vendor",
+      "lastVerified": "2026-09-28",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["forms-specialist", "aria-specialist", "testing-coach"],
+      "checkFrequency": "quarterly"
+    },
+    {
+      "id": "vispero-standards-support",
+      "url": "https://github.com/freedomScientific/standards-support/issues",
+      "type": "at-vendor",
+      "lastVerified": "2026-09-28",
+      "sha256": "",
+      "version": "latest",
+      "agents": ["forms-specialist", "live-region-controller", "testing-coach"],
+      "checkFrequency": "monthly"
     }
   ]
 }
-
 
