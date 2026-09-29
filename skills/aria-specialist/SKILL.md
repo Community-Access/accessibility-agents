@@ -129,6 +129,7 @@ Read one only when the task reaches it. Do not read them all up front.
 
 - `references/aria-you-must-use-correctly.md` - ARIA You Must Use Correctly
 - `references/landmark-and-region-overuse.md` - Landmark and Region Overuse, Accessible Names and Descriptions
+- `references/flex-and-grid-text-runs.md` - Flex and Grid Text Runs
 
 ## Output contract
 

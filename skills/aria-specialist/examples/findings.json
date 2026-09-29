@@ -23,6 +23,17 @@
       "location": "src/components/Card.tsx:12",
       "summary": "Redundant role on a semantic element.",
       "fix": "Remove role=\"article\" from the article element; the element already carries that role."
+    },
+    {
+      "rule": "ARIA-012",
+      "wcag": "1.3.1 A",
+      "severity": "moderate",
+      "confidence": "medium",
+      "location": "src/components/MessageHeader.tsx:8",
+      "summary": "A flex row splits one phrase (author and timestamp) into two accessibility objects, so VoiceOver takes two swipes for one line.",
+      "fix": "Wrap the author and timestamp in a single inline span and make that the one flex child, or add a real separator character between them in a non-hidden span.",
+      "evidence": "<div class=\"msg-header\"><span>Ada</span><span>6:37 PM</span></div>",
+      "component": "MessageHeader"
     }
   ],
   "passed": [

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`aria-specialist` and `mobile-accessibility` now cover flex and grid text runs.** WebKit exposes each flex or grid child as its own accessibility object, so a row that reads as one phrase costs one swipe per child on iOS, and the container drops whitespace between children so adjacent words glue together in speech. Adds a `flex-and-grid-text-runs` reference, an `ARIA-012` finding, and a "One phrase, one stop" section in the iOS audit phase. Neither defect is visible in Chrome, which collapses the row into one text node.
+
 ## [7.0.3] - 2026-09-23
 
 Every MCP tool failed on invocation in 7.0.2. Reported as

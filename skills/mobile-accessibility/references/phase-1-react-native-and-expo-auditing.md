@@ -203,6 +203,16 @@ Text("Summary").accessibilitySortPriority(2)
 Button("Details").accessibilitySortPriority(1)
 ```
 
+#### One phrase, one stop
+
+Focus order is not only about frames: on iOS, WebKit exposes each child of a flex or grid container as its own accessibility element, so a card row built from separate labels (title, subtitle, timestamp) costs one swipe per label. When the pieces read as one phrase, produce one element instead:
+
+- SwiftUI: `.accessibilityElement(children: .combine)`
+- UIKit: set `isAccessibilityElement = true` on the container and join the pieces in its `accessibilityLabel`
+- Compose: `Modifier.semantics(mergeDescendants = true)`
+
+The reverse also happens: a flex container drops whitespace-only text nodes between its children, so two labels can announce as one glued word ("Ada6:37 PM"). Keep a real separator character inside the grouped element. The same applies to web content in a `WKWebView` or mobile Safari, where visual `gap` creates no boundary in the accessibility tree. Confirm in the Accessibility Inspector, which lists exactly the elements VoiceOver stops on.
+
 ---
 
 ## Phase 3: Android-Specific Auditing (Jetpack Compose and Views)

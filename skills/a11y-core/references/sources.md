@@ -60,6 +60,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [ARIA Authoring Practices Guide (APG)](https://www.w3.org/WAI/ARIA/apg/)
 - [axe DevTools ARIA Rules](https://accessibilityinsights.io/info-examples/web/)
 - [HTML Living Standard](https://html.spec.whatwg.org/)
+- [Chrome DevTools accessibility tree reference](https://developer.chrome.com/docs/devtools/accessibility/reference)
 
 ### keyboard-navigator
 
