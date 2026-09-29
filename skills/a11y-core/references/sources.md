@@ -98,6 +98,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [ARIA Authoring Practices - Live Regions](https://www.w3.org/WAI/ARIA/apg/practices/)
 - [WCAG 4.1.3 Status Messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html)
 - [aria-live, aria-atomic, aria-relevant](https://www.w3.org/TR/wai-aria-1.2/#aria-live)
+- [Freedom Scientific standards-support issue tracker](https://github.com/freedomScientific/standards-support/issues) (explicit `aria-atomic="true"` silencing live regions in JAWS on Firefox)
 
 ### alt-text-headings
 

@@ -13,6 +13,17 @@
       "summary": "Toast is inserted into the DOM with its live region, so nothing is announced.",
       "fix": "Render an empty aria-live=\"polite\" container on mount and write the message into it.",
       "component": "Toast"
+    },
+    {
+      "rule": "LIVE-003",
+      "wcag": "4.1.3 AA",
+      "severity": "serious",
+      "confidence": "medium",
+      "location": "src/components/ChatTranscript.tsx:18",
+      "summary": "The chat transcript is a live region whose whole contents are re-rendered, so screen readers re-read the entire conversation history.",
+      "fix": "Take the transcript out of the live region (role=\"log\" with aria-live=\"off\") and announce each completed turn through a separate visually hidden role=\"status\" announcer.",
+      "evidence": "<div role=\"log\">{messages.map(m => <p>{m.text}</p>)}</div>",
+      "component": "ChatTranscript"
     }
   ],
   "passed": [

@@ -58,10 +58,13 @@ The conditional render creates and fills the element simultaneously. The screen 
 8. Is `textContent` used to update (not innerHTML or element replacement)?
 9. For React: are live regions unconditionally rendered?
 10. Are toasts announced without stealing focus?
-11. Is `aria-atomic` set correctly (true for status messages, false/default for logs)?
+11. Is `aria-atomic` needed at all, or does the role already imply it (`role="status"` and `role="alert"` are atomic by default)?
 12. Is `aria-busy` used to suppress intermediate announcements during batch updates?
 13. Do alerts avoid auto-disappearing without user control?
 14. Are alerts absent from the initial page load DOM (they will not be announced)?
+15. Does every status region set `aria-live` explicitly, or does it rely only on the implicit role mapping?
+16. Will a repeated identical message still re-announce (region cleared and refilled)?
+17. Is a streaming transcript or frequently re-rendered list kept out of the live region?
 
 ## Common Mistakes You Must Catch
 
@@ -73,6 +76,9 @@ The conditional render creates and fills the element simultaneously. The screen 
 - Announcements during page load that screen reader overrides with its own page load announcement
 - Missing loading state announcements (user does not know anything is happening)
 - Using `display: none` to hide a live region (screen reader ignores it completely)
+- A status region that relies only on `role="status"` with no explicit `aria-live` (some AT/browser combinations stay silent)
+- A streaming transcript or re-rendered list inside a live region (screen readers re-read the whole region, not just the new entry)
+- An explicit `aria-atomic="true"` that silences JAWS on Firefox (leave it to the role default -- standards-support issue #876)
 
 ## Structured Output for Sub-Agent Use
 

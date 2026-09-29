@@ -32,10 +32,19 @@ Never use assertive for routine updates. Interrupting the screen reader is disor
 
 ### `role="status"`
 
-Implicit `aria-live="polite"`. Use for status indicators that update frequently.
+Implicit `aria-live="polite"`. Use for status indicators that update frequently. Set `aria-live="polite"` explicitly as well: the implicit mapping is correct per spec, but JAWS and VoiceOver only treat a region as live reliably when the attribute is present, and being explicit costs nothing.
+
+A region repainted with identical text does not change, so a repeated message does not re-announce. Clear the region first and refill it on the next frame so the repeat still speaks:
+
+```javascript
+function announce(regionEl, message) {
+  regionEl.textContent = '';
+  requestAnimationFrame(() => { regionEl.textContent = message; });
+}
+```
 
 ```html
-<div role="status">5 items in cart</div>
+<div role="status" aria-live="polite">5 items in cart</div>
 ```
 
 ### `role="alert"`
@@ -56,6 +65,18 @@ Implicit `aria-live="assertive"`. Use for error conditions.
 ### `role="log"`
 
 Implicit `aria-live="polite"`. Use for sequential content where new entries are added (chat, activity feeds, console output).
+
+A log only announces well when each appended entry is self-contained and the region does not otherwise churn. If the newest entry is streamed token by token, or the whole list is re-rendered, screen readers re-read far more than the addition -- iOS VoiceOver will read the entire conversation history. For chat and streaming output, keep the transcript itself non-live (`role="log"` with `aria-live="off"`) and announce only each completed turn through a small dedicated announcer outside it:
+
+```html
+<div id="transcript" role="log" aria-live="off"><!-- messages --></div>
+<div id="transcript-announcer" role="status" aria-live="polite" class="visually-hidden"></div>
+
+<script>
+document.getElementById('transcript-announcer').textContent =
+  'Assistant: ' + completedReplyText;
+</script>
+```
 
 ```html
 <div role="log" aria-label="Chat messages">
@@ -85,7 +106,7 @@ The HTML `<output>` element has an implicit `role="status"` (polite live region)
 
 **`aria-atomic`** -- Controls whether the screen reader announces the entire region or just the changed portion:
 
-- `aria-atomic="true"` -- announce the ENTIRE region content on any change (use for status messages where context matters: "3 of 10 items")
+- `aria-atomic="true"` -- announce the ENTIRE region content on any change (use for status messages where context matters: "3 of 10 items"). Caution: an explicit `aria-atomic="true"` can silence the region entirely in JAWS on Firefox (Freedom Scientific standards-support issue [#876](https://github.com/freedomScientific/standards-support/issues/876)), so leave it off where the role already implies atomicity -- `role="status"` and `role="alert"` are atomic by default.
 - `aria-atomic="false"` (default) -- announce only the changed nodes (use for chat logs where only the new message matters)
 
 **`aria-relevant`** -- Controls which types of changes trigger announcements:
