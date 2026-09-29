@@ -177,6 +177,8 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [axe-core Library](https://github.com/dequelabs/axe-core)
 - [axe DevTools](https://www.deque.com/axe/devtools/)
 - [Playwright Accessibility Testing](https://playwright.dev/docs/accessibility-testing)
+- [Chrome DevTools accessibility tree reference](https://developer.chrome.com/docs/devtools/accessibility/reference)
+- [Freedom Scientific standards-support issue tracker](https://github.com/freedomScientific/standards-support/issues)
 - [Pa11y](https://pa11y.org/)
 
 ### wcag-guide

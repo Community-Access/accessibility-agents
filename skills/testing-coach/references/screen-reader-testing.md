@@ -43,6 +43,8 @@ Part of the `testing-coach` skill. Read this only when the task reaches these se
 4. Are form fields labeled? (Navigate to each, listen for the label)
 5. Do error messages announce when they appear?
 6. Can you complete the full user journey eyes-closed?
+7. Swipe through a grouped row (title, subtitle, timestamp): each extra swipe is a separate accessibility object, not a styling detail.
+8. Check a labelled field that also has a placeholder: expect the name once, not the name plus the placeholder.
 
 ### VoiceOver (macOS - Built-in)
 
@@ -152,5 +154,21 @@ Follow this sequence for every page or component:
    - Complete the primary task (sign up, checkout, search)
    - Note every point of confusion or failure
 ```
+
+### Extra Verbosity: Duplicated Names and Split Text Runs
+
+Two kinds of extra verbosity live in the accessibility tree rather than in the visible text, and the browser confirms them faster than the ear does.
+
+**Duplicated names.** Select a form field in Chrome DevTools > Elements > Accessibility. When a field has both an accessible name and a `placeholder`, the placeholder appears as a child node of the field, and JAWS and VoiceOver announce the name twice (`textbox "Email"` with a `/placeholder:` child). A label plus a placeholder is a defect even though it looks correct on screen.
+
+**Split text runs.** In a `display: flex` or `display: grid` row, WebKit (Safari and iOS) exposes every child as its own accessibility object, so a visually grouped row becomes one swipe per child; the container also drops the whitespace between children, which can glue two labels into one spoken word. Chromium collapses the row into a single text node and hides the defect, so confirm it in Safari or iOS VoiceOver rather than Chrome alone.
+
+**Verify:**
+
+- A labelled field with a placeholder announces its name once.
+- A row that reads as one phrase takes one swipe, not three.
+- A streaming transcript announces only the new turn, not the whole conversation history.
+
+Source: [Chrome accessibility tree reference](https://developer.chrome.com/docs/devtools/accessibility/reference) and the [Freedom Scientific standards-support tracker](https://github.com/freedomScientific/standards-support/issues) (placeholder on a labelled textarea; explicit `aria-atomic="true"` silencing live regions in JAWS on Firefox).
 
 ---
