@@ -80,13 +80,13 @@ class ScorePanelAccessible(wx.Accessible):
 ## Qt Accessibility
 
 Every interactive widget in a `.ui` file needs one of: visible `text`,
-`accessibleName`/`accessibleDescription`, `toolTip`, or a `QLabel` buddy.
-Icon-only `QPushButton`/`QToolButton` fails most often. A `toolTip` counts
+`accessibleName`/`accessibleDescription`, or `toolTip`. Icon-only
+`QPushButton`/`QToolButton` fails most often. A `toolTip` counts
 as a name -- screen readers announce it.
 
 ```xml
 <widget class="QLineEdit" name="searchField">
-  <property name="accessibleName"><string>Search entries</string></property>
+  <property name="placeholderText"><string>Search entries (Ctrl+F)</string></property>
 </widget>
 <widget class="QToolButton" name="copyButton">
   <property name="toolTip"><string>Copy password</string></property>
@@ -98,11 +98,16 @@ as a name -- screen readers announce it.
 ```
 
 ```cpp
-searchField->setAccessibleName("Search entries");
 copyButton->setToolTip("Copy password"); // announced by screen readers
-label->setBuddy(searchField);
+label->setBuddy(searchField); // mnemonic and relation only, not a name
 ```
 
+- A `QLabel` buddy does NOT name the control: Qt leaves the accessible Name
+  empty (probe-verified) and screen readers announce values only. Buddies
+  give mnemonics and relations; the control still needs its own name.
+- For `QLineEdit`, a descriptive placeholder suffices; an `accessibleName`
+  does not stack audibly with it (verified live with NVDA). Prefer the
+  placeholder over a duplicate name.
 - A code-set name clears only the same dialog's widget; match by dialog stem.
 - `Qt::NoFocus` on interactive is a finding unless a verified read-only
   display; keep an allow-list.
