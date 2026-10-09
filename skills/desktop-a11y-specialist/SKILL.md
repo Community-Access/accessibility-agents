@@ -77,6 +77,37 @@ class ScorePanelAccessible(wx.Accessible):
 
 ---
 
+## Qt Accessibility
+
+Every interactive widget in a `.ui` file needs one of: visible `text`,
+`accessibleName`/`accessibleDescription`, `toolTip`, or a `QLabel` buddy.
+Icon-only `QPushButton`/`QToolButton` fails most often. A `toolTip` counts
+as a name -- screen readers announce it.
+
+```xml
+<widget class="QLineEdit" name="searchField">
+  <property name="accessibleName"><string>Search entries</string></property>
+</widget>
+<widget class="QToolButton" name="copyButton">
+  <property name="toolTip"><string>Copy password</string></property>
+</widget>
+<widget class="QLabel" name="searchLabel">
+  <property name="text"><string>Search:</string></property>
+  <property name="buddy"><cstring>searchField</cstring></property>
+</widget>
+```
+
+```cpp
+searchField->setAccessibleName("Search entries");
+copyButton->setToolTip("Copy password"); // announced by screen readers
+label->setBuddy(searchField);
+```
+
+- A code-set name clears only the same dialog's widget; match by dialog stem.
+- `Qt::NoFocus` on interactive is a finding unless a verified read-only
+  display; keep an allow-list.
+- Every `tabstop` must resolve to a named widget.
+
 ## Focus Management Rules
 
 1. Focus must be visible on every focused control
