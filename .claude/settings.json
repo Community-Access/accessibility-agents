@@ -16,6 +16,14 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          { "type": "command", "command": "node hooks/guard.mjs --behaviour mark --client claude", "timeout": 10 }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "hooks": [

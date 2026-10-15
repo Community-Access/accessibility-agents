@@ -15,7 +15,7 @@ it on each client. A dash means the client has no event that fits.
 |---|---|---|---|---|
 | detect: inject the contract once | `UserPromptSubmit` | `UserPromptSubmit` | `userPromptSubmitted` | `BeforeAgent` |
 | gate: refuse a UI edit before review | `PreToolUse` on Edit, Write | `PreToolUse` on apply_patch, Edit, Write | `preToolUse` | `BeforeTool` on write_file, replace |
-| mark: lead completed, open the gate | `SubagentStop` | `SubagentStop` | `postToolUse` | `AfterAgent` |
+| mark: lead completed, open the gate | `SubagentStop`, `PostToolUse` on Skill | `SubagentStop` | `postToolUse` | `AfterAgent` |
 | persist: save and restore across compaction | `PreCompact`, `SessionStart` | `PreCompact`, `SessionStart` | - | `PreCompress`, `SessionStart` |
 | finalize: refuse to end an unreviewed turn | `Stop` | `Stop` | - | `AfterAgent` |
 
@@ -23,6 +23,13 @@ it on each client. A dash means the client has no event that fits.
 
 **Claude Code and Codex** get the full gate: an edit is refused before review,
 a turn cannot end with an unreviewed edit, and a wizard survives compaction.
+
+On Claude Code the routers are skills, which run inline through the Skill tool
+rather than as subagents, so `SubagentStop` never fires for them. The gate opens
+on `PostToolUse` for the Skill tool instead, the same way Copilot's
+`postToolUse` does. `finalize` refuses a stop once; when Claude Code reports it
+is already continuing because of that refusal (`stop_hook_active`), it lets the
+turn end rather than loop.
 
 **Gemini and Antigravity** get the full gate under different names.
 
@@ -38,7 +45,7 @@ only the wrapper differs.
 
 | Client | Manifest | Root variable | Decision output |
 |---|---|---|---|
-| Claude Code | `hooks/claude.hooks.json`, `hooks` object keyed by event, `matcher` regex | `${CLAUDE_PLUGIN_ROOT}` | JSON `hookSpecificOutput.permissionDecision`, or exit 2 |
+| Claude Code | `hooks/claude.hooks.json`, declared as `hooks` in `.claude-plugin/plugin.json`, `hooks` object keyed by event, `matcher` regex | `${CLAUDE_PLUGIN_ROOT}`, quoted | JSON `hookSpecificOutput.permissionDecision`, or exit 2 |
 | Codex | `hooks/codex.hooks.json`, same shape, `statusMessage` per hook | `${PLUGIN_ROOT}` | exit code |
 | Copilot | `hooks/copilot.hooks.json`, `version: 1`, `bash` and `powershell` commands, `timeoutSec` | none; paths are repository-relative | exit code |
 | Gemini | `hooks/gemini.hooks.json`, named hooks with `description`, timeouts in milliseconds | `${extensionPath}` | JSON `decision`, or exit code |
@@ -64,12 +71,14 @@ names the next action.
 
 ## What is checked
 
-`hooks/guard.test.mjs`, 22 tests: the reminder fires once; the gate refuses
+`hooks/guard.test.mjs`, 30 tests: the reminder fires once; the gate refuses
 every user-facing extension and ignores build output, tests and dependencies;
-every path key a client might use is recognised; only the lead opens the gate;
-session aliases work and session isolation holds; finalize refuses an
-unreviewed UI edit; persist round-trips state; malformed input and unknown
-behaviours are ignored rather than fatal.
+every path key a client might use is recognised; only the lead opens the gate,
+whether a client reports it as `subagent_type`, `agent_type` or a Skill tool
+call; the Claude manifest is declared, carries no unknown keys, and marks on both events; session aliases
+work and session isolation holds; finalize refuses an unreviewed UI edit once
+and does not loop; persist round-trips state under the right event name;
+malformed input and unknown behaviours are ignored rather than fatal.
 
 ## Sources
 

@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The hooks never loaded from a Claude Code plugin install.** Claude Code
+  only discovers `hooks/hooks.json` by itself, and `.claude-plugin/plugin.json`
+  did not declare `hooks/claude.hooks.json`, so a plugin install wired no gate
+  at all. `verify:live` did not show it because it runs inside this checkout,
+  where `.claude/settings.json` supplies the same hooks.
+- **Once loaded, the gate could never open on Claude Code.** The routers are
+  skills, which Claude Code runs inline through the Skill tool, so
+  `SubagentStop` never fires for the lead; and when a subagent does finish,
+  Claude Code names it `agent_type`, which `mark` did not read. `mark` now also
+  runs on `PostToolUse` for the Skill tool, as Copilot's `postToolUse` already
+  did, and reads `agent_type`.
+- **The Stop hook could loop.** `finalize` ignored `stop_hook_active`, so it
+  refused every continuation of a turn it had already refused. It now refuses
+  once, emits a stop decision rather than a `PreToolUse` one, and writes the
+  reason to stderr as well. Its message said a file "was edited without an
+  accessibility review", when the gate had refused that edit; it now says the
+  edit was refused and not made, and offers a way to finish that does not
+  need the review.
+- `hooks/claude.hooks.json` had a `$comment` key, which Claude Code reports as
+  unknown at every session start. The explanation lives in
+  `docs/standards/hooks-by-client.md`.
+- Context restored on `SessionStart` was labelled `UserPromptSubmit`; it now
+  names the event that fired.
+- `${CLAUDE_PLUGIN_ROOT}` is quoted in every Claude hook command, so a plugin
+  path containing a space no longer splits the command, which
+  `claude plugin validate` warned about.
+
 ## [7.0.3] - 2026-09-23
 
 Every MCP tool failed on invocation in 7.0.2. Reported as

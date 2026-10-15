@@ -181,11 +181,18 @@ function targetPath(payload) {
   );
 }
 
+/**
+ * The skill or subagent a payload reports. Claude Code names a finished
+ * subagent `agent_type` on SubagentStop, and a skill invocation
+ * `tool_input.skill` on PostToolUse for the Skill tool.
+ */
 function subagentName(payload) {
   const input = payload.tool_input || payload.toolInput || payload.arguments || {};
   return (
     payload.subagent_type ||
     payload.subagentType ||
+    payload.agent_type ||
+    payload.agentType ||
     payload.agent ||
     payload.agent_name ||
     payload.name ||
@@ -207,11 +214,14 @@ function isUiFile(file) {
  * Each client reads a different field. Emitting all of them is harmless:
  * a client ignores the keys it does not know, and the exit code carries the
  * decision for any client that reads nothing at all.
+ *
+ * `hookEventName` must name the event that actually fired, which for persist
+ * is SessionStart rather than UserPromptSubmit.
  */
-function emitContext(text) {
+function emitContext(text, event = 'UserPromptSubmit') {
   process.stdout.write(
     JSON.stringify({
-      hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: text },
+      hookSpecificOutput: { hookEventName: event, additionalContext: text },
       additionalContext: text,
       systemMessage: text,
     }),
@@ -232,12 +242,26 @@ function emitDeny(reason) {
   );
 }
 
+/**
+ * A stop event has no permission decision, so it gets no PreToolUse output.
+ * The reason also goes to stderr, which is what a client reads as the reason
+ * to continue when it does not accept the JSON alongside exit 2.
+ */
+function emitBlock(reason) {
+  process.stdout.write(JSON.stringify({ decision: 'block', reason }));
+  process.stderr.write(`${reason}\n`);
+}
+
+function eventName(payload) {
+  return payload.hook_event_name || payload.hookEventName || undefined;
+}
+
 // --------------------------------------------------------------- behaviours
 
 function detect(payload, ids) {
   if (hasMarker(ids, 'reminded')) return 0;
   setMarker(ids, 'reminded');
-  emitContext(REMINDER);
+  emitContext(REMINDER, eventName(payload));
   return 0;
 }
 
@@ -291,20 +315,26 @@ function persist(payload, ids) {
     `Accessibility session state restored. Lead review ${state.reviewed ? 'completed' : 'not yet run'}.` +
       (state.attemptedUiEdit ? ` A UI edit to ${state.attemptedUiEdit} was blocked earlier.` : '') +
       ' The contract is in AGENTS.md.',
+    eventName(payload),
   );
   return 0;
 }
 
 /**
- * The last gate. A turn that edited a user-facing file without a completed
- * review would otherwise end with the work merged and nobody told.
+ * The last gate. A turn whose UI edit was refused would otherwise end with the
+ * edit silently missing and nobody told.
+ *
+ * It refuses once per stop. When the client is already continuing because of
+ * this refusal (`stop_hook_active`), it lets the turn end; refusing again would
+ * loop on a condition the model may have no way to resolve.
  */
 function finalize(payload, ids) {
+  if (payload.stop_hook_active || payload.stopHookActive) return 0;
   if (!hasMarker(ids, 'ui-edit-attempted')) return 0;
   if (hasMarker(ids, 'reviewed')) return 0;
-  emitDeny(
-    'A user-facing file was edited without an accessibility review. Dispatch accessibility-lead and let it ' +
-      'complete before finishing this turn.',
+  emitBlock(
+    'An edit to a user-facing file was refused because no accessibility review has run, so the edit was not ' +
+      'made. Dispatch accessibility-lead and retry it, or tell the user the edit is still outstanding.',
   );
   return 2;
 }

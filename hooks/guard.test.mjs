@@ -33,7 +33,7 @@ function run(behaviour, payload) {
   } catch {
     json = null;
   }
-  return { code: result.status, stdout: result.stdout, json };
+  return { code: result.status, stdout: result.stdout, stderr: result.stderr, json };
 }
 
 const SESSION = { session_id: 'test-session' };
@@ -146,6 +146,58 @@ describe('mark', () => {
     const other = run('gate', { session_id: 'session-b', tool_input: { file_path: 'src/X.tsx' } });
     assert.equal(other.code, 2, 'a review in one session must not unlock a different session');
   });
+
+  test('Claude Code SubagentStop names the subagent agent_type', () => {
+    run('mark', { ...SESSION, hook_event_name: 'SubagentStop', agent_type: 'accessibility-agents:accessibility-lead' });
+    assert.equal(run('gate', edit('src/X.tsx')).code, 0, 'a lead reported as agent_type must open the gate');
+  });
+
+  test('Claude Code runs the lead as a skill, reported on PostToolUse for Skill', () => {
+    // Skills run inline in Claude Code, so SubagentStop never fires for the lead.
+    run('mark', {
+      ...SESSION,
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Skill',
+      tool_input: { skill: 'accessibility-agents:accessibility-lead' },
+    });
+    assert.equal(run('gate', edit('src/X.tsx')).code, 0, 'invoking the lead skill must open the gate');
+  });
+
+  test('an unrelated skill does not open the gate', () => {
+    run('mark', {
+      ...SESSION,
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Skill',
+      tool_input: { skill: 'accessibility-agents:aria-specialist' },
+    });
+    assert.equal(run('gate', edit('src/X.tsx')).code, 2, 'only the lead may open the gate');
+  });
+});
+
+describe('claude manifest', () => {
+  const ROOT = path.dirname(HERE);
+  const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
+
+  test('the plugin manifest points at the Claude hooks file', () => {
+    // Claude Code only auto-loads hooks/hooks.json; any other name must be declared.
+    const manifest = readJson('.claude-plugin/plugin.json');
+    assert.equal(manifest.hooks, './hooks/claude.hooks.json');
+    assert.ok(readJson('hooks/claude.hooks.json').hooks, 'the hooks file must wrap its events in a "hooks" key');
+  });
+
+  test('the hooks file has no keys Claude Code warns about', () => {
+    // Any other top-level key, such as $comment, prints a warning at every session start.
+    assert.deepEqual(Object.keys(readJson('hooks/claude.hooks.json')), ['hooks']);
+  });
+
+  test('mark listens where Claude Code reports the lead finishing', () => {
+    const { hooks } = readJson('hooks/claude.hooks.json');
+    const marks = (event) =>
+      (hooks[event] || []).some((entry) => entry.hooks.some((h) => h.command.includes('--behaviour mark')));
+    assert.ok(marks('SubagentStop'), 'mark must run on SubagentStop');
+    const skill = (hooks.PostToolUse || []).find((entry) => new RegExp(`^(?:${entry.matcher})$`).test('Skill'));
+    assert.ok(skill && skill.hooks.some((h) => h.command.includes('--behaviour mark')), 'mark must run on PostToolUse for Skill');
+  });
 });
 
 describe('finalize', () => {
@@ -163,6 +215,23 @@ describe('finalize', () => {
     run('mark', { ...SESSION, subagent_type: 'accessibility-lead' });
     assert.equal(run('finalize', SESSION).code, 0);
   });
+
+  test('the refusal is a stop decision, with the reason on stderr too', () => {
+    run('gate', edit('src/Modal.tsx'));
+    const result = run('finalize', { ...SESSION, hook_event_name: 'Stop' });
+    assert.equal(result.json.decision, 'block');
+    assert.match(result.json.reason, /accessibility-lead/);
+    assert.doesNotMatch(result.json.reason, /was edited/, 'the gate refused the edit, so nothing was edited');
+    assert.equal(result.json.hookSpecificOutput, undefined, 'a stop event takes no PreToolUse output');
+    assert.match(result.stderr, /accessibility-lead/);
+  });
+
+  test('refuses once, then lets a continued turn end rather than loop', () => {
+    run('gate', edit('src/Modal.tsx'));
+    assert.equal(run('finalize', { ...SESSION, stop_hook_active: false }).code, 2);
+    const again = run('finalize', { ...SESSION, stop_hook_active: true });
+    assert.equal(again.code, 0, 'a turn already continuing because of this hook must be allowed to end');
+  });
 });
 
 describe('persist', () => {
@@ -173,6 +242,7 @@ describe('persist', () => {
     const restored = run('persist', { ...SESSION, hook_event_name: 'SessionStart' });
     assert.ok(restored.json, 'state should be handed back after compaction');
     assert.match(restored.json.additionalContext, /review completed/i);
+    assert.equal(restored.json.hookSpecificOutput.hookEventName, 'SessionStart', 'context must name the event that fired');
   });
 
   test('restoring with no saved state says nothing', () => {

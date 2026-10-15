@@ -15,7 +15,7 @@ The gate is six files: the script, four manifests, and its tests.
 | `hooks/codex.hooks.json` | Codex event names |
 | `hooks/copilot.hooks.json` | Copilot coding-agent format, version 1 |
 | `hooks/gemini.hooks.json` | Gemini CLI and Antigravity event names |
-| `hooks/guard.test.mjs` | 22 tests; run with `node --test hooks/guard.test.mjs` |
+| `hooks/guard.test.mjs` | 30 tests; run with `node --test hooks/guard.test.mjs` |
 
 ## Behaviours
 
@@ -70,7 +70,9 @@ a misconfigured manifest cannot break every turn.
 
 ## Installing
 
-A plugin install wires the manifest automatically. `node scripts/install.mjs`
+A plugin install wires the manifest automatically: on Claude Code,
+`.claude-plugin/plugin.json` declares `hooks/claude.hooks.json`, because Claude
+Code only discovers `hooks/hooks.json` on its own. `node scripts/install.mjs`
 writes the manifest for each client it finds, never overwriting a hooks file
 that already exists; it writes beside it and tells you to merge. For
 developing this repository, `.claude/settings.json` already points at
@@ -90,4 +92,10 @@ echo '{"session_id":"t","subagent_type":"accessibility-lead"}' \
   | node hooks/guard.mjs --behaviour mark --client claude
 ```
 
-and the same gate call exits 0.
+and the same gate call exits 0. Claude Code reports the lead the way it
+actually runs, as a Skill tool call, and that opens the gate too:
+
+```bash
+echo '{"session_id":"t","tool_name":"Skill","tool_input":{"skill":"accessibility-agents:accessibility-lead"}}' \
+  | node hooks/guard.mjs --behaviour mark --client claude
+```
