@@ -52,7 +52,7 @@ Ask the user to determine scope before reading any code:
 Xcode -> Xcode menu -> Open Developer Tool -> Accessibility Inspector
 - Run audit: Audit tab -> Run Audit
 - Inspect elements: Inspection tab -> hover element
-- Simulate VoiceOver: +F7 in Simulator
+- VoiceOver does not run in the iOS Simulator; test VoiceOver on a device
 ```
 
 **Android - Accessibility Scanner:**
@@ -70,8 +70,8 @@ Output: Issues list with severity and suggested fixes
 adb shell settings put secure enabled_accessibility_services \
   com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService
 
-# Check accessibility tree (RN)
-# In Metro: press 'a' for Android accessibility report
+# Check the accessibility tree with Accessibility Inspector (iOS) or
+# Accessibility Scanner (Android), above. Metro's 'a' key only launches Android.
 ```
 
 ### 4.2 Automated Testing
@@ -81,12 +81,12 @@ adb shell settings put secure enabled_accessibility_services \
 ```jsx
 import { render, screen } from '@testing-library/react-native';
 
-test('close button is accessible', () => {
-  render(<CloseButton onPress={jest.fn()} />);
+test('close button is accessible', async () => {
+  await render(<CloseButton onPress={jest.fn()} />);
 
   const button = screen.getByRole('button', { name: /close/i });
   expect(button).toBeTruthy();
-  expect(button).toHaveAccessibilityState({ disabled: false });
+  expect(button).toBeEnabled();
 });
 ```
 
@@ -96,48 +96,30 @@ test('close button is accessible', () => {
 // Check accessibility label
 await expect(element(by.label('Submit form'))).toBeVisible();
 
-// Verify role
-await expect(element(by.id('submit-btn'))).toHaveRole('button');
+// Verify label by test ID (Detox has no role matcher)
+await expect(element(by.id('submit-btn'))).toHaveLabel('Submit form');
 ```
 
 **Maestro:**
 
 ```yaml
+# Maestro's text selector also matches accessibilityLabel (iOS)
+# and contentDescription (Android); there is no label selector
 - assertVisible:
-    label: "Close dialog"
+    text: "Close dialog"
 - tapOn:
-    label: "Submit form"
+    text: "Submit form"
 ```
 
 ---
 
 ## Phase 5: Report Format
 
-Structure the accessibility report as follows:
-
-```markdown
-## Mobile Accessibility Audit - [Component/Screen Name]
-**Platform:** React Native / iOS / Android
-**Date:** YYYY-MM-DD
-**Severity Filter:** All Issues / Errors + Warnings / Errors Only
-
-### Summary
-| Severity | Count |
-|----------|-------|
-| Error | N |
-| Warning | N |
-| Tip | N |
-
-### Issues
-
-#### [RN-001 / iOS-001 / AND-001] [Short Description]
-- **Severity:** Error | Warning | Tip
-- **File:** path/to/Component.tsx (line N)
-- **WCAG:** [SC number] - [Name]
-- **Impact:** [Who is affected and how]
-- **Current code:** `<code snippet>`
-- **Fix:** `<corrected code snippet>`
-```
+Return findings JSON as the output contract below says. Use rule IDs such as
+`RN-001`, `iOS-001` or `AND-001`, `wcag` as for example `4.1.2 A` (or `n/a`
+for platform guidelines outside WCAG), and the a11y-core severities. The Q3
+filter maps as Errors to `critical` and `serious`, Warnings to `moderate`, and
+Tips to `minor`.
 
 ---
 

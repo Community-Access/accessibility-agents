@@ -28,7 +28,7 @@ For each emoji, note: location (heading | bullet-first-char | consecutive-sequen
 - `translate`: Auto-fix where translation is known; flag unknowns for review.
 - `leave-unchanged`: Do not flag any emoji.
 
-**Translate mode - known translations:**
+**Translate mode - known translations** (the emoji here are the input to detect, listed deliberately):
 🚀 Launch | ✅ Done | ⚠️ Warning | ❌ Error | 📝 Note | 💡 Tip | 🔧 Configuration | 📚 Documentation | 🎯 Goal | ✨ New | 🔍 Search | 🛠️ Tools | 👋 Hello | 🎉 Celebration | ⭐ Featured | 💬 Discussion | 🏠 Home | 📊 Data | 🔒 Security | 🌐 Web | 📦 Package | 🔗 Link | 📋 Checklist | 🏆 Achievement | ⚡ Quick | 👍 Approved | 👎 Rejected | 🐛 Bug | 🤝 Collaboration | 🎓 Learning | 🔑 Key | 📌 Pinned | ℹ️ Info | 🔄 Refresh | ➕ Add | ➖ Remove | 💻 Code | 🔔 Notification | 📣 Announcement | 🧪 Test | 🎨 Design | 🌟 Highlight | 📈 Increase | 📉 Decrease | 🏗️ Build
 
 If translation is unknown, flag for human review.

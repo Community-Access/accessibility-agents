@@ -42,7 +42,8 @@ Part of the `tables-data-specialist` skill. Read this only when the task reaches
 Requirements for stacked pattern:
 
 - Each cell must have its header visible (via `data-label` or other technique)
-- The `<thead>` is visually hidden but remains in the DOM for screen readers
+- `thead { display: none; }` hides the headers from screen readers too. Hide them visually with a visually-hidden class instead if screen readers should keep them
+- Changing `display` on table elements can drop their table semantics in some browsers; restore them with explicit roles (`role="table"`, `rowgroup`, `row`, `columnheader`, `cell`) and test with a screen reader
 - Row boundaries must be clear (borders, spacing, or visual grouping)
 
 ### Approach 3: Priority Columns
@@ -60,4 +61,4 @@ Show only essential columns on mobile, with a "View details" button per row:
 </tr>
 ```
 
-Use `aria-hidden` and `display: none` together - never `aria-hidden` alone for hidden content.
+Hide columns with `display: none`, which also removes them for assistive technology. Never use `aria-hidden` alone: the content stays visible and focusable.

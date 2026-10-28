@@ -56,9 +56,7 @@ Today we'll cover caption best practices.
 - File must start with `WEBVTT` header
 - Timestamps: `HH:MM:SS.mmm --> HH:MM:SS.mmm`
 - Speaker identification: `<v Speaker Name>Text`
-- Maximum 2 lines per caption, 32 characters per line
-- Minimum display time: 1 second
-- Maximum display time: 7 seconds
+- Style-guide values (for example the DCMP Captioning Key), not WCAG requirements: maximum 2 lines per caption, about 32 characters per line, display time roughly 1 to 7 seconds
 
 ### SRT (SubRip Text)
 
@@ -87,9 +85,9 @@ Today we'll cover caption best practices.
 
 ## Caption Quality Guidelines
 
-Each metric, with its requirement.
+Each metric, with its target. These are caption style-guide and broadcast-practice targets; WCAG 1.2.2 and 1.2.4 require captions but set no numeric values.
 
-| Metric | Requirement |
+| Metric | Target |
 |--------|------------|
 | Accuracy | 99%+ word accuracy |
 | Synchronization | Within 1 second of audio |
@@ -122,11 +120,13 @@ Audio description narrates visual information during pauses in dialogue.
 </video>
 ```
 
+Browsers do not voice a `kind="descriptions"` text track, and screen reader support for it is limited. To meet 1.2.5 reliably, offer a version of the video with descriptions in the audio track (or a player that voices the text track), and keep the text track as a supplement.
+
 ## Accessible Media Player ARIA Patterns
 
 ### Minimum Controls
 
-Every media player must have keyboard-accessible controls for:
+Every media player must have keyboard-accessible controls for the items below. Prefer native `<button>` and `<input type="range">`; the roles listed are for custom controls:
 
 - Play/Pause (`role="button"`, `aria-label="Play"` / `aria-label="Pause"`)
 - Volume (`role="slider"`, `aria-label="Volume"`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`)
@@ -157,6 +157,8 @@ Each key, with its action.
 | C | Toggle captions |
 | F | Toggle fullscreen |
 
+Single-letter shortcuts (M, C, F) must work only while the player has focus, or be possible to turn off or remap (2.1.4 Character Key Shortcuts, A).
+
 ## Transcript Best Practices
 
 - Provide a full-text transcript adjacent to or linked from the media
@@ -168,7 +170,7 @@ Each key, with its action.
 
 - WCAG 1.2.4 (AA) requires captions for live audio in synchronized media
 - Options: human captioner (CART), AI-powered auto-captioning, hybrid
-- AI auto-captions alone rarely meet the 99% accuracy requirement — human review or correction is recommended
+- AI auto-captions alone rarely reach the 99% accuracy that caption style guides target - human review or correction is recommended
 - WebSocket-based caption delivery for web: push text to a `<div aria-live="polite">` container
 
 ## Common Violations
@@ -177,13 +179,13 @@ Each issue, with its WCAG SC and severity.
 
 | Issue | WCAG SC | Severity |
 |-------|---------|----------|
-| No captions on prerecorded video | 1.2.2 | Critical |
-| Auto-generated captions without review | 1.2.2 | Serious |
-| No audio description for visual-only content | 1.2.5 | Serious |
-| Inaccessible media player controls | 2.1.1, 4.1.2 | Critical |
-| No keyboard access to play/pause | 2.1.1 | Critical |
-| Autoplay without user control | 1.4.2 | Serious |
-| Volume slider not keyboard-operable | 2.1.1 | Serious |
-| No transcript for audio-only content | 1.2.1 | Critical |
-| Captions poorly synchronized (>2s drift) | 1.2.2 | Moderate |
-| Missing speaker identification in captions | 1.2.2 | Moderate |
+| No captions on prerecorded video | 1.2.2 | critical |
+| Auto-generated captions without review | 1.2.2 | serious |
+| No audio description for visual-only content | 1.2.5 | serious |
+| Inaccessible media player controls | 2.1.1, 4.1.2 | critical |
+| No keyboard access to play/pause | 2.1.1 | critical |
+| Autoplay without user control | 1.4.2 | serious |
+| Volume slider not keyboard-operable | 2.1.1 | serious |
+| No transcript for audio-only content | 1.2.1 | critical |
+| Captions poorly synchronized (>2s drift) | 1.2.2 | moderate |
+| Missing speaker identification in captions | 1.2.2 | moderate |

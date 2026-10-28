@@ -41,32 +41,24 @@ Every audit report MUST include these sections:
 
 ## Severity Scoring Formula
 
-```text
-Document Score = 100 - (sum of weighted findings)
-
-Weights:
-  Error (high confidence):   -10 points
-  Error (medium confidence):  -7 points
-  Error (low confidence):     -3 points
-  Warning (high confidence):  -3 points
-  Warning (medium confidence):-2 points
-  Warning (low confidence):   -1 point
-  Tips:                        0 points
-
-Floor: 0 (minimum score)
-```
+The score and grade in a rendered report come from
+`skills/a11y-core/scripts/merge-findings.mjs` (weights critical 10, serious 5,
+moderate 2, minor 1; confidence high 1.0, medium 0.7, low 0.4; grades A 90+,
+B 80+, C 70+, D 60+, F below). The formula is in `kb-web-severity-scoring`.
+Map a document checker's levels onto the canonical severities first
+(`kb-severity-mapping`) rather than scoring errors and warnings directly.
 
 ## Score Grades
 
-Each score, with its grade and meaning.
+Each score band, with its grade and meaning.
 
 | Score | Grade | Meaning |
 |-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues |
-| 75-89 | B | Good - some warnings, few errors |
-| 50-74 | C | Needs Work - multiple errors |
-| 25-49 | D | Poor - significant accessibility barriers |
-| 0-24 | F | Failing - critical barriers, likely unusable with AT |
+| 90-100 | A | Excellent - few barriers found |
+| 80-89 | B | Good - some barriers found |
+| 70-79 | C | Needs Work - many barriers remain |
+| 60-69 | D | Poor - significant barriers |
+| 0-59 | F | Failing - unusable with AT |
 
 ## Organization Modes
 
@@ -93,10 +85,17 @@ Each level, with its criteria.
 
 ### Supported VPAT Editions
 
-- **VPAT 2.5 (WCAG)** - maps to WCAG 2.2 criteria
-- **VPAT 2.5 (508)** - maps to Revised Section 508 standards
-- **VPAT 2.5 (EN 301 549)** - maps to EU accessibility directive
+The current ITI template is VPAT 2.5Rev (24 April 2025), as of October 2026.
+
+- **VPAT 2.5 (WCAG)** - maps to WCAG 2.0, 2.1 and 2.2 criteria
+- **VPAT 2.5 (508)** - maps to Revised Section 508 standards (WCAG 2.0 AA)
+- **VPAT 2.5 (EU)** - maps to EN 301 549; the template still points at V3.2.1 (WCAG 2.1 AA)
 - **VPAT 2.5 (INT)** - International edition (all three combined)
+
+4.1.1 Parsing is obsolete in WCAG 2.2 and is never reported as a 2.2 failure.
+For the 4.1.1 rows that 2.0 and 2.1 based tables still carry, follow
+`skills/kb-legal-compliance-mapping/SKILL.md`. Date every ACR and say which
+edition and standard versions it covers.
 
 ## Remediation Tracking
 

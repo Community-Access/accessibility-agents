@@ -108,25 +108,25 @@ Each pattern, with its issue and fix.
 
 | Pattern | Issue | Fix |
 |---------|-------|-----|
-| `[aria-label]` binding | Invalid - ARIA is not a property | Use `[attr.aria-label]` |
-| `*ngFor` without `trackBy` | Focus loss on list re-render | Add `trackBy` function |
+| `[aria-label]` binding before Angular 20.2 | Those versions require the `attr.` prefix (current docs allow `[aria-label]`) | Use `[attr.aria-label]`, which works in every version |
+| `@for` without a stable `track` (or legacy `*ngFor` without `trackBy`) | Focus loss on list re-render | `@for (item of items; track item.id)`; `NgFor` is deprecated since v20 |
 | No `LiveAnnouncer` | Route changes not announced | Inject `LiveAnnouncer` and announce navigation |
 | `OnPush` + live regions | Change detection may not trigger | Use `ChangeDetectorRef.markForCheck()` |
 
 ### Fix Templates
 
 ```typescript
-// Bad: ARIA binding
+// Bad before Angular 20.2: plain property binding
 <button [aria-label]="label">X</button>
 
-// Good: ARIA attribute binding
+// Good in every version: ARIA attribute binding
 <button [attr.aria-label]="label">X</button>
 
-// Bad: ngFor without trackBy
-<li *ngFor="let item of items">{{ item.name }}</li>
+// Bad: tracking by index (nodes are reused by position, so focus stays on a node whose item changed)
+@for (item of items; track $index) { <li>{{ item.name }}</li> }
 
-// Good: ngFor with trackBy
-<li *ngFor="let item of items; trackBy: trackById">{{ item.name }}</li>
+// Good: track a stable identity
+@for (item of items; track item.id) { <li>{{ item.name }}</li> }
 
 // Route change announcements
 constructor(private liveAnnouncer: LiveAnnouncer, private router: Router) {
@@ -148,26 +148,26 @@ Each pattern, with its issue and fix.
 |---------|-------|-----|
 | `{#if}` without focus management | Focus lost when content appears | Use `use:action` to focus new content |
 | `transition:` without motion check | Animations play regardless of user preference | Add `prefers-reduced-motion` check |
-| `on:click` on non-interactive | Not keyboard accessible | Use `<button>` or add keyboard handlers |
+| `onclick` (Svelte 4: `on:click`) on non-interactive | Not keyboard accessible | Use `<button>` or add keyboard handlers |
 
 ### Fix Templates
 
 ```svelte
 <!-- Bad: click on div -->
-<div on:click={toggle}>Toggle</div>
+<div onclick={toggle}>Toggle</div>
 
 <!-- Good: keyboard accessible -->
-<button on:click={toggle}>Toggle</button>
+<button onclick={toggle}>Toggle</button>
 
 <!-- Bad: animation without motion preference -->
 <div transition:fly={{ y: 200 }}>Content</div>
 
-<!-- Good: respects motion preference -->
-<div transition:fly={{ y: reducedMotion ? 0 : 200, duration: reducedMotion ? 0 : 300 }}>Content</div>
-
+<!-- Good: respects motion preference (Svelte 5.7+) -->
 <script>
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  import { prefersReducedMotion } from 'svelte/motion';
 </script>
+
+<div transition:fly={{ y: prefersReducedMotion.current ? 0 : 200, duration: prefersReducedMotion.current ? 0 : 300 }}>Content</div>
 ```
 
 ## Tailwind CSS
@@ -178,7 +178,7 @@ Each pattern, with its issue and fix.
 
 | Pattern | Issue | Fix |
 |---------|-------|-----|
-| `outline-none` | Removes focus indicator | Pair with `ring-2 ring-offset-2 focus-visible:ring-blue-500` |
+| `outline-none` (v4) or `outline-hidden` | Removes focus indicator; in v4 `outline-none` also removes it in forced-colors mode | Use `outline-hidden` (v4), paired with `focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500` |
 | `text-gray-400` on `bg-white` | Fails 4.5:1 contrast | Use `text-gray-600` or darker |
 | No `motion-reduce:` variant | Animations ignore user preference | Add `motion-reduce:transition-none` |
 | Missing `focus:` styles | No visible focus indicator | Add `focus:ring-2 focus:ring-blue-500` |
@@ -186,17 +186,17 @@ Each pattern, with its issue and fix.
 
 ### Contrast-Safe Tailwind Pairs
 
-Each background, with its minimum text and ratio.
+Each background, with a passing text color and its ratio. Ratios are for the Tailwind v4 default palette (OKLCH converted to sRGB; red-600 and green-700 sit outside sRGB, so those are approximate). `text-gray-500` (about 4.8:1) is the lightest gray that passes 4.5:1 on white.
 
-| Background | Minimum Text | Ratio |
+| Background | Text | Ratio |
 |-----------|-------------|-------|
-| `bg-white` | `text-gray-600` | 4.55:1 |
-| `bg-white` | `text-gray-700` | 6.62:1 |
-| `bg-gray-50` | `text-gray-700` | 6.29:1 |
-| `bg-gray-900` | `text-gray-300` | 5.92:1 |
-| `bg-blue-600` | `text-white` | 5.23:1 |
-| `bg-red-600` | `text-white` | 4.54:1 |
-| `bg-green-700` | `text-white` | 4.58:1 |
+| `bg-white` | `text-gray-600` | 7.56:1 |
+| `bg-white` | `text-gray-700` | 10.31:1 |
+| `bg-gray-50` | `text-gray-700` | 9.87:1 |
+| `bg-gray-900` | `text-gray-300` | 12.06:1 |
+| `bg-blue-600` | `text-white` | about 5.3:1 |
+| `bg-red-600` | `text-white` | about 4.8:1 |
+| `bg-green-700` | `text-white` | 4.94:1 |
 
 ### Fix Templates
 
@@ -207,7 +207,7 @@ Each background, with its minimum text and ratio.
 </button>
 
 <!-- Good: visible focus indicator -->
-<button class="bg-blue-500 text-white px-4 py-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+<button class="bg-blue-500 text-white px-4 py-2 rounded focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
   Submit
 </button>
 

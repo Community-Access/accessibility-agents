@@ -13,8 +13,7 @@ myAddon/
     brailleDisplayDrivers/
     doc/en/readme.md
     locale/en/LC_MESSAGES/
-    installTasks.py
-    uninstallTasks.py
+    installTasks.py   (onInstall and onUninstall both live here)
     manifest.ini
   buildVars.py
   sconstruct
@@ -23,15 +22,17 @@ myAddon/
 ### manifest.ini
 
 ```ini
-name = myAddon
-summary = My Addon Display Name
-description = What the addon does.
-author = Your Name <email@example.com>
-url = https://github.com/yourname/myAddon
-version = 1.0.0
-minimumNVDAVersion = 2025.1.0
-lastTestedNVDAVersion = 2026.1.0
+name = "myAddon"
+summary = "My Addon Display Name"
+description = "What the addon does."
+author = "Your Name <email@example.com>"
+url = "https://github.com/yourname/myAddon"
+version = "1.0.0"
+minimumNVDAVersion = "2025.1.0"
+lastTestedNVDAVersion = "2026.1.0"
 ```
+
+The NVDA Developer Guide requires every string value in `manifest.ini` to be in quotes. For the Add-on Store, `minimumNVDAVersion` and `lastTestedNVDAVersion` must both be values listed in `nvdaAPIVersions.json`.
 
 **Note:** The lowest allowed `minimumNVDAVersion` for Python 3 addons is `2019.3.0`. For addons shipping native 64-bit DLLs, use `2026.1.0` as the minimum.
 
@@ -51,6 +52,7 @@ braille.handler.message("Download complete")
 
 ```python
 import wx
+import globalPluginHandler
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def __init__(self):

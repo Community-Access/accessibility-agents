@@ -32,7 +32,7 @@ const GATES = [
     name: 'Agent Skills specification',
     standard: 'agentskills.io/specification',
     command: [NODE, ['scripts/verify-spec.mjs']],
-    proves: 'Every skill is readable by any client implementing the open standard, checked with the specification authors\' own validator rather than ours.',
+    proves: 'Every skill is readable by any client implementing the open standard, checked with a port of the specification\'s reference validator rather than our own rules.',
   },
   {
     id: 'skills',
@@ -119,11 +119,18 @@ const GATES = [
     proves: 'The skills catalog and MCP tools reference describe what is actually shipped.',
   },
   {
+    id: 'bundle',
+    name: 'MCP server bundle',
+    standard: 'mcp-server/dist/stdio.mjs is a fresh build of the source',
+    command: [NODE, ['scripts/check-mcp-bundle.mjs']],
+    proves: 'A plugin install, which has no node_modules, starts the same server the tests ran, because the committed bundle matches a fresh build byte for byte.',
+  },
+  {
     id: 'dependencies',
     name: 'Dependency advisories',
     standard: 'no known-vulnerable dependency ships',
     command: [NODE, ['scripts/verify-dependencies.mjs']],
-    proves: 'None of the three dependency trees carries a high or critical advisory, checked against the registry rather than assumed.',
+    proves: 'Neither dependency tree (root tooling, MCP server) carries a high or critical advisory, checked against the registry rather than assumed.',
     optional: true,
   },
   {

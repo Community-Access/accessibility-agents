@@ -1,4 +1,6 @@
-# Web Accessibility Wizard reference: Phase 2: Keyboard Navigation and Focus
+# Web Accessibility Wizard reference: Phases 1 to 8: Domain Checks
+
+Part of the `web-accessibility-wizard` skill. Read this only when the task reaches these sections.
 
 ## Phase 1: Structure and Semantics
 
@@ -21,8 +23,6 @@ Then review:
 - [ ] Semantic HTML usage (no `<div>` buttons, proper list markup)
 
 Report findings with severity levels before proceeding.
-
-Part of the `web-accessibility-wizard` skill. Read this only when the task reaches these sections.
 
 ## Phase 2: Keyboard Navigation and Focus
 

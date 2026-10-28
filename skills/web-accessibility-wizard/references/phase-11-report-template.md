@@ -4,11 +4,11 @@ Part of the `web-accessibility-wizard` skill. Read this only when the task reach
 
 ## Phase 11: Final Report and Action Plan
 
-Compile all findings into a single prioritized report and **write it to `ACCESSIBILITY-AUDIT.md` in the current working directory**. This file is the deliverable - a persistent, reviewable artifact that the team can track over time.
+Compile all findings into a single prioritized report, **written to `WEB-ACCESSIBILITY-AUDIT.md` in the current working directory** (the renderer's default for `--template web`). This file is the deliverable - a persistent, reviewable artifact that the team can track over time. Render it with `skills/a11y-core/scripts/render-report.mjs` as SKILL.md says; the structure below is what the finished report must contain, not a page to type by hand.
 
 ### Report Structure
 
-Write this exact structure to `ACCESSIBILITY-AUDIT.md`:
+The report contains this structure:
 
 ```markdown
 # Accessibility Audit Report
@@ -35,7 +35,7 @@ Write this exact structure to `ACCESSIBILITY-AUDIT.md`:
 This report combines two methods:
 
 1. **Agent-driven code review** (Phases 1-8): Static analysis of source code by specialist accessibility agents covering structure, keyboard, forms, color, ARIA, dynamic content, tables, and links.
-2. **axe-core runtime scan** (Phase 9): Automated scan of the rendered page in a browser, testing the actual DOM against WCAG 2.1 AA rules.
+2. **axe-core runtime scan** (Phase 9): Automated scan of the rendered page in a browser, testing the actual DOM against the axe-core rules tagged for the target standard (for WCAG 2.2 AA: `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`). axe-core has no rule for most WCAG 2.2 criteria, so those were checked manually or not at all; say which.
 
 Issues found by both methods are marked as high-confidence findings.
 
@@ -210,7 +210,7 @@ Organize findings based on the preference selected in Phase 0 Step 6:
 
 | # | Issue | File | Fix Applied | Verified |
 |---|-------|------|-------------|----------|
-| 1 | [description] | [file:line] | [what was changed] | / |
+| 1 | [description] | [file:line] | [what was changed] | [Yes / No] |
 | ... | | | | |
 
 **Total:** X fixes applied, Y verified by re-scan
@@ -310,7 +310,7 @@ When detecting shared components:
 |---------------|------|----------|----------------|----------------|
 | 1.1.1 Non-text Content | Missing alt text | Critical | 5 | 12 |
 | 2.4.1 Bypass Blocks | No skip link | Serious | 8 | 8 |
-| 1.4.3 Contrast | Text contrast failure | Serious | 3 | 7 |
+| 1.4.3 Contrast (Minimum) | Text contrast failure | Serious | 3 | 7 |
 | ... | | | | |
 ```
 
@@ -337,8 +337,8 @@ To set up automated scanning, create a `.a11y-web-config.json` in your project r
 ### WCAG Criteria Met
 | Criterion | Description | Level | Status |
 |-----------|-------------|-------|--------|
-| 1.3.1 | Info and Relationships | A |  Pass |
-| 2.1.1 | Keyboard | A |  Pass |
+| 1.3.1 | Info and Relationships | A | Pass |
+| 2.1.1 | Keyboard | A | Pass |
 | ... | | | |
 
 ### Areas of Strength

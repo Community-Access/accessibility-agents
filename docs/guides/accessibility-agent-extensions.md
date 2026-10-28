@@ -2,6 +2,8 @@
 
 Accessibility Agents extensions let a team add its own accessibility standards without forking the core project.
 
+> Status in 7.x: the extension manifests, the universal installer and the Codex custom subagents this page describes belonged to version 6. Version 7 ships no extension-manifest loader. To add a team's own rules today, write them as Agent Skills (see [Creating Custom Skills](create-custom-skills.md)) and install them beside this package's skills. The design below is kept as the model for that work.
+
 The goal is simple: Accessibility Agents should know the public standards, the built-in Community Access agent teams, and the local rules that matter in a real organization. A company may need design-system checks, procurement language, product terminology, regional requirements, or internal severity rules. Extensions give those rules a first-class place to live.
 
 ## Why Extensions Exist
@@ -45,26 +47,15 @@ This matters because third-party and company extensions use the same basic shape
 
 ## How Installation Works
 
-Users should not need extra steps after running the universal installer.
-
-When Codex support is selected, the installer copies:
-
-- the native Codex plugin
-- five small router skills
-- Codex custom subagents
-- specialist reference files
-- built-in extension manifests
-
-The installer also records managed files so repair and uninstall flows can clean up safely.
-
-For Codex, the important installed surfaces are:
-
-- `~/.codex/plugins/a11y-agents-codex/` or project-local plugin scope
-- `~/.codex/skills/` or project-local skill scope for router skills
-- `~/.codex/agents/` or project-local agent scope for custom subagents
-- `~/.a11y-agents/extensions/` or project-local `.a11y-agents/extensions/` for extension manifests
-
-Exact paths can vary by platform and installer mode, but the user experience should not. Running the universal installer is the supported setup path.
+In 7.x, Codex gets the package either as a plugin
+(`codex plugin marketplace add Community-Access/accessibility-agents`, then
+`codex plugin add accessibility-agents@community-access`), which gives the
+skills and the MCP server but no edit gate (Codex no longer loads plugin
+hooks), or through `npm run setup`, which copies the skills to
+`~/.agents/skills` and writes `~/.codex/hooks.json`, the only route to the gate
+on Codex. There are no Codex custom subagents and no
+`~/.codex/skills/` copy; Codex does not read that folder. See
+[Getting started](../getting-started/README.md).
 
 ## How Routing Works
 
@@ -285,8 +276,8 @@ Private extensions should use the same manifest format so they can be installed 
 Extensions use one manifest model, then each platform maps it into the platform's native surface:
 
 - Claude Code: agents or specialists under the Claude plugin or `.claude/` structure
-- GitHub Copilot: `skills/`, `skills/`, prompts, and instructions
-- Codex: plugin references, router skills, and `.codex/agents/` custom subagents
+- GitHub Copilot: the plugin or `~/.agents/skills`
+- Codex: the plugin or `~/.agents/skills`, with `agents/openai.yaml` deciding which skills are listed
 - Gemini: Gemini extension files and instruction surfaces
 
 The extension manifest is the common contract. Platform files are implementation details.
@@ -295,12 +286,10 @@ The extension manifest is the common contract. Platform files are implementation
 
 Codex has a practical context-management problem: if every specialist is exposed as a top-level skill, Codex can hit skill-description limits and warn that skill context has been shortened.
 
-Accessibility Agents v6 avoids that by using:
-
-- a small set of router skills
-- custom subagents for specialist work
-- lazy-loaded reference files
-- extension manifests for discovery
+Accessibility Agents avoids that by exposing only the six router skills. Every
+other skill carries `agents/openai.yaml` with `allow_implicit_invocation: false`,
+so Codex keeps it out of the catalog until a router names it, and the long
+tail lives in `references/` files loaded on demand.
 
 The router skill stays visible. Specialist details are loaded only when they are relevant. This keeps Codex aware of the Accessibility Agents system without forcing all specialist instructions into the initial context.
 
@@ -354,13 +343,10 @@ Check this wxPython app with the developer tools extension, including desktop ac
 
 Before releasing extension changes:
 
-- run `node scripts/validate-skills/.js`
-- run `node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks`
-- run `node scripts/check-skill-description-quality.js`
-- run `bash -n scripts/install.mjs`
-- run PowerShell syntax checks when `pwsh` is available
+- run `npm run verify` (every gate, including the skills, specification and markdown checks)
+- run `node scripts/build-dispatch-matrices.mjs` and `node scripts/build-docs.mjs` if you added or removed a skill
+- run `npm run setup -- --dry-run` and check it would install what you expect
 - run Go tests when `go` is available
-- verify the universal installer still installs built-in extension manifests
-- verify new documentation contains no emoji
+- verify new documentation contains no emoji (`npm run verify:markdown` reports them)
 
 Extensions should make Accessibility Agents more adaptable without making installation or routing harder for users.

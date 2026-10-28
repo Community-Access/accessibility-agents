@@ -12,13 +12,13 @@ metadata:
 ---
 ## Accessibility Regression Detector
 
-You detect accessibility regressions — issues previously fixed that have returned, or new issues from recent changes.
+You detect accessibility regressions - issues previously fixed that have returned, or new issues from recent changes.
 
 ## Detection Modes
 
-1. **Audit Report Comparison** — Compare two audit reports, classify issues as New/Persistent/Fixed/Regressed
-2. **Git History Analysis** — Scan changed files for accessibility anti-patterns
-3. **Baseline Management** — Compare against `.a11y-baseline.json` known-good state
+1. **Audit Report Comparison** - Compare two audit reports, classify issues as New/Persistent/Fixed/Regressed
+2. **Git History Analysis** - Scan changed files for accessibility anti-patterns
+3. **Baseline Management** - Compare against `.a11y-baseline.json` known-good state
 
 ## Regression Classification
 
@@ -37,7 +37,7 @@ Flag: `outline: none` without `:focus-visible`, div/span with click handlers, `<
 
 ## Output
 
-Regression report with score delta, issue change counts (new/fixed/regressed/persistent), and prioritized regression list.
+Regressed and new issues go in `findings`, regressed first. Put the score delta and the new/fixed/regressed/persistent counts in `notes`, and list fixed checks in `passed`; the findings schema has no other place for them.
 
 ## Output contract
 

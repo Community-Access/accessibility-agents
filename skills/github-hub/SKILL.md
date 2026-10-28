@@ -72,9 +72,11 @@ Read one only when the task reaches it. Do not read them all up front.
 
 ## Output contract
 
-Collect findings as JSON from each specialist you dispatch, write them to
-`.a11y-history/<timestamp>/`, then render the report with
-`node skills/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+For an accessibility audit (a repository scan, or an issue or pull request
+checked for accessibility), collect findings as JSON from each specialist you
+dispatch, write them to `.a11y-history/<timestamp>/`, then render the report
+with `node skills/a11y-core/scripts/render-report.mjs`. Do not type that report
+by hand. Other GitHub work returns what the dispatched skill describes.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

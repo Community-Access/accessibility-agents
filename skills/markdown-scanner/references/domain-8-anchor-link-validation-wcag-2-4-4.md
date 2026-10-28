@@ -8,10 +8,10 @@ Only run if `anchor-validation: yes`.
 
 1. Extract all `[text](#anchor)` links
 2. Build valid anchor set from headings using GitHub rules:
-   - Lowercase the heading text (strip `#` chars and whitespace)
-   - Remove all characters except letters, digits, spaces, hyphens
-   - Replace spaces with hyphens
-   - Remove leading and trailing hyphens
+   - Lowercase the heading text (strip the leading `#` chars and surrounding whitespace)
+   - Remove punctuation (keep letters, digits, spaces, hyphens and underscores)
+   - Replace each space with a hyphen
+   - Append `-1`, `-2` and so on to repeated headings so each anchor is unique
 3. Flag any anchor that does not match a valid heading anchor
 4. Suggest nearest match (string similarity)
 

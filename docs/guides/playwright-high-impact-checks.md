@@ -33,9 +33,14 @@ By default, it serves the local example page and runs high-impact checks against
 
 - `http://127.0.0.1:4173/example/index.html`
 
+That page is broken on purpose, so on a pull request the job is a self-test:
+it passes when the checker reports the page as failing, with at least one
+critical axe violation and the keyboard trap, and fails if the checker stops
+catching them.
+
 ### Manual Run
 
-Use `workflow_dispatch` for a live URL:
+Use `workflow_dispatch` for a live URL. With a URL, the job is a real gate and fails on the conditions below:
 
 - `url` (optional): target URL
 - `min_impact` (optional): `critical|serious|moderate|minor` (default `serious`)
@@ -56,7 +61,7 @@ node mcp-server/scripts/playwright-high-impact-check.mjs \
 
 ## Pass/Fail Logic
 
-The check fails when any of the following are true:
+The script fails (exit 1) when any of the following are true:
 
 - axe violations at or above `min_impact`
 - potential keyboard trap detected

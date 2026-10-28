@@ -4,17 +4,19 @@ Part of the `testing-coach` skill. Read this only when the task reaches these se
 
 ## Automated Testing
 
-### What Automation Catches (~30% of issues)
+### What Automation Catches
+
+Automated checks find only a minority of accessibility barriers. They are reliable for:
 
 - Missing alt text
 - Missing form labels
 - Insufficient color contrast
 - Missing document language
-- Duplicate IDs
+- Duplicate IDs referenced by ARIA attributes
 - Invalid ARIA attributes
 - Missing landmark regions
 
-### What Automation Cannot Catch (~70% of issues)
+### What Automation Cannot Catch
 
 - Whether alt text is actually accurate
 - Whether tab order makes logical sense
@@ -36,7 +38,7 @@ test('homepage has no accessibility violations', async ({ page }) => {
   await page.goto('/');
   
   const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag22aa'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
   
   expect(results.violations).toEqual([]);
@@ -48,7 +50,7 @@ test('login form is accessible', async ({ page }) => {
   
   const results = await new AxeBuilder({ page })
     .include('#login-form')
-    .withTags(['wcag2a', 'wcag2aa', 'wcag22aa'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
   
   expect(results.violations).toEqual([]);
@@ -57,11 +59,11 @@ test('login form is accessible', async ({ page }) => {
 // Test after interaction (modal open, dropdown expanded)
 test('modal is accessible when open', async ({ page }) => {
   await page.goto('/');
-  await page.click('#open-modal');
-  await page.waitForSelector('[role="dialog"]');
+  await page.locator('#open-modal').click();
+  await page.getByRole('dialog').waitFor();
   
   const results = await new AxeBuilder({ page })
-    .include('[role="dialog"]')
+    .include('dialog[open], [role="dialog"]')
     .analyze();
   
   expect(results.violations).toEqual([]);
@@ -83,15 +85,15 @@ describe('Accessibility', () => {
     cy.checkA11y(null, {
       runOnly: {
         type: 'tag',
-        values: ['wcag2a', 'wcag2aa', 'wcag22aa']
+        values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
       }
     });
   });
 
   it('has no violations after opening modal', () => {
     cy.get('#open-modal').click();
-    cy.get('[role="dialog"]').should('be.visible');
-    cy.checkA11y('[role="dialog"]');
+    cy.get('dialog[open], [role="dialog"]').should('be.visible');
+    cy.checkA11y('dialog[open], [role="dialog"]');
   });
 });
 ```
@@ -129,7 +131,8 @@ module.exports = {
 # Single page
 npx pa11y https://example.com
 
-# With WCAG 2.2 AA standard
+# WCAG2AA standard (the default). Pa11y's standards are WCAG2A, WCAG2AA and
+# WCAG2AAA; there is no separate WCAG 2.2 option
 npx pa11y --standard WCAG2AA https://example.com
 
 # Multiple pages
@@ -183,10 +186,10 @@ jobs:
   a11y:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
       - run: npm ci
       - run: npm run build
       
@@ -227,9 +230,9 @@ Same as Chrome (Chromium-based), plus:
 1. **Accessibility tree in Elements panel**
 2. **ARIA validation warnings** in Issues panel
 
-### VS Code Integrated Browser (VS Code 1.113+)
+### VS Code Integrated Browser
 
-VS Code 1.113 builds on the integrated browser introduced in 1.112. It remains excellent for accessibility testing because you never leave VS Code, and it now handles local HTTPS with self-signed certificates more smoothly.
+VS Code has an integrated browser (<https://code.visualstudio.com/docs/debugtest/integrated-browser>). It is useful for accessibility testing because you never leave VS Code.
 
 **Setup:**
 
@@ -255,9 +258,9 @@ VS Code 1.113 builds on the integrated browser introduced in 1.112. It remains e
 
 **Accessibility Testing Features:**
 
-- **Independent zoom:** The integrated browser has its own zoom level (separate from VS Code's). Use Ctrl+= / Ctrl+- to test WCAG 1.4.4 (Resize Text) and 1.4.10 (Reflow) directly.
-- **DevTools access:** Right-click > Inspect to open DevTools inside VS Code with the Accessibility Tree, contrast checker, and CSS Overview.
-- **Screenshot capture:** Agents can capture screenshots of the integrated browser, enabling visual accessibility analysis with image-capable models.
+- **Zoom:** The `workbench.browser.pageZoom` setting sets the default page zoom, for testing WCAG 1.4.4 (Resize Text) and 1.4.10 (Reflow).
+- **DevTools access:** Toggle the browser's Developer Tools from the browser toolbar to inspect the Accessibility Tree and contrast.
+- **Screenshot capture:** Add to Chat can attach a viewport or area screenshot (full page is experimental), enabling visual accessibility analysis with image-capable models.
 - **Breakpoint debugging:** Set breakpoints on focus handlers, keyboard event listeners, and ARIA updates to debug accessibility issues in real-time.
 
 **Testing Workflow:**
@@ -345,7 +348,7 @@ The `workbench.browser.pageZoom` setting controls the default zoom level. To tes
 
 ### Common Testing Mistakes
 
-1. **Only testing with automation** - catches ~30% of issues. You must manually test.
+1. **Only testing with automation** - finds only a minority of issues. You must manually test.
 2. **Testing in only one browser** - screen reader + browser combinations behave differently
 3. **Testing only the happy path** - test error states, empty states, loading states
 4. **Not testing after interaction** - modals, AJAX loads, client-side routing change the DOM

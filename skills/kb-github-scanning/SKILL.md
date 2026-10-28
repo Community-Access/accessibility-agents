@@ -22,13 +22,13 @@ Each intent, with its query pattern and scope.
 
 | Intent | Query Pattern | Scope |
 |--------|--------------|-------|
-| Assigned to you | `is:open assignee:USERNAME` | All repos |
-| You were @mentioned | `is:open mentions:USERNAME` | All repos |
-| Authored by you | `is:open author:USERNAME` | All repos |
-| Specific repo | `repo:owner/repo is:open` | Single repo |
-| By keyword | `{keyword} is:open` | All repos |
-| Org-wide | `org:ORGNAME is:open` | Org repos |
-| Closed (for recap) | `is:closed author:USERNAME` | All repos |
+| Assigned to you | `is:issue is:open assignee:USERNAME` | All repos |
+| You were @mentioned | `is:issue is:open mentions:USERNAME` | All repos |
+| Authored by you | `is:issue is:open author:USERNAME` | All repos |
+| Specific repo | `is:issue repo:owner/repo is:open` | Single repo |
+| By keyword | `is:issue {keyword} is:open` | All repos |
+| Org-wide | `is:issue org:ORGNAME is:open` | Org repos |
+| Closed (for recap) | `is:issue is:closed author:USERNAME` | All repos |
 
 ### Pull Requests
 
@@ -36,12 +36,12 @@ Each intent, with its query pattern and scope.
 
 | Intent | Query Pattern | Scope |
 |--------|--------------|-------|
-| Awaiting your review | `review-requested:USERNAME state:open` | All repos |
-| Your open PRs | `author:USERNAME state:open` | All repos |
-| Assigned to you | `assignee:USERNAME state:open` | All repos |
-| You reviewed, check for updates | `reviewed-by:USERNAME state:open` | All repos |
+| Awaiting your review | `is:pr review-requested:USERNAME state:open` | All repos |
+| Your open PRs | `is:pr author:USERNAME state:open` | All repos |
+| Assigned to you | `is:pr assignee:USERNAME state:open` | All repos |
+| You reviewed, check for updates | `is:pr reviewed-by:USERNAME state:open` | All repos |
 | Specific PR | Fetch directly with owner, repo, number | Single repo |
-| Org-wide | `org:ORGNAME state:open` | Org repos |
+| Org-wide | `is:pr org:ORGNAME state:open` | Org repos |
 
 ### Discussions
 
@@ -105,7 +105,7 @@ Add qualifiers to narrow by scope when the user specifies one:
 
 ## Preferences File Integration
 
-Read `.github/agents/preferences.md` and apply these filters before and after searching:
+Read `.github/accessibility-agents/preferences.md` (the user creates it from `docs/reference/preferences.example.md`) and apply these filters before and after searching. If that file does not exist, read `.github/agents/preferences.md` (the older location) and suggest moving it: VS Code loads every `.md` file in `.github/agents/` as a custom agent.
 
 1. **`repos.discovery`** - determines the default search scope (all / starred / owned / configured / workspace).
 2. **`repos.include`** - always include these repos even in restricted modes.

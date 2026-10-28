@@ -60,10 +60,10 @@
 ### GitHub Copilot
 
 ```text
-@document-accessibility-wizard audit all documents in this project
-@document-accessibility-wizard quick check on report.docx
-@document-accessibility-wizard set up CI/CD for document scanning
-@document-accessibility-wizard generate remediation scripts for the last scan
+/document-accessibility-wizard audit all documents in this project
+/document-accessibility-wizard quick check on report.docx
+/document-accessibility-wizard set up CI/CD for document scanning
+/document-accessibility-wizard generate remediation scripts for the last scan
 ```
 
 </details>

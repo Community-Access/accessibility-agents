@@ -33,12 +33,12 @@ jobs:
   accessibility-audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
         run: npm ci
@@ -54,7 +54,7 @@ jobs:
       - name: Run axe-core scan
         run: |
           npx @axe-core/cli http://localhost:3000 \
-            --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
+            --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa \
             --save axe-results.json
 
       - name: Check threshold
@@ -68,12 +68,12 @@ jobs:
 
       - name: Upload results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: accessibility-results
           path: |
             axe-results.json
-            ACCESSIBILITY-AUDIT.md
+            WEB-ACCESSIBILITY-AUDIT.md
 ```
 
 ### Azure DevOps Integration
@@ -101,7 +101,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: '20.x'
+      versionSpec: '24.x'
     displayName: Setup Node.js
 
   - script: npm ci
@@ -115,7 +115,7 @@ steps:
 
   - script: |
       npx @axe-core/cli http://localhost:3000 \
-        --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
+        --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa \
         --save axe-results.json
     displayName: Run axe-core scan
 
@@ -143,7 +143,7 @@ echo "URL: $URL"
 echo "Threshold: $THRESHOLD violations allowed"
 
 npx @axe-core/cli "$URL" \
-  --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
+  --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa \
   --save axe-results.json
 
 VIOLATIONS=$(node -e "const d=require('./axe-results.json');console.log(Array.isArray(d)?d.reduce((s,r)=>s+(r.violations?.length||0),0):(d.violations?.length||0))")
@@ -217,7 +217,7 @@ SPAs using hash routing (`#/route`) or the History API require special handling:
 
 ### Sites Requiring Cookies/Sessions
 
-- Support passing cookies to axe-core via `--cookie` flag or Playwright context
+- Pass cookies through a Playwright browser context (`@axe-core/playwright`); `@axe-core/cli` has no cookie option
 - Warn if session expiration may affect scan results
 - Recommend scanning behind a test account with long-lived sessions
 
@@ -246,14 +246,14 @@ Support a `.a11y-web-config.json` configuration file in the project root for con
   "rules": {
     "enabled": "all",
     "disabled": [],
-    "tags": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]
+    "tags": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
   },
   "severity": {
     "filter": ["critical", "serious", "moderate", "minor"],
     "failOn": ["critical", "serious"]
   },
   "report": {
-    "outputPath": "ACCESSIBILITY-AUDIT.md",
+    "outputPath": "WEB-ACCESSIBILITY-AUDIT.md",
     "organization": "by-page",
     "includeRemediation": true,
     "includeScreenshots": false,
@@ -294,10 +294,10 @@ Each field, with its type, default and description.
 | `scan.viewport` | object | {1280, 720} | Browser viewport dimensions |
 | `rules.enabled` | string/array | "all" | Rules to enable ("all" or array of rule IDs) |
 | `rules.disabled` | string[] | [] | Rules to explicitly disable |
-| `rules.tags` | string[] | ["wcag2a","wcag2aa"] | axe-core rule tags to include |
+| `rules.tags` | string[] | ["wcag2a","wcag2aa","wcag21a","wcag21aa","wcag22aa"] | axe-core rule tags to include (the WCAG 2.2 AA set; drop `wcag22aa` for a WCAG 2.1 AA target) |
 | `severity.filter` | string[] | all | Severity levels to include in report |
 | `severity.failOn` | string[] | ["critical","serious"] | Severity levels that cause CI failure |
-| `report.outputPath` | string | "ACCESSIBILITY-AUDIT.md" | Report file path |
+| `report.outputPath` | string | "WEB-ACCESSIBILITY-AUDIT.md" | Report file path |
 | `report.organization` | string | "by-page" | Report organization: by-page, by-issue, by-severity |
 | `thresholds.minScore` | number | 0 | Minimum acceptable score (0-100) |
 | `thresholds.maxCritical` | number | null | Max critical issues before failure |
@@ -322,34 +322,36 @@ When this file is present, the wizard automatically detects it and applies its c
 You are an **orchestrator** (read-only until fix mode). You may:
 
 - Run axe-core scans and code reviews
-- Delegate domain scans to sub-agents in parallel groups (A, B, C)
+- Delegate domain scans to sub-agents in parallel groups (A, B, C in `references/delegation-and-scan-context.md`)
 - Aggregate findings into a scored report
 - Enter interactive fix mode ONLY after presenting findings and obtaining user confirmation
 
 You may NOT:
 
-- Apply fixes without user confirmation at the Phase 3 review gate
-- Skip mandatory phases (Phase 0 config, Phase 9 axe-core, Phase 10 report)
+- Apply fixes without user confirmation at the "before applying any fix" gate in SKILL.md
+- Skip mandatory phases (Phase 0 discovery, Phase 9 axe-core when a URL is available, Phase 11 report)
 - Modify files outside the declared scan scope
 
 ### Sub-Agent Output Contract
 
-Every sub-agent in Groups A/B/C MUST return findings in this format:
+Every sub-agent in Groups A/B/C MUST return JSON matching
+`skills/a11y-core/schemas/findings.schema.json`. Each finding has:
 
-- `rule_id`: axe-core rule ID or WCAG criterion
+- `rule`: axe-core rule ID or the skill's rule ID
+- `wcag`: WCAG 2.2 criterion and level, for example `1.3.1 A`, or `n/a`
 - `severity`: `critical` | `serious` | `moderate` | `minor`
-- `element`: CSS selector or file:line reference
-- `description`: what is wrong
-- `remediation`: how to fix it
-- `confidence`: `high` | `medium` | `low`
+- `location`: CSS selector, file:line reference or URL
+- `summary`: what is wrong
+- `fix`: how to fix it
+- `confidence` (optional, omit when high): `high` | `medium` | `low`
 
 Findings missing required fields are rejected. The wizard re-requests from the sub-agent with explicit field requirements.
 
 ### Boundary Validation
 
-**Before Phase 2 (parallel scanning):** Verify all sub-agent inputs are ready: URLs resolved, config loaded, scan scope confirmed.
+**Before Phases 1 to 8 (parallel scanning):** Verify all sub-agent inputs are ready: URLs resolved, config loaded, scan scope confirmed.
 **After each parallel group:** Verify each sub-agent returned structured findings. Log which sub-agents completed and which failed. Proceed with partial results only after noting gaps.
-**Before Phase 10 (report):** Verify axe-core scan completed (Phase 9 is mandatory). Verify severity scoring inputs are complete.
+**Before Phase 11 (report):** Verify the axe-core scan completed (Phase 9 is mandatory when a URL is available). Verify severity scoring inputs are complete.
 
 ### Failure Handling
 

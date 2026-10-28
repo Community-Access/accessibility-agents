@@ -69,7 +69,7 @@ You MUST take screenshots at these points. DO NOT skip any of them:
 
 ### Include in Report
 
-When writing `ACCESSIBILITY-AUDIT.md`, reference screenshots inline:
+When writing `WEB-ACCESSIBILITY-AUDIT.md`, reference screenshots inline:
 
 ```markdown
 ### 1. Primary brand color fails contrast

@@ -26,7 +26,9 @@ Pattern:  {base_url}{rule-id}
 Example:  https://accessibilityinsights.io/info-examples/web/image-alt/
 ```
 
-For any axe-core rule, construct the URL by appending the rule ID to the base URL. This pattern covers all axe-core rules.
+For an axe-core rule, construct the URL by appending the rule ID to the base URL. If Accessibility Insights has no page for a rule, use the `helpUrl` axe itself returns, which has the form `https://dequeuniversity.com/rules/axe/<major.minor>/<rule-id>` (for axe-core 4.14, `https://dequeuniversity.com/rules/axe/4.14/image-alt`).
+
+The WCAG column follows the tags in axe-core 4.14.0. Rules axe tags `best-practice` are not WCAG failures on their own; report them with `wcag` set to `n/a` unless a person confirms a criterion failure.
 
 ### Common axe-core Rules
 
@@ -37,23 +39,26 @@ Each rule ID, with its issue, WCAG and help URL.
 | `image-alt` | Image missing alternative text | 1.1.1 | `https://accessibilityinsights.io/info-examples/web/image-alt/` |
 | `button-name` | Button has no accessible name | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/button-name/` |
 | `color-contrast` | Text has insufficient contrast | 1.4.3 | `https://accessibilityinsights.io/info-examples/web/color-contrast/` |
-| `label` | Form element has no label | 1.3.1 | `https://accessibilityinsights.io/info-examples/web/label/` |
-| `link-name` | Link has no discernible text | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/link-name/` |
+| `label` | Form element has no label | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/label/` |
+| `link-name` | Link has no discernible text | 2.4.4, 4.1.2 | `https://accessibilityinsights.io/info-examples/web/link-name/` |
 | `html-has-lang` | Page missing lang attribute | 3.1.1 | `https://accessibilityinsights.io/info-examples/web/html-has-lang/` |
 | `document-title` | Page missing title | 2.4.2 | `https://accessibilityinsights.io/info-examples/web/document-title/` |
-| `heading-order` | Heading levels skipped | 1.3.1 | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` |
+| `heading-order` | Heading levels skipped | best practice (relates to 1.3.1) | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` |
 | `aria-roles` | Invalid ARIA role | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/aria-roles/` |
 | `aria-required-attr` | Missing required ARIA attribute | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/aria-required-attr/` |
 | `aria-valid-attr` | Invalid ARIA attribute | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/aria-valid-attr/` |
 | `bypass` | No skip navigation link | 2.4.1 | `https://accessibilityinsights.io/info-examples/web/bypass/` |
-| `region` | Content not in landmark | 1.3.1 | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` |
-| `tabindex` | Positive tabindex used | 2.4.3 | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` |
-| `duplicate-id` | Duplicate element ID | 4.1.1 | `https://accessibilityinsights.io/info-examples/web/duplicate-id/` |
-| `focus-order-semantics` | Focus order issue | 2.4.3 | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` |
-| `input-image-alt` | Input image missing alt | 1.1.1 | `https://accessibilityinsights.io/info-examples/web/input-image-alt/` |
+| `region` | Content not in landmark | best practice (relates to 1.3.1) | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` |
+| `tabindex` | Positive tabindex used | best practice (relates to 2.4.3) | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` |
+| `duplicate-id-aria` | ID referenced by ARIA or a label is not unique | 4.1.2 | `https://dequeuniversity.com/rules/axe/4.14/duplicate-id-aria` |
+| `focus-order-semantics` | Focus order issue | best practice, experimental (relates to 2.4.3) | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` |
+| `input-image-alt` | Input image missing alt | 1.1.1, 4.1.2 | `https://accessibilityinsights.io/info-examples/web/input-image-alt/` |
 | `meta-viewport` | Viewport disables zoom | 1.4.4 | `https://accessibilityinsights.io/info-examples/web/meta-viewport/` |
 | `select-name` | Select element has no label | 4.1.2 | `https://accessibilityinsights.io/info-examples/web/select-name/` |
 | `autocomplete-valid` | Invalid autocomplete value | 1.3.5 | `https://accessibilityinsights.io/info-examples/web/autocomplete-valid/` |
+| `target-size` | Touch target too small | 2.5.8 | `https://dequeuniversity.com/rules/axe/4.14/target-size` |
+
+`duplicate-id` and `duplicate-id-active` are deprecated in axe-core and tagged for the obsolete 4.1.1 Parsing. Do not report them as WCAG 2.2 failures; `duplicate-id-aria` covers the duplicate IDs that still break names and relationships. `target-size` is off by default; it runs when selected by tag (such as `wcag22aa`) or enabled explicitly.
 
 ### W3C/WAI Topic Pages (Non-axe Issues)
 
@@ -74,24 +79,24 @@ For agent-detected issues without axe-core rule IDs, use these W3C/WAI pages:
 
 | Rule ID | Issue | Help URL |
 |---------|-------|----------|
-| `DOCX-E001` | Missing alt text on images | `https://support.microsoft.com/en-us/office/add-alternative-text-to-a-shape-picture-chart-smartart-graphic-or-other-object-44989b2a-903c-4d9a-b742-6a75b451c669` |
-| `DOCX-E002` | Missing table header row | `https://support.microsoft.com/en-us/office/create-accessible-tables-in-word-cb464015-59dc-46a0-ac01-6217c62210e5` |
-| `DOCX-E003` | Skipped heading levels | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_headings` |
-| `DOCX-E004` | Missing document title | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_doctitle` |
-| `DOCX-E005` | Merged or split table cells | `https://support.microsoft.com/en-us/office/create-accessible-tables-in-word-cb464015-59dc-46a0-ac01-6217c62210e5` |
-| `DOCX-E006` | Ambiguous hyperlink text | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_links` |
-| `DOCX-E007` | No heading structure | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_headings` |
-| `DOCX-E008` | Document access restricted (IRM) | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d` |
-| `DOCX-E009` | Content controls without titles | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d` |
-| `DOCX-W001` | Nested tables | `https://support.microsoft.com/en-us/office/create-accessible-tables-in-word-cb464015-59dc-46a0-ac01-6217c62210e5` |
-| `DOCX-W002` | Long alt text (>150 chars) | `https://support.microsoft.com/en-us/office/everything-you-need-to-know-to-write-effective-alt-text-df98f884-ca3d-456c-807b-1a1fa82f5dc2` |
-| `DOCX-W003` | Manual list characters | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d` |
-| `DOCX-W004` | Blank table rows for spacing | `https://support.microsoft.com/en-us/office/create-accessible-tables-in-word-cb464015-59dc-46a0-ac01-6217c62210e5` |
-| `DOCX-W005` | Heading exceeds 100 characters | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_headings` |
-| `DOCX-W006` | Watermark present | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_watermarks` |
-| `DOCX-T001` | Missing document language | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_language` |
-| `DOCX-T002` | Layout table with header markup | `https://support.microsoft.com/en-us/office/create-accessible-tables-in-word-cb464015-59dc-46a0-ac01-6217c62210e5` |
-| `DOCX-T003` | Repeated blank characters | `https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-87ac-47ea-b91a-78dcacb3c66d#bkmk_whitespace` |
+| `DOCX-E001` | Missing alt text on images | `https://support.microsoft.com/en-us/accessibility/office-accessibility/add-alternative-text-to-a-shape-picture-chart-smartart-graphic-or-other-object` |
+| `DOCX-E002` | Missing table header row | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_tableheaders_win` |
+| `DOCX-E003` | Skipped heading levels | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_builtinheadings_win` |
+| `DOCX-E004` | Missing document title | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities` |
+| `DOCX-E005` | Merged or split table cells | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_avoid_tables_win` |
+| `DOCX-E006` | Ambiguous hyperlink text | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_links_and_screentips_win` |
+| `DOCX-E007` | No heading structure | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_builtinheadings_win` |
+| `DOCX-E008` | Document access restricted (IRM) | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities` |
+| `DOCX-E009` | Content controls without titles | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities` |
+| `DOCX-W001` | Nested tables | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_avoid_tables_win` |
+| `DOCX-W002` | Long alt text (>150 chars) | `https://support.microsoft.com/en-us/accessibility/office-accessibility/everything-you-need-to-know-to-write-effective-alt-text` |
+| `DOCX-W003` | Manual list characters | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_createlists_win` |
+| `DOCX-W004` | Blank table rows for spacing | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_avoid_tables_win` |
+| `DOCX-W005` | Heading exceeds 100 characters | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_builtinheadings_win` |
+| `DOCX-W006` | Watermark present | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities` |
+| `DOCX-T001` | Missing document language | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities` |
+| `DOCX-T002` | Layout table with header markup | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_tableheaders_win` |
+| `DOCX-T003` | Repeated blank characters | `https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities#bkmk_textspacing_win` |
 
 ### Excel (XLSX) Rules
 
@@ -99,22 +104,22 @@ For agent-detected issues without axe-core rule IDs, use these W3C/WAI pages:
 
 | Rule ID | Issue | Help URL |
 |---------|-------|----------|
-| `XLSX-E001` | Missing alt text on images/charts | `https://support.microsoft.com/en-us/office/add-alternative-text-to-a-shape-picture-chart-smartart-graphic-or-other-object-44989b2a-903c-4d9a-b742-6a75b451c669` |
-| `XLSX-E002` | Missing table header row | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_tableheaders` |
-| `XLSX-E003` | Default sheet names | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_sheettabs` |
-| `XLSX-E004` | Merged cells in data tables | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_mergedcells` |
-| `XLSX-E005` | Ambiguous hyperlink text | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593` |
-| `XLSX-E006` | Missing workbook title | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_doctitle` |
-| `XLSX-E007` | Red-only negative number formatting | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_color` |
-| `XLSX-E008` | Workbook access restricted (IRM) | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593` |
-| `XLSX-W001` | Blank cells used for formatting | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593` |
-| `XLSX-W002` | Color-only data differentiation | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_color` |
-| `XLSX-W003` | Complex table structure | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_mergedcells` |
-| `XLSX-W004` | Empty worksheet | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593` |
-| `XLSX-W005` | Long alt text (>150 chars) | `https://support.microsoft.com/en-us/office/everything-you-need-to-know-to-write-effective-alt-text-df98f884-ca3d-456c-807b-1a1fa82f5dc2` |
-| `XLSX-T001` | Sheet tab order not logical | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593#bkmk_sheettabs` |
-| `XLSX-T002` | Missing named ranges | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593` |
-| `XLSX-T003` | Missing workbook language | `https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-6cc05fc5-1314-48b5-8eb3-683e49b3e593` |
+| `XLSX-E001` | Missing alt text on images/charts | `https://support.microsoft.com/en-us/accessibility/office-accessibility/add-alternative-text-to-a-shape-picture-chart-smartart-graphic-or-other-object` |
+| `XLSX-E002` | Missing table header row | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
+| `XLSX-E003` | Default sheet names | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets#bkmk_renamesheet_win` |
+| `XLSX-E004` | Merged cells in data tables | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
+| `XLSX-E005` | Ambiguous hyperlink text | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets#bkmk_links_and_screentips_win` |
+| `XLSX-E006` | Missing workbook title | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
+| `XLSX-E007` | Red-only negative number formatting | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets#bkmk_fontformatandcolor_win` |
+| `XLSX-E008` | Workbook access restricted (IRM) | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
+| `XLSX-W001` | Blank cells used for formatting | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
+| `XLSX-W002` | Color-only data differentiation | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets#bkmk_fontformatandcolor_win` |
+| `XLSX-W003` | Complex table structure | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
+| `XLSX-W004` | Empty worksheet | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets#bkmk_deletesheets_win` |
+| `XLSX-W005` | Long alt text (>150 chars) | `https://support.microsoft.com/en-us/accessibility/office-accessibility/everything-you-need-to-know-to-write-effective-alt-text` |
+| `XLSX-T001` | Sheet tab order not logical | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets#bkmk_renamesheet_win` |
+| `XLSX-T002` | Missing named ranges | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
+| `XLSX-T003` | Missing workbook language | `https://support.microsoft.com/en-us/accessibility/excel/accessibility-best-practices-with-excel-spreadsheets` |
 
 ### PowerPoint (PPTX) Rules
 
@@ -122,23 +127,23 @@ For agent-detected issues without axe-core rule IDs, use these W3C/WAI pages:
 
 | Rule ID | Issue | Help URL |
 |---------|-------|----------|
-| `PPTX-E001` | Missing alt text on images | `https://support.microsoft.com/en-us/office/add-alternative-text-to-a-shape-picture-chart-smartart-graphic-or-other-object-44989b2a-903c-4d9a-b742-6a75b451c669` |
-| `PPTX-E002` | Missing slide titles | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_slidetitles` |
-| `PPTX-E003` | Duplicate slide titles | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_slidetitles` |
-| `PPTX-E004` | Missing table header row | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_tableheaders` |
-| `PPTX-E005` | Ambiguous hyperlink text | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_links` |
-| `PPTX-E006` | Incorrect reading order | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_readingorder` |
-| `PPTX-E007` | Presentation access restricted (IRM) | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25` |
-| `PPTX-W001` | Missing presentation title | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25` |
-| `PPTX-W002` | Tables used for layout | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_tableheaders` |
-| `PPTX-W003` | Merged table cells | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_tableheaders` |
-| `PPTX-W004` | Audio/video without captions | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_captions` |
-| `PPTX-W005` | Color-only meaning | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_color` |
-| `PPTX-W006` | Long alt text (>150 chars) | `https://support.microsoft.com/en-us/office/everything-you-need-to-know-to-write-effective-alt-text-df98f884-ca3d-456c-807b-1a1fa82f5dc2` |
-| `PPTX-T001` | Missing section names | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25` |
-| `PPTX-T002` | Excessive animations | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25#bkmk_animations` |
-| `PPTX-T003` | Missing slide notes | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25` |
-| `PPTX-T004` | Missing presentation language | `https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7772b2-2f33-4bd2-8ca7-dae3b2b3ef25` |
+| `PPTX-E001` | Missing alt text on images | `https://support.microsoft.com/en-us/accessibility/office-accessibility/add-alternative-text-to-a-shape-picture-chart-smartart-graphic-or-other-object` |
+| `PPTX-E002` | Missing slide titles | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_titlewin` |
+| `PPTX-E003` | Duplicate slide titles | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_titlewin` |
+| `PPTX-E004` | Missing table header row | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_headerswin` |
+| `PPTX-E005` | Ambiguous hyperlink text | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_winhyperlinksaccessible` |
+| `PPTX-E006` | Incorrect reading order | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_readingorderwin` |
+| `PPTX-E007` | Presentation access restricted (IRM) | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities` |
+| `PPTX-W001` | Missing presentation title | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities` |
+| `PPTX-W002` | Tables used for layout | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_tableswin` |
+| `PPTX-W003` | Merged table cells | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_tableswin` |
+| `PPTX-W004` | Audio/video without captions | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_winvideo` |
+| `PPTX-W005` | Color-only meaning | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities#bkmk_fontcolorwin` |
+| `PPTX-W006` | Long alt text (>150 chars) | `https://support.microsoft.com/en-us/accessibility/office-accessibility/everything-you-need-to-know-to-write-effective-alt-text` |
+| `PPTX-T001` | Missing section names | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities` |
+| `PPTX-T002` | Excessive animations | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities` |
+| `PPTX-T003` | Missing slide notes | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities` |
+| `PPTX-T004` | Missing presentation language | `https://support.microsoft.com/en-us/accessibility/powerpoint/make-your-powerpoint-presentations-accessible-to-people-with-disabilities` |
 
 ## Adobe PDF
 
@@ -146,18 +151,19 @@ Each rule ID, with its issue and help URL.
 
 | Rule ID | Issue | Help URL |
 |---------|-------|----------|
-| `PDFUA.TaggedPDF` | Document not tagged | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#tag_pdf` |
-| `PDFUA.Title` | Missing document title | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#add_title` |
-| `PDFUA.Language` | Missing document language | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#set_language` |
-| `PDFUA.BookmarksPresent` | Missing bookmarks | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#bookmarks` |
-| `PDFUA.AltText` | Missing alt text | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#alt_text` |
-| `PDFUA.TableHeaders` | Missing table headers | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#tables` |
-| `PDFUA.ReadingOrder` | Incorrect reading order | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#reading_order` |
-| `PDFUA.Headings` | Heading structure issues | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#headings` |
-| `PDFUA.ListTags` | Missing list tags | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#lists` |
-| `PDFBP.Contrast` | Low contrast text | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#contrast` |
-| `PDFBP.Scanned` | Scanned (image-only) PDF | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#scanned` |
-| `PDFQ.Searchable` | Text not searchable | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#ocr` |
+| `PDFUA.01.001` | Document not tagged | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html#creating_a_tagged_pdf_from_an_authoring_application` |
+| `PDFBP.META.TITLE_PRESENT` | Missing document title | `https://helpx.adobe.com/acrobat/using/create-verify-pdf-accessibility.html` |
+| `PDFUA.06.001` | Missing document language | `https://helpx.adobe.com/acrobat/using/create-verify-pdf-accessibility.html` (section: Document language) |
+| `PDFBP.NAV.BOOKMARKS_FOR_LONG_DOCS` | Missing bookmarks | `https://helpx.adobe.com/acrobat/using/create-verify-pdf-accessibility.html` (section: Bookmarks) |
+| `PDFUA.13.001` | Missing alt text | `https://helpx.adobe.com/acrobat/using/create-verify-pdf-accessibility.html` |
+| `PDFUA.19.001` | Missing table headers | `https://helpx.adobe.com/acrobat/using/editing-document-structure-content-tags.html` |
+| `PDFBP.STRUCT.READING_ORDER` | Incorrect reading order | `https://helpx.adobe.com/acrobat/using/touch-reading-order-tool-pdfs.html` (section: Check and correct reading order) |
+| `PDFUA.07.001` | Heading structure issues | `https://helpx.adobe.com/acrobat/using/editing-document-structure-content-tags.html` |
+| `PDFUA.20.001` | Missing list tags | `https://helpx.adobe.com/acrobat/using/editing-document-structure-content-tags.html` |
+| `PDFBP.TEXT.EXTRACTABLE` | Scanned (image-only) PDF | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html` |
+| `PDFQ.REPO.NO_SCANNED_ONLY` | Image-only PDF in repository | `https://helpx.adobe.com/acrobat/using/creating-accessible-pdfs.html` |
+
+Rule IDs are the ones defined in `skills/pdf-accessibility/references/rule-layers.md`. There is no PDF contrast rule; check text contrast in PDFs manually against 1.4.3.
 
 ## WCAG 2.2 Understanding Documents
 
@@ -248,7 +254,7 @@ Each rule, with its fix steps.
 
 | Rule | Fix Steps |
 |------|-----------|
-| `PDFUA.TaggedPDF` | Accessibility, Add Tags to Document |
-| `PDFUA.Title` | File, Properties, Description tab, Title field |
-| `PDFUA.Language` | File, Properties, Advanced tab, Language dropdown |
-| `PDFUA.ReadingOrder` | Tools, Accessibility, Reading Order tool |
+| `PDFUA.01.001` | Accessibility, Add Tags to Document |
+| `PDFBP.META.TITLE_PRESENT` | File, Properties, Description tab, Title field |
+| `PDFUA.06.001` | File, Properties, Advanced tab, Language dropdown |
+| `PDFBP.STRUCT.READING_ORDER` | Tools, Accessibility, Reading Order tool |

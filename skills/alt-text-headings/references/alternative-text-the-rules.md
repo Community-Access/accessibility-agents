@@ -65,11 +65,11 @@ When an image is inside a link or button, the alt text describes where it goes o
 Images that add no information -- visual flourishes, spacers, backgrounds, dividers:
 
 ```html
-<img src="divider.png" alt="" aria-hidden="true">
+<img src="divider.png" alt="">
 <img src="background-pattern.png" alt="" role="presentation">
 ```
 
-Both `alt=""` and `role="presentation"` work. Use `alt=""` as the primary method. Add `aria-hidden="true"` as reinforcement for SVGs and complex decorative elements.
+Both `alt=""` and `role="presentation"` work. Use `alt=""` as the primary method; on an `img` it already removes the image from the accessibility tree, so `aria-hidden="true"` adds nothing there. Use `aria-hidden="true"` for decorative inline SVGs and other decorative elements that have no `alt`.
 
 ### Rule 5: Complex Images Need Long Descriptions
 
@@ -123,7 +123,7 @@ Requirements for meaningful SVGs:
 Requirements for decorative SVGs:
 
 - `aria-hidden="true"` on the `<svg>` element
-- `focusable="false"` to prevent IE/Edge focus issues
+- `focusable="false"` to prevent focus in Internet Explorer and legacy (pre-Chromium) Edge; harmless elsewhere
 - No `<title>` or `<desc>` elements
 
 ### SVGs in Buttons and Links

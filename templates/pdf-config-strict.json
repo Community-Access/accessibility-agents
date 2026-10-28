@@ -1,6 +1,6 @@
 {
-  "$schema": "./.github/schemas/pdf-config.schema.json",
-  "description": "Strict PDF profile — all rules, all severities. Full PDF/UA conformance plus best practices.",
+  "$schema": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/pdf-config.schema.json",
+  "description": "Strict PDF profile: all rules, all severities. Full PDF/UA conformance plus best practices.",
   "enabled": true,
   "disabledRules": [],
   "severityFilter": ["error", "warning", "tip"],

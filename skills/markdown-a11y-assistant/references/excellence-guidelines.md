@@ -40,13 +40,14 @@ You may NOT:
 
 ### Sub-Agent Output Contract
 
-`markdown-scanner` MUST return findings per file in this format:
+`markdown-scanner` MUST return JSON matching `skills/a11y-core/schemas/findings.schema.json` per file. Each finding has:
 
-- `domain`: one of the 9 accessibility domains
+- `rule`: the markdownlint rule or domain rule ID (for example `MD045`, `LINK-AMBIGUOUS`)
+- `wcag`: WCAG 2.2 criterion number and level, for example `2.4.4 A`, or `n/a` for the cognitive domains
 - `severity`: `critical` | `serious` | `moderate` | `minor`
 - `location`: file path and line number
-- `description`: what is wrong
-- `remediation`: how to fix it (or `human-judgment` if auto-fix is not appropriate)
+- `summary`: what is wrong, in one sentence
+- `fix`: how to fix it (start with `human-judgment:` if auto-fix is not appropriate)
 
 `markdown-fixer` MUST return results per fix in this format:
 

@@ -81,7 +81,7 @@ const STATUS_OUTPUT_SCHEMA = z.object({
 });
 
 const LISTING_OUTPUT_SCHEMA = z.object({
-  items: z.array(z.record(z.any())).describe("The records returned."),
+  items: z.array(z.record(z.string(), z.any())).describe("The records returned."),
   total: z.number().optional().describe("How many records exist, when more than were returned."),
 });
 

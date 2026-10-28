@@ -1,197 +1,127 @@
 # Plugin Packaging Guide
 
-How to package, distribute, and install a11y-agent-team agents in different environments.
+How Accessibility Agents is packaged, distributed and installed in 7.x. The
+standard behind it, and exactly which manifest each client reads, is in
+[Agent Plugins 1.0](../../docs/standards/agent-plugins.md).
 
-## Distribution Formats
+## What ships
 
-### 1. Git Clone (Recommended)
+One repository, one copy of each skill. Every client reads the same files.
 
-The primary distribution method. All agents, skills, and configuration are stored in the repository.
+| Path | What it is |
+|---|---|
+| `skills/` | 108 Agent Skills: 6 routers, and the specialists, helpers and reference skills they dispatch |
+| `plugin.json` | Agent Plugins 1.0 manifest |
+| `mcp.json` | Agent Plugins 1.0 MCP registration |
+| `com.github.copilot/hooks/hooks.json` | Copilot CLI and VS Code plugin hooks |
+| `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` | Claude Code manifest and the `community-access` marketplace |
+| `.codex-plugin/plugin.json` | Codex compatibility manifest |
+| `hooks/` | the hook guard and the per-client hook manifests |
+| `mcp-server/` | the MCP server (39 tools); `mcp-server/dist/stdio.mjs` is the committed stdio bundle the plugins launch |
+| `templates/` | scan configuration profiles |
 
-**Install:**
+## Distribution formats
 
-```bash
-gh skill install Community-Access/accessibility-agents
-gh skill setup Community-Access/accessibility-agents
+### 1. Plugin (recommended where available)
+
+```text
+Claude Code   /plugin marketplace add Community-Access/accessibility-agents
+              /plugin install accessibility-agents@community-access
+Copilot CLI   copilot plugin marketplace add Community-Access/accessibility-agents
+              copilot plugin install accessibility-agents@community-access
+Codex         codex plugin marketplace add Community-Access/accessibility-agents
+              codex plugin add accessibility-agents@community-access
+              (skills and MCP server only; no edit gate, see below)
+VS Code       Chat: Install Plugin From Source, with the repository URL
+              (requires chat.plugins.enabled)
 ```
 
-**Update:**
+The plugin loads the skills and the hooks and starts the MCP server from its
+bundle, `mcp-server/dist/stdio.mjs`, with no `npm install`. Only the optional
+scanners (Playwright, `@axe-core/playwright`, `pdf-lib`, veraPDF) need
+installing; the tools that need them say how.
+
+On Codex the command is `codex plugin add`, not `install`. Codex reads the
+repository's `.claude-plugin/marketplace.json`. Tested live with Codex CLI
+0.165.0: the install registers the MCP server (`codex mcp list` shows
+`mcp-server/dist/stdio.mjs`) and `codex debug prompt-input` lists exactly the
+six routers. The Codex plugin does not load hooks: Codex 0.165.0 lists its
+`plugin_hooks` feature as removed, and after `codex plugin add` Codex reports
+no hooks. So on Codex the plugin gives the skills and the MCP server but no
+edit gate. For the gate, use `npm run setup` instead, which writes
+`~/.codex/hooks.json` (Codex then lists all six hooks), and register the server
+with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
+Use one route, not both.
+
+### 2. Direct install from a checkout
 
 ```bash
-gh extension upgrade gh-skill
-gh skill setup Community-Access/accessibility-agents
-```
-
-**Advantages:**
-
-- Full agent set with all configuration
-- Update support via `gh skill` commands
-- Works for Claude Code, Copilot, Claude Desktop, and Codex CLI simultaneously
-- Git-based versioning and rollback
-
-### 2. MCP Server (HTTP or stdio)
-
-Standalone MCP server providing accessibility scanning tools via Streamable HTTP or stdio transport.
-
-**Install and run:**
-
-```bash
-cd mcp-server
+git clone https://github.com/Community-Access/accessibility-agents
+cd accessibility-agents
 npm install
-npm start          # HTTP on port 3100
-npm run start:stdio # stdio for Claude Desktop
+npm run setup -- --dry-run
+npm run setup
 ```
 
-**Claude Desktop config (`claude_desktop_config.json`):**
+`npm run setup` copies `skills/` to `~/.agents/skills` (Codex, Copilot CLI,
+VS Code, Gemini CLI) and to `~/.gemini/config/skills` when Antigravity is
+present, and writes the hook manifest for each client it finds. Claude Code
+does not read `~/.agents/skills`; use the plugin, or `claude --plugin-dir` on
+the checkout. See [Getting started](../../docs/getting-started/README.md).
+
+### 3. MCP server only
+
+```bash
+node mcp-server/dist/stdio.mjs   # stdio bundle, no install needed
+cd mcp-server
+npm install                      # needed for the HTTP server and for development
+npm start                        # Streamable HTTP on 127.0.0.1:3100
+```
+
+Claude Desktop config (`claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
     "a11y-agent-team": {
       "command": "node",
-      "args": ["<path-to>/mcp-server/stdio.js"]
+      "args": ["<path-to>/mcp-server/dist/stdio.mjs"]
     }
   }
 }
 ```
 
-**What's included (24 tools):**
+The server provides 39 tools; the generated
+[MCP tools reference](../../docs/reference/mcp-tools.md) lists them with their
+annotations. Without the skills, a client gets the tools but not the guided
+workflows.
 
-- Core analysis: `check_contrast`, `get_accessibility_guidelines`, `check_heading_structure`, `check_link_text`, `check_form_labels`, `check_color_blindness`, `check_reading_level`
-- Documents: `scan_office_document`, `scan_pdf_document`, `extract_document_metadata`, `batch_scan_documents`, `fix_document_metadata`, `fix_document_headings`
-- Media and reporting: `validate_caption_file`, `generate_accessibility_statement`
-- Cache helpers: `check_audit_cache`, `update_audit_cache`
-- Playwright (optional): `run_axe_scan`, `run_playwright_a11y_tree`, `run_playwright_keyboard_scan`, `run_playwright_contrast_scan`, `run_playwright_viewport_scan`
-- PDF extras (optional): `run_verapdf_scan` (requires veraPDF CLI), `convert_pdf_form_to_html` (requires pdf-lib)
+## Custom packages and extensions
 
-**What's NOT included:**
-
-- Agent files (Claude Desktop uses tools, not agent files)
-- Agent Skills
-
-### 3. Per-Project Install (Copilot)
-
-Copy only the GitHub Copilot files into an existing project:
-
-```bash
-# Copy agents
-cp -r .github/agents/ /path/to/project/.github/agents/
-
-# Copy workspace instructions
-cp .github/copilot-instructions.md /path/to/project/.github/
-
-# Copy skills (optional)
-cp -r .github/skills/ /path/to/project/.github/skills/
-
-# Copy prompts (optional)
-cp -r .github/prompts/ /path/to/project/.github/prompts/
-
-# Copy VS Code config
-cp -r .vscode/ /path/to/project/.vscode/
-```
-
-**Minimal install (agents only):**
-
-```bash
-cp -r .github/agents/ /path/to/project/.github/agents/
-cp .github/copilot-instructions.md /path/to/project/.github/
-```
-
-### 4. Per-Project Install (Claude Code)
-
-Copy only the Claude Code files into an existing project:
-
-```bash
-# Copy agents
-cp -r .claude/agents/ /path/to/project/.claude/agents/
-```
-
-## Creating Custom Agent Packages
-
-### Subset Packages
-
-Create a focused package with only the agents you need:
-
-**Web-only package** (no document agents):
-
-```text
-.github/agents/
-  accessibility-lead.agent.md
-  aria-specialist.agent.md
-  modal-specialist.agent.md
-  contrast-master.agent.md
-  keyboard-navigator.agent.md
-  live-region-controller.agent.md
-  forms-specialist.agent.md
-  alt-text-headings.agent.md
-  tables-data-specialist.agent.md
-  link-checker.agent.md
-  web-accessibility-wizard.agent.md
-  testing-coach.agent.md
-  wcag-guide.agent.md
-```
-
-**Document-only package:**
-
-```text
-.github/agents/
-  document-accessibility-wizard.agent.md
-  document-inventory.agent.md
-  cross-document-analyzer.agent.md
-  word-accessibility.agent.md
-  excel-accessibility.agent.md
-  powerpoint-accessibility.agent.md
-  pdf-accessibility.agent.md
-  office-scan-config.agent.md
-  pdf-scan-config.agent.md
-.github/skills/
-  accessibility-rules/SKILL.md
-  document-scanning/SKILL.md
-  report-generation/SKILL.md
-```
-
-### Custom Agent Extensions
-
-To add organization-specific rules or agents:
+To add organization-specific rules or skills:
 
 1. Fork the repository
-2. Add custom agents in `.github/agents/` or `.claude/agents/`
-3. Update `copilot-instructions.md` with your custom agents
+2. Add a skill with `node scripts/new-skill.mjs <name> --tier specialist --domain <domain>`
+3. Rebuild the dispatch matrices and catalog (`node scripts/build-dispatch-matrices.mjs`, `node scripts/build-docs.mjs`) so a router can reach it
 4. Add organization-specific scan configuration in `templates/`
-5. Distribute the fork URL to your team
+5. Run `npm run verify`, then distribute the fork as a marketplace or checkout
 
-## Version Management
+Trimming the package to a subset of skills is possible, but the routers'
+dispatch matrices are generated from the skills present, so rebuild them after
+removing any.
 
-### Pinning to a Version
+## Version management
 
-Use git tags for specific versions:
-
-```bash
-git clone --branch v1.0.0 https://github.com/Community-Access/accessibility-agents.git
-```
-
-### Auto-Update
-
-`gh skill` follows the installed skill source. To pin, install from a tagged checkout:
+Pin to a release tag or commit:
 
 ```bash
-git clone --branch v1.0.0 https://github.com/Community-Access/accessibility-agents.git
-cd accessibility-agents
-gh skill install .
+git clone --branch <tag> https://github.com/Community-Access/accessibility-agents.git
 ```
 
-## File Size Reference
+`git tag` lists the tags; tags before 7.0 contain the old per-client layout,
+not this one. A Claude Code marketplace can also be pinned with `#ref`, for
+example `/plugin marketplace add Community-Access/accessibility-agents#<tag>`.
 
-Approximate sizes for planning distribution:
-
-| Component | Files | Size |
-|-----------|-------|------|
-| Claude Code agents | 20 `.md` files | ~350 KB |
-| Copilot agents | 22 `.agent.md` files | ~400 KB |
-| Agent Skills | 3 `SKILL.md` files | ~30 KB |
-| Prompts | 9 `.prompt.md` files | ~15 KB |
-| Templates | 7 config files | ~10 KB |
-| MCP server | `mcp-server/` (7 files) | ~120 KB |
-| VS Code config | 4 files | ~5 KB |
-| Documentation | Various | ~120 KB |
-| **Total** | **~70 files** | **~1 MB** |
+Nothing in this package updates itself. A plugin follows your client's plugin
+update settings; a checkout updates when you pull and run `npm run setup`
+again.

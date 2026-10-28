@@ -40,11 +40,11 @@
 
 ## Process
 
-1. **Read audit results** — ingests web, document, or markdown accessibility audit reports
-2. **Determine conformance** — calculates overall conformance level based on findings
-3. **Identify limitations** — lists specific non-conformant content with WCAG criteria
-4. **Generate statement** — produces structured markdown in the selected format
-5. **Add feedback section** — includes customizable contact information and procedures
+1. **Read audit results** - ingests web, document, or markdown accessibility audit reports
+2. **Determine conformance** - calculates overall conformance level based on findings
+3. **Identify limitations** - lists specific non-conformant content with WCAG criteria
+4. **Generate statement** - produces structured markdown in the selected format
+5. **Add feedback section** - includes customizable contact information and procedures
 
 ## Handoffs
 
@@ -59,12 +59,12 @@ Each target, with its when.
 ## Sample Usage
 
 ```text
-@accessibility-statement Generate a W3C-format accessibility statement 
+/accessibility-statement Generate a W3C-format accessibility statement 
 from the audit results in WEB-ACCESSIBILITY-AUDIT.md.
 ```
 
 ```text
-@accessibility-statement Create an EU-model statement for our website, 
+/accessibility-statement Create an EU-model statement for our website, 
 including the feedback mechanism and enforcement procedure for Germany.
 ```
 

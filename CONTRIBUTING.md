@@ -64,6 +64,15 @@ run it with `--plugin-dir .`. The enforcement gate runs on this repository's
 own source through `.claude/settings.json`, so an edit to a user-facing file
 here is refused until `accessibility-lead` has run.
 
+### Changing the MCP server
+
+Plugin installs launch `mcp-server/dist/stdio.mjs`, a committed esbuild bundle,
+because a plugin install has no `node_modules`. If you edit anything under
+`mcp-server/`, run `npm install --prefix mcp-server` once, then
+`npm run build --prefix mcp-server`, and commit the rebuilt
+`mcp-server/dist/stdio.mjs` with your change. The `bundle` gate in
+`npm run verify` fails if the committed bundle differs from a fresh build.
+
 ### Where things went
 
 Before 7.0 every agent existed in six per-client copies. They are gone, and
@@ -74,9 +83,9 @@ everything about that migration is in
 
 The agents are framework-agnostic by default. If you work with React, Vue, Svelte, Angular, or another framework and know accessibility pitfalls specific to it, those patterns are welcome additions to the relevant agent instructions.
 
-### Fix installer or update scripts
+### Fix the installer
 
-The install, update, and uninstall scripts support macOS and Windows. Bug fixes and improvements are welcome, especially for edge cases on systems we have not tested.
+`scripts/install.mjs` (run with `npm run setup`, `npm run setup -- --dry-run` or `node scripts/install.mjs --uninstall`) is one Node script for macOS, Linux and Windows. Bug fixes and improvements are welcome, especially for edge cases on systems we have not tested.
 
 ### Improve documentation
 
@@ -87,41 +96,32 @@ Clearer docs, better examples, typo fixes - all welcome.
 1. Fork the repo
 2. Create a branch from `main` (`git checkout -b my-fix`)
 3. Make your changes
-4. Test on your system (run the installer, verify agents load)
+4. Test on your system (run `npm run verify`, and check the skills load in your client)
 5. Open a PR with a clear description of what changed and why
 
-### Windows: Enable Symlinks
+### Windows
 
-This repo uses symlinks inside `claude-code-plugin/` to avoid duplicating docs and templates. Git on Windows defaults to `core.symlinks=false`, which converts symlinks to text stub files. To get real symlinks:
-
-1. Enable **Developer Mode** in Windows Settings (Settings > System > For developers).
-2. Clone with symlinks enabled:
-
-   ```bash
-   git clone -c core.symlinks=true https://github.com/Community-Access/accessibility-agents.git
-   ```
-
-   Or set it globally: `git config --global core.symlinks true`
+The repository ships no symlinks. `node scripts/dev-link.mjs` makes `.agents/skills` a directory junction on Windows, which needs no Developer Mode or elevation, and falls back to a directory symlink.
 
 ## Testing Requirements
 
-> ⚠️ **CRITICAL:** Always test contributions with the **latest versions** of all relevant tools. Agent behavior depends on current platform APIs, model capabilities, and bug fixes.
+> **Important:** Always test contributions with the **latest versions** of all relevant tools. Agent behavior depends on current platform APIs, model capabilities, and bug fixes.
 
 **Before submitting a PR, verify you are using:**
 
 - **VS Code:** Latest stable release
 - **GitHub Copilot Extensions:** Latest versions (both Copilot and Copilot Chat)
-- **Claude Code CLI:** Latest version (`claude code update`)
+- **Claude Code CLI:** Latest version (`claude update`)
 - **Claude Desktop:** Latest version (auto-updates enabled)
 - **Gemini CLI:** Latest version
 - **Codex CLI:** Latest version
-- **Node.js:** v18.0.0 or higher (for CLI tools like axe-core, pa11y)
+- **Node.js:** an LTS line, 26, 24 or 22 (Node 18 and 20 are end of life)
 
 **Version checks before testing:**
 
 ```bash
 code --version          # VS Code
-claude code --version   # Claude Code CLI
+claude --version        # Claude Code CLI
 node --version         # Node.js
 npm list -g --depth=0  # Global npm packages
 ```
@@ -150,7 +150,7 @@ Before submitting, confirm:
 Preferred primary sources:
 
 - VS Code updates: `https://code.visualstudio.com/updates`
-- VS Code Copilot customization: `https://code.visualstudio.com/docs/copilot/customization`
+- VS Code agent customization: `https://code.visualstudio.com/docs/agent-customization/overview`
 - GitHub Copilot docs: `https://docs.github.com/copilot`
 - W3C WCAG 2.2: `https://www.w3.org/TR/WCAG22/`
 
@@ -167,7 +167,7 @@ Source verification:
 
 - **Keep agent instructions focused.** Each agent owns one domain. Do not add ARIA rules to the contrast agent or focus management to the forms agent.
 - **Match the existing style.** Read the agent you are modifying before making changes. Follow the same structure and tone.
-- **Update both platforms.** If you change a Claude Code agent, update the matching Copilot agent too (and vice versa).
+- **Edit one copy.** Each skill exists once, in `skills/<name>/`, and every client reads it. There are no per-client copies to keep in step.
 - **Test your changes.** Install the agents and verify they work. If you changed an agent, try invoking it with a prompt that exercises the change.
 - **One concern per PR.** A PR that fixes one agent gap is easier to review than one that changes five agents and the installer.
 

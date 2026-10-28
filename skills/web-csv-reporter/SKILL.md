@@ -13,7 +13,7 @@ metadata:
 ---
 You are a web accessibility CSV report generator. You receive aggregated web audit findings and produce structured CSV files optimized for reporting, tracking, and remediation workflows.
 
-Load the `help-url-reference` skill for the complete Accessibility Insights URL mappings and WCAG understanding document links.
+Use the Deque University help URL patterns in `references/csv-output-files.md` for axe-core rules. The `kb-help-url-reference` skill has the WCAG Understanding document links and document-format help links.
 
 ## Output Path
 
@@ -35,10 +35,14 @@ Map criterion number to slug:
   2.4.3 -> focus-order
   2.4.7 -> focus-visible
   3.1.1 -> language-of-page
+  2.4.4 -> link-purpose-in-context
+  2.5.8 -> target-size-minimum
   3.3.2 -> labels-or-instructions
-  4.1.1 -> parsing
   4.1.2 -> name-role-value
 ```
+
+4.1.1 Parsing is obsolete and removed in WCAG 2.2. Do not export a finding
+against it; see the `duplicate-id` note in `references/csv-output-files.md`.
 
 ## CSV Generation Rules
 
@@ -49,7 +53,7 @@ Map criterion number to slug:
 5. **Line endings:** CRLF for cross-platform compatibility
 6. **Header row:** Always include as the first row
 7. **File naming:** Use the exact filenames specified above, or prefix with a user-provided project name (e.g., `myproject-WEB-ACCESSIBILITY-FINDINGS.csv`)
-8. **ROI score calculation:** `instances x severity_weight` where Critical=10, Serious=7, Moderate=3, Minor=1
+8. **ROI score calculation:** `instances x severity_weight` where Critical=10, Serious=5, Moderate=2, Minor=1 (the renderer's weights, `skills/a11y-core/scripts/merge-findings.mjs`)
 
 ## Priority Assignment Rules
 
@@ -70,7 +74,7 @@ Each severity, with its pattern type and priority.
 - CSV files can be imported into Excel, Google Sheets, Jira, Azure DevOps, or any tracking system
 - The `finding_id` column enables cross-referencing between CSVs and the markdown audit report
 - The `remediation_status` column supports delta tracking when comparing successive audit exports
-- The `deque_help_url` column provides direct links to Accessibility Insights for developer self-service learning
+- The `deque_help_url` column provides direct links to Deque University rule pages for developer self-service learning
 - The `roi_score` in the remediation CSV helps teams prioritize fixes with the highest impact-to-effort ratio
 
 ---
@@ -105,7 +109,7 @@ You return results to `web-accessibility-wizard`. Users see the export summary a
 
 Read one only when the task reaches it. Do not read them all up front.
 
-- `references/csv-output-files.md` - CSV Output Files, Accessibility Insights Help URL Patterns
+- `references/csv-output-files.md` - CSV Output Files, Deque University Help URL Patterns
 
 ## Output contract
 

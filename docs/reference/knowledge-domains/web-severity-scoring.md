@@ -14,47 +14,53 @@ Each agent, with its why.
 
 ## Severity Scoring Formula
 
+The score in every rendered report is computed by
+`skills/a11y-core/scripts/merge-findings.mjs`; where this page and the script
+differ, the script decides. A score is not a conformance claim.
+
 ```text
-Page Score = 100 - (sum of weighted findings)
-
-Critical, high confidence (both sources): -15
-Critical, high confidence (single source): -10
-Critical, medium confidence:               - 7
-Critical, low confidence:                  - 3
-Serious, high confidence:                  - 7
-Serious, medium confidence:                - 5
-Serious, low confidence:                   - 2
-Moderate, high confidence:                 - 3
-Moderate, medium confidence:               - 2
-Moderate, low confidence:                  - 1
-Minor:                                     - 1
-
-Floor: 0
+penalty = sum over findings of severity_weight x confidence_factor
+checks  = max(number of findings + number of passed checks, 10)
+score   = max(0, round(100 - (penalty / checks) x 20))
 ```
+
+Each severity, with its weight.
+
+| Severity | Weight |
+|----------|--------|
+| critical | 10 |
+| serious | 5 |
+| moderate | 2 |
+| minor | 1 |
+
+Example: one critical finding at high confidence and 9 passed checks gives
+penalty 10, checks 10, score 100 - (10 / 10) x 20 = 80, grade B.
 
 ## Score Grades
 
-Each score, with its grade and meaning.
+Each score band, with its grade.
 
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues, meets WCAG AA |
-| 75-89 | B | Good - some issues, mostly meets WCAG AA |
-| 50-74 | C | Needs Work - multiple issues, partial compliance |
-| 25-49 | D | Poor - significant accessibility barriers |
-| 0-24 | F | Failing - critical barriers, likely unusable with AT |
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## Confidence Levels
 
-Each level, with weight and when to use.
+Each level, with its factor and when to use it.
 
-| Level | Weight | When to Use |
+| Level | Factor | When to Use |
 |-------|--------|-------------|
-| **High** | 100% | Confirmed by axe-core + agent review, OR definitively structural (missing alt, no labels, no `lang`) |
-| **Medium** | 70% | Found by one source - likely issue but needs judgment (heading edge cases, questionable ARIA) |
-| **Low** | 30% | Possible issue, needs human review (alt quality, reading order, context-dependent link text) |
+| **high** | 1.0 | Structural and certain (missing alt, no label, no `lang`), or found by two sources (for example axe-core and code review) |
+| **medium** | 0.7 | One source, likely an issue (heading edge cases, questionable ARIA, possible keyboard trap) |
+| **low** | 0.4 | Needs human review (alt quality, reading order, context-dependent link text) |
 
-**Source correlation rule:** Issues found by both axe-core AND agent code review are automatically upgraded to **high confidence**, regardless of individual confidence ratings.
+A finding confirmed by a third source, such as a Playwright run, stays
+`high`; the findings schema has no higher level. Merging keeps the highest
+confidence any source reported for the same rule at the same location.
 
 ## Scorecard Formats
 
@@ -83,7 +89,7 @@ Each level, with weight and when to use.
 |------|-------|-------|----------|---------|----------|-------|
 | / | 82 | B | 0 | 2 | 3 | 1 |
 | /login | 91 | A | 0 | 0 | 2 | 1 |
-| /dashboard | 45 | D | 2 | 4 | 3 | 2 |
+| /dashboard | 45 | F | 2 | 4 | 3 | 2 |
 | **Average** | **72.7** | **C** | **2** | **6** | **8** | **4** |
 ```
 
@@ -136,10 +142,10 @@ Each status, with its definition.
 
 | Status | Definition |
 |--------|-----------|
-|  Fixed | In previous report, no longer present |
-|  New | Not in previous report, appears now |
-|  Persistent | Remains from previous report |
-|  Regressed | Previously fixed, has returned |
+| Fixed | In previous report, no longer present |
+| New | Not in previous report, appears now |
+| Persistent | Remains from previous report |
+| Regressed | Remains, at a higher severity than in the previous report |
 
 ### Progress Metrics
 

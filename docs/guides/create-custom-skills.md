@@ -6,26 +6,27 @@ This guide explains how to extend the accessibility agents platform with custom 
 
 A **Skill** is a reusable knowledge domain that agents reference for guidance on a specific topic. Each skill is:
 
-- **Focused** — covers one domain (e.g., WCAG scoring, Tailwind contrast, etc.)
-- **Authoritative** — grounds recommendations in official sources
-- **Reusable** — referenced by multiple agents across the platform
-- **Validated** — tested against real-world accessibility issues
+- **Focused** - covers one domain (e.g., WCAG scoring, Tailwind contrast, etc.)
+- **Authoritative** - grounds recommendations in official sources
+- **Reusable** - referenced by multiple agents across the platform
+- **Validated** - tested against real-world accessibility issues
 
 ### Skill Structure
 
-```text
-Claude Code Plugin Structure:
-  .claude/
-    agents/
-      your-skill-name.md
+A skill is a folder whose name matches the skill's `name`, containing
+`SKILL.md`. In this repository skills live in `skills/` and are scaffolded with
+`node scripts/new-skill.mjs`; in your own project, put them where your client
+reads workspace skills (`.agents/skills/`, `.agents/skills/` or
+`.github/skills/`).
 
-Your Custom Skill Structure:
-  .claude/skills/my-custom-domain/
-    SKILL.md              # Main skill documentation
-    rules.json            # Optional: Structured rule definitions
-    examples/
-      example-1.md
-      example-2.md
+```text
+.agents/skills/my-custom-domain/
+  SKILL.md              # Main skill documentation
+  references/           # Optional: long-tail detail, one level deep
+    rules.md
+  examples/
+    example-1.md
+    example-2.md
 ```
 
 ## Creating a Custom Skill (Step by Step)
@@ -61,25 +62,22 @@ Ask yourself:
 
 ### Step 2: Create the Skill File
 
-Create `.claude/skills/my-custom-domain/SKILL.md`:
+Create `.agents/skills/my-custom-domain/SKILL.md`. The frontmatter may hold only the six fields the Agent Skills specification defines (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`); `metadata` values must be strings. Put sources in the body, where the model reads them:
 
 ```markdown
 ---
 name: my-custom-domain
-version: "1.0"
 description: [One sentence describing what this skill covers]
-tags: 
-  - wcag
-  - custom-domain
-appliesTo:
-  - aria-specialist
-  - web-accessibility-wizard
-sources:
-  - name: "WCAG 2.2 Success Criterion X.X.X"
-    url: "https://www.w3.org/WAI/WCAG22/Understanding/..."
-  - name: "Industry Standard Name"
-    url: "https://..."
+license: MIT
+metadata:
+  version: "1.0"
+  tags: "wcag, custom-domain"
 ---
+
+## Sources
+
+- [WCAG 2.2 Success Criterion X.X.X](https://www.w3.org/WAI/WCAG22/Understanding/...)
+- [Industry Standard Name](https://...)
 
 ## Overview
 
@@ -126,8 +124,8 @@ If you're unsure whether to apply this skill, use this decision tree:
 ```
 
 Do you have [context X]?
-├─ Yes → Apply Rule 1, Rule 2
-├─ No  → Apply Rule 3
+|- Yes: Apply Rule 1, Rule 2
+|- No:  Apply Rule 3
 
 ```python
 
@@ -152,7 +150,7 @@ Do you have [context X]?
 
 If upgrading from an older version:
 
-### v1.0 → v2.0
+### v1.0 to v2.0
 [What changed, what needs updating]
 
 ## See Also
@@ -189,7 +187,7 @@ If your skill defines many rules, create a `rules.json` file for programmatic ac
     {
       "id": "RULE-002",
       "name": "Rule 2 Name",
-      "severity": "high",
+      "severity": "serious",
       "wcagCriterion": "2.4.4",
       "description": "What this rule checks for",
       "appliesTo": ["platform2"],
@@ -202,7 +200,7 @@ If your skill defines many rules, create a `rules.json` file for programmatic ac
 
 ### Step 4: Add Examples (Recommended)
 
-Create `.claude/skills/my-custom-domain/examples/` with real-world examples:
+Create `.agents/skills/my-custom-domain/examples/` with real-world examples:
 
 **example-1.md:**
 
@@ -247,8 +245,8 @@ This skill provides:
 
 For team-internal skills that shouldn't go public:
 
-1. Create in `.claude/skills/my-internal-domain/`
-2. Add permission restrictions (if using): `.claude/metadata/acl.json`
+1. Create in your project's skills folder, for example `.agents/skills/my-internal-domain/`
+2. Keep the repository private if the skill must not be public
 3. Document in team wiki/confluence
 4. Link from team-used agents only
 
@@ -256,26 +254,26 @@ For team-internal skills that shouldn't go public:
 
 To publish a skill for the public accessibility-agents repository:
 
-1. ✅ **Source validation**
+1. **Source validation**
    - All recommendations mapped to authoritative sources
    - Sources tested for link rot
    - Citations in structured format
 
-2. ✅ **Quality bar**
+2. **Quality bar**
    - At least 3 detailed rule examples
    - Decision tree or guidance flow
    - Real-world use cases
    - Platform/framework tested
 
-3. ✅ **Documentation**
-   - SKILL.md with full structure
-   - rules.json if 5+ rules
+3. **Documentation**
+   - SKILL.md with full structure, body under 6 KiB
+   - `references/` files for the long tail
    - 2-3 examples/ files
    - README explaining the skill
 
-4. ✅ **Testing**
-   - Validate against accessibility-agents test suite
-   - Run verify-sources.yml to check all links
+4. **Testing**
+   - Run `npm run verify` (specification, package rules, markdown)
+   - Check every external link by hand; no workflow checks them automatically
    - Tested by 2+ independent reviewers
 
 5. **Submit PR** to accessibility-agents repo with:
@@ -290,7 +288,7 @@ To publish a skill for the public accessibility-agents repository:
 
 Skills are considered "maintained" if:
 
-- Links to authoritative sources pass `verify-sources.yml` checks
+- Links to authoritative sources have been checked recently
 - No unresolved issues tagged `skill:my-skill`
 - At least one maintainer has reviewed recent changes
 
@@ -305,7 +303,7 @@ Skills are deprecated if:
 
 **Deprecation process:**
 
-1. Add `status: deprecated` to SKILL.md frontmatter
+1. Add `status: "deprecated"` under `metadata` in the SKILL.md frontmatter (a top-level `status` field is not allowed by the specification)
 2. Add deprecation notice in overview
 3. Link to replacement skill
 4. Update referencing agents
@@ -318,7 +316,7 @@ Skills are deprecated if:
 For React, Vue, Angular, Svelte, etc.:
 
 ```text
-.claude/skills/framework-accessibility-[name]/
+.agents/skills/framework-accessibility-[name]/
   SKILL.md              # Framework-specific patterns
   rules.json            # Framework-specific rules
   examples/
@@ -331,7 +329,7 @@ For React, Vue, Angular, Svelte, etc.:
 For detailed guidance on a single SC:
 
 ```text
-.claude/skills/wcag-[criterion]/
+.agents/skills/wcag-[criterion]/
   SKILL.md              # Deep dive on that criterion
   rules.json            # How to test it
   examples/
@@ -344,7 +342,7 @@ For detailed guidance on a single SC:
 For vertical markets (fintech, healthcare, education, e-commerce):
 
 ```text
-.claude/skills/[industry]-accessibility/
+.agents/skills/[industry]-accessibility/
   SKILL.md              # Industry-standard requirements
   rules.json            # Industry-specific rules
   examples/
@@ -357,7 +355,7 @@ For vertical markets (fintech, healthcare, education, e-commerce):
 For accessibility-focused libraries:
 
 ```text
-.claude/skills/[library]-accessibility/
+.agents/skills/[library]-accessibility/
   SKILL.md              # How to use [library] accessibly
   rules.json            # [Library] accessibility checks
   examples/
@@ -372,27 +370,25 @@ Here's a complete walkthrough of creating a fintech-specific skill:
 ### 1. Plan (5 min)
 
 - Domain: Financial services accessibility
-- Authority: WCAG 2.2 AA + PCI DSS Accessibility + Industry standards
-- Users: E-commerce specialist, developer-hub agents
+- Authority: WCAG 2.2 AA plus any industry rules your organization applies (PCI DSS is a security standard and has no accessibility requirements of its own)
+- Users: forms-specialist and developer-hub
 - Decisions: Number validation, currency input, data table rules
 
 ### 2. Create (30 min)
 
-**`.claude/skills/fintech-accessibility/SKILL.md`:**
+**`.agents/skills/fintech-accessibility/SKILL.md`:**
 
 ```markdown
 ---
 name: fintech-accessibility
-version: "1.0"
-appliesTo:
-  - e-commerce-specialist
-  - developer-hub
-sources:
-  - name: "WCAG 2.2 SC 1.3.1 - Info and Relationships"
-    url: "https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships"
-  - name: "PCI Data Security Standard - Accessibility"
-    url: "https://www.pcisecuritystandards.org/"
+description: Accessibility rules for payment forms, currency input and account dashboards.
+license: MIT
+metadata:
+  version: "1.0"
 ---
+
+Sources: [WCAG 2.2 SC 1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships),
+[WCAG 2.2 SC 3.3.8 Accessible Authentication (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-minimum).
 
 ## Financial UI Accessibility
 
@@ -410,7 +406,7 @@ When accepting currency input:
 
 ### 3. Examples (20 min)
 
-**`.claude/skills/fintech-accessibility/examples/correct-payment-form.tsx`:**
+**`.agents/skills/fintech-accessibility/examples/correct-payment-form.tsx`:**
 
 ```tsx
 // Correct: Validating currency input accessibly
@@ -441,16 +437,16 @@ When accepting currency input:
 
 ### 4. Publish (10 min)
 
-- ✅ Sources validated (PCI accessible.org URL + WCAG linked)
-- ✅ Examples tested with screen reader
-- ✅ Added to e-commerce-specialist agent references
-- ✅ Open PR with fintech-accessibility skill
+- Sources validated (PCI accessible.org URL + WCAG linked)
+- Examples tested with screen reader
+- Added to the references of the skills that dispatch it
+- Open PR with fintech-accessibility skill
 
 ## Maintenance Going Forward
 
 Once published, your skill is:
 
-- Included in `verify-sources.yml` link checking
+- External links checked by hand
 - Upgraded in agent references when new versions drop
 - Monitored for link rot and standard changes
 - Eligible for community contributions and improvements
@@ -471,12 +467,12 @@ Once published, your skill is:
 
 ### Public Skill Checklist (before PR)
 
-- [ ] Above checklist complete ✅
+- [ ] Above checklist complete
 - [ ] rules.json created (if 5+ rules)
 - [ ] 3+ examples/ files included
 - [ ] README explaining the skill
 - [ ] All sources cited with full URLs
-- [ ] verify-sources.yml passes
+- [ ] `npm run verify` passes
 - [ ] Tested by 2+ independent reviewers
 - [ ] No merge conflicts with main
 

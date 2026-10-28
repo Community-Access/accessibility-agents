@@ -39,12 +39,12 @@ The agent returns a structured findings block the orchestrator aggregates:
 |--------|----------|------|-------|---------------|
 | Links | Serious | 14 | "click here" - non-descriptive link text | "Download the configuration guide" |
 | Headings | Critical | 32 | H2 followed by H4 - skipped H3 | Add an H3 section or change H4 to H3 |
-| Emoji | Moderate | 5 | 🚀 in H1 heading - breaks anchor IDs | Remove emoji or replace with text |
+| Emoji | Moderate | 5 | an emoji (for example a rocket) in an H1 heading - breaks anchor IDs | Remove emoji or replace with text |
 ```
 
 ## Scoring Formula
 
 ```text
-File Score = 100 - (Critical×15 + Serious×7 + Moderate×3 + Minor×1)
+File Score = 100 - (Critical x 15 + Serious x 7 + Moderate x 3 + Minor x 1)
 Floor: 0
 ```

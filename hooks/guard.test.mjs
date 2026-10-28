@@ -75,6 +75,34 @@ describe('gate', () => {
     assert.ok(words <= 45, `refusal is ${words} words; it must name the next action and stop`);
   });
 
+  test('opens when Claude Code reports the lead subagent stopping, by agent_type', () => {
+    // Claude Code's SubagentStop payload names the subagent in agent_type.
+    run('mark', { ...SESSION, hook_event_name: 'SubagentStop', agent_type: 'accessibility-agents:accessibility-lead' });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 0);
+  });
+
+  test('opens when the lead skill is invoked through Claude Code\'s Skill tool', () => {
+    // An inline skill has no stop event. Without this, the gate stayed shut
+    // for the whole session: seen live, five edits refused after three leads.
+    run('mark', {
+      ...SESSION,
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Skill',
+      tool_input: { skill: 'accessibility-agents:accessibility-lead' },
+    });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 0);
+  });
+
+  test('a general-purpose subagent stopping does not open the gate', () => {
+    run('mark', { ...SESSION, hook_event_name: 'SubagentStop', agent_type: 'general-purpose' });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 2);
+  });
+
+  test('another skill through the Skill tool does not open the gate', () => {
+    run('mark', { ...SESSION, hook_event_name: 'PostToolUse', tool_name: 'Skill', tool_input: { skill: 'accessibility-agents:contrast-master' } });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 2);
+  });
+
   test('allows the edit once the lead has completed', () => {
     run('mark', { ...SESSION, subagent_type: 'accessibility-lead' });
     const result = run('gate', edit('src/components/Modal.tsx'));
@@ -163,6 +191,20 @@ describe('finalize', () => {
     run('mark', { ...SESSION, subagent_type: 'accessibility-lead' });
     assert.equal(run('finalize', SESSION).code, 0);
   });
+
+  test('blocks a stop with decision and reason, not PreToolUse output', () => {
+    run('gate', edit('src/Modal.tsx'));
+    const r = run('finalize', SESSION);
+    assert.equal(r.code, 2);
+    assert.equal(r.json.decision, 'block');
+    assert.match(r.json.reason, /accessibility-lead/);
+    assert.equal(r.json.hookSpecificOutput, undefined);
+  });
+
+  test('does not refuse again while the client is continuing from a refusal', () => {
+    run('gate', edit('src/Modal.tsx'));
+    assert.equal(run('finalize', { ...SESSION, stop_hook_active: true }).code, 0);
+  });
 });
 
 describe('persist', () => {
@@ -201,5 +243,60 @@ describe('robustness', () => {
 
   test('an empty payload does not gate anything', () => {
     assert.equal(run('gate', {}).code, 0, 'no file path means no edit to gate');
+  });
+});
+
+describe('antigravity', () => {
+  function runAg(behaviour, payload) {
+    const result = spawnSync(process.execPath, [GUARD, '--behaviour', behaviour, '--client', 'antigravity'], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: { ...process.env, A11Y_GUARD_DIR: scratch },
+    });
+    return { code: result.status, json: JSON.parse(result.stdout) };
+  }
+  const CONV = { conversationId: 'ag-conv' };
+  const write = (file) => ({ ...CONV, toolCall: { name: 'write_to_file', args: { TargetFile: file, CodeContent: 'x' } } });
+  const view = (file) => ({ ...CONV, toolCall: { name: 'view_file', args: { AbsolutePath: file, IsSkillFile: true } } });
+
+  test('denies a UI edit with a decision on stdout, not an exit code', () => {
+    const { code, json } = runAg('gate', write('/w/src/App.tsx'));
+    assert.equal(code, 0);
+    assert.equal(json.decision, 'deny');
+    assert.match(json.reason, /accessibility-lead/);
+  });
+
+  test('allows a non-UI edit with an explicit decision', () => {
+    assert.deepEqual(runAg('gate', write('/w/server/db.py')).json, { decision: 'allow' });
+  });
+
+  test('reading the lead SKILL.md opens the gate; another skill does not', () => {
+    runAg('mark', view('/h/.gemini/config/skills/aria-specialist/SKILL.md'));
+    assert.equal(runAg('gate', write('/w/src/App.tsx')).json.decision, 'deny');
+    assert.deepEqual(runAg('mark', view('/h/.gemini/config/skills/accessibility-lead/SKILL.md')).json, {});
+    assert.equal(runAg('gate', write('/w/src/App.tsx')).json.decision, 'allow');
+  });
+
+  test('replace_file_content is gated by TargetFile too', () => {
+    const payload = { ...CONV, toolCall: { name: 'replace_file_content', args: { TargetFile: 'C:\\w\\index.html' } } };
+    assert.equal(runAg('gate', payload).json.decision, 'deny');
+  });
+
+  test('injects the contract once as a system message step', () => {
+    const first = runAg('detect', { ...CONV, invocationNum: 0 });
+    assert.match(first.json.injectSteps[0].systemMessage, /WCAG 2\.2 AA/);
+    assert.deepEqual(runAg('detect', { ...CONV, invocationNum: 1 }).json, {});
+  });
+});
+
+describe('arguments sent as a JSON string', () => {
+  test('a UI edit whose arguments arrive as a string is still gated', () => {
+    const payload = { conversationId: 'str-args', toolCall: { name: 'write_to_file', args: JSON.stringify({ TargetFile: '/w/a.css' }) } };
+    const result = spawnSync(process.execPath, [GUARD, '--behaviour', 'gate', '--client', 'antigravity'], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: { ...process.env, A11Y_GUARD_DIR: scratch },
+    });
+    assert.equal(JSON.parse(result.stdout).decision, 'deny');
   });
 });

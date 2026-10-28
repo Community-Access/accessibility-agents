@@ -2,6 +2,8 @@
 
 This document records the authoritative sources consulted during the comprehensive audit and strengthening of all web accessibility agent rules. Each source directly informed specific agent updates, ensuring every rule and guidance in this project is grounded in real-world, standards-based best practices.
 
+The audit predates 7.0. Agent names below are now skill names in `skills/`, and the `*.instructions.md` files it mentions no longer exist; their rules were folded into the skills.
+
 ## W3C WAI ARIA Authoring Practices Guide (APG)
 
 The W3C APG is the definitive reference for ARIA pattern implementation. It provides design patterns, keyboard interaction models, and code examples for every common interactive widget.
@@ -77,13 +79,13 @@ The W3C APG is the definitive reference for ARIA pattern implementation. It prov
   - Name calculation precedence order
   - WARNING: `aria-label` hides descendant content on roles supporting "naming from contents"
   - Composing effective names: function not form, distinguishing word first, 1-3 words, no role name
-  - Description techniques (`aria-describedby`, `aria-description`)
+  - Description techniques (`aria-describedby`; `aria-description` is defined only in the WAI-ARIA 1.3 Working Draft)
 
 ## W3C WCAG 2.2 Understanding Documents
 
 The Understanding documents provide detailed explanations, examples, and techniques for each WCAG success criterion.
 
-### Focus Appearance (SC 2.4.13)
+### Focus Appearance (SC 2.4.13, Level AAA)
 
 - **URL:** [https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html](https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html)
 - **Agents strengthened:** contrast-master
@@ -101,7 +103,7 @@ The Understanding documents provide detailed explanations, examples, and techniq
 - **Key findings applied:**
   - 24x24 CSS pixel minimum for interactive targets
   - Spacing exception with 24px diameter circle test
-  - Five exceptions: inline, user agent default, equivalent, essential, legally required
+  - Five exceptions: spacing, equivalent, inline, user agent control, essential (essential covers a presentation that is legally required)
   - C42 technique reference
 
 ### Accessible Authentication Minimum (SC 3.3.8)
@@ -113,7 +115,7 @@ The Understanding documents provide detailed explanations, examples, and techniq
   - Support password managers via `autocomplete` attributes
   - Provide show/hide toggle for password fields
   - Alternative authentication methods: passkeys, WebAuthn, OAuth, biometrics
-  - CAPTCHA must have non-cognitive alternatives
+  - A cognitive function test needs an alternative or an assisting mechanism; at AA, tests that ask the user to recognise objects or identify personal content they provided are exceptions (3.3.9, Level AAA, removes them)
 
 ## WebAIM (Web Accessibility In Mind)
 
@@ -218,7 +220,7 @@ Each agent was audited against the relevant authoritative sources for its domain
 2. **Research:** Fetched and analyzed 17+ authoritative source documents
 3. **Gap analysis:** Compared each agent's existing rules against the authoritative findings
 4. **Targeted edits:** Added missing rules, corrected inaccurate guidance, and strengthened existing rules
-5. **Dual-platform sync:** All edits applied to both Copilot (`skills/`) and Claude (`skills/`) agent files
+5. **Dual-platform sync:** All edits applied to both the Copilot and the Claude agent files, which then existed as separate copies (7.0 replaced both with one skill each)
 6. **Instruction files:** Updated shared instruction files (`semantic-html.instructions.md`, `web-accessibility-baseline.instructions.md`)
 
 ### Files Updated

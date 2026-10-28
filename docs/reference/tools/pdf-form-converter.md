@@ -44,7 +44,7 @@ Each PDF field type, with its pdf-lib class and HTML output.
 convert_pdf_form_to_html filePath="forms/application.pdf" title="Job Application"
 
 # Copilot Chat
-@document-accessibility-wizard convert the enrollment PDF form to accessible HTML
+/document-accessibility-wizard convert the enrollment PDF form to accessible HTML
 ```
 
 ## Parameters

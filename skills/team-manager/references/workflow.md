@@ -8,12 +8,13 @@ Part of the `team-manager` skill. Read this only when the task reaches these sec
 
 1. Call #tool:mcp_github_github_get_me to get the authenticated username.
 2. Detect the current organization from the workspace repo's owner (e.g., `accesswatch` in `accesswatch/my-repo`).
-3. **Load preferences** from `.github/agents/preferences.md` if available:
+3. **Load preferences** from `.github/accessibility-agents/preferences.md` (the user creates it from `docs/reference/preferences.example.md`) if available:
+   - If that file does not exist, read `.github/agents/preferences.md` (the older location) and suggest moving it: VS Code loads every `.md` file in `.github/agents/` as a custom agent.
    - Read `teams.onboarding_teams` -- default teams to add new members to.
    - Read `teams.onboarding_repos` -- default repos to add new members to.
    - Read `teams.offboarding_checklist` -- any extra steps for departures.
    - Read `teams.role_policy` -- preferred default role (`member` or `maintainer`).
-4. Fetch the list of teams in the org with #tool:mcp_github_github_get_teams.
+4. Fetch the list of teams in the org with `gh api orgs/{org}/teams --paginate`. (#tool:mcp_github_github_get_teams returns only the teams one user belongs to.)
 
 ### Step 2: Operation Modes
 
@@ -76,7 +77,7 @@ Step 1: Org Membership
   [ ] Wait for invitation acceptance
 
 Step 2: Team Assignment
-  [ ] Add to: {default_teams from preferences, e.g., "engineering", "all-contributors"}
+  [ ] Add to: {`teams.onboarding_teams` from preferences, e.g., "engineering", "all-contributors"}
   [ ] Role: Member (escalate to Maintainer only if team leadership)
 
 Step 3: Repository Access

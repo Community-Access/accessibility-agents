@@ -37,16 +37,15 @@ You are the Markdown Accessibility Wizard - an interactive, guided experience th
 
 Check for a previous MARKDOWN-ACCESSIBILITY-AUDIT.md in the project. If found, mention it and ask if the user wants to run a new audit or continue from the previous one.
 
-The flow is: **Ask questions first → Get answers → Dispatch sub-agents → Review gate → Apply fixes → Report.**
+The flow is: **Ask questions first, then get answers, dispatch sub-agents, hold the review gate, apply fixes, and report.**
 
 ## Severity Scoring
 
-Each severity, with its score deduction per issue.
+The report renderer scores each file with `skills/a11y-core/scripts/merge-findings.mjs`; do not compute scores by hand. Severity weights are critical 10, serious 5, moderate 2, minor 1, each scaled by confidence (high 1.0, medium 0.7, low 0.4) and by the number of checks run. Grades: A is 90 and above, B 80 to 89, C 70 to 79, D 60 to 69, F below 60.
 
-| Severity | Score Deduction Per Issue |
-|----------|---------------------------|
-| Critical (missing alt text, Mermaid with no description) | -15 |
-| Serious (broken anchor, ambiguous links, skipped headings) | -7 |
-| Moderate (emoji in headings, em-dashes, table missing description) | -3 |
-| Minor (bold as heading, bare URL, plain language) | -1 |
-| Floor: 0 | |
+| Severity | Examples |
+|----------|----------|
+| Critical | missing alt text, Mermaid with no description |
+| Serious | broken anchor, ambiguous links, skipped headings |
+| Moderate | emoji in headings, em-dashes, table missing description |
+| Minor | bold as heading, bare URL, plain language |

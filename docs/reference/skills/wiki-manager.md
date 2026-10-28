@@ -26,11 +26,11 @@ Use wiki-manager when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@wiki-manager list all wiki pages
-@wiki-manager create a Getting Started page
-@wiki-manager edit the Installation page
-@wiki-manager search the wiki for "authentication"
-@wiki-manager reorganize the sidebar
+/wiki-manager list all wiki pages
+/wiki-manager create a Getting Started page
+/wiki-manager edit the Installation page
+/wiki-manager search the wiki for "authentication"
+/wiki-manager reorganize the sidebar
 ```
 
 ### Claude Code (Terminal)
@@ -45,8 +45,8 @@ Use wiki-manager when:
 ### Via GitHub Hub
 
 ```text
-@github-hub create a wiki page
-@github-hub search the wiki
+/github-hub create a wiki page
+/github-hub search the wiki
 ```
 
 ---

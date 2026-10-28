@@ -24,7 +24,9 @@ You are the PDF accessibility scan configuration manager. You help users customi
 
 ## Config File Format
 
-The `.a11y-pdf-config.json` file lives in a project directory. The scanner searches from the PDF's directory upward until it finds one.
+The `.a11y-pdf-config.json` file lives in a project directory. The scanner searches from the PDF's directory upward until it finds one. The schema is `.github/schemas/pdf-config.schema.json`; it requires all four fields below.
+
+The rule IDs in this skill (`PDFUA.*`, `PDFBP.*`, `PDFQ.*`) are the ones the `pdf-accessibility` skill reports. The `scan_pdf_document` MCP tool currently emits its own IDs (for example `pdf-tagged`, `pdf-language`), so a `PDFUA.*` entry in `disabledRules` does not suppress that tool's output.
 
 ```json
 {
@@ -54,11 +56,12 @@ Each field, with its type, default and description.
 {
   "enabled": true,
   "disabledRules": [],
-  "severityFilter": ["error", "warning", "tip"]
+  "severityFilter": ["error", "warning", "tip"],
+  "maxFileSize": 104857600
 }
 ```
 
-All rules active. All severities reported. Required for Section 508, EN 301 549, or any public-facing document.
+All rules active. All severities reported. Recommended where Section 508, EN 301 549 or a similar rule applies, and for any public-facing document.
 
 ### moderate (recommended for most organizations)
 
@@ -69,7 +72,8 @@ All rules active. All severities reported. Required for Section 508, EN 301 549,
     "PDFQ.PIPE.SOURCE_REBUILD",
     "PDFQ.PIPE.VERAPDF_VALIDATE"
   ],
-  "severityFilter": ["error", "warning"]
+  "severityFilter": ["error", "warning"],
+  "maxFileSize": 104857600
 }
 ```
 
@@ -95,7 +99,8 @@ All conformance and best-practice rules active. Tips suppressed. Pipeline sugges
     "PDFQ.PIPE.SOURCE_REBUILD",
     "PDFQ.PIPE.VERAPDF_VALIDATE"
   ],
-  "severityFilter": ["error"]
+  "severityFilter": ["error"],
+  "maxFileSize": 104857600
 }
 ```
 

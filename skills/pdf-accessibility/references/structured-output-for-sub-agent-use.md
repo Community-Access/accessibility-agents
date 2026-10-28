@@ -4,7 +4,7 @@ Part of the `pdf-accessibility` skill. Read this only when the task reaches thes
 
 ## Structured Output for Sub-Agent Use
 
-When invoked as a sub-agent by the document-accessibility-wizard, return each finding in this format:
+A router always gets the findings JSON described in `SKILL.md`. Use this prose format only when a person asks to read findings as text:
 
 ```text
 ### [Rule ID] - [severity]: [Brief description]
@@ -25,7 +25,7 @@ When invoked as a sub-agent by the document-accessibility-wizard, return each fi
 
 ### Output Summary
 
-End your invocation with this summary block (used by the wizard for / progress announcements):
+End that prose rendering with this summary block:
 
 ```text
 ## PDF Accessibility Findings Summary
@@ -49,13 +49,15 @@ You are a **read-only scanner**. You analyze PDF documents and produce structure
 
 Every finding MUST include these fields:
 
-- `rule_id`: PDFUA or PDFBP-prefixed rule ID
+- `rule`: PDFUA, PDFBP or PDFQ-prefixed rule ID
+- `wcag`: WCAG 2.2 criterion number and level, for example `1.3.1 A`, or `n/a`
 - `severity`: `critical` | `serious` | `moderate` | `minor`
 - `location`: file path, page number, element description
-- `description`: what is wrong
-- `remediation`: how to fix it
-- `wcag_criterion`: mapped WCAG 2.2 success criterion
-- `confidence`: `high` | `medium` | `low`
+- `summary`: what is wrong, in one sentence
+- `fix`: how to fix it
+- `confidence`: `high` | `medium` | `low` (omit when high)
+
+These are the field names in `skills/a11y-core/schemas/findings.schema.json`.
 
 Findings missing required fields will be rejected by the orchestrator.
 

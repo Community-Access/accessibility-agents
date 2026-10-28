@@ -129,4 +129,4 @@ Each component, with its role.
 | [cross-document-analyzer](./cross-document-analyzer.md) | Receives the inventory after scanning to perform pattern detection and scoring |
 | [audit-document-folder prompt](../../history/prompts/documents/audit-document-folder.md) | User-facing prompt that triggers recursive file discovery |
 | [audit-changed-documents prompt](../../history/prompts/documents/audit-changed-documents.md) | User-facing prompt that triggers delta detection |
-| [document-scanning skill](../../skills/kb-document-scanning/SKILL.md) | Full file discovery command reference and configuration details |
+| [document-scanning skill](../../../skills/kb-document-scanning/SKILL.md) | Full file discovery command reference and configuration details |

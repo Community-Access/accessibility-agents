@@ -18,10 +18,10 @@ A code review alone is NOT sufficient. axe-core tests the actual rendered DOM in
 2. Run this Bash command NOW:
 
    ```bash
-   npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa --save ACCESSIBILITY-SCAN.json
+   npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save ACCESSIBILITY-SCAN.json
    ```
 
-   If `@axe-core/cli` is not available, try: `npx axe-cli <URL> --save ACCESSIBILITY-SCAN.json`
+   For a WCAG 2.1 AA target, drop `wcag22aa`. With `wcag22aa` in the list axe also runs `target-size` (2.5.8), which is off by default. axe-core has no rule for most WCAG 2.2 criteria (2.4.11, 2.5.7, 3.2.6, 3.3.7, 3.3.8), so those stay manual checks. If `npx` cannot fetch `@axe-core/cli`, install it with `npm install --save-dev @axe-core/cli`. Do not fall back to the old `axe-cli` package: it is deprecated and its last release was 3.2.1 in 2020.
 3. Convert the JSON results to a markdown report and write it to `ACCESSIBILITY-SCAN.md`
 4. Cross-reference scan results with findings from previous phases
 5. Mark issues found by both the agent review and the scan as high-confidence findings
@@ -71,17 +71,17 @@ Assign each audited page/component a weighted **accessibility risk score** (0-10
 
 ### Scoring Formula
 
+`skills/a11y-core/scripts/render-report.mjs` computes the score and grade with
+`score()` in `skills/a11y-core/scripts/merge-findings.mjs`. Do not compute a
+different score by hand. This is what it does:
+
 ```text
-Page Score = 100 - (sum of weighted findings)
+penalty = sum over findings of (severity weight x confidence factor)
+checks  = max(number of findings + number of passed checks, 10)
+Score   = max(0, round(100 - (penalty / checks) x 20))
 
-Weights:
-  Critical issue (axe-core + agent confirmed):  -15 points each
-  Critical issue (single source):               -10 points each
-  Serious issue:                                  -7 points each
-  Moderate issue:                                 -3 points each
-  Minor issue:                                    -1 point each
-
-Floor: 0 (scores cannot go below 0)
+Severity weights:    critical 10, serious 5, moderate 2, minor 1
+Confidence factors:  high 1.0, medium 0.7, low 0.4 (no confidence = high)
 ```
 
 ### Score Grades
@@ -90,11 +90,14 @@ Each score, with its grade and meaning.
 
 | Score | Grade | Meaning |
 |-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues, meets WCAG AA |
-| 75-89 | B | Good - some issues, mostly meets WCAG AA |
-| 50-74 | C | Needs Work - multiple issues, partial WCAG AA compliance |
-| 25-49 | D | Poor - significant accessibility barriers |
-| 0-24 | F | Failing - critical barriers, likely unusable with AT |
+| 90-100 | A | Excellent - minor or no issues found |
+| 80-89 | B | Good - some issues |
+| 70-79 | C | Needs Work - multiple issues |
+| 60-69 | D | Poor - significant accessibility barriers |
+| 0-59 | F | Failing - critical barriers, likely unusable with AT |
+
+A grade describes the findings, not conformance. A page with any failure of a
+WCAG criterion does not meet that criterion, whatever its score.
 
 ### Confidence Levels
 
@@ -106,19 +109,15 @@ Every finding must include a confidence rating:
 | **medium** | Found by one source, likely an issue but needs verification | Heading hierarchy edge cases, questionable ARIA usage, possible keyboard traps |
 | **low** | Possible issue, flagged for human review | Alt text quality, reading order assumptions, context-dependent link text |
 
-When computing severity scores, weight by confidence:
-
-- High confidence: full weight
-- Medium confidence: 70% weight
-- Low confidence: 30% weight
+The confidence factors above are how the renderer weights each level.
 
 ## Remediation Tracking
 
-When a previous `ACCESSIBILITY-AUDIT.md` exists in the project, automatically offer comparison mode.
+When a previous `WEB-ACCESSIBILITY-AUDIT.md` exists in the project, automatically offer comparison mode.
 
 ### Comparison Analysis
 
-1. **Parse the Previous Report:** Read the baseline `ACCESSIBILITY-AUDIT.md` and extract findings by page/component and issue description.
+1. **Parse the Previous Report:** Read the baseline `WEB-ACCESSIBILITY-AUDIT.md` (its embedded findings JSON) and extract findings by page/component and issue description.
 2. **Classify Changes:**
    - **Fixed** - issue was in the previous report but is no longer present
    - **New** - issue was not in the previous report but appears now
@@ -136,7 +135,7 @@ Include in the final report when comparing:
 ```text
  Remediation Progress
 
-Comparing against: ACCESSIBILITY-AUDIT.md (previous)
+Comparing against: WEB-ACCESSIBILITY-AUDIT.md (previous)
 
    Fixed:      8 issues resolved since last audit
    New:        3 new issues found
@@ -157,11 +156,11 @@ When auditing multiple pages, generate a per-page scorecard that enables compari
 
   /                        82/100 (B) - Good
   /login                   91/100 (A) - Excellent
-  /dashboard               45/100 (D) - Poor
-  /settings                68/100 (C) - Needs Work
-  /checkout                37/100 (D) - Poor
+  /dashboard               45/100 (F) - Failing
+  /settings                68/100 (D) - Poor
+  /checkout                37/100 (F) - Failing
 
-  Overall Average:         64.6/100 (C) - Needs Work
+  Overall Average:         64.6/100 (D) - Poor
   Best:  /login (91)
   Worst: /checkout (37)
 
@@ -189,7 +188,7 @@ Options:
 - **Just the report** - no fixes, I'll handle them manually
 - **Fix a specific issue** - let me pick which one(s)
 
-### Auto-Fixable Issues (safe to apply without asking)
+### Auto-Fixable Issues (safe to apply once the user picks a fix option above)
 
 These can be fixed programmatically with high confidence:
 
@@ -231,25 +230,26 @@ When applying fixes:
 
 **This phase runs only when Playwright MCP tools are available AND a URL was provided.**
 
-If Playwright was detected in Step 0, dispatch the `playwright-scanner` agent via the Task tool with the dev server/production URL and the current scan context.
+If Playwright was detected in Step 0, dispatch the `playwright-scanner` skill, with the dispatch prompt in SKILL.md, with the dev server/production URL and the current scan context.
 
 ### Behavioral Scan Execution
 
 1. **Dispatch playwright-scanner** with the URL, scan profile, and any selectors of interest from previous phases.
 2. **Receive structured results** covering:
    - **Keyboard flow:** Tab sequence, keyboard traps, unreachable elements (WCAG 2.1.1, 2.1.2, 2.4.3)
-   - **Dynamic state scan:** axe-core violations in expanded/active states (all applicable SC)
-   - **Responsive viewport scan:** Reflow failures, touch target sizes at 320/768/1024/1440px (WCAG 1.4.10, 2.5.8)
+   - **axe-core scan:** violations on the loaded page, including `target-size` (WCAG 2.5.8) with the default WCAG 2.2 AA tags. The MCP server cannot open expanded or active states before scanning; those need a Playwright test
+   - **Responsive viewport scan:** Reflow failures (horizontal scroll) at 320/768/1024/1280px (WCAG 1.4.10)
    - **Rendered contrast:** Computed foreground/background contrast ratios after CSS cascade (WCAG 1.4.3, 1.4.6)
    - **Accessibility tree:** Browser's accessibility tree snapshot for structural verification
 3. **Merge findings** with Phase 1-9 results for three-source correlation:
-   - Issues found by agent review + axe-core + Playwright → **Confirmed** confidence (1.2x weight)
-   - Issues found by any two sources → **High** confidence (1.0x weight)
-   - Issues found by Playwright only → **Medium** confidence (0.7x weight)
+   - Issues found by agent review, axe-core and Playwright: `high` confidence
+   - Issues found by any two sources: `high` confidence
+   - Issues found by Playwright only: `medium` confidence
+   - The findings schema allows only `high`, `medium` and `low`; there is no higher level and no extra weight
 4. **Report behavioral results** before proceeding to the final report.
 
 ### Graceful Degradation
 
-- If Playwright tools are not available: Skip Phase 10 entirely. Add a note to the report: "Behavioral testing unavailable. Install Playwright for keyboard traversal, dynamic state, and rendered contrast testing."
-- If @axe-core/playwright is not installed but Playwright is: Run keyboard, contrast, and accessibility tree scans only. Note that state and viewport scans were skipped.
+- If Playwright tools are not available: Skip Phase 10 entirely. Add a note to the report: "Behavioral testing unavailable. Install Playwright for keyboard traversal, reflow, and rendered contrast testing."
+- If @axe-core/playwright is not installed but Playwright is: Run keyboard, contrast, viewport and accessibility tree scans only. Note that the axe-core scan was skipped.
 - If the URL is unreachable: Skip Phase 10 and note the error.

@@ -41,7 +41,7 @@ Each prefix, with its format, sub-agent and count.
 
 Complete tracking of all WCAG 2.2 Level A and AA success criteria. Criteria with document-specific rules list the rule IDs. Criteria requiring human judgment show "Manual review". Criteria that apply only to web/app contexts show a dash. See the **wcag-guide** agent for full explanations of each criterion.
 
-> **Note:** WCAG 2.2 removed 4.1.1 Parsing (it is "always satisfied" in modern user agents and no longer tested).
+> **Note:** 4.1.1 Parsing is obsolete and removed in WCAG 2.2, so it is not listed. For WCAG 2.0 and 2.1, W3C notes say it is treated as always satisfied for HTML and XML content.
 
 ### Level A
 

@@ -6,20 +6,20 @@ Part of the `kb-path-instructions` skill.
 
 ## Dependencies
 
-No other instruction files are required before reading this one. This is the baseline — all other web accessibility instructions extend it.
+No other instruction files are required before reading this one. This is the baseline - all other web accessibility instructions extend it.
 
 These rules apply automatically to every HTML and component file. They represent the minimum non-negotiable requirements for WCAG 2.2 AA conformance. Apply all of them when generating or editing web UI code - no agent invocation required.
 
 ---
 
-> **Impact:** Interactive elements without correct semantics are invisible to screen reader users and unreachable by keyboard-only users — they simply cannot use those parts of the UI.
+> **Impact:** Interactive elements without correct semantics are invisible to screen reader users and unreachable by keyboard-only users - they simply cannot use those parts of the UI.
 
 ## Interactive Elements
 
 - Use `<button>` for actions that do not navigate. Use `<a href>` for navigation. Never swap them.
-- Avoid adding `onClick` to a non-interactive element (`<div>`, `<span>`, `<p>`). The preferred fix is always to replace it with a `<button>` — this requires zero ARIA and gets keyboard/AT support for free. If replacing is not feasible (e.g., deeply nested third-party component), add all three: `role="button"`, `tabIndex={0}`, and keyboard handlers (`onKeyDown`/`onKeyUp` for both Enter and Space). This is a last resort, not a first choice.
+- Avoid adding `onClick` to a non-interactive element (`<div>`, `<span>`, `<p>`). The preferred fix is always to replace it with a `<button>` - this requires zero ARIA and gets keyboard/AT support for free. If replacing is not feasible (e.g., deeply nested third-party component), add all three: `role="button"`, `tabIndex={0}`, and keyboard handlers (`onKeyDown`/`onKeyUp` for both Enter and Space). This is a last resort, not a first choice.
 - No positive `tabindex` values (`tabindex="1"` or higher). Use `tabindex="0"` to add an element to the tab order, `tabindex="-1"` to allow programmatic focus only.
-- Avoid `outline: none` or `outline: 0` on interactive elements without a visible replacement. Pair with a `:focus-visible` rule providing a `2px solid` outline or box-shadow equivalent. Acceptable only when a custom `:focus-visible` style is immediately defined that provides equal or greater visibility (contrast ≥3:1, minimum 2px width, clear boundary around the component).
+- Avoid `outline: none` or `outline: 0` on interactive elements without a visible replacement. Pair with a `:focus-visible` rule providing a `2px solid` outline or box-shadow equivalent. Acceptable only when a custom `:focus-visible` style is immediately defined that provides equal or greater visibility (contrast >=3:1, minimum 2px width, clear boundary around the component).
 
 ---
 
@@ -83,7 +83,7 @@ These rules apply automatically to every HTML and component file. They represent
 - Normal text contrast: minimum **4.5:1** against its background.
 - Large text contrast (18pt / 14pt bold or larger): minimum **3:1**.
 - UI component contrast (input borders, focus rings, icon buttons, chart lines): minimum **3:1** against adjacent background.
-- Focus indicators: minimum **3:1** between focused and unfocused appearance (WCAG 2.4.7, AA).
+- Focus indicators: must be visible (2.4.7, AA); an indicator drawn as a border or outline needs **3:1** against adjacent colors (1.4.11, AA). A 3:1 change between focused and unfocused states over a 2px perimeter is 2.4.13 Focus Appearance (AAA).
 
 ---
 
@@ -99,7 +99,7 @@ These rules apply automatically to every HTML and component file. They represent
 
 ---
 
-> **Impact:** Incorrect ARIA is worse than no ARIA — it overrides native semantics and can make elements completely inaccessible. Broken `aria-controls` / `aria-labelledby` references produce empty or misleading AT announcements.
+> **Impact:** Incorrect ARIA is worse than no ARIA - it overrides native semantics and can make elements completely inaccessible. Broken `aria-controls` / `aria-labelledby` references produce empty or misleading AT announcements.
 
 ## ARIA
 
@@ -109,7 +109,7 @@ These rules apply automatically to every HTML and component file. They represent
 - All `aria-controls`, `aria-labelledby`, and `aria-describedby` attribute values must be IDs of elements that exist in the DOM.
 - `aria-hidden="true"` must never be placed on a focused element or on an element that contains a focused element.
 - Do not nest interactive elements (e.g., a `<button>` inside an `<a href>` is invalid HTML and causes AT failures).
-- **Working accessibility beats spec purity.** If code works correctly with screen readers and keyboard navigation but uses a non-standard ARIA pattern, flag it as Minor, not Critical. Never change working ARIA roles without first searching all workspace files for JavaScript/CSS selectors that reference the current role, and never remove documented attributes (`aria-keyshortcuts`, `title`) without explicit user approval.
+- **Working accessibility beats spec purity.** If code works correctly with screen readers and keyboard navigation but uses a non-standard ARIA pattern, flag it as minor, not critical. Never change working ARIA roles without first searching all workspace files for JavaScript/CSS selectors that reference the current role, and never remove documented attributes (`aria-keyshortcuts`, `title`) without explicit user approval.
 
 ---
 
@@ -126,19 +126,19 @@ These rules apply automatically to every HTML and component file. They represent
   ```
 
 - Auto-playing carousels and animations must provide a visible pause control.
-- No content may flash more than 3 times per second (WCAG 2.3.1, Level A).
+- No content may flash more than three times in any one-second period unless the flashes are below the general and red flash thresholds (WCAG 2.3.1, Level A).
 
 ---
 
-> **Impact:** These six criteria were the most commonly failed in 2022-2024 audits of newly built sites. They cover real barriers that were not addressed in WCAG 2.1.
+> **Impact:** These six criteria cover real barriers that were not addressed in WCAG 2.1. axe-core checks only 2.5.8 (`target-size`, with the `wcag22aa` tag); the others need manual testing.
 
-## WCAG 2.2 New Criteria (AA)
+## WCAG 2.2 New Criteria (A and AA)
 
-These six success criteria were added in WCAG 2.2. Apply them to all new and updated web content.
+These six Level A and AA success criteria were added in WCAG 2.2 (three more, 2.4.12, 2.4.13 and 3.3.9, are AAA). Apply them to all new and updated web content.
 
-- **Focus Not Obscured (2.4.11):** When an element receives keyboard focus, it must not be entirely hidden by sticky headers, footers, cookie banners, or other fixed-position content. Ensure `scroll-padding` or dynamic offsets account for sticky elements.
-- **Dragging Movements (2.5.7):** Any function that uses dragging (drag-to-reorder, sliders, drag-and-drop) must also be operable with a single pointer without dragging. Provide click-to-move, arrow key controls, or alternative UI.
-- **Target Size - Minimum (2.5.8):** Interactive targets must be at least 24x24 CSS pixels, or have sufficient spacing from adjacent targets. Inline text links are exempt. Apply `min-width: 24px; min-height: 24px` to icon buttons and small controls.
-- **Consistent Help (3.2.6):** If help mechanisms (contact info, chat widget, FAQ link) appear on multiple pages, they must be in the same relative location on each page.
+- **Focus Not Obscured (Minimum) (2.4.11, AA):** When an element receives keyboard focus, it must not be entirely hidden by sticky headers, footers, cookie banners, or other fixed-position content. Ensure `scroll-padding` or dynamic offsets account for sticky elements.
+- **Dragging Movements (2.5.7, AA):** Any function that uses dragging (drag-to-reorder, sliders, drag-and-drop) must also be operable with a single pointer without dragging. Provide click-to-move, arrow key controls, or alternative UI.
+- **Target Size (Minimum) (2.5.8, AA):** Interactive targets must be at least 24x24 CSS pixels, or have sufficient spacing from adjacent targets. Inline text links are exempt. Apply `min-width: 24px; min-height: 24px` to icon buttons and small controls.
+- **Consistent Help (3.2.6, Level A):** If help mechanisms (contact info, chat widget, FAQ link) appear on multiple pages, they must be in the same relative location on each page.
 - **Redundant Entry (3.3.7, Level A):** Information previously entered by the user in a multi-step process must be auto-populated or available for selection. Do not force re-entry of address, email, or payment data already provided.
-- **Accessible Authentication - Minimum (3.3.8):** Authentication must not require cognitive function tests (memorizing passwords, solving puzzles) unless an alternative method is available. Support password managers (never block paste), passkeys, biometrics, or email/SMS codes.
+- **Accessible Authentication (Minimum) (3.3.8, AA):** Authentication must not require cognitive function tests (memorizing passwords, solving puzzles) unless an alternative method is available. Support password managers (never block paste), passkeys, biometrics, or email/SMS codes.

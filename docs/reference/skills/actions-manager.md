@@ -26,11 +26,11 @@ Use actions-manager when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@actions-manager show recent workflow runs
-@actions-manager why did CI fail on this PR?
-@actions-manager re-run the failed jobs on run 12345
-@actions-manager show logs for the "test" job
-@actions-manager list artifacts from the latest build
+/actions-manager show recent workflow runs
+/actions-manager why did CI fail on this PR?
+/actions-manager re-run the failed jobs on run 12345
+/actions-manager show logs for the "test" job
+/actions-manager list artifacts from the latest build
 ```
 
 ### Claude Code (Terminal)
@@ -45,8 +45,8 @@ Use actions-manager when:
 ### Via GitHub Hub
 
 ```text
-@github-hub why did CI fail?
-@github-hub re-run the failed build
+/github-hub why did CI fail?
+/github-hub re-run the failed build
 ```
 
 ---

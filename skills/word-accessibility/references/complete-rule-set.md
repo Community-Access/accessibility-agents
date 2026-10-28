@@ -28,7 +28,7 @@ Each rule ID, with name and what it checks.
 |---------|------|----------------|
 | DOCX-W001 | nested-tables | Tables inside other tables. Nested tables are nearly impossible to navigate with a screen reader. Check for `<w:tbl>` inside `<w:tc>`. |
 | DOCX-W002 | long-alt-text | Alt text exceeding 150 characters. Long alt text should typically be moved to a long description or the document body. |
-| DOCX-W003 | manual-list | Paragraphs starting with manual bullet characters (-, -, *, >) or manual numbers (1., 2.) instead of using Word's built-in list styles. |
+| DOCX-W003 | manual-list | Paragraphs starting with manual bullet characters (-, *, >, or a bullet glyph such as U+2022) or manual numbers (1., 2.) instead of using Word's built-in list styles. |
 | DOCX-W004 | blank-table-rows | Empty table rows or columns used for visual spacing. These create confusion in screen readers which announce empty cells. |
 | DOCX-W005 | heading-length | Heading text exceeding 100 characters. Headings should be concise for quick navigation. |
 | DOCX-W006 | watermark-present | Document contains a watermark. Watermarks are visual-only and not announced by screen readers. Important information should not be in a watermark. |
@@ -39,7 +39,7 @@ Each rule ID, with name and what it checks.
 
 | Rule ID | Name | What It Checks |
 |---------|------|----------------|
-| DOCX-T001 | missing-document-language | Document language is not set in `<w:lang>` in `word/settings.xml` or `docProps/core.xml`. Screen readers use this to select the correct speech synthesizer. |
+| DOCX-T001 | missing-document-language | Document language is not set: no `<w:lang>` in the `w:docDefaults` of `word/styles.xml` (Word also writes `<w:themeFontLang>` in `word/settings.xml`) and no `<dc:language>` in `docProps/core.xml`. Screen readers use this to select the correct speech synthesizer. |
 | DOCX-T002 | layout-table-header | A table used for layout (no data) incorrectly has header row markup. Layout tables should not have structural table markup. |
 | DOCX-T003 | repeated-blank-chars | Multiple consecutive spaces, tabs, or paragraph marks used for formatting instead of styles, indentation settings, or spacing settings. |
 
@@ -59,9 +59,9 @@ Missing or empty `descr` is a violation. Also check `<pic:cNvPr>` for inline ima
 
 **Remediation:**
 
-1. Right-click the image in Word -> Edit Alt Text
+1. Right-click the image in Word -> View Alt Text (or select it, then Picture Format -> Alt Text)
 2. Write a concise description of the image's content and purpose
-3. For decorative images, mark as "decorative" (this sets `descr` to empty and adds `<a:extLst>` with decorative flag — the scanner detects this and skips the image)
+3. For decorative images, check "Mark as decorative" in the Alt Text pane (this sets `descr` to empty and adds `<a:extLst>` with the decorative flag; the scanner detects this and skips the image)
 
 ### DOCX-E002: Missing Table Header
 

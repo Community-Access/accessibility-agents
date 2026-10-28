@@ -18,7 +18,7 @@ Ask the user before reading any files:
 
 **Q1 - Design system type:**
 
-- Tailwind CSS (tailwind.config.js / tailwind.config.ts)
+- Tailwind CSS (tailwind.config.js / tailwind.config.ts in v3; `@theme` in CSS in v4, whose default palette is in OKLCH)
 - CSS custom properties only (tokens.css / variables.css)
 - Style Dictionary (tokens.json / config.json)
 - Material UI (MUI) theme file
@@ -30,7 +30,7 @@ Ask the user before reading any files:
 
 - Full token audit (color + spacing + focus + motion)
 - Color contrast only
-- Focus ring tokens only (WCAG 2.4.13)
+- Focus ring tokens only (WCAG 2.4.7 and 1.4.11 at AA; 2.4.13 at AAA)
 - Spacing / touch target tokens only
 - Motion / animation tokens only
 
@@ -44,7 +44,7 @@ Ask the user before reading any files:
 
 ## Phase 3: Spacing Token Analysis (Touch Targets)
 
-**WCAG 2.5.8 (AA, 2.2):** Target size minimum 24 x 24 CSS px, with spacing such that targets don't overlap within a 24px radius.
+**WCAG 2.5.8 (AA, 2.2):** Target size minimum 24 x 24 CSS px, or spaced so that a 24 CSS px diameter circle centered on each undersized target does not intersect another target or another undersized target's circle.
 **Best practice (WCAG 2.5.5 AAA):** 44 x 44 CSS px.
 
 ### 3.1 Token Paths to Check
@@ -59,7 +59,7 @@ spacing: {
 }
 
 // Minimum button height = vertical padding x 2 + line-height
-// e.g., py-2 (8px x 2=16px) + leading-5 (20px) = 36px -> FAILS WCAG 2.5.5
+// e.g., py-2 (8px x 2=16px) + leading-5 (20px) = 36px -> passes 2.5.8 (AA), FAILS 2.5.5 (AAA)
 // Fix: use py-3 (12px x 2=24px) + line-height = 44px
 ```
 
@@ -67,7 +67,7 @@ spacing: {
 
 ## Phase 4: Motion Token Analysis
 
-**WCAG 2.3.3 (AAA):** All animation triggered by interaction can be disabled.
+**WCAG 2.3.3 (AAA):** Motion animation triggered by interaction can be disabled, unless the animation is essential.
 **Best practice (WCAG 2.3.3 compliance):** Honor `prefers-reduced-motion`.
 
 ```js
@@ -96,7 +96,7 @@ module.exports = {
 
 ## Phase 5: Reporting
 
-Structure findings as token-level violation entries:
+Return findings only as JSON (see Output contract): one finding per failing token or token pair, with the token in `location`, the values and measured versus required ratio in `evidence`, and the replacement in `fix`. The layout below shows what to capture for each kind of token; it is not a format to print.
 
 ```markdown
 ## Design System Accessibility Audit
@@ -108,16 +108,15 @@ Structure findings as token-level violation entries:
 
 | Token Pair | Foreground | Background | Ratio | Required | Status | Severity |
 |------------|-----------|-----------|-------|---------|--------|---------|
-| text.muted on background | #6B7280 | #FFFFFF | 4.48:1 | 4.5:1 |  FAIL | Error |
-| warning.main on background | #ed6c02 | #FFFFFF | 2.94:1 | 4.5:1 |  FAIL | Error |
-| text.secondary on surface | rgba(0,0,0,0.6) | #FFFFFF | 3.95:1 | 4.5:1 |  FAIL | Warning |
+| text.muted on background | #9CA3AF | #FFFFFF | 2.54:1 | 4.5:1 | FAIL | serious |
+| warning.main on background | #ed6c02 | #FFFFFF | 3.11:1 | 4.5:1 | FAIL | serious |
 
 ### Suggested Fixes
 
 For each failing token, provide a WCAG-compliant replacement:
 
-**text.muted:** `#6B7280` -> `#6B7080` (4.50:1) or `#595959` (7.00:1 for AAA)
-**warning.main:** `#ed6c02` -> `#b45309` (4.57:1) - Tailwind `amber-700`
+**text.muted:** `#9CA3AF` -> `#6B7280` (4.83:1) or `#595959` (7.00:1 for AAA)
+**warning.main:** `#ed6c02` -> `#b45309` (5.02:1) - Tailwind v3 `amber-700`
 
 ### Focus Ring Violations
 
@@ -130,7 +129,7 @@ For each failing token, provide a WCAG-compliant replacement:
 
 | Token | Value | Computed Target Size | Required | Status |
 |-------|-------|---------------------|---------|--------|
-| btn-sm padding | py-1 px-2 | 28 x 8px + 20px = 36px height | 44px |  FAIL |
+| btn-sm padding | py-1 px-2 | 4px x 2 + 20px line-height = 28px height | 24px (2.5.8 AA); 44px (2.5.5 AAA) | Pass AA, FAIL AAA |
 
 ### Motion Violations
 

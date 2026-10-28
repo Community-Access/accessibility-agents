@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+  "name": "Accessibility Agents",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:5-24",
+  "postCreateCommand": "npm ci --no-audit --no-fund && npm ci --no-audit --no-fund --prefix mcp-server && (cd mcp-server && npx playwright install --with-deps chromium) && npm run setup",
+  "customizations": {
+    "vscode": {
+      "extensions": ["GitHub.copilot-chat"]
+    }
+  }
+}

@@ -17,38 +17,35 @@ The `document-accessibility-wizard` calls this agent whenever a multi-document a
 - `audit-document-folder` prompt - after scanning all documents in the folder
 - `audit-changed-documents` prompt - after scanning the git-changed files
 - `compare-audits` prompt - when comparing two audit reports across time
-- `generate-vpat` prompt - when aggregating conformance data across a library of documents
+- `document-accessibility-wizard` Phase 4 export - when aggregating conformance data across a library of documents into a VPAT or ACR
 
 ## Scoring Formula
 
-The agent computes a risk score for each document:
+Scores and grades come from `skills/a11y-core/scripts/merge-findings.mjs`,
+which `render-report.mjs` runs for every report; the analyzer does not compute
+them by hand.
 
 ```text
-Score = 100 - (sum of weighted findings)
-Minimum score: 0
+penalty = sum over findings of severity_weight x confidence_factor
+          (weights: critical 10, serious 5, moderate 2, minor 1;
+           confidence: high 1.0, medium 0.7, low 0.4)
+checks  = max(number of findings + number of passed checks, 10)
+score   = max(0, round(100 - (penalty / checks) x 20))
 ```
 
-| Finding Type | Confidence | Deduction |
-|-------------|-----------|-----------|
-| Error | High | -10 points |
-| Error | Medium | -7 points |
-| Error | Low | -3 points |
-| Warning | High | -3 points |
-| Warning | Medium | -2 points |
-| Warning | Low | -1 point |
-| Tip | Any | 0 points |
+Document checker levels (error, warning, tip) are mapped onto the canonical severities first (`kb-severity-mapping`); they are not scored directly.
 
 ### Grade Table
 
-Each score, with its grade and meaning.
+Each score band, with its grade.
 
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues |
-| 75-89 | B | Good - some warnings, few errors |
-| 50-74 | C | Needs Work - multiple errors |
-| 25-49 | D | Poor - significant accessibility barriers |
-| 0-24 | F | Failing - critical barriers, likely unusable with assistive technology |
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## Pattern Detection
 
@@ -101,5 +98,5 @@ Each component, with its role.
 |-----------|------|
 | [document-accessibility-wizard](./document-accessibility-wizard.md) | Orchestrating wizard that calls this agent and incorporates its output into the final report |
 | [document-inventory](./document-inventory.md) | Runs before this agent - provides the file list the wizard scans |
-| [report-generation skill](../../skills/kb-report-generation/SKILL.md) | Scoring formulas and grade table this agent implements |
+| [report-generation skill](../../../skills/kb-report-generation/SKILL.md) | Scoring formulas and grade table this agent implements |
 | [compare-audits prompt](../../history/prompts/documents/compare-audits.md) | User-facing prompt that triggers remediation tracking analysis |

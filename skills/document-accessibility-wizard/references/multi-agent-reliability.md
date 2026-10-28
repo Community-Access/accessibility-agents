@@ -21,14 +21,15 @@ You may NOT:
 
 ### Sub-Agent Output Contract
 
-Every format-specific scanner MUST return findings in this format:
+Every format-specific scanner MUST return JSON matching `skills/a11y-core/schemas/findings.schema.json`. Each finding has:
 
-- `rule_id`: format-specific rule ID (DOCX-*, XLSX-*, PPTX-*, PDFUA.*, PDFBP.*, EPUB-*)
+- `rule`: format-specific rule ID (DOCX-*, XLSX-*, PPTX-*, PDFUA.*, PDFBP.*, PDFQ.*, EPUB-*)
+- `wcag`: WCAG 2.2 criterion number and level, for example `1.1.1 A`, or `n/a`
 - `severity`: `critical` | `serious` | `moderate` | `minor`
 - `location`: file path, page/slide/sheet number, element description
-- `description`: what is wrong
-- `remediation`: how to fix it
-- `wcag_criterion`: mapped WCAG 2.2 success criterion
+- `summary`: what is wrong, in one sentence
+- `fix`: how to fix it
+- `confidence` (optional): `high` | `medium` | `low`
 
 Findings missing required fields are rejected. The wizard re-requests with explicit field requirements.
 

@@ -86,13 +86,13 @@ You are a **read-only scanner**. You analyze Word documents and produce structur
 
 Every finding MUST include these fields:
 
-- `rule_id`: DOCX-prefixed rule ID
+- `rule`: DOCX-prefixed rule ID
+- `wcag`: criterion and level, e.g. `1.3.1 A`, or `n/a`
 - `severity`: `critical` | `serious` | `moderate` | `minor`
 - `location`: file path, page/section, element description
-- `description`: what is wrong
-- `remediation`: how to fix it
-- `wcag_criterion`: mapped WCAG 2.2 success criterion
-- `confidence`: `high` | `medium` | `low`
+- `summary`: what is wrong, in one sentence
+- `fix`: how to fix it
+- `confidence`: `high` | `medium` | `low` (omit when high)
 
 Findings missing required fields will be rejected by the orchestrator.
 

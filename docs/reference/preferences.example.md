@@ -1,6 +1,6 @@
 # Workspace Preferences - Example Configuration
 
-**Copy this file to `preferences.md` and customize for your workspace.**
+**Copy this file to `.github/accessibility-agents/preferences.md` in your workspace and customize it.** Do not put it in `.github/agents/`: VS Code loads every `.md` file there as a custom agent.
 
 This file shows examples of all available configuration options. You can copy sections you need and remove the rest.
 

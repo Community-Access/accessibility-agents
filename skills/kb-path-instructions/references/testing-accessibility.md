@@ -6,25 +6,25 @@ Part of the `kb-path-instructions` skill.
 
 ## Dependencies
 
-- `web-accessibility-baseline.instructions.md` — the WCAG rules these tests verify
-- `aria-patterns.instructions.md` — the keyboard interaction patterns to test for composite widgets
+- `web-accessibility-baseline.md` (same folder) - the WCAG rules these tests verify
+- `aria-patterns.md` (same folder) - the keyboard interaction patterns to test for composite widgets
 
 These rules apply automatically to test and spec files for UI components. They encourage accessibility assertions alongside functional tests.
 
 ---
 
-> **Impact:** Test suites without accessibility assertions silently allow regressions. Role-based queries (`getByRole`) fail the test when ARIA semantics break — `getByTestId` would pass the same test even after the element becomes inaccessible.
+> **Impact:** Test suites without accessibility assertions silently allow regressions. Role-based queries (`getByRole`) fail the test when ARIA semantics break - `getByTestId` would pass the same test even after the element becomes inaccessible.
 
 ## Query Priority
 
-- Prefer `getByRole` for finding elements — role-based queries assert that correct ARIA semantics are present, validating accessibility at the query level.
-- Reserve `getByTestId` for elements with no semantic role (layout wrappers, purely visual containers). Creating test IDs specifically to avoid accessible queries is an anti-pattern — fix the accessibility instead.
-- Use `getByLabelText` for form inputs — this verifies the label-input association works.
-- Use `getByText` for visible content — this confirms the text is exposed to all users.
+- Prefer `getByRole` for finding elements - role-based queries assert that correct ARIA semantics are present, validating accessibility at the query level.
+- Reserve `getByTestId` for elements with no semantic role (layout wrappers, purely visual containers). Creating test IDs specifically to avoid accessible queries is an anti-pattern - fix the accessibility instead.
+- Use `getByLabelText` for form inputs - this verifies the label-input association works.
+- Use `getByText` for visible content - this confirms the text is exposed to all users.
 
 ## Keyboard Interaction Tests
 
-- When testing interactive components (buttons, menus, dialogs, tabs), include keyboard interaction tests. If the component does not yet support keyboard interaction, add a failing test as a regression guard — this documents the gap and prevents the issue from being silently merged:
+- When testing interactive components (buttons, menus, dialogs, tabs), include keyboard interaction tests. If the component does not yet support keyboard interaction, add a failing test as a regression guard - this documents the gap and prevents the issue from being silently merged:
   - Tab key moves focus to and between interactive elements.
   - Enter/Space activates buttons and links.
   - Escape closes dialogs and popovers.
@@ -33,10 +33,10 @@ These rules apply automatically to test and spec files for UI components. They e
 ## Accessibility Assertions
 
 - Use `toHaveAccessibleName()` / `toHaveAccessibleDescription()` from `@testing-library/jest-dom` to verify ARIA labeling.
-  - `toHaveAccessibleName()` — checks the computed accessible name (from label, aria-label, aria-labelledby, or content)
-  - `toHaveAccessibleDescription()` — checks the computed description (from aria-describedby or title)
+  - `toHaveAccessibleName()` - checks the computed accessible name (from label, aria-label, aria-labelledby, or content)
+  - `toHaveAccessibleDescription()` - checks the computed description (from aria-describedby or title)
   - Both work with Vitest when configured with `@testing-library/jest-dom/vitest`.
-- Use `toBeVisible()` instead of checking CSS classes — it confirms the element is perceivable.
+- Use `toBeVisible()` instead of checking CSS classes - it confirms the element is perceivable.
 - Use `toHaveFocus()` to verify focus management after user interactions (dialog open, delete action, route change).
 
 ## Component Test Checklist
@@ -50,7 +50,7 @@ When testing a UI component, consider adding:
 
 ---
 
-> **Impact:** Manual role/name/state assertions catch one issue at a time. axe-core integration tests catch whole classes of violations (missing labels, contrast failures, redundant ARIA) in a single assertion.
+> **Impact:** Manual role/name/state assertions catch one issue at a time. axe-core integration tests catch whole classes of violations (missing labels, invalid or redundant ARIA) in a single assertion. Color contrast is not checked: jest-axe turns it off because it does not work in JSDOM, so test contrast in a real browser (Playwright).
 
 ## Automated axe-core Integration
 
@@ -89,7 +89,7 @@ const results = await axe(screen.getByRole('dialog'));
 
 ---
 
-> **Impact:** Focus management tests are the only automated mechanism to catch regressions where dialogs, toasts, or route changes fail to move focus — invisible to unit tests that don't simulate user navigation flow.
+> **Impact:** Focus management tests are the only automated mechanism to catch regressions where dialogs, toasts, or route changes fail to move focus - invisible to unit tests that don't simulate user navigation flow.
 
 ## Focus Management Tests
 

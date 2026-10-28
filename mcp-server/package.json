@@ -1,7 +1,7 @@
 {
   "name": "@a11y-agent-team/mcp-server",
-  "version": "7.0.3",
-  "description": "Server-based MCP server for the A11y Agent Team. Provides accessibility scanning tools over HTTP (Streamable HTTP transport with SSE fallback). Works with Claude Desktop, VS Code Copilot, and any MCP-compatible client.",
+  "version": "7.1.0",
+  "description": "Server-based MCP server for the A11y Agent Team. Provides accessibility scanning tools over stdio and over the Streamable HTTP transport. Works with any MCP client.",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -24,7 +24,7 @@
     "copilot"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22"
   },
   "bin": {
     "a11y-mcp-server": "./server.js",
@@ -42,24 +42,27 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "start:stdio": "node stdio.js",
+    "build": "esbuild stdio.js --bundle --platform=node --format=esm --target=node22 --legal-comments=eof --external:playwright --external:playwright-core --external:@axe-core/playwright --external:pdf-lib \"--banner:js=import { createRequire as __a11yRequire } from 'node:module'; const require = __a11yRequire(import.meta.url);\" --outfile=dist/stdio.mjs",
     "test": "node --test server-core.test.js mcp-conformance.test.js",
     "prepublishOnly": "npm test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.30.0",
-    "express": "^5.1.0",
-    "playwright-core": "^1.58.2",
-    "zod": "^3.25.0"
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "express": "^5.2.1",
+    "zod": "^4.6.7"
   },
   "optionalDependencies": {
-    "@axe-core/playwright": "^4.11.1",
+    "@axe-core/playwright": "^4.14.0",
     "pdf-lib": "^1.17.1",
-    "playwright": "^1.58.2"
+    "playwright": "^1.64.1"
   },
   "//overrides": "Transitive dependencies pinned to their first patched release. Each is within the range its parent asks for, so this raises a floor rather than forcing an incompatible version. Remove an entry once the parent ships a range that cannot resolve below it.",
   "overrides": {
     "fast-uri": "^3.1.6",
     "hono": "^4.12.25",
     "ip-address": "^10.3.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

@@ -36,7 +36,7 @@ Before submitting, verify all applicable items. If an item doesn't apply, mark i
 ### Modals & Overlays
 
 - [ ] Uses `<dialog>` with `showModal()` (or equivalent focus trapping)
-- [ ] Focus lands on Close button on open
+- [ ] Focus moves into the dialog on open (by default its first focusable element; for a confirmation, the least destructive action)
 - [ ] Escape closes the modal
 - [ ] Focus returns to trigger on close
 
@@ -59,16 +59,16 @@ Before submitting, verify all applicable items. If an item doesn't apply, mark i
 - [ ] Tested with screen reader (VoiceOver, NVDA, or JAWS) if available
 - [ ] No new accessibility linting warnings
 
-### Source Citations (Agent Changes Only)
+### Source Citations (Skill Changes Only)
 
 - [ ] All factual claims include inline links to authoritative sources
-- [ ] Sources section included at end of any new agent file or substantive guidance
+- [ ] Sources section included at end of any new skill or substantive guidance
 - [ ] Source URLs verified as reachable and current
-- [ ] New sources added to `SOURCE_REGISTRY.json` if they are primary references for an agent domain
+- [ ] New sources added to `docs/standards/source-registry.json` if they are primary references for a skill's domain
 
 ### Release Readiness (When Version/Release Files Change)
 
-- [ ] `plugin.yaml`, `gemini-extension.json`, `mcp-server/package.json`, and `manifest.json` versions are aligned
+- [ ] `package.json`, `plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json` and `mcp-server/package.json` versions are aligned (`npm run verify:release` checks all but the marketplace file)
 - [ ] `CHANGELOG.md` contains the matching version section
 - [ ] `RELEASE-{version}.md` exists and includes `## Overview`, `## Highlights`, and `## Full Changelog`
 - [ ] Public action examples use the current tag (for example, `action@v{version}`)

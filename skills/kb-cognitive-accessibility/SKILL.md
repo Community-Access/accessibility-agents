@@ -45,7 +45,7 @@ Each SC, with name, what to check and common failures.
 |----|------|--------------|-----------------|
 | 2.2.1 | Timing Adjustable | Session timeouts warn >=20s before expiry; user can extend >=10x or disable | Redirect without warning; extension UI exists but does nothing |
 | 2.2.2 | Pause, Stop, Hide | Auto-moving/blinking content >5s has pause/stop control | Blinking backgrounds, marquee text, auto-scrolling feeds |
-| 2.3.1 | Three Flashes | No content flashes >3 Hz (absolute) | Transition animations that strobe |
+| 2.3.1 | Three Flashes or Below Threshold | No more than three flashes in any one-second period, unless below the general and red flash thresholds | Transition animations that strobe |
 | 3.3.1 | Error Identification | Error identified in text, not just color | Red border with no error message |
 | 3.3.2 | Labels or Instructions | Format requirements shown *before* error, required fields identified upfront | Format hint only in error state; asterisks with no legend |
 | 3.3.7 | Redundant Entry *(2.2 new)* | Previously-entered info not re-requested in same session unless security-essential or stale | Email re-entered on step 3; billing address not pre-filled from shipping |
@@ -60,8 +60,8 @@ Each SC, with name, what to check and common failures.
 | 3.2.3 | Consistent Navigation | Nav appears in same relative order across pages | Footer nav changes order on mobile vs desktop |
 | 3.2.4 | Consistent Identification | Same-function components have same accessible name across pages | "Search" button on one page, "Find" on another |
 | 3.3.3 | Error Suggestion | For detected errors, suggest correction when possible/safe | "Invalid email" with no example or format hint |
-| 3.3.4 | Error Prevention (Legal, Financial) | Review step before irreversible submission; allow reversal or confirmation | One-click purchase with no review screen; no undo for account deletion |
-| 3.3.8 | Accessible Authentication Min. *(2.2 new)* | Authentication must not require cognitive function test unless an alternative exists | `autocomplete="off"` on login forms; paste disabled in password fields; transcription-only CAPTCHA |
+| 3.3.4 | Error Prevention (Legal, Financial, Data) | Review step before irreversible submission; allow reversal or confirmation | One-click purchase with no review screen; no undo for account deletion |
+| 3.3.8 | Accessible Authentication Min. *(2.2 new)* | Authentication must not require cognitive function test unless an alternative or exception (object recognition, personal content) applies | Password managers actively blocked from filling login fields; paste disabled in password fields; transcription-only CAPTCHA, including audio CAPTCHA |
 
 ### Level AAA (Advisory - Review and Report)
 
@@ -72,8 +72,8 @@ Each SC, with name and what to check.
 | 2.2.6 | Timeouts | Warn about data loss from inactivity at start of session |
 | 3.1.3 | Unusual Words | Jargon/idiom defined on first use |
 | 3.1.4 | Abbreviations | Abbreviations expanded on first use |
-| 3.1.5 | Reading Level | General content <= Grade 8; see formula below |
-| 3.3.9 | Accessible Authentication Enhanced *(2.2 new)* | No cognitive function test *at all* (removes the object-recognition exception) |
+| 3.1.5 | Reading Level | Text above lower secondary education level has supplemental content or a simpler version (grade 8 is a working proxy); see formula below |
+| 3.3.9 | Accessible Authentication Enhanced *(2.2 new)* | No cognitive function test unless an alternative exists (removes the object-recognition and personal-content exceptions) |
 
 ---
 
@@ -85,7 +85,7 @@ Each pattern, with its failure and SC.
 
 | Pattern | Failure | SC |
 |---------|---------|-----|
-| `autocomplete="off"` on `type="password"` | Blocks password manager paste | 3.3.8 |
+| Script or attributes that actively stop password managers filling `type="password"` | Forces recall or transcription | 3.3.8 |
 | JavaScript `onpaste="return false"` on password input | Blocks manual paste | 3.3.8 |
 | CAPTCHA with only distorted text option | No cognitive-free alternative | 3.3.8 |
 | Security question requiring exact recall | Pure memory test | 3.3.8 |
@@ -100,7 +100,7 @@ Each pattern, with why it passes.
 | `<input type="password" autocomplete="current-password">` | Allows password manager autofill |
 | Passkey/biometric as login alternative | No cognitive function test |
 | "Same as shipping address" checkbox on billing form | Eliminates redundant entry |
-| CAPTCHA with audio alternative | Provides non-visual option |
+| CAPTCHA with a non-cognitive alternative, or (AA only) an object-recognition CAPTCHA | Meets the alternative or object-recognition exception; an audio CAPTCHA that must be transcribed does not |
 | Email magic link with no password required | Removes cognitive test entirely |
 
 ---
@@ -163,11 +163,11 @@ Each rating, with its error text.
 
 | Rating | Error Text |
 |--------|-----------|
-|  Fail | "Invalid input." |
-|  Fail | "You entered the wrong password." |
-|  Marginal | "Password is incorrect." |
-|  Pass | "The password doesn't match. Passwords are case-sensitive - check Caps Lock and try again." |
-|  Pass | "Email must include @ - for example, <name@company.com>" |
+| Fail | "Invalid input." |
+| Fail | "You entered the wrong password." |
+| Marginal | "Password is incorrect." |
+| Pass | "The password doesn't match. Passwords are case-sensitive - check Caps Lock and try again." |
+| Pass | "Email must include @ - for example, <name@company.com>" |
 
 ---
 
@@ -257,38 +257,38 @@ sessionTimer = setTimeout(() => {
 
 ## COGA Guidance Mapping
 
-### Making Content Usable - Key Objectives
+### Making Content Usable - Design Objectives
 
-From the W3C COGA "Making Content Usable for People with Cognitive and Learning Disabilities" guidance:
+From the W3C Working Group Note [Making Content Usable for People with Cognitive and Learning Disabilities](https://www.w3.org/TR/coga-usable/) (29 April 2021), which has eight design objectives:
 
 | Objective | What to Check | Severity |
 |-----------|--------------|----------|
-| Use a clear and understandable writing style | Reading level, plain language, sentence structure | High |
-| Avoid creating excessive cognitive load | Step count in forms, memory demands, auto-advancing content | High |
-| Provide reminders and feedback | Confirmation messages, progress indicators ("Step 2 of 4"), success confirmation | Medium |
-| Help users avoid mistakes and recover from them | Validation before submit, undo capability, confirm destructive actions | High |
-| Make forms easy to fill out | Pre-populate known data, stepwise format, visible format hints | High |
-| Use a consistent and predictable layout | Navigation location, interactive element behavior, icon consistency | Medium |
-| Use familiar icons and symbols | Standard iconography, labeled icons, no icon-only navigation | Medium |
-| Avoid distorting a person's view of reality | No fake urgency timers, no dark patterns | High |
+| 1. Help Users Understand What Things are and How to Use Them | Familiar, labeled icons; consistent interactive element behavior | moderate |
+| 2. Help Users Find What They Need | Navigation location, clear headings, key tasks easy to reach | moderate |
+| 3. Use Clear and Understandable Content | Reading level, plain language, sentence structure | serious |
+| 4. Help Users Avoid Mistakes and Know How to Correct Them | Validation before submit, undo capability, confirm destructive actions | serious |
+| 5. Help Users Focus | Step count in forms, interruptions, auto-advancing content, fake urgency timers | serious |
+| 6. Ensure Processes Do Not Rely on Memory | Pre-populate known data, no recall-based login, visible format hints | serious |
+| 7. Provide Help and Support | Confirmation messages, progress indicators ("Step 2 of 4"), help available | moderate |
+| 8. Support Adaptation and Personalization | Content still works with user styles, zoom and personalization tools | moderate |
 
 ### Severity Assessment for COGA Findings
 
-Each finding type, with its severity and rationale.
+Each finding type, with its severity (the a11y-core values) and rationale.
 
 | Finding Type | Severity | Rationale |
 |-------------|----------|-----------|
-| 3.3.8 violation (paste disabled / CAPTCHA only) | Critical | Completely blocks authentication for many users |
-| 3.3.7 violation (required re-entry of existing data) | High | Significant burden; causes abandonment |
-| 2.2.1 violation (no timeout warning) | High | Data loss and user confusion |
-| Reading level > Grade 10 (non-technical) | High | Excludes ~20% of adults |
-| Error message with no correction guidance | High | Users cannot self-recover |
-| Poor error message tone (blame language) | Medium | Anxiety increase; may cause abandonment |
-| Inconsistent terminology across same flow | Medium | Confusion; increased cognitive load |
-| Missing progress indicator in multi-step | Medium | User cannot gauge effort remaining |
-| Reading level Grade 9-10 (general content) | Medium | Partial barrier |
-| Jargon without definition | Low-Medium | Depends on density |
-| Missing confirmation of success | Low | Uncertainty about whether action completed |
+| 3.3.8 violation (paste disabled / CAPTCHA only) | critical | Completely blocks authentication for many users |
+| 3.3.7 violation (required re-entry of existing data) | serious | Significant burden; causes abandonment |
+| 2.2.1 violation (no timeout warning) | serious | Data loss and user confusion |
+| Reading level > Grade 10 (non-technical) | serious | Excludes ~20% of adults |
+| Error message with no correction guidance | serious | Users cannot self-recover |
+| Poor error message tone (blame language) | moderate | Anxiety increase; may cause abandonment |
+| Inconsistent terminology across same flow | moderate | Confusion; increased cognitive load |
+| Missing progress indicator in multi-step | moderate | User cannot gauge effort remaining |
+| Reading level Grade 9-10 (general content) | moderate | Partial barrier |
+| Jargon without definition | minor or moderate | Depends on density |
+| Missing confirmation of success | minor | Uncertainty about whether action completed |
 
 ---
 

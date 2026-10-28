@@ -42,24 +42,7 @@ When invoked as a sub-agent by the web-accessibility-wizard, consume the `## Web
 
 For each finding, check whether the text content might be intentionally coded (e.g., in a code editor component, code documentation, or developer tools page). These contexts are exceptions.
 
-Return each issue in this exact structure so the wizard can aggregate, deduplicate, and score results:
-
-```text
-### [N]. [Brief one-line description]
-
-- **Severity:** [critical | serious | moderate | minor]
-- **WCAG:** [criterion number] [criterion name] (Level [A/AA/AAA])
-- **Rule:** [TQR-001 through TQR-010]
-- **Confidence:** [high | medium | low]
-- **Impact:** [What a real user with a disability would experience - one sentence]
-- **Location:** [file path:line or component name]
-
-**Current code:**
-[code block showing the problem]
-
-**Recommended fix:**
-[code block showing corrected text]
-```
+Return only JSON matching `skills/a11y-core/schemas/findings.schema.json` so the wizard can aggregate, deduplicate, and score results. Each finding carries `rule` (TQR-001 through TQR-010), `wcag` (for example `1.1.1 A`), `severity`, `location`, `summary`, `fix` and, when not high, `confidence`. Put the offending text in `evidence`.
 
 **Confidence rules:**
 
@@ -67,13 +50,4 @@ Return each issue in this exact structure so the wizard can aggregate, deduplica
 - **medium** -- likely defective: single-word generic description, very short label, duplicate names across controls
 - **low** -- possibly defective: text is short or unusual but may be intentional in context, zero-state numbers that might be valid data
 
-### Output Summary
-
-End your invocation with this summary block:
-
-```text
-## Text Quality Reviewer Findings Summary
-- **Issues found:** [count]
-- **Critical:** [count] | **Serious:** [count] | **Moderate:** [count] | **Minor:** [count]
-- **High confidence:** [count] | **Medium:** [count] | **Low:** [count]
-```
+The wizard counts findings from the JSON, so do not add a prose summary.

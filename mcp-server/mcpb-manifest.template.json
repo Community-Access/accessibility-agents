@@ -53,7 +53,7 @@
     "platforms": ["darwin", "win32", "linux"],
     "claude_desktop": ">=0.10.0",
     "runtimes": {
-      "node": ">=18.0.0"
+      "node": ">=22"
     }
   },
   "_build_notes": {

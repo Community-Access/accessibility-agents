@@ -67,6 +67,6 @@ own output is read aloud.
 
 ## More
 
-- Full agent roster, knowledge domains and decision matrix: `docs/agent-reference.md`
-- How to write and build files in this repository: `docs/repository-conventions.md`
+- Every skill by tier and domain: `docs/reference/skills/README.md`
+- How to write, build and verify files in this repository: `CONTRIBUTING.md`
 - Shared contract, findings schema, report requirements: `skills/a11y-core/SKILL.md`

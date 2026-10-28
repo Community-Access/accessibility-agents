@@ -28,7 +28,7 @@ export function registerReportTools(server) {
         "Render a complete audit report from findings JSON. Produces every required section, computes the score and grade, and embeds the merged findings so the next run can show a delta.",
       inputSchema: z.object({
         findings: z
-          .array(z.record(z.any()))
+          .array(z.record(z.string(), z.any()))
           .min(1)
           .describe("Findings payloads, each matching skills/a11y-core/schemas/findings.schema.json."),
         template: z

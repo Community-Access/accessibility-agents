@@ -44,18 +44,27 @@
 
 ## Scoring Formula
 
+Scores and grades come from `skills/a11y-core/scripts/merge-findings.mjs`,
+which `render-report.mjs` runs for every report; the skill does not compute
+them by hand.
+
 ```text
-File Score = 100 - (Critical×15 + Serious×7 + Moderate×3 + Minor×1)
-Floor: 0
+penalty = sum over findings of severity_weight x confidence_factor
+          (weights: critical 10, serious 5, moderate 2, minor 1;
+           confidence: high 1.0, medium 0.7, low 0.4)
+checks  = max(number of findings + number of passed checks, 10)
+score   = max(0, round(100 - (penalty / checks) x 20))
 ```
 
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues |
-| 75-89 | B | Good - mostly accessible documentation |
-| 50-74 | C | Needs Work - several accessibility gaps |
-| 25-49 | D | Poor - significant barriers |
-| 0-24 | F | Failing - major structural problems |
+Each score band, with its grade.
+
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## Example Prompts
 
@@ -75,11 +84,11 @@ Floor: 0
 ### GitHub Copilot
 
 ```text
-@markdown-a11y-assistant audit README.md
-@markdown-a11y-assistant audit all markdown files in this repo
-@markdown-a11y-assistant remove emoji from CONTRIBUTING.md
-@markdown-a11y-assistant fix anchor links in ROADMAP.md
-@markdown-a11y-assistant compare this audit with the previous one
+/markdown-a11y-assistant audit README.md
+/markdown-a11y-assistant audit all markdown files in this repo
+/markdown-a11y-assistant remove emoji from CONTRIBUTING.md
+/markdown-a11y-assistant fix anchor links in ROADMAP.md
+/markdown-a11y-assistant compare this audit with the previous one
 ```
 
 </details>

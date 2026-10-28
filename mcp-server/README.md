@@ -1,21 +1,22 @@
-# A11y Agent Team — MCP Server
+# A11y Agent Team MCP Server
 
-Server-based MCP (Model Context Protocol) server that provides accessibility scanning tools over HTTP or stdio. Works with Claude Desktop, VS Code Copilot, and any MCP-compatible client.
+MCP (Model Context Protocol) server that provides 39 accessibility scanning tools over Streamable HTTP or stdio. Works with Claude Code, Claude Desktop, VS Code, the Copilot CLI and any MCP-compatible client. It is built on `@modelcontextprotocol/sdk` 1.32.2 and implements what that SDK provides (protocol revisions up to 2025-11-25); see [the MCP standards page](../docs/standards/mcp.md) for where it stands against 2026-07-28.
 
 In this repository, the MCP server lives in the top-level `mcp-server/` directory. The main entry points are `server.js` (HTTP) and `stdio.js` (stdio).
 
 ## What Works Out Of The Box
 
-The MCP server is the executable part of PDF scanning. The PDF agent and prompt files tell the model when to scan; this server provides the actual `scan_pdf_document` tool.
+The MCP server is the executable part of document scanning. The skills (for PDF, `pdf-accessibility` and `pdf-scan-config` under `skills/`) tell the model when to scan; this server provides the actual `scan_pdf_document` tool.
 
 | What you install | What you get | PDF scanning works? |
 |------------------|--------------|---------------------|
-| Prompt files only | Reusable prompt text | No |
-| Agent files only | PDF scanning instructions in chat | No |
-| Agent files + MCP server | Working `scan_pdf_document` tool | Yes |
-| Agent files + MCP server + veraPDF | Baseline scan + deep PDF/UA validation | Yes |
+| Skills only | PDF scanning instructions in chat | No |
+| Skills + MCP server | Working `scan_pdf_document` tool | Yes |
+| Skills + MCP server + veraPDF | Baseline scan + deep PDF/UA validation | Yes |
 
-If you only copy prompt files or agent files into a prompts or agents folder, PDF scanning will not run until a client is configured to talk to this MCP server.
+A plugin install launches `dist/stdio.mjs`, a single esbuild bundle of the stdio server and its dependencies, so it starts with no `npm install` (`mcp.json`, and `mcpServers` in `.claude-plugin/plugin.json`). Playwright, `@axe-core/playwright` and `pdf-lib` are left out of the bundle and stay optional; the tools that need them say how to install them. Run `npm install` in this folder only for the HTTP server (`server.js`) or to work on the source.
+
+If you change the server's source, run `npm run build` here and commit the rebuilt `dist/stdio.mjs`: the `bundle` gate in `npm run verify` fails when the committed bundle differs from a fresh build.
 
 ## Architecture
 
@@ -23,32 +24,24 @@ The server supports two transport modes:
 
 | Mode | Entry Point | Transport | Use Case |
 |------|-------------|-----------|----------|
-| **HTTP** | `server.js` | Streamable HTTP + SSE | Remote clients, shared servers, CI/CD |
-| **stdio** | `stdio.js` | stdin/stdout | Claude Desktop `mcp.json`, local use |
+| **HTTP** | `server.js` | Streamable HTTP (stateful with a GET event stream by default; stateless with `A11Y_MCP_STATELESS=1`). The legacy HTTP+SSE transport is not offered | Remote clients, shared servers, CI/CD |
+| **stdio** | `stdio.js` (bundled as `dist/stdio.mjs`) | stdin/stdout | Claude Desktop, plugin installs, local use |
 
 Both modes share the same tool implementations via `server-core.js`.
 
 ## Quick Start
 
-Before you start, make sure `node --version` reports Node.js 18 or later and that `npm` is available.
-
-If Node.js is missing, the repository installers can now offer to install it:
-
-- Windows PowerShell installer uses `winget` when available
-- macOS shell installer uses Homebrew when available
-
-Manual fallback: <https://nodejs.org/en/download>
+Before you start, make sure `node --version` reports a supported Node.js LTS line (26, 24 or 22) and that `npm` is available. The repository installer does not install Node.js; get it from <https://nodejs.org/en/download>.
 
 ```bash
+# stdio, from the bundle: no install needed
+node mcp-server/dist/stdio.mjs
+
+# HTTP mode needs the dependencies
 cd mcp-server
 npm install
-
-# HTTP mode (default)
 npm start
 # -> http://127.0.0.1:3100/mcp
-
-# stdio mode (local desktop clients)
-node stdio.js
 ```
 
 For a PDF-only walkthrough, see [PDF-QUICKSTART.md](PDF-QUICKSTART.md).
@@ -59,17 +52,16 @@ Each class, with requirement, needed for and required.
 
 | Class | Requirement | Needed For | Required? |
 |------|-------------|------------|-----------|
-| Runtime | Node.js 18+ | Running the MCP server | Yes |
-| Runtime | npm | Installing MCP server dependencies | Yes |
-| Runtime | `@modelcontextprotocol/sdk`, `zod` | Core MCP tool registration and execution | Yes |
+| Runtime | Node.js LTS (26, 24 or 22) | Running the MCP server | Yes |
+| Runtime | none for the stdio bundle | `dist/stdio.mjs` carries `@modelcontextprotocol/sdk` and `zod` inside it | No |
+| HTTP or development | npm, then `npm install` in this folder (`@modelcontextprotocol/sdk`, `zod`, `express`) | The HTTP server (`server.js`), running the unbundled source and the tests | Only for those |
 | Client | MCP-compatible client | Calling the server tools | Yes |
 | Optional feature | Java 11+ + `verapdf` | Deep PDF validation with `run_verapdf_scan` | No |
 | Optional feature | `playwright`, `@axe-core/playwright`, Chromium | Browser-based scanning tools | No |
 | Optional feature | `pdf-lib` | `convert_pdf_form_to_html` | No |
-| Installer-only | `git` | Cloning during install/update flows | No |
-| Installer-only | Python 3 | Some shell installer automation and smoke-test fallback paths | No |
+| Installer-only | `git` | Cloning the repository | No |
 
-Python is not required to run the MCP server. It is only used by the shell installer for a few automatic config updates and as a fallback helper in some install-time checks.
+Python is not required to run the MCP server or to install the package.
 
 ## Local Vs Shared Server
 
@@ -92,39 +84,38 @@ Each environment variable, with its default and description.
 | `PORT` | `3100` | HTTP server port |
 | `A11Y_MCP_HOST` | `127.0.0.1` | Bind address |
 | `A11Y_MCP_STATELESS` | (unset) | Set to `1` for stateless mode |
+| `GLOW_API_BASE_URL` | `https://letitglow.app/mcp` | Endpoint the GLOW bridge tools call |
 
 ### Stateful vs Stateless
 
-- **Stateful** (default): Sessions persist across requests. Supports SSE for streaming. Best for interactive use.
-- **Stateless**: Each request creates a fresh server instance. No sessions. Best for CI/CD and serverless deployments.
+- **Stateful** (default): Sessions persist across requests (`Mcp-Session-Id`), and a GET request opens a server-sent event stream for that session. Best for interactive use. The 2026-07-28 MCP revision removes sessions and the GET endpoint; this mode follows the SDK.
+- **Stateless**: Each request creates a fresh server instance. No sessions, POST only. Best for CI/CD and serverless deployments.
 
 ## Client Configuration
 
-### Claude Desktop (`mcp.json`)
+### Claude Desktop (`claude_desktop_config.json`)
 
-**HTTP mode** (recommended):
-
-```json
-{
-  "mcpServers": {
-    "a11y-agent-team": {
-      "url": "http://127.0.0.1:3100/mcp"
-    }
-  }
-}
-```
-
-**stdio mode** (alternative):
+Claude Desktop starts local servers from `claude_desktop_config.json` (Settings, Developer, Edit Config), using stdio:
 
 ```json
 {
   "mcpServers": {
     "a11y-agent-team": {
       "command": "node",
-      "args": ["/path/to/mcp-server/stdio.js"]
+      "args": ["/path/to/mcp-server/dist/stdio.mjs"]
     }
   }
 }
+```
+
+Remote HTTP servers are added in Claude Desktop as custom connectors rather than in this file; see <https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp>.
+
+### Claude Code
+
+The plugin registers the server for you. Without the plugin:
+
+```bash
+claude mcp add --transport stdio a11y-agent-team -- node /path/to/mcp-server/dist/stdio.mjs
 ```
 
 ### VS Code (`.vscode/mcp.json`)
@@ -184,12 +175,12 @@ Option 2: pass `baseUrl` per tool call (for one-off testing):
 
 If your immediate goal is only PDF accessibility scanning, this is the smallest working path:
 
-1. Install Node.js 18 or later.
+1. Install a Node.js LTS release (26, 24 or 22).
 2. Open this folder: `mcp-server/`
 3. Run `npm install`
 4. Start the server with `npm start`
 5. Point your MCP client at `http://127.0.0.1:3100/mcp`
-6. Install or copy the PDF agent file if you want the guided PDF workflow in chat
+6. Install the skills (see [Getting started](../docs/getting-started/README.md)) if you want the guided PDF workflow in chat
 
 Minimum files for the MCP side:
 
@@ -201,8 +192,7 @@ Minimum files for the MCP side:
 
 If you also want the chat workflow layer, add:
 
-- `.github/agents/pdf-accessibility.agent.md`
-- `.github/agents/pdf-scan-config.agent.md`
+- the `pdf-accessibility` and `pdf-scan-config` skills (`skills/pdf-accessibility/`, `skills/pdf-scan-config/`), installed with the rest of the package
 - `templates/pdf-config-moderate.json` copied to your project as `.a11y-pdf-config.json` (optional)
 
 ## Available Tools
@@ -256,7 +246,7 @@ Each tool, with its requires and description.
 | `run_playwright_keyboard_scan` | playwright | Test keyboard navigation |
 | `run_playwright_contrast_scan` | playwright | Visual contrast analysis |
 | `run_playwright_viewport_scan` | playwright | Test reflow at multiple widths |
-| `run_verapdf_scan` | veraPDF CLI | PDF/UA-1 conformance validation (SARIF output) |
+| `run_verapdf_scan` | veraPDF CLI | PDF/UA-1 (default), PDF/UA-2 or PDF/A validation, chosen with `flavour` (SARIF output) |
 | `convert_pdf_form_to_html` | pdf-lib | Convert PDF forms to accessible HTML |
 
 ### Markdown Tools
@@ -265,7 +255,7 @@ Each tool, with its description.
 
 | Tool | Description |
 |------|-------------|
-| `lint_markdown` | Lint markdown files for accessibility issues (links, alt text, headings, tables, emoji) |
+| `scan_markdown_document` | Scan markdown files for accessibility issues (links, alt text, headings, tables, emoji) |
 
 ### Caching Tools
 
@@ -361,13 +351,13 @@ Example natural-language requests:
 
 The tool will return installation guidance if `verapdf` is not installed.
 
-For more background, see [../docs/tools/verapdf-integration.md](../docs/tools/verapdf-integration.md).
+For more background, see [veraPDF integration](../docs/reference/tools/verapdf-integration.md).
 
 ## Health Check
 
 ```bash
 curl http://127.0.0.1:3100/health
-# {"status":"ok","name":"a11y-agent-team","version":"5.0.0","mode":"stateful"}
+# {"status":"ok","name":"a11y-agent-team","version":"7.1.0","mode":"stateful"}
 ```
 
 ## MCP Prompts
@@ -376,13 +366,13 @@ Pre-built prompt templates that guide the model through accessibility workflows.
 
 | Prompt | Arguments | Description |
 |--------|-----------|-------------|
-| `audit-page` | `url` (required), `level` (optional: A/AA/AAA) | Structured WCAG audit instruction — walks through axe-core, heading, link, form, keyboard, and contrast scans |
+| `audit-page` | `url` (required), `level` (optional: A/AA/AAA) | Structured WCAG audit instruction; walks through axe-core, heading, link, form, keyboard, and contrast scans |
 | `check-component` | `component` (required) | Component-specific review using built-in guidelines (modal, tabs, accordion, combobox, carousel, form, live-region, navigation, general) |
 | `explain-wcag` | `criterion` (required) | Explain a WCAG criterion with practical examples, common violations, and testing guidance |
 
 ## MCP Resources
 
-Read-only data endpoints for accessibility reference material.
+Read-only data endpoints for accessibility reference material. The two with a `{...}` parameter are resource templates: a client lists or completes them and reads a concrete address such as `a11y://guidelines/modal`.
 
 | Resource URI | Description |
 |-------------|-------------|
@@ -392,19 +382,19 @@ Read-only data endpoints for accessibility reference material.
 
 ## Security
 
-- **Path traversal prevention** — File operations validate paths against home directory and CWD boundaries (CWE-22)
-- **Symlink resolution** — Write operations resolve symlinks to prevent escape (CWE-59)
-- **SSRF protection** — URL-based tools validate schemes (http/https only)
-- **Command injection prevention** — External commands use `execFile` (not `exec`) with argument arrays
-- **File size limits** — Documents capped at 100 MB, batch operations at 50 files
-- **Local binding** — Server binds to `127.0.0.1` by default (not exposed to network)
+- **Path traversal prevention**: File operations validate paths against home directory and CWD boundaries (CWE-22)
+- **Symlink resolution**: Write operations resolve symlinks to prevent escape (CWE-59)
+- **SSRF protection**: URL-based tools validate schemes (http/https only)
+- **Command injection prevention**: External commands use `execFile` (not `exec`) with argument arrays
+- **File size limits**: Documents capped at 100 MB, batch operations at 50 files
+- **Local binding**: Server binds to `127.0.0.1` by default (not exposed to network)
 
 ## Deployment
 
 ### Docker
 
 ```dockerfile
-FROM node:20-slim
+FROM node:24-slim
 WORKDIR /app
 COPY package.json .
 RUN npm install --omit=dev
@@ -432,4 +422,4 @@ WantedBy=multi-user.target
 
 ## License
 
-MIT — see [LICENSE](../LICENSE) in the repository root.
+MIT. See [LICENSE](../LICENSE) in the repository root.

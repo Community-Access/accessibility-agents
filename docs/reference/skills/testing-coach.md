@@ -55,10 +55,10 @@
 ### GitHub Copilot
 
 ```text
-@testing-coach how should I test this component with VoiceOver?
-@testing-coach what automated accessibility tests should I add?
-@testing-coach create a test plan for the login page
-@testing-coach what are the essential NVDA commands for testing forms?
+/testing-coach how should I test this component with VoiceOver?
+/testing-coach what automated accessibility tests should I add?
+/testing-coach create a test plan for the login page
+/testing-coach what are the essential NVDA commands for testing forms?
 ```
 
 </details>

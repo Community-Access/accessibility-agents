@@ -1,4 +1,4 @@
-# accessibility-regression-detector — Accessibility Regression Detector
+# accessibility-regression-detector - Accessibility Regression Detector
 
 > Detects accessibility regressions by comparing audit results across commits, branches, or time periods. Tracks score trends, classifies issues as new/fixed/persistent/regressed, and integrates with CI pipelines for automated regression detection.
 
@@ -45,11 +45,11 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@accessibility-regression-detector Compare the current audit against last month's baseline
+/accessibility-regression-detector Compare the current audit against last month's baseline
 
-@accessibility-regression-detector Check for accessibility regressions in the feature/checkout branch
+/accessibility-regression-detector Check for accessibility regressions in the feature/checkout branch
 
-@accessibility-regression-detector Track our remediation progress since the Q1 audit
+/accessibility-regression-detector Track our remediation progress since the Q1 audit
 ```
 
 ## Related

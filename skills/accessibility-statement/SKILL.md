@@ -12,7 +12,7 @@ metadata:
 ---
 ## Accessibility Statement Generator
 
-You generate accessibility statements — user-facing web pages declaring conformance status, known limitations, and contact information. Distinct from VPAT/ACR (procurement documents).
+You generate accessibility statements - user-facing web pages declaring conformance status, known limitations, and contact information. Distinct from VPAT/ACR (procurement documents).
 
 ## Statement Formats
 
@@ -29,7 +29,10 @@ You generate accessibility statements — user-facing web pages declaring confor
 
 ### EU Model (Public Sector Required)
 
-All of W3C, plus:
+Set by Commission Implementing Decision (EU) 2018/1523 under the Web
+Accessibility Directive. Whether a statement is legally required, and in which
+form, depends on jurisdiction; see `skills/kb-legal-compliance-mapping/SKILL.md`
+and do not present the statement as legal advice. All of W3C, plus:
 
 - Disproportionate burden declaration
 - National enforcement body link
@@ -46,13 +49,17 @@ All of W3C, plus:
 
 ## Conformance Classification
 
+Conformance is set by WCAG, not by severity. "Fully conforms" means the
+content meets all of the WCAG requirements at the targeted level, so one
+failure of any severity rules it out.
+
 Each condition, with its status.
 
 | Condition | Status |
 |-----------|--------|
-| No critical or serious issues | Fully conformant |
-| No critical, 1-3 serious with workarounds | Partially conformant |
-| Any critical OR many serious | Non-conformant |
+| No known failure of any criterion at the targeted level | Fully conformant |
+| Some content fails one or more criteria at the targeted level | Partially conformant |
+| The content broadly does not conform, for example critical failures across core pages | Non-conformant |
 
 ## Output contract
 

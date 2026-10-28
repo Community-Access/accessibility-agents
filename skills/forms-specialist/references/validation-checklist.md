@@ -41,37 +41,19 @@ When invoked as a sub-agent by the web-accessibility-wizard, consume the `## Web
 
 Provide framework-specific code fixes. For React, use `htmlFor` (not `for`). For Angular, use `[attr.aria-describedby]`. For Vue, use standard HTML attributes. For controlled inputs, show the state management pattern.
 
-Return each issue in this exact structure so the wizard can aggregate, deduplicate, and score results:
+Return findings only as JSON matching `skills/a11y-core/schemas/findings.schema.json`, as the output contract in SKILL.md requires. Map each issue to the schema fields:
 
-```text
-### [N]. [Brief one-line description]
-
-- **Severity:** [critical | serious | moderate | minor]
-- **WCAG:** [criterion number] [criterion name] (Level [A/AA/AAA])
-- **Confidence:** [high | medium | low]
-- **Impact:** [What a real user with a disability would experience - one sentence]
-- **Location:** [file path:line or component name]
-
-**Current code:**
-[code block showing the problem]
-
-**Recommended fix:**
-[code block showing the corrected code in the detected framework syntax]
-```
+- `rule` - a stable identifier for the check
+- `wcag` - criterion number and level, for example `"1.4.3 AA"`, or `"n/a"` for findings outside WCAG
+- `severity` - `critical`, `serious`, `moderate` or `minor`
+- `confidence` - `high`, `medium` or `low` (omit when high)
+- `location` - file path and line, or a CSS selector: somewhere a person can open (a repeated component goes in `component`)
+- `summary` - one sentence naming the defect and what a user with a disability would experience
+- `fix` - the corrected code or text, in the detected framework's syntax
+- `evidence` - the offending markup or value, kept short
 
 **Confidence rules:**
 
 - **high** - definitively wrong: input with no label association, error message with no `aria-describedby`, required field with no `required` attribute
 - **medium** - likely wrong: label and input appear visually associated but lack programmatic link, placeholder-only label suspected
 - **low** - possibly wrong: custom form control pattern may have accessible equivalent not visible in static analysis
-
-### Output Summary
-
-End your invocation with this summary block (used by the wizard for / progress announcements):
-
-```text
-## Forms Specialist Findings Summary
-- **Issues found:** [count]
-- **Critical:** [count] | **Serious:** [count] | **Moderate:** [count] | **Minor:** [count]
-- **High confidence:** [count] | **Medium:** [count] | **Low:** [count]
-```

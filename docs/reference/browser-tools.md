@@ -9,7 +9,7 @@ Agentic browser tools enable accessibility agents (web-accessibility-wizard, web
 1. **Apply a fix** to source code
 2. **Take a screenshot** in the integrated browser
 3. **Analyze the visual result** against accessibility criteria
-4. **Report back** with visual evidence: "Fix verified ✓" or "Requires manual review"
+4. **Report back** with visual evidence: "Fix verified" or "Requires manual review"
 
 This closes the feedback loop for automated accessibility remediation.
 
@@ -59,10 +59,10 @@ When enabled, agents automatically invoke browser tools to gather visual evidenc
 **How:**
 
 ```text
-Agent → Apply fix (add alt text) 
-      → Take screenshot 
-      → Run axe-core scan on rendered page 
-      → Report: "Fix verified, contrast ratio is 4.7:1 ✓"
+Agent: Apply fix (add alt text) 
+      then Take screenshot 
+      then Run axe-core scan on rendered page 
+      then Report: "Fix verified, contrast ratio is 4.7:1"
 ```
 
 **Example workflow:**
@@ -76,7 +76,7 @@ Applied alt="Diagram showing A11y testing workflow" to <img id="workflow-diagram
 **Verify in Browser:**
 [screenshot showing alt text in DevTools]
 
-**Result:** ✓ Alt text is correct and meaningful. Ready to ship.
+**Result:** Pass. Alt text is correct and meaningful. Ready to ship.
 ```
 
 ### Pattern 2: Visual Verification (Heavy Use)
@@ -86,10 +86,10 @@ Applied alt="Diagram showing A11y testing workflow" to <img id="workflow-diagram
 **How:**
 
 ```python
-Agent → Apply CSS fix (change button color from #333 to #000)
-      → Take screenshot showing button before/after
-      → Compare contrast ratio (old: 3.2:1 → new: 4.8:1)
-      → Report: "Contrast improved. Verified in integrated browser."
+Agent: Apply CSS fix (change button color from #333 to #000)
+      then Take screenshot showing button before/after
+      then Compare contrast ratio (old: 3.2:1 to new: 4.8:1)
+      then Report: "Contrast improved. Verified in integrated browser."
 ```
 
 ### Pattern 3: Interaction Testing (Keyboard, Screen Readers)
@@ -99,10 +99,10 @@ Agent → Apply CSS fix (change button color from #333 to #000)
 **How:**
 
 ```text
-Agent → Apply fix (add missing tabindex, focus management)
-      → Invoke browser.click() to trigger interaction
-      → Take screenshot showing focus ring
-      → Report: "Focus ring visible and correct. Keyboard navigation verified."
+Agent: Apply fix (add missing tabindex, focus management)
+      then Invoke browser.click() to trigger interaction
+      then Take screenshot showing focus ring
+      then Report: "Focus ring visible and correct. Keyboard navigation verified."
 ```
 
 ### Pattern 4: Failure Handling & Graceful Degradation
@@ -115,15 +115,15 @@ Agent → Apply fix (add missing tabindex, focus management)
 try {
   const image = await browser.screenshot()
   const analysis = await analyzeContrast(image)
-  return `✓ Verified: contrast is ${analysis.ratio}:1`
+  return `Verified: contrast is ${analysis.ratio}:1`
 } catch (error) {
   if (error.code === 'BROWSER_NOT_AVAILABLE') {
-    return `⚠️ Browser tools not enabled. Install with: workbench.browser.enableChatTools`
+    return `Warning: Browser tools not enabled. Install with: workbench.browser.enableChatTools`
   }
   if (error.code === 'NAVIGATION_TIMEOUT') {
-    return `⚠️ Page took too long to load. Please verify manually.`
+    return `Warning: Page took too long to load. Please verify manually.`
   }
-  return `⚠️ Manual verification required. [details: ${error.message}]`
+  return `Warning: Manual verification required. [details: ${error.message}]`
 }
 ```
 
@@ -136,7 +136,7 @@ try {
 Agents invoke browser tools via existing chat infrastructure (no new APIs needed):
 
 ```javascript
-// In web-accessibility-wizard.agent.md
+// In skills/web-accessibility-wizard/SKILL.md
 
 const result = await runBrowserTool({
   action: 'screenshot',
@@ -183,13 +183,13 @@ class AccessibilityAnalyzer:
         """Run OCR + color analysis on screenshot"""
         # Extract colors from screenshot
         # Compute WCAG contrast ratios
-        # Report: "Button text: #333 on #FFF = 9.3:1 (AAA) ✓"
+        # Report: "Button text: #333 on #FFF = 9.3:1 (AAA)"
     
     def detect_focus_ring(self, image: Buffer) -> dict:
         """Check for visible focus indicator"""
         # Compare before/after screenshots
         # Detect outline or glow
-        # Report: "Focus ring visible (2px blue outline) ✓"
+        # Report: "Focus ring visible (2px blue outline)"
     
     def run_axe_in_context(self) -> dict:
         """Run axe-core accessibility scan on loaded page"""
@@ -240,7 +240,7 @@ await browser.navigate('http://localhost:3000/hero')
 // Verify Fix 1
 const img = await browser.inspect('#hero')
 const altText = img.getAttribute('alt')
-console.log(`✓ Alt text present: "${altText}"`)
+console.log(`Pass: Alt text present: "${altText}"`)
 
 // Verify Fix 2
 const button = await browser.inspect('button')
@@ -248,7 +248,7 @@ const computed = await browser.evaluateInBrowser(
   `getComputedStyle(document.querySelector('button')).color`
 )
 const contrast = computeContrast('#000', '#FFF')
-console.log(`✓ Button contrast: ${contrast}:1 (WCAG AAA)`)
+console.log(`Pass: Button contrast: ${contrast}:1 (WCAG AAA)`)
 
 // Take final screenshot
 const screenshot = await browser.screenshot()
@@ -288,7 +288,7 @@ Both issues are fixed and verified. Ready to merge.
 **Response:**
 
 ```text
-⚠️ Browser tools are not enabled. To enable visual verification:
+Warning: Browser tools are not enabled. To enable visual verification:
 1. Open VS Code settings
 2. Search for "Browser Chat Tools"
 3. Enable: workbench.browser.enableChatTools
@@ -306,7 +306,7 @@ Without browser tools, fixes are applied but not visually verified.
 **Response:**
 
 ```text
-⚠️ The page didn't load within 10 seconds. Possible causes:
+Warning: The page didn't load within 10 seconds. Possible causes:
 - Page is at http://localhost (check if dev server is running)
 - Network connection issue
 - Page infinite loops or has very slow initial load
@@ -323,7 +323,7 @@ Please verify fixes manually or start the dev server and try again.
 **Response:**
 
 ```text
-⚠️ The element to verify (#hero-image) wasn't found on the current page.
+Warning: The element to verify (#hero-image) wasn't found on the current page.
 Possible causes:
 - Page hasn't fully rendered yet
 - Selector changed or element was moved
@@ -344,13 +344,13 @@ Please navigate to the correct page or verify the selector exists.
 **Response:**
 
 ```yaml
-⚠️ Visual analysis couldn't verify the complete fix. This can happen if:
+Warning: Visual analysis couldn't verify the complete fix. This can happen if:
 - Screenshot is too blurry or low contrast
 - Element is partially off-screen
 - Browser zoom level is non-standard (set to 100%)
 
 Workaround: Open DevTools and manually inspect the element:
-- Right-click element → Inspect
+- Right-click element > Inspect
 - Look for: [alt text], [color], [outline], [aria-label]
 ```
 
@@ -379,7 +379,7 @@ Workaround: Open DevTools and manually inspect the element:
 
 - [ ] After applying each fix, call `runBrowserTool({ action: 'screenshot' })`
 - [ ] Analyze screenshot for visual accessibility metrics
-- [ ] Comment on fix with evidence: "✓ Verified" or "⚠️ Manual review needed"
+- [ ] Comment on fix with evidence: "Verified" or "Warning: Manual review needed"
 - [ ] Generate before/after comparison image (if fix is CSS/color related)
 
 ### Phase 5.4: Testing & Iteration (3 hours)
@@ -400,24 +400,24 @@ Workaround: Open DevTools and manually inspect the element:
 
 **Technical:**
 
-- ✓ Agents can invoke `browser.screenshot()` and receive PNG
-- ✓ Agents can invoke `browser.click()`, `browser.type()`, `browser.navigate()`
-- ✓ Agents can invoke `browser.evaluateInBrowser()` for custom checks
-- ✓ Agents implement all 4 failure modes with graceful degradation
-- ✓ Agents embed visual evidence (screenshots) in fix reports
-- ✓ Screenshots include metadata (URL, timestamp, viewport size)
+- Agents can invoke `browser.screenshot()` and receive PNG
+- Agents can invoke `browser.click()`, `browser.type()`, `browser.navigate()`
+- Agents can invoke `browser.evaluateInBrowser()` for custom checks
+- Agents implement all 4 failure modes with graceful degradation
+- Agents embed visual evidence (screenshots) in fix reports
+- Screenshots include metadata (URL, timestamp, viewport size)
 
 **User Experience:**
 
-- ✓ Users see "Verified in browser ✓" when fixes are confirmed
-- ✓ Users see "Manual verification recommended ⚠️" when analysis fails
-- ✓ Users can enable/disable browser tools easily
-- ✓ Users can retry verification if page didn't load
-- ✓ Before/after images shown for visual fixes (contrast, colors)
+- Users see "Verified in browser" when fixes are confirmed
+- Users see "Manual verification recommended" when analysis fails
+- Users can enable/disable browser tools easily
+- Users can retry verification if page didn't load
+- Before/after images shown for visual fixes (contrast, colors)
 
 **Documentation:**
 
-- [ ] Added "Browser-Assisted Verification" section to web-accessibility-wizard.agent.md
+- [ ] Added "Browser-Assisted Verification" section to skills/web-accessibility-wizard/SKILL.md
 - [ ] Updated README with "Using Browser Verification" guide
 - [ ] Created troubleshooting section for failure modes
 - [ ] Added examples to docs/AGENTIC-BROWSER-TOOLS.md (this file)
@@ -510,6 +510,9 @@ window.location.href = '...'     // Navigate (only via browser.navigate())
 
 ### Enable Browser Tools
 
+The setting is on by default (VS Code's AI settings reference lists its default
+as `true`); set it explicitly only if it was turned off.
+
 **Settings (User Scope):**
 
 ```json
@@ -523,54 +526,33 @@ window.location.href = '...'     // Navigate (only via browser.navigate())
 ```json
 // .vscode/settings.json
 {
-  "workbench.browser.enableChatTools": true,
-  "[agent]": {
-    "workbench.browser.enableChatTools": true
-  }
-}
-```
-
-### Configure Timeouts
-
-```json
-{
-  "workbench.browser.toolTimeout": 10000,      // 10 seconds
-  "workbench.browser.navigationTimeout": 30000 // 30 seconds
+  "workbench.browser.enableChatTools": true
 }
 ```
 
 ---
 
-## 12. Metrics & Telemetry
+## 12. Telemetry
 
-### What We Track
-
-- **Screenshot count:** How many screenshots per session?
-- **Verification success rate:** How often does verification succeed vs fail?
-- **Failure modes:** Which failure mode happens most often?
-- **Time to verify:** How long does verification take on average?
-- **User acceptance:** Do users enable browser tools?
-
-### Privacy
-
-- No screenshots are uploaded to external servers
-- No page content is analyzed outside the browser
-- All analysis is local to VS Code instance
-- Users can disable telemetry via VS Code settings
+None. This package collects no metrics or telemetry, and screenshots stay on
+the machine (see [PRIVACY.md](../../PRIVACY.md)). Anything VS Code itself
+records is governed by VS Code's own telemetry settings.
 
 ---
 
 ## 13. References
 
-- **VS Code 1.110 Release Notes** — <https://code.visualstudio.com/updates/>
-- **VS Code Browser Tools API** — <https://code.visualstudio.com/docs/copilot/customization/overview>
-- **Integrated Browser Documentation** — <https://code.visualstudio.com/docs/editor/debugging>
-- **WCAG 2.2: Visual Accessibility** — <https://www.w3.org/TR/WCAG22/>
+- **VS Code 1.110 Release Notes** - <https://code.visualstudio.com/updates/>
+- **VS Code AI settings reference (browser tools setting)** - <https://code.visualstudio.com/docs/agents/reference/ai-settings>
+- **Integrated Browser Documentation** - <https://code.visualstudio.com/docs/editor/debugging>
+- **WCAG 2.2: Visual Accessibility** - <https://www.w3.org/TR/WCAG22/>
 
 ---
 
 ## 14. Next Steps
 
-→ [Phase 5.2: Enhance web-accessibility-wizard](./browser-tools.md#implementation-phases)  
-→ [Phase 5.3: Enhance web-issue-fixer](./browser-tools.md#implementation-phases)  
-→ [Phase 5.4: Testing & Iteration](./browser-tools.md#implementation-phases)
+The implementation phases this page once linked to are recorded in the
+project history; the browser-assisted verification they describe is part of
+the `web-accessibility-wizard` and `web-issue-fixer` skills
+([wizard](../../skills/web-accessibility-wizard/SKILL.md),
+[fixer](../../skills/web-issue-fixer/SKILL.md)).

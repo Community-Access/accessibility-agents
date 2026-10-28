@@ -79,13 +79,13 @@ Generate `MARKDOWN-ACCESSIBILITY-AUDIT.md`:
 
 ## Score Calculation
 
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent |
-| 75-89 | B | Good |
-| 50-74 | C | Needs Work |
-| 25-49 | D | Poor |
-| 0-24 | F | Failing |
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## Issue Breakdown
 

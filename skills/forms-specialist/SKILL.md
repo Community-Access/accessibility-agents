@@ -75,12 +75,12 @@ Additional instructions beyond the label must be programmatically associated:
 
 ```html
 <label>
-  <input type="checkbox" aria-checked="mixed" id="select-all">
+  <input type="checkbox" id="select-all">
   Select all items
 </label>
 ```
 
-Set via JavaScript: `checkbox.indeterminate = true;`
+Set via JavaScript: `checkbox.indeterminate = true;`, which browsers expose as mixed. Never put `aria-checked` on a native checkbox (ARIA in HTML forbids it).
 
 ## File Uploads
 

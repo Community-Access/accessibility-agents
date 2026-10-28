@@ -26,10 +26,10 @@ This is the agent for when you need to:
 ### GitHub Copilot (VS Code)
 
 ```text
-@repo-admin add @alice to community-access/accessibility-agents as maintainer
-@repo-admin audit access on all my repos
-@repo-admin configure branch protection for main
-@repo-admin sync labels from my template repo
+/repo-admin add @alice to community-access/accessibility-agents as maintainer
+/repo-admin audit access on all my repos
+/repo-admin configure branch protection for main
+/repo-admin sync labels from my template repo
 ```
 
 ### Claude Code (Terminal)
@@ -43,9 +43,9 @@ This is the agent for when you need to:
 ### Via GitHub Hub
 
 ```text
-@github-hub manage repo admin
-@github-hub audit repository access
-@github-hub add @alice as maintainer
+/github-hub manage repo admin
+/github-hub audit repository access
+/github-hub add @alice as maintainer
 ```
 
 ---
@@ -100,7 +100,7 @@ Before using this agent, understand the five GitHub permission levels:
 
 ### Adding a Collaborator
 
-1. You say: `@repo-admin add @alice to this repo as maintainer`
+1. You say: `/repo-admin add @alice to this repo as maintainer`
 
 2. The agent identifies the repo (from workspace context or asks):
 
@@ -130,7 +130,7 @@ Before using this agent, understand the five GitHub permission levels:
 
 ### Access Audit
 
-1. You say: `@repo-admin audit access on all my repos`
+1. You say: `/repo-admin audit access on all my repos`
 
 2. Collects collaborators across all your repos:
 
@@ -154,7 +154,7 @@ Before using this agent, understand the five GitHub permission levels:
 
 ### Branch Protection Setup
 
-1. You say: `@repo-admin protect the main branch - require 2 PR reviews and CI to pass`
+1. You say: `/repo-admin protect the main branch - require 2 PR reviews and CI to pass`
 
 2. Shows current state:
 
@@ -187,37 +187,37 @@ Before using this agent, understand the five GitHub permission levels:
 ### Collaborator Management
 
 ```text
-@repo-admin add @alice to this repo with write access
-@repo-admin add @bob as a read-only reviewer
-@repo-admin remove @dave from this repo
-@repo-admin list all collaborators and their permission levels
-@repo-admin audit access across all my repos - flag anything unusual
+/repo-admin add @alice to this repo with write access
+/repo-admin add @bob as a read-only reviewer
+/repo-admin remove @dave from this repo
+/repo-admin list all collaborators and their permission levels
+/repo-admin audit access across all my repos - flag anything unusual
 ```
 
 ### Branch Protection
 
 ```text
-@repo-admin protect main - require at least 1 PR review before merge
-@repo-admin require CI to pass before any merge to main
-@repo-admin block direct pushes to main for everyone including admins
-@repo-admin show me the current branch protection rules
+/repo-admin protect main - require at least 1 PR review before merge
+/repo-admin require CI to pass before any merge to main
+/repo-admin block direct pushes to main for everyone including admins
+/repo-admin show me the current branch protection rules
 ```
 
 ### Label Management
 
 ```text
-@repo-admin sync labels from taylorarndt/label-template to all my repos
-@repo-admin add label "a11y" with color #0e9f6e to this repo
-@repo-admin delete the "wip" label from all repos
-@repo-admin show me which labels are missing from my-app compared to a11y-agent-team
+/repo-admin sync labels from taylorarndt/label-template to all my repos
+/repo-admin add label "a11y" with color #0e9f6e to this repo
+/repo-admin delete the "wip" label from all repos
+/repo-admin show me which labels are missing from my-app compared to a11y-agent-team
 ```
 
 ### Milestones
 
 ```text
-@repo-admin create milestone v2.0 due December 31
-@repo-admin list open milestones
-@repo-admin close milestone v1.5
+/repo-admin create milestone v2.0 due December 31
+/repo-admin list open milestones
+/repo-admin close milestone v1.5
 ```
 
 </details>

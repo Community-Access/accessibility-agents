@@ -6,11 +6,11 @@ Part of the `web-accessibility-wizard` skill. Read this only when the task reach
 
 ### Platform-Aware Delegation
 
-You are the orchestrator. Use the **Task** tool to delegate scanning to specialist sub-agents. Specialists are stored in `.claude/specialists/` -- load each with `Read(".claude/specialists/<name>.md")` and pass the file body (all content after the closing `---` frontmatter delimiter) as the `prompt` parameter. For parallel dispatch, launch multiple `Task` calls in the same turn without waiting between them.
+You are the orchestrator. Delegate scanning to specialist skills in `skills/<name>/` with the dispatch prompt in SKILL.md, through the client's subagent mechanism (see `skills/a11y-core/SKILL.md`: the Agent tool in Claude Code, a worker subagent in Codex, a subagent or handoff in Copilot, the generalist agent in Gemini and Antigravity). Dispatch by pointer: never read a specialist's body into your context or paste it into the prompt. For parallel dispatch, launch the subagents in the same turn without waiting between them.
 
-**If the Task tool is available** (top-level invocation): Delegate to sub-agents listed below. Pass the Web Scan Context block to each. Collect and aggregate their findings.
+**If subagents are available** (top-level invocation): Delegate to sub-agents listed below. Pass the Web Scan Context block to each. Collect and aggregate their findings.
 
-**If the Task tool is unavailable** (running as a sub-agent of accessibility-lead or another coordinator): Apply the specialist domain knowledge inline yourself. You have read access to all workspace files -- scan the code directly using your own knowledge of WCAG 2.2 AA requirements. Do not report that delegation failed; just do the work.
+**If subagents are unavailable** (running as a sub-agent of accessibility-lead or another coordinator): Apply the specialist domain knowledge inline yourself. You have read access to all workspace files -- scan the code directly using your own knowledge of WCAG 2.2 AA requirements. Do not report that delegation failed; just do the work.
 
 This dual-mode behavior ensures the wizard works correctly whether invoked directly by the user or spawned as a sub-agent by another orchestrator.
 
@@ -38,7 +38,7 @@ Each sub-agent, with its handles and focus area.
 
 1. **Never apply accessibility rules directly.** Always delegate to the appropriate specialist sub-agent and use their structured findings.
 2. **Pass full context to each sub-agent.** Include: page URL, framework, scan profile, user preferences from Phase 0, and any previously discovered issues.
-3. **Collect structured results from each sub-agent.** Each sub-agent returns findings with: description, severity, WCAG criterion, impact, location, confidence level, and recommended fix.
+3. **Collect structured results from each sub-agent.** Each sub-agent returns JSON matching `skills/a11y-core/schemas/findings.schema.json`: rule, WCAG criterion, severity, location, summary, fix and, when not high, confidence.
 4. **Aggregate and deduplicate.** If the same issue is found by multiple specialists (e.g., aria-specialist and keyboard-navigator both flag a widget), merge into a single finding and mark as high-confidence.
 5. **Hand off remediation questions.** If the user asks "how do I fix this modal?" -> delegate to modal-specialist. If they ask about ARIA patterns -> delegate to aria-specialist. If they ask about a WCAG criterion -> delegate to wcag-guide.
 
@@ -81,13 +81,12 @@ When running Phases 1-8 with code review, you SHOULD run independent specialists
 
 **Execution order:**
 
-1. Run Group A and Group B simultaneously
-2. When both complete, run Group C
-3. Run Phase 9 (axe-core) - can run during any group if URL available
-4. Run Phase 10 (Playwright behavioral testing) - requires URL and Playwright availability
-5. Compile Phase 11 report from all results
+1. Dispatch Groups A, B and C together: the domain phases are independent (SKILL.md). The groups only organise the progress announcements below
+2. Run Phase 9 (axe-core) - can run during any group if URL available
+3. Run Phase 10 (Playwright behavioral testing) - requires URL and Playwright availability
+4. Compile Phase 11 report from all results
 
-This parallel execution can reduce a full audit from 10 sequential phases to 3 parallel batches.
+This parallel execution replaces 8 sequential domain phases with one parallel batch.
 
 ### Progress Announcements
 

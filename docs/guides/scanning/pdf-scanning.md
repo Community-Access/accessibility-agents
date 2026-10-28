@@ -32,8 +32,8 @@ Each layer, with its rules and purpose.
 /pdf-accessibility check all PDFs in the docs/ directory
 
 # Copilot
-@pdf-accessibility review the annual report PDF
-@pdf-accessibility scan contract.pdf for PDF/UA conformance
+/pdf-accessibility review the annual report PDF
+/pdf-accessibility scan contract.pdf for PDF/UA conformance
 ```
 
 ## CI/CD Script

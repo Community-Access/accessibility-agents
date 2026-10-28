@@ -16,9 +16,9 @@ updates:
       - "github-actions"
     open-pull-requests-limit: 5
 
-  # npm dependencies for vscode-extension
+  # npm dependencies: root tooling and the MCP server
   - package-ecosystem: "npm"
-    directory: "/vscode-extension"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -29,14 +29,14 @@ updates:
       - "npm"
     open-pull-requests-limit: 5
 
-  # pip dependencies for scripts
-  - package-ecosystem: "pip"
-    directory: "/scripts"
+  - package-ecosystem: "npm"
+    directory: "/mcp-server"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+      day: "monday"
     commit-message:
       prefix: "deps"
     labels:
       - "dependencies"
-      - "python"
-    open-pull-requests-limit: 3
+      - "npm"
+    open-pull-requests-limit: 5

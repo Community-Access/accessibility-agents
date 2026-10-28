@@ -14,11 +14,13 @@ metadata:
 |--------|-----|
 | NVDA Source Code | [github.com/nvaccess/nvda](https://github.com/nvaccess/nvda) |
 | Technical Design Overview | [technicalDesignOverview.md](https://github.com/nvaccess/nvda/blob/master/projectDocs/design/technicalDesignOverview.md) |
-| NVDA Developer Guide | [nvdaaddons/DevGuide wiki](https://github.com/nvdaaddons/devguide/wiki/NVDA%20Add-on%20Development%20Guide) |
+| NVDA Developer Guide | [developerGuide.md](https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/developerGuide/developerGuide.md) |
+| Community guide | [nvdaaddons/DevGuide wiki](https://github.com/nvdaaddons/devguide/wiki/NVDA%20Add-on%20Development%20Guide) |
 | NVDA Addon Template | [nvaccess/addonTemplate](https://github.com/nvaccess/addonTemplate) |
 | Add-on Store (addon-datastore) | [nvaccess/addon-datastore](https://github.com/nvaccess/addon-datastore) |
 | Submission Guide | [submissionGuide.md](https://github.com/nvaccess/addon-datastore/blob/master/docs/submitters/submissionGuide.md) |
-| JSON Metadata Schema | [jsonMetadata.md](https://github.com/nvaccess/addon-datastore/blob/master/docs/submitters/jsonMetadata.md) |
+| JSON Metadata Schema | [jsonMetadata.md](https://github.com/nvaccess/addon-datastore/blob/master/docs/design/jsonMetadata.md) |
+| Valid NVDA API versions | [nvdaAPIVersions.json](https://github.com/nvaccess/addon-datastore-transform/blob/main/nvdaAPIVersions.json) |
 | Addon Store Validation | [nvaccess/addon-datastore-validation](https://github.com/nvaccess/addon-datastore-validation) |
 | NVDA User Guide | [nvaccess.org userGuide](https://www.nvaccess.org/files/nvda/documentation/userGuide.html) |
 | scriptHandler source | [scriptHandler.py](https://github.com/nvaccess/nvda/blob/master/source/scriptHandler.py) |
@@ -73,7 +75,8 @@ API Handler (IAccessible/UIA/JAB)
 6. Tree Interceptor
 7. Focused NVDAObject
 8. Focus Ancestors (if canPropagate=True)
-9. globalCommands
+9. Configuration profile activation commands
+10. globalCommands
 ```
 
 ---

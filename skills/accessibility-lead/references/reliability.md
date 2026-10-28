@@ -31,9 +31,10 @@ Every delegation to a specialist MUST include:
 
 Your final report MUST use the structured finding format:
 
-- Rule/criterion, severity (`critical`|`major`|`minor`), specialist who identified it, file path and location, description, impact, remediation
+- The fields of `skills/a11y-core/schemas/findings.schema.json`: `rule`, `wcag`, `severity` (`critical`|`serious`|`moderate`|`minor`), `location`, `summary` and `fix`, plus `confidence` and `evidence` where known
+- The specialist that identified each finding (the `skill` field of the payload it came from)
 
-Do not present findings as unstructured prose. Every finding must have all fields.
+Do not present findings as unstructured prose. Every finding must have all required fields.
 
 ### Boundary Validation
 

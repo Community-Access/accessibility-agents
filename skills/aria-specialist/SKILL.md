@@ -20,14 +20,14 @@ Do not use ARIA if native HTML can express the semantics. A `<button>` is always
 
 These elements already have implicit roles. Adding ARIA to them is redundant and can cause double announcements in screen readers:
 
-- `<header>` -- already banner landmark
+- `<header>` -- already banner landmark (when not inside `article`, `aside`, `main`, `nav` or `section`)
 - `<nav>` -- already navigation landmark
 - `<main>` -- already main landmark
-- `<footer>` -- already contentinfo landmark
+- `<footer>` -- already contentinfo landmark (same scoping as `<header>`)
 - `<button>` -- never add `role="button"`
 - `<a href>` -- never add `role="link"`
 - `<input type="checkbox">` -- never add `role="checkbox"`
-- `<select>` -- never add `role="listbox"`
+- `<select>` -- already combobox (or listbox with `multiple` or `size` greater than 1); never add either role
 
 Exception: Multiple `<nav>` elements on one page need `aria-label` to differentiate them ("Main navigation", "Footer navigation").
 
@@ -47,8 +47,8 @@ Always hide icons from screen readers. They create verbosity.
   <svg aria-hidden="true">...</svg>
 </button>
 
-<!-- Decorative image -->
-<img src="decoration.png" alt="" aria-hidden="true">
+<!-- Decorative image: alt="" is enough, aria-hidden adds nothing -->
+<img src="decoration.png" alt="">
 ```
 
 Never leave an icon-only button without an accessible name. Never let an SVG be visible to assistive technology when there is already visible text.
@@ -86,23 +86,16 @@ When invoked as a sub-agent by the web-accessibility-wizard, consume the `## Web
 
 Provide framework-specific code fixes using the correct syntax for the detected stack (React camelCase props, Vue binding syntax, Angular attribute binding, etc.).
 
-Return each issue in this exact structure so the wizard can aggregate, deduplicate, and score results:
+Return findings only as JSON matching `skills/a11y-core/schemas/findings.schema.json`, as the Output contract below requires. Map each issue to the schema fields:
 
-```text
-### [N]. [Brief one-line description]
-
-- **Severity:** [critical | serious | moderate | minor]
-- **WCAG:** [criterion number] [criterion name] (Level [A/AA/AAA])
-- **Confidence:** [high | medium | low]
-- **Impact:** [What a real user with a disability would experience - one sentence]
-- **Location:** [file path:line, or CSS selector, or component name]
-
-**Current code:**
-[code block showing the problem]
-
-**Recommended fix:**
-[code block showing the corrected code in the detected framework syntax]
-```
+- `rule` - a stable identifier for the check
+- `wcag` - criterion number and level, for example `"1.4.3 AA"`, or `"n/a"` for findings outside WCAG
+- `severity` - `critical`, `serious`, `moderate` or `minor`
+- `confidence` - `high`, `medium` or `low` (omit when high)
+- `location` - file path and line, or a CSS selector: somewhere a person can open (a repeated component goes in `component`)
+- `summary` - one sentence naming the defect and what a user with a disability would experience
+- `fix` - the corrected code or text, in the detected framework's syntax
+- `evidence` - the offending markup or value, kept short
 
 **Confidence rules:**
 
@@ -110,18 +103,7 @@ Return each issue in this exact structure so the wizard can aggregate, deduplica
 - **medium** - likely wrong: unusual pattern, probable issue, may need browser verification to confirm
 - **low** - possibly wrong: context-dependent, may be intentional, flagged for human review
 
-### Output Summary
-
-End your invocation with this summary block (used by the wizard for / progress announcements):
-
-```text
-## ARIA Specialist Findings Summary
-- **Issues found:** [count]
-- **Critical:** [count] | **Serious:** [count] | **Moderate:** [count] | **Minor:** [count]
-- **High confidence:** [count] | **Medium:** [count] | **Low:** [count]
-```
-
-Always explain your reasoning. Developers need to understand why, not just what.
+Put the reasoning in `summary` and `fix`, not in prose around the JSON. Developers need to understand why, not just what.
 
 ## Reference files
 

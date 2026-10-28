@@ -62,9 +62,9 @@ Non-visual issues (ARIA, keyboard, live regions). It owns the visual/color domai
 ### GitHub Copilot
 
 ```text
-@contrast-master review the color palette in this design system
-@contrast-master are these Tailwind colors accessible for text?
-@contrast-master check contrast in the error state
+/contrast-master review the color palette in this design system
+/contrast-master are these Tailwind colors accessible for text?
+/contrast-master check contrast in the error state
 ```
 
 </details>

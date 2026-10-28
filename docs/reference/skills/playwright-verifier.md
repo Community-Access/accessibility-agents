@@ -15,7 +15,7 @@ Closed-loop fix verification using Playwright. After a fix is applied, navigates
 3. Compare pre-fix and post-fix state
 4. Return verdict: **PASS**, **FAIL**, or **REGRESSION**
 
-## Fix Type → Verification Tool Mapping
+## Fix Type to Verification Tool Mapping
 
 Each fix type, with tool used and what is checked.
 
@@ -34,9 +34,9 @@ After a verified PASS, generates a Playwright test file that encodes the asserti
 
 ## Dependencies
 
-Same as `playwright-scanner` — requires `playwright`, optionally enhanced by `@axe-core/playwright`.
+Same as `playwright-scanner` - requires `playwright`, optionally enhanced by `@axe-core/playwright`.
 
 ## Related Agents
 
-- `web-issue-fixer` — Orchestrator that dispatches this agent
-- `playwright-scanner` — Scanning counterpart
+- `web-issue-fixer` - Orchestrator that dispatches this agent
+- `playwright-scanner` - Scanning counterpart

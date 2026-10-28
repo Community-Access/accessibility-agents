@@ -27,16 +27,16 @@ Issues found by **both** axe-core and code review are automatically upgraded to 
 
 ```bash
 # Single page - WCAG 2.2 AA
-npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa
+npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa
 
 # Save results to JSON
-npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa --save ACCESSIBILITY-SCAN.json
+npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save ACCESSIBILITY-SCAN.json
 
 # Multiple pages
-npx @axe-core/cli <URL1> <URL2> <URL3> --tags wcag2a,wcag2aa,wcag21a,wcag21aa --save ACCESSIBILITY-SCAN.json
+npx @axe-core/cli <URL1> <URL2> <URL3> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save ACCESSIBILITY-SCAN.json
 
-# Headless Chrome
-npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa --chrome-flags="--headless --no-sandbox"
+# Headless Chrome is the default; pass extra Chrome flags, comma-separated
+npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --chrome-options="no-sandbox"
 ```
 
 ### Tag Reference
@@ -49,7 +49,7 @@ Each tag, with its standard.
 | `wcag2aa` | WCAG 2.0 Level AA |
 | `wcag21a` | WCAG 2.1 Level A |
 | `wcag21aa` | WCAG 2.1 Level AA |
-| `wcag22aa` | WCAG 2.2 Level AA |
+| `wcag22aa` | WCAG 2.2 Level AA (in axe-core 4.14, only `target-size`; it runs only when this tag is listed) |
 | `best-practice` | Best practices (not required by WCAG) |
 
 ## Screenshot Capture
@@ -124,7 +124,7 @@ Each indicator, with its framework.
   "profile": "standard",
   "wcagLevel": "AA",
   "wcagVersion": "2.2",
-  "axeTags": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+  "axeTags": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"],
   "maxPages": 50,
   "screenshots": false,
   "framework": "auto",

@@ -8,7 +8,7 @@ You own everything related to GitHub repo setup and management:
 
 - **Issue templates** - bug report, feature request, custom (YAML form format)
 - **Contributing guide** - CONTRIBUTING.md tailored to the project
-- **Code of conduct** - CODE_OF_CONDUCT.md (Contributor Covenant v2.1)
+- **Code of conduct** - CODE_OF_CONDUCT.md (Contributor Covenant 3.0, the current version)
 - **Security policy** - SECURITY.md
 - **PR templates** - PULL_REQUEST_TEMPLATE.md
 - **README scaffolding** - badges, contributors section, table of contents, project structure

@@ -35,7 +35,7 @@ Penalties - Issues & PRs:
 Penalties - Community Health:
   No CONTRIBUTING.md:                        - 5 points
   No CODE_OF_CONDUCT.md:                     - 3 points
-  No branch protection on main:              - 5 points
+  No branch protection or ruleset on default: - 5 points
   0 open "good first issue" labels:          - 2 points
 
 Floor: 0 (minimum score)
@@ -143,10 +143,10 @@ When re-running an analysis against a previous report, classify every finding by
 
 | Change | Finding | Details |
 |--------|---------|---------|
-|  Fixed | 3 stale PRs resolved | Team cleared the backlog |
-|  New | CI failing on main | Build broke in last 24h |
-|  Persistent (#3) | Velocity 30% below baseline | Third consecutive week |
-|  Regressed | Security alert reopened | lodash advisory re-filed |
+| Fixed | 3 stale PRs resolved | Team cleared the backlog |
+| New | CI failing on main | Build broke in last 24h |
+| Persistent (#3) | Velocity 30% below baseline | Third consecutive week |
+| Regressed | Security alert reopened | lodash advisory re-filed |
 
 **Progress:** {N} fixed, {M} new, {P} persistent, {Q} regressed
 **Score change:** {current_score} ({+/-N} from {previous_score})

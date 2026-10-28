@@ -30,22 +30,29 @@ Each row, with its #, domain, WCAG and severities.
 
 ## Severity Scoring Formula
 
+The score and grade in a rendered markdown report come from
+`skills/a11y-core/scripts/merge-findings.mjs`, which `render-report.mjs` runs;
+where this page and the script differ, the script decides.
+
 ```text
-File Score = 100 - (Critical×15 + Serious×7 + Moderate×3 + Minor×1)
-Floor: 0
+penalty = sum over findings of severity_weight x confidence_factor
+          (weights: critical 10, serious 5, moderate 2, minor 1;
+           confidence: high 1.0, medium 0.7, low 0.4)
+checks  = max(number of findings + number of passed checks, 10)
+score   = max(0, round(100 - (penalty / checks) x 20))
 ```
 
 ### Grade Table
 
-Each score, with its grade and meaning.
+Each score band, with its grade.
 
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues |
-| 75-89 | B | Good - mostly accessible documentation |
-| 50-74 | C | Needs Work - several accessibility gaps |
-| 25-49 | D | Poor - significant barriers |
-| 0-24 | F | Failing - major structural problems |
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## Emoji Handling Modes
 
@@ -60,7 +67,7 @@ Each mode, with behavior and when to use.
 
 ### Emoji Translation Map (selected entries)
 
-Each emoji, with its translation, emoji and translation.
+Each emoji, with its translation, emoji and translation. The emoji in this table are deliberate examples of input the fixer recognises; they are data, not a style to copy, and this project's own prose uses none.
 
 | Emoji | Translation | Emoji | Translation |
 |-------|------------|-------|------------|
@@ -83,13 +90,13 @@ Each emoji, with its translation, emoji and translation.
 
 Emoji appear in Unicode ranges:
 
-- `U+1F600–U+1F64F` Emoticons
-- `U+1F300–U+1F5FF` Misc Symbols and Pictographs
-- `U+1F680–U+1F6FF` Transport and Map
-- `U+1F700–U+1F77F` Alchemical Symbols
-- `U+2600–U+26FF` Misc Symbols
-- `U+2700–U+27BF` Dingbats
-- `U+FE00–U+FE0F` Variation Selectors
+- `U+1F600` to `U+1F64F` Emoticons
+- `U+1F300` to `U+1F5FF` Misc Symbols and Pictographs
+- `U+1F680` to `U+1F6FF` Transport and Map
+- `U+1F700` to `U+1F77F` Alchemical Symbols
+- `U+2600` to `U+26FF` Misc Symbols
+- `U+2700` to `U+27BF` Dingbats
+- `U+FE00` to `U+FE0F` Variation Selectors
 
 ## Ambiguous Link Patterns
 

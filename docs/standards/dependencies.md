@@ -6,11 +6,11 @@ checks that against the registry rather than assuming it.
 | | |
 |---|---|
 | Source of truth | the npm advisory database, via `npm audit` |
-| Also reported by | GitHub Dependabot on the default branch |
-| Governs here | three independent dependency trees |
+| Also reported by | GitHub Dependabot (npm in `/` and `/mcp-server`, and GitHub Actions) |
+| Governs here | two dependency trees, root tooling and the MCP server, both gated |
 | Checked by | `npm run verify:deps`, part of `npm run verify` |
 
-## The three trees, and why their thresholds differ
+## The two trees
 
 Each tree, with what it is for and what fails the gate.
 
@@ -18,7 +18,6 @@ Each tree, with what it is for and what fails the gate.
 |---|---|---|
 | `mcp-server` | runtime. Executes on a user machine and reads their documents | high, critical |
 | root | tooling only, but runs in CI on every pull request | high, critical |
-| `vscode-extension` | deprecated, build-time only, published to nobody | reported, never fatal |
 
 Offline is not a pass. When the registry cannot be reached the gate exits 2 and
 says so, rather than printing a green line it has not earned.
@@ -28,7 +27,8 @@ says so, rather than printing a green line it has not earned.
 Three of the MCP server's advisories were in packages it does not depend on
 directly: `fast-uri` through ajv, `hono` through the MCP SDK, and `ip-address`
 through express-rate-limit. Upgrading the SDK from 1.27.1 to 1.30.0 moved them
-forward but not far enough.
+forward but not far enough. The server is now on SDK 1.32.2, whose ranges are
+unchanged, so the overrides stay.
 
 They are pinned in `mcp-server/package.json` under `overrides`, each to its
 first patched release, and each is inside the range its parent asks for.
@@ -38,6 +38,10 @@ first patched release, and each is inside the range its parent asks for.
 | `fast-uri` | `^3.0.1`, by ajv | `^3.1.6` | 5 |
 | `hono` | `^4.11.4`, by the MCP SDK | `^4.12.25` | 1 |
 | `ip-address` | `^10.2.0`, by express-rate-limit | `^10.3.1` | 1 |
+
+On 2026-10-28 the gate reported: root tooling 4 low, MCP server none. The
+deprecated VS Code extension, and with it a third dependency tree, was removed
+from the repository in this release.
 
 An override raises a floor; it does not force an incompatible version. Remove
 one once its parent ships a range that cannot resolve below the patched

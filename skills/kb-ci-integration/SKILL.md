@@ -39,16 +39,21 @@ npm install --save-dev @axe-core/cli
 npx axe <url> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa
 ```
 
-### Output Formats
+In axe-core 4.14 the only rule tagged `wcag22aa` is `target-size`, and it runs only when that tag is listed. Most WCAG 2.2 criteria (2.4.11, 2.5.7, 3.2.6, 3.3.7, 3.3.8) have no axe rule and need manual testing.
 
-Each flag, with its output.
+### Output and Exit Flags
 
-| Flag | Output |
+Each flag, with its effect. The CLI has no `--reporter json|sarif|html` option; results are always axe JSON.
+
+| Flag | Effect |
 |------|--------|
-| `--reporter json` | JSON results to stdout |
-| `--reporter sarif` | SARIF format for code scanning |
-| `--reporter html` | Human-readable HTML report |
-| `--save <file>` | Save results to file |
+| `--save <file>` (`-s`) | Save JSON results to a file |
+| `--dir <path>` (`-d`) | Directory for the saved file |
+| `--stdout` (`-j`) | Print JSON results to stdout and silence other output |
+| `--exit` (`-q`) | Exit with code 1 when any page has violations |
+| `--disable <rules>` (`-l`) | Skip rule IDs; combine with `--tags` |
+
+`--rules` takes rule IDs, not tags, and is ignored when `--tags` is also given. The CLI treats arguments as URLs and prefixes `http://` when no scheme is given, so local files need `file://` URLs.
 
 ### Exit Codes
 
@@ -56,9 +61,11 @@ Each code, with its meaning.
 
 | Code | Meaning |
 |------|---------|
-| 0 | No violations found |
-| 1 | Violations found |
-| 2 | Error running scan |
+| 0 | Scan ran. Without `--exit`, this is also returned when violations were found |
+| 1 | Violations found (only with `--exit`), or an error during the scan |
+| 2 | Setup error: axe-core source not found, invalid options, browser timeout or ChromeDriver version mismatch |
+
+The CLI drives Chrome through ChromeDriver. When the versions do not match, install a synced pair with `npx browser-driver-manager install chrome`.
 
 ---
 
@@ -93,9 +100,9 @@ baseline = load("axe-baseline.json")
 
 new_violations = current_violations - baseline
 if new_violations.count > 0:
-    FAIL PR — "N new accessibility violations introduced"
+    FAIL PR - "N new accessibility violations introduced"
 else:
-    PASS — "No new violations (M existing in baseline)"
+    PASS - "No new violations (M existing in baseline)"
 ```
 
 ---
@@ -112,11 +119,13 @@ jobs:
   a11y:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22 }
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24 }
       - run: npm ci
-      - run: npx axe $(git diff --name-only HEAD~1 --diff-filter=ACMR -- '*.html' | tr '\n' ' ') --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --reporter json --save results.json
+      - run: npx browser-driver-manager install chrome
+      - run: npx axe $(git diff --name-only origin/${{ github.base_ref }}...HEAD --diff-filter=ACMR -- '*.html' | sed "s#^#file://$PWD/#" | tr '\n' ' ') --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save results.json
       - name: Check results
         run: |
           violations=$(jq '[.[].violations[]] | length' results.json)
@@ -132,8 +141,11 @@ SARIF (Static Analysis Results Interchange Format) enables inline annotations in
 
 ### Upload Step
 
+axe does not write SARIF. Convert its JSON with Microsoft's `axe-sarif-converter`, then upload. The job needs `permissions: security-events: write`.
+
 ```yaml
-- uses: github/codeql-action/upload-sarif@v3
+- run: npx axe-sarif-converter --input-files results.json --output-file results.sarif
+- uses: github/codeql-action/upload-sarif@v4
   with:
     sarif_file: results.sarif
     category: accessibility
@@ -142,7 +154,7 @@ SARIF (Static Analysis Results Interchange Format) enables inline annotations in
 ### Benefits
 
 - Violations appear as inline annotations on the exact lines in the PR diff
-- Results visible in the Security → Code Scanning tab
+- Results visible in the Security tab, under Code scanning
 - Tracks violation trends over time
 - Supports dismissal workflow for false positives
 
@@ -163,6 +175,8 @@ Each strategy, with blocks on and best for.
 
 ## Multi-Platform Templates
 
+Both templates below need Chrome in the build image; the `node` images do not include it.
+
 ### Azure DevOps
 
 ```yaml
@@ -175,8 +189,8 @@ pool:
 
 steps:
   - task: NodeTool@0
-    inputs: { versionSpec: '22.x' }
-  - script: npm ci && npx axe $(Build.SourcesDirectory)/index.html --tags wcag2a,wcag2aa
+    inputs: { versionSpec: '24.x' }
+  - script: npm ci && npx axe file://$(Build.SourcesDirectory)/index.html --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --exit
     displayName: 'Accessibility Scan'
 ```
 
@@ -184,10 +198,10 @@ steps:
 
 ```yaml
 accessibility:
-  image: node:22
+  image: node:24
   script:
     - npm ci
-    - npx axe $CI_PROJECT_DIR/index.html --tags wcag2a,wcag2aa
+    - npx axe file://$CI_PROJECT_DIR/index.html --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --exit
   only:
     changes: ['**/*.html', '**/*.jsx', '**/*.tsx']
 ```

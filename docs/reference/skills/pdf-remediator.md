@@ -43,11 +43,11 @@
 
 ## Process
 
-1. **Read audit report** — looks for existing `DOCUMENT-ACCESSIBILITY-AUDIT.md`
-2. **Classify fixes** — separates findings into auto-fixable vs. manual
-3. **Generate scripts** — creates a shell script for programmatic fixes
-4. **Guide manual fixes** — provides step-by-step Acrobat Pro instructions
-5. **Verify** — recommends re-running the PDF accessibility audit
+1. **Read audit report** - looks for existing `DOCUMENT-ACCESSIBILITY-AUDIT.md`
+2. **Classify fixes** - separates findings into auto-fixable vs. manual
+3. **Generate scripts** - creates a shell script for programmatic fixes
+4. **Guide manual fixes** - provides step-by-step Acrobat Pro instructions
+5. **Verify** - recommends re-running the PDF accessibility audit
 
 ## Handoffs
 
@@ -61,7 +61,7 @@ Each target, with its when.
 ## Sample Usage
 
 ```text
-@pdf-remediator Fix the accessibility issues in report.pdf — set the title, 
+/pdf-remediator Fix the accessibility issues in report.pdf - set the title, 
 add language, and guide me through fixing the table structure.
 ```
 

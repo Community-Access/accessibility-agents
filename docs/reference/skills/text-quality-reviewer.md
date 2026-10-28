@@ -52,10 +52,10 @@ Missing alt attributes (that is alt-text-headings), invalid ARIA syntax (that is
 ### GitHub Copilot
 
 ```text
-@text-quality-reviewer scan alt text for code syntax or template variables
-@text-quality-reviewer check aria-labels in this component
-@text-quality-reviewer find duplicate button labels on this page
-@text-quality-reviewer audit non-visual text quality in src/components/
+/text-quality-reviewer scan alt text for code syntax or template variables
+/text-quality-reviewer check aria-labels in this component
+/text-quality-reviewer find duplicate button labels on this page
+/text-quality-reviewer audit non-visual text quality in src/components/
 ```
 
 </details>

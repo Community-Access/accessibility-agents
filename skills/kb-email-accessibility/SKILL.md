@@ -20,19 +20,19 @@ Reference data for HTML email accessibility under email client rendering constra
 
 ## Email Client Rendering Constraints
 
-Email HTML operates under severe constraints compared to web browsers:
+Email HTML operates under severe constraints compared to web browsers. Support below is from caniemail.com (Gmail webmail, Outlook for Windows, Apple Mail for macOS, Yahoo webmail, Outlook.com; tests dated 2019-2026). Clients change, so retest before relying on a row.
 
 | Feature | Gmail | Outlook (Win) | Apple Mail | Yahoo | Outlook.com |
 |---------|-------|--------------|------------|-------|-------------|
-| Semantic HTML (`<nav>`, `<main>`) | Stripped | Stripped | Supported | Stripped | Stripped |
-| `role` attributes | Stripped | Stripped | Supported | Stripped | Stripped |
-| `aria-*` attributes | Stripped | Stripped | Supported | Stripped | Stripped |
-| `<style>` blocks | Supported | Supported | Supported | Supported | Supported |
+| Semantic HTML (`<nav>`, `<main>`) | Partial | Not supported | Supported | Not supported | Partial |
+| `role` attribute | Supported | Supported | Supported | Partial | Supported |
+| `aria-label`, `aria-hidden` | Supported | Supported | Supported | Not supported | Supported |
+| `<style>` blocks | Partial | Partial | Supported | Supported | Supported |
 | External CSS | Stripped | Stripped | Stripped | Stripped | Stripped |
 | JavaScript | Stripped | Stripped | Stripped | Stripped | Stripped |
 | CSS Grid | Supported | Not supported | Supported | Supported | Supported |
 | CSS Flexbox | Supported | Not supported | Supported | Supported | Supported |
-| `<button>` element | Rendered | Rendered | Rendered | Rendered | Rendered |
+| `<button>` element | Supported | Not supported | Supported | Partial (submit only) | Partial (reset only) |
 | `tabindex` | Stripped | Stripped | Supported | Stripped | Stripped |
 
 ### Key Constraint: Outlook Desktop uses the Word rendering engine, not a browser engine
@@ -54,7 +54,7 @@ Email HTML operates under severe constraints compared to web browsers:
 **Rules:**
 
 - ALL layout tables MUST have `role="presentation"` to prevent screen readers from announcing table semantics
-- Data tables (actual tabular data) should NOT have `role="presentation"` — they need proper `<th>`, `scope`, and `<caption>`
+- Data tables (actual tabular data) should NOT have `role="presentation"` - they need proper `<th>`, `scope`, and `<caption>`
 - Use `cellspacing="0" cellpadding="0" border="0"` on layout tables
 
 ### Images
@@ -67,10 +67,10 @@ Email HTML operates under severe constraints compared to web browsers:
 
 - Every `<img>` must have `alt` attribute
 - Decorative images: `alt=""` (empty, not omitted)
-- Set explicit `width` and `height` — prevents layout shifts when images are blocked
-- Many email clients block images by default — alt text is the only fallback
+- Set explicit `width` and `height` - prevents layout shifts when images are blocked
+- Many email clients block images by default - alt text is the only fallback
 - Style images with `display: block` to prevent gaps in Outlook
-- Use `style="font-size: 14px; font-family: Arial, sans-serif; color: #333333;"` on the `<img>` tag — some clients display alt text using these styles
+- Use `style="font-size: 14px; font-family: Arial, sans-serif; color: #333333;"` on the `<img>` tag - some clients display alt text using these styles
 
 ### Links
 
@@ -83,8 +83,8 @@ Email HTML operates under severe constraints compared to web browsers:
 **Rules:**
 
 - Link text must be descriptive (no "click here" or "read more")
-- Always use `text-decoration: underline` — color alone can't distinguish links (WCAG 1.4.1)
-- Include `style` attributes directly on `<a>` tags — some clients strip `<style>` blocks
+- Always use `text-decoration: underline` - color alone can't distinguish links (WCAG 1.4.1)
+- Include `style` attributes directly on `<a>` tags - some clients strip `<style>` blocks
 - For CTA buttons, use the bulletproof button pattern (see below)
 
 ### Bulletproof Buttons (Work in All Clients)
@@ -134,13 +134,13 @@ Email HTML operates under severe constraints compared to web browsers:
 **Rules:**
 
 - Test contrast ratios in both light and dark modes
-- Some clients invert colors automatically — use `data-ogsb="ignore"` for Outlook.com to prevent unwanted inversions
+- Some clients invert colors automatically - use `data-ogsb="ignore"` for Outlook.com to prevent unwanted inversions
 - Transparent PNGs work well in both modes; JPGs with white backgrounds look broken in dark mode
 
 ## Reading Order
 
 - Email reading order follows the HTML source order (no CSS Grid reordering possible in email)
-- Single-column layouts are most accessible — multi-column requires careful `dir="ltr"` and table cell ordering
+- Single-column layouts are most accessible - multi-column requires careful `dir="ltr"` and table cell ordering
 - For RTL languages, use `dir="rtl"` on the `<html>` element and reverse table cell order
 
 ## Framework Patterns

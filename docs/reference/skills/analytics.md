@@ -31,11 +31,11 @@ Use analytics when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@analytics team dashboard
-@analytics my stats this month
-@analytics who is overloaded?
-@analytics review turnaround times for the last 30 days
-@analytics code hotspots - which files change most?
+/analytics team dashboard
+/analytics my stats this month
+/analytics who is overloaded?
+/analytics review turnaround times for the last 30 days
+/analytics code hotspots - which files change most?
 ```
 
 ### Claude Code (Terminal)
@@ -50,9 +50,9 @@ Use analytics when:
 ### Via GitHub Hub
 
 ```text
-@github-hub team analytics
-@github-hub show me team velocity
-@github-hub generate health report
+/github-hub team analytics
+/github-hub show me team velocity
+/github-hub generate health report
 ```
 
 ---
@@ -188,28 +188,28 @@ Each factor, with its penalty.
 ### Quick Queries
 
 ```text
-@analytics what is our current health score?
-@analytics how long does it take us to merge a PR?
-@analytics who reviewed the most PRs this month?
-@analytics which issues are taking longest to close?
+/analytics what is our current health score?
+/analytics how long does it take us to merge a PR?
+/analytics who reviewed the most PRs this month?
+/analytics which issues are taking longest to close?
 ```
 
 ### Deep Analysis
 
 ```text
-@analytics full team dashboard for Q3
-@analytics bottleneck report - where are we losing time?
-@analytics contributor activity for @alice this quarter
-@analytics churn analysis - which files should we refactor?
-@analytics compare this month to last month
+/analytics full team dashboard for Q3
+/analytics bottleneck report - where are we losing time?
+/analytics contributor activity for @alice this quarter
+/analytics churn analysis - which files should we refactor?
+/analytics compare this month to last month
 ```
 
 ### Personal Stats
 
 ```text
-@analytics my contribution stats this month
-@analytics how fast am I reviewing PRs compared to the team average?
-@analytics what PRs have I reviewed in the last 2 weeks?
+/analytics my contribution stats this month
+/analytics how fast am I reviewing PRs compared to the team average?
+/analytics what PRs have I reviewed in the last 2 weeks?
 ```
 
 </details>

@@ -18,8 +18,10 @@ The 7.0 shape keeps the review and removes the cost.
 ## One tree, four tiers
 
 Every agent is an Agent Skill under `skills/`. There are no per-client copies:
-Claude Code reads the directory as a plugin, and Codex, Copilot, Gemini and
-Antigravity read it from `~/.agents/skills` or a repository's `.agents/skills`.
+Claude Code, the Copilot CLI and VS Code can read the directory as a plugin;
+Codex, the Copilot CLI, VS Code and Gemini CLI read it from `~/.agents/skills`
+or a repository's `.agents/skills`; Antigravity reads `~/.gemini/config/skills`
+or the workspace `.agents/skills`.
 
 The skills sit in four tiers, and the tier decides who may start one and what
 it costs. This table is the whole cost model.
@@ -36,7 +38,7 @@ is verified in a live session by `npm run verify:live`:
 
 - Claude Code and VS Code read `disable-model-invocation: true` in frontmatter.
 - Codex reads `policy.allow_implicit_invocation: false` in `agents/openai.yaml`.
-- Copilot CLI reads the same frontmatter field as Claude Code.
+- Copilot CLI honours the same frontmatter field in the live measurement, although its documentation does not mention it.
 
 A specialist that no router names is unreachable. Each router's
 `references/dispatch-matrix.md` is therefore generated from skill frontmatter
@@ -76,11 +78,11 @@ it.
 
 ## Findings, not prose
 
-Every scanning skill returns JSON against one schema,
+Every accessibility scanning skill returns JSON against one schema,
 `skills/a11y-core/schemas/findings.schema.json`. That single decision gives
 the package most of its new capabilities:
 
-- Reports are rendered by `render-report.mjs` with all seven required sections,
+- Accessibility audit reports are rendered by `render-report.mjs` with all seven required sections,
   rather than typed by the model from a template it may not follow.
 - Two skills finding the same defect in the same place merge to one finding.
 - A defect repeated across forty pages under one component reports as one job.
@@ -93,21 +95,27 @@ thing whether a skill or a scanner produced it.
 
 ## The enforcement gate
 
-One script, `hooks/guard.mjs`, and four manifests that map each client's
-event names onto its five behaviours: detect once per session, gate edits to
+One script, `hooks/guard.mjs`, and a manifest per client (the plugin files
+`hooks/hooks.json` and `com.github.copilot/hooks/hooks.json`, and direct-install
+manifests for Codex, Copilot, Gemini CLI and Antigravity) that map each
+client's event names onto its five behaviours: detect once per session, gate edits to
 user-facing files, mark when the lead completes, persist across compaction,
 finalize before a turn ends. It fails closed: a crash in the gate refuses the
 edit rather than allowing it.
 
-The gate opens on the lead's completion, not its launch. The previous design
-opened on launch, so a cancelled review unlocked every edit for the rest of the
-session.
+The gate opens on the lead's completion, not its launch, wherever the client
+reports completion. The previous design opened on launch, so a cancelled review
+unlocked every edit for the rest of the session. The exceptions are Claude Code
+when the lead runs inline as a skill, and Antigravity, which loads a skill by
+reading its `SKILL.md` with `view_file`: neither has a completion event, so the
+gate opens when the lead's instructions are loaded. On Claude Code the finalize
+behaviour remains the backstop; Antigravity has none wired.
 
 ## Measured, budgeted, verified
 
 `skills/a11y-core/scripts/measure-context.mjs` reports what the package costs
 per client; `budgets.json` holds the ceilings; CI fails on regression.
-`scripts/verify.mjs` runs fifteen gates, each of which names the standard it
+`scripts/verify.mjs` runs sixteen gates, each of which names the standard it
 checks and what a failure would cost a person. The evidence is in
 [the conformance dossier](../standards/conformance.md).
 
@@ -128,8 +136,9 @@ deviation is recorded explicitly rather than hidden; see
 by Codex whatever its frontmatter says. Every non-router carries the file, and
 the live gate checks that the count is exactly six.
 
-**Copilot has no stop or compaction event.** The edit gate is the enforcement
-floor there. The per-client table is in [Hooks, by client](../standards/hooks-by-client.md).
+**Copilot's stop and compaction events are not wired yet.** Copilot has
+`agentStop` and `preCompact`; the package uses only the edit gate there for
+now, which is the enforcement floor. The per-client table is in [Hooks, by client](../standards/hooks-by-client.md).
 
 **The reports are generated.** A model can write a more fluent report than a
 script. It cannot be relied on to write one with every section an auditor

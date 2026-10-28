@@ -25,11 +25,11 @@ This agent is for org admins and team leads who manage GitHub organization struc
 ### GitHub Copilot (VS Code)
 
 ```text
-@team-manager add @alice to the frontend team
-@team-manager onboard @newdev - they are joining backend
-@team-manager offboard @alice - she is leaving the team
-@team-manager create team "accessibility-reviewers"
-@team-manager show all teams and members
+/team-manager add @alice to the frontend team
+/team-manager onboard @newdev - they are joining backend
+/team-manager offboard @alice - she is leaving the team
+/team-manager create team "accessibility-reviewers"
+/team-manager show all teams and members
 ```
 
 ### Claude Code (Terminal)
@@ -43,9 +43,9 @@ This agent is for org admins and team leads who manage GitHub organization struc
 ### Via GitHub Hub
 
 ```text
-@github-hub team management
-@github-hub onboard @newdev
-@github-hub who is in the backend team?
+/github-hub team management
+/github-hub onboard @newdev
+/github-hub who is in the backend team?
 ```
 
 ---
@@ -76,7 +76,7 @@ This agent is for org admins and team leads who manage GitHub organization struc
 
 ### Full Onboarding
 
-1. You say: `@team-manager onboard @newdev - joining the accessibility team with write access to a11y-agent-team`
+1. You say: `/team-manager onboard @newdev - joining the accessibility team with write access to a11y-agent-team`
 
 2. The agent builds an onboarding checklist and previews it:
 
@@ -105,12 +105,12 @@ This agent is for org admins and team leads who manage GitHub organization struc
 
 ### Full Offboarding
 
-1. You say: `@team-manager offboard @alice - she is leaving the project`
+1. You say: `/team-manager offboard @alice - she is leaving the project`
 
 2. The agent discovers all access first:
 
    ```text
-    Auditing @alice's access…
+    Auditing @alice's access...
     Teams: accessibility-reviewers, frontend
     Direct repo collaborator: taylorarndt/my-other-repo (Maintain)
     Org membership: active
@@ -134,7 +134,7 @@ This agent is for org admins and team leads who manage GitHub organization struc
 
 ### Create a New Team
 
-1. You say: `@team-manager create a team called "a11y-reviewers" with access to a11y-agent-team`
+1. You say: `/team-manager create a team called "a11y-reviewers" with access to a11y-agent-team`
 
 2. Asks for team visibility (visible to all org members / secret):
 
@@ -184,28 +184,28 @@ If you ask for a higher permission level, the agent notes the impact: "Granting 
 ### Basic Member Operations
 
 ```text
-@team-manager add @alice to the frontend team
-@team-manager add @bob to all teams @alice is in
-@team-manager remove @carol from the release-managers team
-@team-manager what teams is @alice on?
-@team-manager who is in the accessibility-reviewers team?
+/team-manager add @alice to the frontend team
+/team-manager add @bob to all teams @alice is in
+/team-manager remove @carol from the release-managers team
+/team-manager what teams is @alice on?
+/team-manager who is in the accessibility-reviewers team?
 ```
 
 ### Onboarding and Offboarding
 
 ```text
-@team-manager onboard @newdev - frontend team, write access to main repo
-@team-manager offboard @alice completely - she is leaving today
-@team-manager generate an onboarding record for @newdev
+/team-manager onboard @newdev - frontend team, write access to main repo
+/team-manager offboard @alice completely - she is leaving today
+/team-manager generate an onboarding record for @newdev
 ```
 
 ### Team Structure
 
 ```text
-@team-manager create team "qa-reviewers" with read access to all repos
-@team-manager list all teams in the org
-@team-manager generate a full team report
-@team-manager sync access - grant qa-reviewers access to my new repo
+/team-manager create team "qa-reviewers" with read access to all repos
+/team-manager list all teams in the org
+/team-manager generate a full team report
+/team-manager sync access - grant qa-reviewers access to my new repo
 ```
 
 </details>

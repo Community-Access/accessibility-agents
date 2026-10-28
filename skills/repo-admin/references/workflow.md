@@ -8,7 +8,8 @@ Part of the `repo-admin` skill. Read this only when the task reaches these secti
 
 1. Call #tool:mcp_github_github_get_me to get the authenticated username.
 2. Detect the workspace repo from the current directory.
-3. **Load preferences** from `.github/agents/preferences.md` if available:
+3. **Load preferences** from `.github/accessibility-agents/preferences.md` (the user creates it from `docs/reference/preferences.example.md`) if available:
+   - If that file does not exist, read `.github/agents/preferences.md` (the older location) and suggest moving it: VS Code loads every `.md` file in `.github/agents/` as a custom agent.
    - Read `repos.include` for the set of repos the user cares about (used for bulk operations).
    - Read `repos.exclude` for repos to skip.
    - Read `admin.label_template_repo` for the canonical label source (default: the workspace repo).
@@ -28,7 +29,7 @@ Part of the `repo-admin` skill. Read this only when the task reaches these secti
    - **Write** -- can push (recommended for contributors)
    - **Maintain** -- can manage non-destructive repo settings
    - **Admin** -- full access including destructive actions
-3. Check if the user is already a collaborator (#tool:mcp_github_github_list_collaborators or equivalent).
+3. Check if the user is already a collaborator (#tool:mcp_github_github_list_repository_collaborators or equivalent).
 4. If already a collaborator, show current role and ask if they want to change it.
 5. **Preview action:**
 
@@ -134,14 +135,14 @@ Part of the `repo-admin` skill. Read this only when the task reaches these secti
    - Require conversation resolution
    - Require signed commits
    - Require linear history
-   - Include administrators (enforce rules for admins too)
+   - Do not allow bypassing the above settings (apply the rules to admins too; `enforce_admins` in the REST API)
    - Restrict who can push (specific users/teams)
    - Allow force pushes (off by default -- warn if enabling)
    - Allow deletions (off by default -- warn if enabling)
 4. If the user says "apply standard protection" -- use the template from `admin.default_branch_protection` in preferences, or a sensible default:
    - Require 1 reviewer
    - Require CI to pass (if workflows exist)
-   - Include administrators
+   - Do not allow bypassing the above settings
    - No force pushes
    - No deletions
 5. **Preview the full ruleset** before applying.
@@ -153,12 +154,12 @@ Part of the `repo-admin` skill. Read this only when the task reaches these secti
 
 1. Show current settings for the repo.
 2. Allow the user to change:
-   - **Visibility:** public <-> private <-> internal ( warn on public -> private)
+   - **Visibility:** public <-> private <-> internal (warn on public -> private)
    - **Merge strategies:** allow merge, squash, rebase (check/uncheck)
    - **Automatically delete head branches** after merge
    - **Features:** Issues on/off, Wiki on/off, Projects on/off, Discussions on/off
    - **Default branch:** rename or change
-   - **Archive repository:** marks repo as read-only, disabling pushes and most mutations ( warn before enabling)
+   - **Archive repository:** marks repo as read-only, disabling pushes and most mutations (warn before enabling)
 3. Preview changes before applying.
 4. Apply and confirm.
 
@@ -195,7 +196,7 @@ Part of the `repo-admin` skill. Read this only when the task reaches these secti
 **Delete extra labels (if requested):**
 
 - List labels that exist in targets but not source.
-- Warn: "Deleting labels from issues won't remove them from the issues -- only the label definition is removed."
+- Warn: "Deleting a label removes it from every issue and pull request it is applied to."
 - Confirm per-repo before deleting extras.
 
 #### Mode G: Milestone Management

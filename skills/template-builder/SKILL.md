@@ -14,7 +14,7 @@ metadata:
 
 [Shared instructions](../kb-github-shared-instructions/SKILL.md)
 
-**Skills:** [`github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`github-scanning`](../kb-github-scanning/SKILL.md)
+**Skills:** [`kb-github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`kb-github-scanning`](../kb-github-scanning/SKILL.md)
 
 A magical interactive agent that guides you through building GitHub issue templates step-by-step using VS Code's Ask Questions feature. Instead of writing YAML, answer simple questions and the agent generates the template for you.
 
@@ -22,8 +22,8 @@ A magical interactive agent that guides you through building GitHub issue templa
 
 ### In VS Code
 
-1. Open Copilot Chat (`Ctrl+Shift+I` Windows, `Cmd+Shift+I` macOS)
-2. Type: `@template-builder` or `/build-template`
+1. Open the Chat view
+2. Ask `github-hub` to "create an issue template", or type `/template-builder`
 3. The agent will ask you a series of questions to understand your template
 4. Answer each question in the Ask Questions prompts
 5. The agent generates your complete YAML template
@@ -61,7 +61,7 @@ The agent includes a guided workflow for the most common case: building an acces
 ### Invoke with
 
 - `@template-builder` + "create accessibility template"
-- `/build-a11y-template`
+- Ask `github-hub` to "build an accessibility template"
 
 ### Workflow
 

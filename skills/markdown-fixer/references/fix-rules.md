@@ -15,7 +15,7 @@ For each Mermaid block being replaced:
 1. Insert the approved/generated text description immediately before the ` ```mermaid ` fence
 2. Wrap the Mermaid source in a `<details>` block:
 
-```markdown
+````markdown
 [description text - this is the primary accessible content]
 
 <details>
@@ -26,7 +26,7 @@ For each Mermaid block being replaced:
 ```
 
 </details>
-```text
+````
 
 The text description is the primary content. The Mermaid source is preserved for sighted users who want the visual diagram.
 
@@ -37,22 +37,22 @@ For each ASCII diagram being replaced (when preference is `replace-with-text`):
 1. Insert the approved/generated description immediately before the diagram
 2. Wrap the ASCII art in a `<details>` block:
 
-```markdown
+````markdown
 [description text - this is the primary accessible content]
 
 <details>
 <summary>ASCII diagram</summary>
 
-```
-
-[original ASCII art - unchanged]
-
 ```text
+[original ASCII art - unchanged]
+```
 
 </details>
-```
+````
 
 ### Emoji Removal Rules
+
+The emoji in the examples below are deliberate input examples, not house style.
 
 When removing emoji:
 
@@ -69,7 +69,7 @@ When translating emoji (translate mode):
 - Heading: `## 🚀 Quick Start` -> `## (Launch) Quick Start`
 - Bullet: `- 🎉 New release` -> `- (Celebration) New release`
 - Inline: `Status: ✅` -> `Status: (Done)`
-- Consecutive: `🚀✨🔥` -> `(Launch) (New) (Warning)`
+- Consecutive: `🚀✨` -> `(Launch) (New)`
 - Unknown emoji: flag as needs-human-review, do not translate
 
 ### Link Text Rewriting

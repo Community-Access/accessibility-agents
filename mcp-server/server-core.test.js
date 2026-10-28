@@ -728,17 +728,18 @@ describe("MCP Resources", () => {
     server = createServer();
   });
 
-  it("registers wcag-guidelines, supported-tools, and scan-config-template resources", () => {
-    const resources = server._registeredResources;
-    const uris = Object.keys(resources);
-    assert.ok(uris.some((u) => u.includes("guidelines")), "wcag-guidelines registered");
-    assert.ok(uris.some((u) => u.includes("tools")), "supported-tools registered");
-    assert.ok(uris.some((u) => u.includes("config")), "scan-config-template registered");
+  it("registers wcag-guidelines and scan-config-template as templates, supported-tools as a resource", () => {
+    const templates = server._registeredResourceTemplates;
+    assert.ok(templates["wcag-guidelines"], "wcag-guidelines registered as a template");
+    assert.ok(templates["scan-config-template"], "scan-config-template registered as a template");
+    assert.equal(templates["wcag-guidelines"].resourceTemplate.uriTemplate.toString(), "a11y://guidelines/{component}");
+    assert.equal(templates["scan-config-template"].resourceTemplate.uriTemplate.toString(), "a11y://config/{profile}");
+    assert.ok(server._registeredResources["a11y://tools"], "supported-tools registered");
   });
 
   it("wcag-guidelines returns markdown content for modal", async () => {
-    const resource = server._registeredResources["a11y://guidelines/{component}"];
-    const result = await resource.readCallback(new URL("a11y://guidelines/modal"), {});
+    const template = server._registeredResourceTemplates["wcag-guidelines"];
+    const result = await template.readCallback(new URL("a11y://guidelines/modal"), { component: "modal" }, {});
     assert.ok(result.contents.length > 0);
     assert.ok(result.contents[0].text.includes("Modal"));
     assert.equal(result.contents[0].mimeType, "text/markdown");
@@ -753,11 +754,69 @@ describe("MCP Resources", () => {
   });
 
   it("scan-config-template returns JSON for moderate profile", async () => {
-    const resource = server._registeredResources["a11y://config/{profile}"];
-    const result = await resource.readCallback(new URL("a11y://config/moderate"), {});
+    const template = server._registeredResourceTemplates["scan-config-template"];
+    const result = await template.readCallback(new URL("a11y://config/moderate"), { profile: "moderate" }, {});
     assert.equal(result.contents[0].mimeType, "application/json");
     const config = JSON.parse(result.contents[0].text);
     assert.ok(Array.isArray(config.severity));
     assert.ok(config.severity.includes("critical"));
+  });
+});
+
+describe("Office and ePub scan configuration", () => {
+  it("reads the per-format block that the office config schema defines", async () => {
+    const { officeConfigFor } = await import("./server-core.js");
+    const defaults = { enabled: true, disabledRules: [], severityFilter: ["error", "warning", "tip"] };
+    const parsed = {
+      version: "1.0",
+      docx: { enabled: true, disabledRules: ["DOCX-E004"], severityFilter: ["error"] },
+      pptx: { enabled: false, disabledRules: [], severityFilter: ["error", "warning"] },
+    };
+    const docx = officeConfigFor("C:/work/report.DOCX", defaults, parsed);
+    assert.deepEqual(docx.severityFilter, ["error"]);
+    assert.deepEqual(docx.disabledRules, ["DOCX-E004"]);
+    assert.equal(officeConfigFor("deck.pptx", defaults, parsed).enabled, false);
+    // A format with no block falls back to the defaults.
+    assert.deepEqual(officeConfigFor("book.xlsx", defaults, parsed).severityFilter, ["error", "warning", "tip"]);
+  });
+
+  it("still honours the older flat shape", async () => {
+    const { officeConfigFor } = await import("./server-core.js");
+    const cfg = officeConfigFor("a.docx", { severityFilter: ["error", "warning", "tip"] }, { severityFilter: ["error"] });
+    assert.deepEqual(cfg.severityFilter, ["error"]);
+  });
+
+  it("maps only to rule IDs that exist in the skills' rule sets", async () => {
+    const { OFFICE_RULE_ALIASES } = await import("./server-core.js");
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+    const sets = {
+      ".docx": "skills/word-accessibility/references/complete-rule-set.md",
+      ".pptx": "skills/powerpoint-accessibility/references/complete-rule-set.md",
+      ".xlsx": "skills/excel-accessibility/references/complete-rule-set.md",
+    };
+    for (const [ext, file] of Object.entries(sets)) {
+      const text = fs.readFileSync(path.join(root, file), "utf8");
+      for (const id of Object.values(OFFICE_RULE_ALIASES[ext])) {
+        assert.ok(text.includes(`| ${id} |`), `${id} is not in ${file}`);
+      }
+    }
+  });
+});
+
+describe("wcagFromAxeTags", async () => {
+  const { wcagFromAxeTags } = await import("./tools/playwright-tools.js");
+  it("maps axe tags to the findings-contract wcag field", () => {
+    assert.deepEqual(wcagFromAxeTags(["cat.forms", "wcag2a", "wcag412", "wcag131"]), {
+      wcag: "4.1.2 A",
+      also: ["1.3.1 A"],
+    });
+  });
+  it("returns n/a when no criterion tag is present", () => {
+    assert.deepEqual(wcagFromAxeTags(["best-practice"]), { wcag: "n/a", also: [] });
+  });
+  it("maps the WCAG 2.2 target-size tag", () => {
+    assert.equal(wcagFromAxeTags(["wcag22aa", "wcag258"]).wcag, "2.5.8 AA");
   });
 });

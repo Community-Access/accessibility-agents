@@ -31,9 +31,9 @@
 **In GitHub Copilot Chat:**
 
 ```text
-@wcag-guide what does WCAG 2.5.8 target size require?
-@wcag-guide explain accessible authentication (3.3.8)
-@wcag-guide when does the orientation criterion (1.3.4) not apply?
+/wcag-guide what does WCAG 2.5.8 target size require?
+/wcag-guide explain accessible authentication (3.3.8)
+/wcag-guide when does the orientation criterion (1.3.4) not apply?
 ```
 
 ## How to Get the Most Out of wcag-guide
@@ -62,13 +62,13 @@ WCAG 2.2 added several criteria not present in 2.1. These are the ones teams mos
 | 2.4.12 Focus Not Obscured (Enhanced) | AAA | No part of the focused element may be hidden by author-created content |
 | 2.4.13 Focus Appearance | AAA | Focus indicator must have minimum 2px outline, 3:1 contrast from unfocused state |
 | 2.5.7 Dragging Movements | AA | Any dragging action must have a single-pointer alternative |
-| 2.5.8 Target Size (Minimum) | AA | Interactive targets must be at least 24x24 CSS pixels |
+| 2.5.8 Target Size (Minimum) | AA | Interactive targets must be at least 24x24 CSS pixels, unless an exception applies (spacing, equivalent, inline, user agent control, essential) |
 | 3.2.6 Consistent Help | A | Help mechanisms in same location across pages |
 | 3.3.7 Redundant Entry | A | Don't ask users to re-enter information already provided |
-| 3.3.8 Accessible Authentication | AA | Cannot require cognitive tests (CAPTCHA) without accessible alternative |
-| 3.3.9 Accessible Authentication (No Exception) | AAA | Stricter version |
+| 3.3.8 Accessible Authentication (Minimum) | AA | No cognitive function test unless there is an alternative or a mechanism to assist; recognising objects or personal content is an allowed exception |
+| 3.3.9 Accessible Authentication (Enhanced) | AAA | As 3.3.8, without the object-recognition and personal-content exceptions |
 
-**Removed from WCAG 2.2:** 4.1.1 Parsing (deprecated - modern browsers handle the issues it addressed).
+**Removed from WCAG 2.2:** 4.1.1 Parsing is obsolete and removed. Do not cite it as a 2.2 requirement; for WCAG 2.0 and 2.1, W3C notes say it is treated as always satisfied for HTML and XML content.
 
 ## The Standard Answer Format
 
@@ -122,10 +122,10 @@ Each connection, with connect to and when.
 ### GitHub Copilot
 
 ```text
-@wcag-guide what does WCAG 2.5.8 target size require?
-@wcag-guide what new criteria were added in WCAG 2.2?
-@wcag-guide explain accessible authentication (3.3.8)
-@wcag-guide when does the orientation criterion (1.3.4) not apply?
+/wcag-guide what does WCAG 2.5.8 target size require?
+/wcag-guide what new criteria were added in WCAG 2.2?
+/wcag-guide explain accessible authentication (3.3.8)
+/wcag-guide when does the orientation criterion (1.3.4) not apply?
 ```
 
 </details>

@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Run Lighthouse CI
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
         with:

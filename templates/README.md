@@ -48,4 +48,4 @@ After copying, edit the config to disable specific rules:
 }
 ```
 
-See the [office-scan-config agent](../.github/agents/office-scan-config.agent.md) and [pdf-scan-config agent](../.github/agents/pdf-scan-config.agent.md) for the full rule reference.
+See the [office-scan-config skill](../skills/office-scan-config/SKILL.md) and [pdf-scan-config skill](../skills/pdf-scan-config/SKILL.md) for the full rule reference.

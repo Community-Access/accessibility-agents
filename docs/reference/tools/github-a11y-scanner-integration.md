@@ -12,11 +12,8 @@ The [GitHub Accessibility Scanner](https://github.com/marketplace/actions/access
 
 ## Setup
 
-Use the `setup-github-scanner` prompt to configure the scanner in your repository:
-
-**In Copilot Chat:** Select the `setup-github-scanner` prompt from the prompt picker.
-
-Or manually create `.github/workflows/accessibility-scanner.yml`:
+Create `.github/workflows/accessibility-scanner.yml` in your repository (the
+`scanner-bridge` skill then reads the issues the scanner files):
 
 ```yaml
 name: Accessibility Scanner
@@ -36,12 +33,14 @@ jobs:
     name: Scan for accessibility violations
     steps:
       - name: Run accessibility scanner
-        uses: github/accessibility-scanner@v2
+        uses: github/accessibility-scanner@v3
         with:
           urls: |
             https://your-site.com
             https://your-site.com/about
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          cache_key: accessibility-scanner
+          token: ${{ secrets.A11Y_SCANNER_TOKEN }}
 ```
 
 ### Scanner Inputs
@@ -50,10 +49,10 @@ Each input, with its required and description.
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `urls` | Yes | Newline-separated list of URLs to scan |
-| `token` | Yes | GitHub token with issues:write permission |
-| `repository` | No | Target repository for issues (default: current) |
-| `cache_key` | No | Custom cache key for deduplication |
+| `urls` | No (or `url_configs`) | Newline-separated list of URLs to scan |
+| `token` | Yes | Fine-grained personal access token with contents, issues and pull_requests write |
+| `repository` | Yes | Repository (with owner) to file issues in |
+| `cache_key` | Yes | Key for caching results across runs |
 | `login_url` | No | Login URL if authentication is required |
 | `skip_copilot_assignment` | No | Set to `true` to disable Copilot auto-assignment |
 | `include_screenshots` | No | Set to `true` to attach screenshots to issues |

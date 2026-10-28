@@ -4,7 +4,7 @@ Part of the `word-accessibility` skill. Read this only when the task reaches the
 
 ## Structured Output for Sub-Agent Use
 
-When invoked as a sub-agent by the document-accessibility-wizard, return each finding in this format:
+A router always gets the findings JSON described in `SKILL.md`. Use this prose format only when a person asks to read findings as text:
 
 ```text
 ### [Rule ID] - [severity]: [Brief description]
@@ -25,7 +25,7 @@ When invoked as a sub-agent by the document-accessibility-wizard, return each fi
 
 ### Output Summary
 
-End your invocation with this summary block (used by the wizard for / progress announcements):
+End that prose rendering with this summary block:
 
 ```text
 ## Word Accessibility Findings Summary

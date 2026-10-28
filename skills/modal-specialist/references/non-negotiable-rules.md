@@ -35,7 +35,7 @@ Per W3C APG, every dialog SHOULD have a visible close button. An icon-only close
 
 ### Focus Trapping
 
-- `<dialog>` with `showModal()` handles focus trapping natively
+- `<dialog>` with `showModal()` makes everything outside the dialog inert, so nothing behind it can be focused or clicked
 - Tab and Shift+Tab cycle only through elements inside the modal
 - Nothing behind the modal should be reachable
 - Verify no `tabindex` on the backdrop or outer container leaks focus out
@@ -50,26 +50,38 @@ Per W3C APG, every dialog SHOULD have a visible close button. An icon-only close
 ### Escape Key
 
 - Escape MUST close the modal
-- `<dialog>` handles this natively, but verify it works
+- `<dialog>` opened with `showModal()` handles this natively, but verify it works
 - After Escape, focus returns to trigger (see above)
-- For confirmation dialogs where Escape could cause data loss, intercept and confirm first
+- For confirmation dialogs where Escape could cause data loss, intercept the `cancel` event and confirm first
 
 ### `aria-modal` and Background Inertness
 
-`aria-modal="true"` tells assistive technology that content outside the dialog is inert. This is the modern replacement for the legacy pattern of manually applying `aria-hidden="true"` to every sibling of the dialog.
+A native `<dialog>` opened with `showModal()` makes the rest of the page inert and is exposed with `aria-modal="true"` by the browser. Add neither `role="dialog"` nor `aria-modal` to it.
+
+A custom (non-`<dialog>`) modal must follow the APG modal dialog pattern
+(<https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/>): `role="dialog"`,
+`aria-modal="true"`, `aria-labelledby`, a Tab and Shift+Tab loop inside the
+dialog, Escape to close, and the HTML `inert` attribute on the page content
+behind it.
+
+For a custom dialog, `aria-modal="true"` tells assistive technology that content outside the dialog is unavailable, but it does not stop focus or clicks reaching it. Pair it with the HTML `inert` attribute on the page content behind the dialog. Both replace the legacy pattern of manually applying `aria-hidden="true"` to every sibling of the dialog.
 
 ```html
-<!-- Modern: aria-modal handles background hiding -->
-<dialog role="dialog" aria-modal="true" aria-labelledby="modal-title">
+<!-- Best: native dialog, opened with modal.showModal() -->
+<dialog aria-labelledby="modal-title">
   ...
 </dialog>
+
+<!-- Custom dialog: aria-modal plus inert on the background -->
+<main inert><!-- page content --></main>
+<div role="dialog" aria-modal="true" aria-labelledby="modal-title">...</div>
 
 <!-- Legacy (avoid): manual aria-hidden on siblings -->
 <div aria-hidden="true"><!-- page content --></div>
 <div role="dialog">...</div>
 ```
 
-Prefer `aria-modal="true"` on the `<dialog>` element. For even stronger protection, apply the HTML `inert` attribute to the page content behind the modal (see keyboard-navigator for details).
+See keyboard-navigator for more on `inert`.
 
 ### Heading Structure
 
@@ -82,5 +94,5 @@ Prefer `aria-modal="true"` on the `<dialog>` element. For even stronger protecti
 - `aria-labelledby` pointing to the heading ID
 - Omit `aria-describedby` when the dialog body contains semantic structures (lists, tables, form fields) -- `aria-describedby` flattens all referenced content into a single string, which destroys structure
 - Use `aria-describedby` only when the description is a short plain-text paragraph (as in alert dialogs)
-- Trigger button has `aria-haspopup="dialog"`
+- Trigger is a `<button>`; `aria-haspopup="dialog"` is optional and not part of the APG dialog pattern
 - Only mark as modal when BOTH conditions are met: (1) code prevents interaction with outside content, and (2) visual styling obscures the page behind

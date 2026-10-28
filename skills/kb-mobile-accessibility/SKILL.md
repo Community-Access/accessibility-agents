@@ -15,78 +15,78 @@ metadata:
 
 ## Mobile Accessibility Skill
 
-This skill provides mobile accessibility reference data for React Native, Expo, iOS, and Android auditing. Used by `mobile-accessibility.agent.md`.
+This skill provides mobile accessibility reference data for React Native, Expo, iOS, and Android auditing. Used by the `mobile-accessibility` skill.
 
 ---
 
 ## React Native Accessibility Props - Full Reference
 
-Each prop, with its type, values or notes, WCAG SC and required.
+Each prop, with its type, values or notes, WCAG SC and required. The `aria-*` props and `role` are aliases in current React Native (0.88); there is no `aria-describedby` or `aria-role`.
 
 | Prop | Type | Values / Notes | WCAG SC | Required |
 |------|------|---------------|---------|---------|
 | `accessible` | boolean | `true` marks the view as an accessibility node | 4.1.2 | Conditional |
 | `accessibilityLabel` | string | Human-readable name - overrides all child text | 1.1.1, 4.1.2 | Yes (all interactive + image elements) |
-| `accessibilityLabelledBy` | string / string[] | References ID(s) of labelling element | 1.3.1 | For form inputs |
+| `accessibilityLabelledBy` | string / string[] | Android only - references the `nativeID` of the labelling element | 1.3.1 | For form inputs |
 | `accessibilityRole` | string (see roles table) | Communicates element type to AT | 4.1.2 | Yes (all interactive elements) |
-| `accessibilityHint` | string | Additional context spoken after label + role | 1.3.3 | When action isn't obvious |
+| `accessibilityHint` | string | Additional context spoken after label + role | 3.3.2 | When action isn't obvious |
 | `accessibilityState` | object | `{checked, disabled, expanded, selected, busy}` | 4.1.2 | State-bearing elements |
-| `accessibilityValue` | object | `{min, max, now, text}` | 1.3.1 | Sliders, steppers, progress bars |
-| `accessibilityActions` | array | `[{name, label}]` - defines custom actions | 4.1.3 | Context menus, long-press alternatives |
-| `onAccessibilityAction` | function | Handles custom action triggers | 4.1.3 | Paired with `accessibilityActions` |
-| `accessibilityLiveRegion` | string | `'none'` / `'polite'` / `'assertive'` | 4.1.3 | Dynamic content updates |
-| `accessibilityViewIsModal` | boolean | `true` traps VoiceOver focus inside modal | 1.3.4 | Modals, drawers, sheets |
+| `accessibilityValue` | object | `{min, max, now, text}` | 4.1.2 | Sliders, steppers, progress bars |
+| `accessibilityActions` | array | `[{name, label}]` - defines custom actions | 2.5.1, 4.1.2 | Context menus, long-press alternatives |
+| `onAccessibilityAction` | function | Handles custom action triggers | 2.5.1, 4.1.2 | Paired with `accessibilityActions` |
+| `accessibilityLiveRegion` | string | Android only - `'none'` / `'polite'` / `'assertive'` | 4.1.3 | Dynamic content updates |
+| `accessibilityViewIsModal` | boolean | iOS only - VoiceOver ignores sibling views | 2.4.3 | Modals, drawers, sheets |
 | `accessibilityElementsHidden` | boolean | iOS - hides element and children from VoiceOver | 1.1.1 | Decorative elements |
 | `importantForAccessibility` | string | Android - `'auto'` / `'yes'` / `'no'` / `'no-hide-descendants'` | 1.1.1 | Decorative / grouped elements |
 | `accessibilityIgnoresInvertColors` | boolean | iOS - preserves colors in Inverted Colors mode | - | Images, video |
-| `aria-label` | string | RN 0.73+ alias for `accessibilityLabel` | 1.1.1, 4.1.2 | Preferred in new code |
-| `aria-labelledby` | string | RN 0.73+ alias for `accessibilityLabelledBy` | 1.3.1 | Form inputs |
-| `aria-describedby` | string | RN 0.73+ alias for `accessibilityHint` | 1.3.3 | Additional description |
-| `aria-role` | string | RN 0.73+ alias for `accessibilityRole` | 4.1.2 | All interactive elements |
+| `aria-label` | string | Alias for `accessibilityLabel` | 1.1.1, 4.1.2 | Preferred in new code |
+| `aria-labelledby` | string | Android only - alias for `accessibilityLabelledBy` | 1.3.1 | Form inputs |
+| `role` | string | Alias for `accessibilityRole` that takes ARIA role names (`button`, `heading`, `listitem`...) | 4.1.2 | All interactive elements |
 | `aria-checked` | boolean / 'mixed' | RN 0.73+ alias for `accessibilityState.checked` | 4.1.2 | Checkboxes |
 | `aria-disabled` | boolean | RN 0.73+ alias for `accessibilityState.disabled` | 4.1.2 | Disabled elements |
 | `aria-expanded` | boolean | RN 0.73+ alias for `accessibilityState.expanded` | 4.1.2 | Accordions, dropdowns |
 | `aria-selected` | boolean | RN 0.73+ alias for `accessibilityState.selected` | 4.1.2 | Tabs, list items |
 | `aria-busy` | boolean | RN 0.73+ alias for `accessibilityState.busy` | 4.1.3 | Loading elements |
 | `aria-hidden` | boolean | RN 0.73+ - maps to `importantForAccessibility` / `accessibilityElementsHidden` | 1.1.1 | Decorative content |
-| `aria-live` | string | RN 0.73+ alias for `accessibilityLiveRegion` | 4.1.3 | Dynamic content |
-| `aria-modal` | boolean | RN 0.73+ alias for `accessibilityViewIsModal` | 1.3.4 | Modals |
+| `aria-live` | string | Android only - `'polite'` / `'assertive'` / `'off'` | 4.1.3 | Dynamic content |
+| `aria-modal` | boolean | iOS only - alias for `accessibilityViewIsModal` | 2.4.3 | Modals |
 
 ### Accessibility Role Values
 
-Each role, with maps to (ios), maps to (android) and use for.
+Each `accessibilityRole`, with the UIAccessibilityTraits value React Native sets on iOS and the class name it reports on Android (from React Native 0.88 source, RCTViewManager.m and ReactAccessibilityDelegate.kt). "None" means React Native adds no trait; the state props still apply. `accessibilityRole` has no `listitem`; the web-style `role` prop accepts `listitem` and other ARIA role names.
 
-| Role | Maps to (iOS) | Maps to (Android) | Use For |
+| Role | iOS trait | Android class | Use For |
 |------|-------------|-----------------|--------|
-| `'button'` | UIAccessibilityTraitButton | AccessibilityNodeInfo.ROLE_BUTTON | Buttons, submission triggers |
-| `'link'` | UIAccessibilityTraitLink | AccessibilityNodeInfo.ROLE_LINK | Navigation links, external URLs |
-| `'search'` | - | ROLE_SEARCH | Search bars |
-| `'image'` | UIAccessibilityTraitImage | ROLE_IMAGE | Images (when accessible=true) |
-| `'imagebutton'` | UIAccessibilityTraitImage+Button | ROLE_BUTTON | Icon buttons |
-| `'header'` | UIAccessibilityTraitHeader | ROLE_HEADING | Headings |
-| `'text'` | UIAccessibilityTraitStaticText | ROLE_LABEL | Static text |
-| `'adjustable'` | UIAccessibilityTraitAdjustable | ROLE_SCROLL_VIEW | Sliders |
-| `'checkbox'` | - | ROLE_CHECKBOX | Checkboxes |
-| `'combobox'` | - | ROLE_DROP_DOWN_LIST | Dropdowns |
-| `'menu'` | - | ROLE_MENU | Menus |
-| `'menuitem'` | - | ROLE_MENU_ITEM | Menu items |
-| `'menubar'` | - | ROLE_MENU_BAR | Menu bars |
-| `'progressbar'` | UIAccessibilityTraitUpdatesFrequently | ROLE_PROGRESS_BAR | Progress indicators |
-| `'radio'` | - | ROLE_RADIO_BUTTON | Radio buttons |
-| `'radiogroup'` | - | - | Radio button groups |
-| `'scrollbar'` | - | ROLE_SCROLL_BAR | Scrollbars |
-| `'spinbutton'` | - | ROLE_SCROLL_VIEW | Steppers, number inputs |
-| `'switch'` | - | ROLE_SWITCH | Toggle switches |
-| `'tab'` | - | ROLE_TAB | Tab elements |
-| `'tablist'` | - | ROLE_TAB_LIST | Tab containers |
-| `'timer'` | UIAccessibilityTraitUpdatesFrequently | - | Countdown timers |
-| `'toolbar'` | - | ROLE_TOOL_BAR | Toolbars |
-| `'grid'` | - | ROLE_GRID | Data grids |
-| `'list'` | - | ROLE_LIST | Lists |
-| `'listitem'` | - | ROLE_LIST_ITEM | List items |
-| `'summary'` | UIAccessibilityTraitSummaryElement | - | Summary/status views |
-| `'alert'` | UIAccessibilityTraitCausesPageTurn | ROLE_ALERT | Alert dialogs |
-| `'none'` | UIAccessibilityTraitNone | ROLE_NONE | Suppress role |
+| `'button'` | Button | android.widget.Button | Buttons, submission triggers |
+| `'link'` | Link | android.view.View | Navigation links, external URLs |
+| `'search'` | SearchField | android.widget.EditText | Search bars |
+| `'image'` | Image | android.widget.ImageView | Images (when accessible=true) |
+| `'imagebutton'` | Image + Button | android.widget.ImageButton | Icon buttons |
+| `'header'` | Header | android.view.View | Headings |
+| `'text'` | StaticText | android.widget.TextView | Static text |
+| `'adjustable'` | Adjustable | android.widget.SeekBar | Sliders |
+| `'checkbox'` | None | android.widget.CheckBox | Checkboxes |
+| `'combobox'` | None | android.view.View | Dropdowns |
+| `'dropdownlist'` | None | android.widget.Spinner | Dropdown lists |
+| `'menu'` | None | android.view.View | Menus |
+| `'menuitem'` | None | android.view.View | Menu items |
+| `'menubar'` | None | android.view.View | Menu bars |
+| `'progressbar'` | UpdatesFrequently | android.view.View | Progress indicators |
+| `'radio'` | None | android.widget.RadioButton | Radio buttons |
+| `'radiogroup'` | None | android.view.View | Radio button groups |
+| `'scrollbar'` | None | android.view.View | Scrollbars |
+| `'spinbutton'` | None | android.widget.SpinButton | Steppers, number inputs |
+| `'switch'` | switch trait (private) | android.widget.Switch | Toggle switches |
+| `'togglebutton'` | Button | android.widget.ToggleButton | Toggle buttons |
+| `'tab'` | None | android.view.View | Tab elements |
+| `'tablist'` | None | android.view.View | Tab containers |
+| `'timer'` | None | android.view.View | Countdown timers |
+| `'toolbar'` | None | android.view.View | Toolbars |
+| `'grid'` | None | android.widget.GridView | Data grids |
+| `'list'` | None | android.widget.AbsListView | Lists |
+| `'summary'` | SummaryElement | android.view.View | Summary/status views |
+| `'alert'` | None | android.view.View | Alerts |
+| `'none'` | None | android.view.View | Suppress role |
 
 ---
 
@@ -106,8 +106,8 @@ Each platform, with its minimum size, recommended and standard.
 ```tsx
 // Violation: TouchableOpacity below minimum
 const styles = StyleSheet.create({
-  closeBtn: { width: 24, height: 24 },          // FAIL - below 44pt
-  iconBtn: { width: 32, height: 32 },            // FAIL - below 44pt
+  closeBtn: { width: 24, height: 24 },          // FAIL HIG - below 44pt (meets the 24px floor of 2.5.8)
+  iconBtn: { width: 32, height: 32 },            // FAIL HIG - below 44pt
   navBtn: { padding: 4 },                        // CONDITIONAL - depends on content size
   compliant: { width: 44, height: 44 },          // PASS
   compliantWithPadding: { padding: 12 },         // PASS if content >= 20pt
@@ -178,9 +178,8 @@ Each modifier / property, with its purpose.
 | `semantics { onClick(label = "...", action = {...}) }` | Click action with label |
 | `semantics { disabled() }` | Disabled state |
 | `semantics { focused = true }` | Force focus |
-| `semantics { liveRegion = LiveRegion.Polite }` | Live region announcements |
-| `semantics { invisibleToUser() }` | Hide from TalkBack |
-| `semantics { mergeDescendants = true }` | Merge child semantics into one node |
+| `semantics { liveRegion = LiveRegionMode.Polite }` | Live region announcements |
+| `semantics { hideFromAccessibility() }` | Hide from TalkBack (replaces the deprecated `invisibleToUser()`) |
 | `clearAndSetSemantics { ... }` | Replace all descendant semantics |
 | `Modifier.semantics(mergeDescendants = true) { }` | Short merge pattern |
 
@@ -282,14 +281,14 @@ Each modifier / property, with its purpose.
   <Button title="Confirm" onPress={confirm} />
 </View>
 
-// FIX - use Modal component (traps focus automatically) or set accessibilityViewIsModal
+// FIX - use the Modal component (it presents in its own window) or set
+// accessibilityViewIsModal (iOS) on the container View
 <Modal
   visible={visible}
   transparent
-  accessibilityViewIsModal={true}  // traps VoiceOver
   onRequestClose={close}           // Android back button
 >
-  <View style={styles.overlay}>
+  <View style={styles.overlay} accessibilityViewIsModal={true}>
     <Text>Are you sure?</Text>
     <Button title="Confirm" onPress={confirm} />
     <Button title="Cancel" onPress={close} />
@@ -315,8 +314,13 @@ Image(
 // FIX - truly decorative
 Image(
     painter = painterResource(id = R.drawable.divider),
-    contentDescription = null,
-    modifier = Modifier.semantics { invisibleToUser() }
+    contentDescription = null  // null is enough for a decorative Image
+)
+
+// FIX - decorative element that is not an Image (for example a separator Text)
+Text(
+    text = "\u2022",
+    modifier = Modifier.semantics { hideFromAccessibility() }
 )
 ```
 
@@ -328,16 +332,16 @@ Image(
 
 ```text
 Xcode -> Xcode menu -> Open Developer Tool -> Accessibility Inspector
-- Run audit: Click "Audit" tab -> "Run Audit" button
-- Inspect: "Inspection" tab -> hover over elements in Simulator
-- Keyboard: Use +F7 to toggle VoiceOver in Simulator
+- Run audit: choose the target (Simulator or device), then use the Audit control
+- Inspect: use the inspection pointer and hover over elements in Simulator
+- VoiceOver is not available in Simulator; test VoiceOver on a device
 ```
 
 ### Android Accessibility Scanner
 
 ```bash
-# Install (Play Store or adb)
-adb install com.google.android.apps.accessibility.auditor
+# Install Accessibility Scanner from Google Play (package com.google.android.apps.accessibility.auditor).
+# adb install needs an APK file path, not a package name.
 
 # Enable TalkBack via ADB (for CI)
 adb shell settings put secure enabled_accessibility_services \
@@ -357,18 +361,19 @@ npm install --save-dev @testing-library/react-native
 ```tsx
 import { render, screen, fireEvent } from '@testing-library/react-native';
 
-test('button has accessible name and role', () => {
-  render(<SubmitButton onPress={jest.fn()} />);
+// @testing-library/react-native 14: render() and fireEvent return Promises
+test('button has accessible name and role', async () => {
+  await render(<SubmitButton onPress={jest.fn()} />);
   const btn = screen.getByRole('button', { name: /submit/i });
-  expect(btn).toBeTruthy();
+  expect(btn).toBeOnTheScreen();
 });
 
-test('checkbox updates state', () => {
-  render(<TermsCheckbox />);
+test('checkbox updates state', async () => {
+  await render(<TermsCheckbox />);
   const checkbox = screen.getByRole('checkbox', { name: /accept terms/i });
-  expect(checkbox).toHaveAccessibilityState({ checked: false });
-  fireEvent.press(checkbox);
-  expect(checkbox).toHaveAccessibilityState({ checked: true });
+  expect(checkbox).not.toBeChecked();
+  await fireEvent.press(checkbox);
+  expect(checkbox).toBeChecked();
 });
 ```
 

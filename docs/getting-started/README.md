@@ -6,35 +6,80 @@ here needs a compiler, an extension, or a per-client layout: the package is one
 
 ## What you need
 
-- Node.js 20 or later
+- Node.js on an LTS line: 26, 24 or 22 (Node 20 reached end of life on 30 April 2026)
 - One of: Claude Code, Codex CLI, GitHub Copilot CLI or VS Code, Gemini CLI, Antigravity
 - For document scanning, nothing extra; for PDF/UA validation, veraPDF; for
   behavioural web scans, Playwright. Each is detected and reported, never assumed.
 
 ## Install
 
-### As a plugin, which wires the enforcement hooks for you
+### As a plugin, which loads the skills, the hooks and the MCP server registration
 
 ```text
 Claude Code   /plugin marketplace add Community-Access/accessibility-agents
-              /plugin install accessibility-agents
-Copilot       copilot plugin install accessibility-agents
-Codex         /plugins, then add this repository
+              /plugin install accessibility-agents@community-access
+Copilot CLI   copilot plugin marketplace add Community-Access/accessibility-agents
+              copilot plugin install accessibility-agents@community-access
+Codex         codex plugin marketplace add Community-Access/accessibility-agents
+              codex plugin add accessibility-agents@community-access
+              (skills and MCP server only; no edit gate, see below)
+VS Code       Chat: Install Plugin From Source, with the repository URL
+              (requires the chat.plugins.enabled setting)
 ```
 
-### As skills, for any client
+The MCP server ships as a single bundle (`mcp-server/dist/stdio.mjs`), so the
+plugin starts it with no `npm install`. Only the optional scanners need
+installing: Playwright and `@axe-core/playwright` for the browser scans,
+`pdf-lib` for PDF form conversion, and the veraPDF CLI. The tools that need
+them say how when they are missing.
+
+On Codex the command is `codex plugin add`, not `install`. Codex reads the
+repository's `.claude-plugin/marketplace.json`. Tested live with Codex CLI
+0.165.0: the install registers the MCP server (`codex mcp list` shows
+`mcp-server/dist/stdio.mjs`) and `codex debug prompt-input` lists exactly the
+six routers. The Codex plugin does not load hooks: Codex 0.165.0 lists its
+`plugin_hooks` feature as removed, and after `codex plugin add` Codex reports
+no hooks. So on Codex the plugin gives the skills and the MCP server but no
+edit gate. For the gate, use `npm run setup` instead, which writes
+`~/.codex/hooks.json` (Codex then lists all six hooks), and register the server
+with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
+Use one route, not both.
+
+### Directly from a checkout, for any client
 
 ```bash
 git clone https://github.com/Community-Access/accessibility-agents
 cd accessibility-agents
 npm install
-node scripts/install.mjs
+npm run setup -- --dry-run
+npm run setup
 ```
 
-That copies `skills/` to `~/.agents/skills`, the shared location Codex, Copilot,
-Gemini and Antigravity read, and writes a hook manifest for whichever clients it
-finds. It never overwrites a hooks file or a skill you have edited, and
-`--dry-run` shows what it would do first.
+`npm install` only installs the development tooling; it no longer runs the
+installer. The MCP server's stdio bundle needs no install; run
+`npm install --prefix mcp-server` only to use the HTTP server (`server.js`) or
+to work on the server's source. `npm run setup` copies `skills/` to `~/.agents/skills`, the personal
+location Codex, the Copilot CLI, VS Code and Gemini CLI read, and to
+`~/.gemini/config/skills` when Antigravity is present. It writes a hook manifest
+for Codex, Gemini CLI and Antigravity when it finds them and prints what is
+left to merge by hand. It never overwrites a hooks file or a skill you have edited, and
+`--dry-run` prints every action without doing it. Claude Code does not read
+`~/.agents/skills`, so the installer writes nothing for it: use the plugin, or
+`claude --plugin-dir <checkout>`. For the optional scanners, run
+`npm install --prefix mcp-server`, then `npx playwright install chromium` in
+`mcp-server/`. Antigravity gets its own hook manifest, written to
+`~/.gemini/config/hooks.json`; its gate opens when Antigravity reads the lead's
+`SKILL.md`, and it is tested against the payloads Antigravity documents, not yet in a live Antigravity session.
+
+### In a GitHub Codespace
+
+The repository has a dev container (`.devcontainer/devcontainer.json`, Node 24).
+On first start it installs the root and MCP server dependencies, installs
+Playwright's Chromium for the browser scans, and runs `npm run setup`, which
+copies the skills to `~/.agents/skills`, a location VS Code reads. The
+workspace's `.vscode/mcp.json` registers the bundled MCP server. So Copilot Chat
+in a codespace has the skills, the MCP server and the browser scanners with no
+further steps. veraPDF is not installed; add it if you need PDF/UA validation.
 
 ### For developing this repository
 
@@ -42,7 +87,7 @@ finds. It never overwrites a hooks file or a skill you have edited, and
 node scripts/dev-link.mjs
 ```
 
-Links `.agents/skills` to `skills/` so every client reads the checkout directly.
+Links `.agents/skills` to `skills/` so Codex, Copilot, VS Code, Gemini CLI and Antigravity read the checkout directly.
 Claude Code needs no link: run it with `--plugin-dir .`.
 
 ## Your first audit
@@ -56,10 +101,11 @@ Describe the problem. You do not need to name a skill, but you can.
 | "Check these PDFs" | `document-accessibility-wizard` scans each file and writes a scored report |
 | "Fix the markdown in docs/" | `markdown-a11y-assistant` scans, shows you the fixes it wants to make, and waits |
 
-Six skills are model-invocable; they are the only ones the model sees. The other
-102 are reachable by name, so `/aria-specialist` works in the slash menu, and
-each router dispatches them by name without loading their instructions into its
-own context.
+Six skills are model-invocable; they are the only ones the model sees. A router
+dispatches the other 102 by name without loading their instructions into its
+own context. 57 of those, such as `/aria-specialist`, are also in the slash
+menu; the 45 reference and helper skills set `user-invocable: false` and are
+not.
 
 ## What the gate does
 
@@ -77,7 +123,7 @@ session, not on every prompt.
 
 ## Reading a report
 
-Every report has the same seven sections, because a script writes them from the
+Every accessibility audit report has the same seven sections, because a script writes them from the
 skills' findings rather than the model typing them:
 
 1. Metadata: what was audited, with what, under which settings

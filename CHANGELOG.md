@@ -7,6 +7,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.1.0] - 2026-10-28
+
+A full audit of the package against current standards and each client's own
+documentation, checked against primary sources and reviewed independently.
+[#221](https://github.com/Community-Access/accessibility-agents/pull/221).
+
+### Fixed
+
+- **Plugin installs loaded no hooks and no MCP server on any client.** Hooks
+  now ship as `hooks/hooks.json` (Claude Code) and
+  `com.github.copilot/hooks/hooks.json` (Copilot CLI, VS Code); `plugin.json`
+  and `mcp.json` validate against the Agent Plugins 1.0 schemas.
+- **The MCP server could not start from a plugin install**, which has no
+  `node_modules`. It now ships bundled as `mcp-server/dist/stdio.mjs`, and a
+  gate checks the bundle matches the source.
+- **The edit gate deadlocked on Claude Code**: the lead runs inline as a skill
+  and fires no stop event. The gate now also opens on `PostToolUse` for the
+  Skill tool and reads `agent_type`. Retested live, both ways.
+- **The Codex edit gate never ran**: Codex rejected `~/.codex/hooks.json` over
+  a `$comment` key. Now `description`; Codex lists all six hooks.
+- **`run_axe_scan` never ran** (`@axe-core/playwright` needs a page from a
+  browser context); its `wcag` field now uses the findings-contract form.
+- **The three prompts and both resource templates were registered wrongly**:
+  wrong arguments, and every resource read returned "not found".
+- **axe never ran 2.5.8 Target Size**: `wcag22aa` was missing from the default
+  tags and from dozens of commands in the skills.
+- **Office and ePub scan configs had no effect**: the scanners now read the
+  per-format blocks.
+- **The installer** ran on every `npm install` (now `npm run setup`); its
+  `--uninstall` deleted every package's skills and Codex's own hooks file.
+- **Security**: 1 critical and 3 high advisories in the MCP server tree
+  (SDK 1.32.2, zod 4).
+
+### Added
+
+- **Antigravity edit gate** (`hooks/antigravity.hooks.json`): the gate opens
+  when Antigravity reads the lead's `SKILL.md`. Tested against the documented
+  hook payloads; not yet in a live Antigravity session.
+- **Codex plugin route**: `codex plugin marketplace add
+  Community-Access/accessibility-agents`, then `codex plugin add
+  accessibility-agents@community-access` (skills and MCP server; Codex no
+  longer loads plugin hooks, so the gate needs `npm run setup`).
+- **Codespaces**: `.devcontainer/devcontainer.json` and `.vscode/mcp.json`.
+- Live client check verified on Claude Code and Codex.
+
+### Changed
+
+- All 108 skills audited: ADA Title II and HHS 504 dates, EN 301 549 V3.2.1
+  and V4.1.1, ISO/IEC 40500:2025, the WCAG 3 draft, 4.1.1, VPAT 2.5Rev,
+  PDF/UA-2, ARIA and APG patterns, axe, Lighthouse and framework APIs.
+- One scoring model, the renderer's (`merge-findings.mjs`), everywhere.
+- About 160 documents corrected: install commands, hooks per client,
+  conformance numbers, dead links, house style.
+- Node 22 or later; the GitHub Action uses Node 24 and current action majors.
+
+### Removed
+
+- **The VS Code extension** (`vscode-extension/`). It discovered
+  `.github/agents/*.agent.md` files that 7.x no longer ships. VS Code installs
+  the package as an agent plugin instead.
+- Two release scripts that checked files removed in 7.0.
+
+### Contributors
+
+Thank you to everyone whose pull requests shaped this release. Ported here,
+with changes:
+
+- [@w9fyi](https://github.com/w9fyi) ([#220](https://github.com/Community-Access/accessibility-agents/pull/220)):
+  the Claude Code Skill-tool mark and `agent_type`, a stop hook that cannot
+  loop (`stop_hook_active`) and gives a usable reason, and the right event
+  name on restored context.
+- [@AdamMagued](https://github.com/AdamMagued) ([#215](https://github.com/Community-Access/accessibility-agents/pull/215),
+  [#212](https://github.com/Community-Access/accessibility-agents/pull/212)): the current PDF/UA-1 source
+  page, and the Headers/IDs exception to TH Scope (Matterhorn 15-003).
+- [@chrisnestrud](https://github.com/chrisnestrud) ([#210](https://github.com/Community-Access/accessibility-agents/pull/210),
+  [#211](https://github.com/Community-Access/accessibility-agents/pull/211),
+  [#208](https://github.com/Community-Access/accessibility-agents/pull/208)): keeping streaming
+  transcripts out of live regions, its screen reader test, and placeholder
+  guidance for labelled fields.
+
 ## [7.0.3] - 2026-09-23
 
 Every MCP tool failed on invocation in 7.0.2. Reported as

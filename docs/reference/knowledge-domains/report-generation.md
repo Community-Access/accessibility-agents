@@ -38,31 +38,33 @@ Include when applicable:
 
 ## Severity Scoring Formula
 
+The score and grade in a rendered report come from
+`skills/a11y-core/scripts/merge-findings.mjs`, which `render-report.mjs` runs;
+where this page and the script differ, the script decides.
+
 ```text
-Document Score = 100 - (sum of weighted findings)
-
-Error, high confidence:    -10 points
-Error, medium confidence:  - 7 points
-Error, low confidence:     - 3 points
-Warning, high confidence:  - 3 points
-Warning, medium confidence:- 2 points
-Warning, low confidence:   - 1 point
-Tips:                        0 points
-
-Floor: 0
+penalty = sum over findings of severity_weight x confidence_factor
+          (weights: critical 10, serious 5, moderate 2, minor 1;
+           confidence: high 1.0, medium 0.7, low 0.4)
+checks  = max(number of findings + number of passed checks, 10)
+score   = max(0, round(100 - (penalty / checks) x 20))
 ```
+
+A document checker's levels (error, warning, tip) are mapped onto these
+canonical severities first, through `kb-severity-mapping`; errors and warnings
+are not scored directly. The full formula is in `kb-web-severity-scoring`.
 
 ## Score Grades
 
-Each score, with its grade and meaning.
+Each score band, with its grade.
 
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues |
-| 75-89 | B | Good - some warnings, few errors |
-| 50-74 | C | Needs Work - multiple errors |
-| 25-49 | D | Poor - significant accessibility barriers |
-| 0-24 | F | Failing - critical barriers, likely unusable with AT |
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## Scorecard Format
 
@@ -72,9 +74,9 @@ Each score, with its grade and meaning.
 | Document | Score | Grade | Errors | Warnings | Tips |
 |----------|-------|-------|--------|----------|------|
 | report.docx | 84 | B | 1 | 3 | 2 |
-| data.xlsx | 62 | C | 3 | 4 | 1 |
+| data.xlsx | 62 | D | 3 | 4 | 1 |
 | slides.pptx | 91 | A | 0 | 2 | 3 |
-| **Average** | **79** | **B** | **4** | **9** | **6** |
+| **Average** | **79** | **C** | **4** | **9** | **6** |
 ```
 
 ## VPAT/ACR Compliance Export
@@ -96,10 +98,10 @@ Each edition, with its standard.
 
 | Edition | Standard |
 |---------|---------|
-| VPAT 2.5 (WCAG) | WCAG 2.2 criteria |
-| VPAT 2.5 (508) | Revised Section 508 |
-| VPAT 2.5 (EN 301 549) | EU Accessibility Directive |
-| VPAT 2.5 (INT) | All three combined |
+| VPAT 2.5Rev (WCAG) | WCAG 2.2 criteria |
+| VPAT 2.5Rev (508) | Revised Section 508 |
+| VPAT 2.5Rev (EU) | EN 301 549 (the template still points at V3.2.1) |
+| VPAT 2.5Rev (INT) | All three combined |
 
 ## Remediation Tracking
 

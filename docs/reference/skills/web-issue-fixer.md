@@ -28,7 +28,7 @@ These fixes are applied without asking. They are deterministic and have no risk 
 | Missing `lang` on `<html>` | Add `lang="en"` (or detected page language) |
 | Missing viewport meta | Add `<meta name="viewport" content="width=device-width, initial-scale=1">` |
 | `<img>` without `alt` attribute | Add `alt=""` (decorative) - content images prompt for description |
-| Positive `tabindex` (1, 2, 3…) | Replace with `tabindex="0"` or remove |
+| Positive `tabindex` (1, 2, 3...) | Replace with `tabindex="0"` or remove |
 | `outline: none` without alternative focus style | Add `outline: 2px solid` with `:focus-visible` |
 | Missing `<label>` for named input | Add `<label>` with matching `for`/`id` |
 | Icon-only button without accessible name | Add `aria-label` |
@@ -105,4 +105,4 @@ Each component, with its role.
 | [web-accessibility-wizard](./web-accessibility-wizard.md) | Orchestrating wizard that calls this agent and presents summary to user |
 | [fix-web-issues prompt](../../history/prompts/web/fix-web-issues.md) | User-facing prompt that triggers the full fix workflow |
 | [audit-web-page prompt](../../history/prompts/web/audit-web-page.md) | Users can opt in to auto-fix immediately after an audit |
-| [framework-accessibility skill](../../skills/kb-framework-accessibility/SKILL.md) | Framework-specific fix patterns and anti-patterns this agent draws from |
+| [framework-accessibility skill](../../../skills/kb-framework-accessibility/SKILL.md) | Framework-specific fix patterns and anti-patterns this agent draws from |

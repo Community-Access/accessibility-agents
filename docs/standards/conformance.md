@@ -10,7 +10,10 @@ npm install
 npm run verify
 ```
 
-Last full run: 2026-09-21. All 15 gates pass, including live sessions on Claude Code, Codex and Copilot.
+Last full run: 2026-10-28, all 16 gates passing. The live gate ran on Claude
+Code only that day, because Codex and Copilot were not installed where it ran;
+the 2026-09-21 run covered all three. Counts re-measured on 2026-10-27 or
+2026-10-28 are dated below.
 
 ---
 
@@ -21,7 +24,7 @@ tool that checks conformance rather than asserting it.
 
 | Standard | Governs | Checked by |
 |---|---|---|
-| [Agent Skills](https://agentskills.io/specification) | every file under `skills/` | `skills-ref`, the specification authors' own validator, via `npm run verify:spec` |
+| [Agent Skills](https://agentskills.io/specification) | every file under `skills/` | `skills-ref validate` via `npm run verify:spec`, using the npm package `skills-ref` 0.1.5, a third-party port of the Python reference validator in agentskills/agentskills |
 | [AGENTS.md](https://agents.md/) | the always-on instruction file | size and content asserted by `validate-skills.mjs` |
 | [Agent Plugins 1.0](https://agent-plugins.org/) | `plugin.json` | `claude plugin validate .` and `check-release-consistency.js` |
 | [Model Context Protocol](https://modelcontextprotocol.io/specification/latest) | the 39 tools in `mcp-server/` | `mcp-conformance.test.js`, which connects a real client over stdio |
@@ -33,16 +36,16 @@ tool that checks conformance rather than asserting it.
 - Claude Code skills and hooks: <https://code.claude.com/docs/en/skills>
 - Codex skills, plugins, subagents and hooks: <https://learn.chatgpt.com/docs/build-skills>
 - Copilot custom agents, skills and hooks: <https://docs.github.com/en/copilot/concepts/agents/about-agent-skills>
-- VS Code agent skills: <https://code.visualstudio.com/docs/copilot/customization/agent-skills>
+- VS Code agent skills: <https://code.visualstudio.com/docs/agent-customization/agent-skills>
 - Gemini CLI skills and hooks: <https://geminicli.com/docs/cli/skills/>
 
 ---
 
 ## 2. The one deviation, stated plainly
 
-The Agent Skills specification allows six frontmatter fields: `name`,
-`description`, `license`, `compatibility`, `metadata` and `allowed-tools`. Its
-reference validator rejects anything else.
+The Agent Skills specification defines six frontmatter fields: `name`,
+`description`, `license`, `compatibility`, `metadata` and `allowed-tools`. It
+says nothing about other fields; its reference validator rejects them.
 
 This package sets two fields the specification does not define:
 
@@ -54,8 +57,10 @@ This package sets two fields the specification does not define:
 **Why they stay.** They are the entire mechanism by which 102 of this package's
 108 skills cost nothing until a router names one. Removing them would put every
 specialist description back into every client's context on every turn, which is
-the cost this modernization exists to remove. Clients that do not know these
-fields ignore them, which is what the specification requires of unknown keys.
+the cost this modernization exists to remove. The specification does not say
+what a client must do with a field it does not define; the clients measured
+live load these skills. The Python reference validator, run on all 108 skills
+on 2026-10-27, reported nothing beyond these two fields.
 
 `verify-spec.mjs` is explicit about this rather than silent: a skill whose only
 unexpected fields are those two passes with the extension recorded; any other
@@ -65,7 +70,7 @@ the exemption.
 ```text
 skills checked          108
 conformant              108
-using documented ext    101 (disable-model-invocation, user-invocable)
+using documented ext    102 (disable-model-invocation, user-invocable)
 failures                0
 ```
 
@@ -73,7 +78,7 @@ failures                0
 
 ## 3. The gates
 
-Fifteen gates. Each says what it proves in terms of what breaks without it.
+Sixteen gates. Each says what it proves in terms of what breaks without it. All sixteen passed on 2026-10-28 (the live gate on Claude Code only).
 
 | Gate | Standard | What a failure would cost |
 |---|---|---|
@@ -90,6 +95,7 @@ Fifteen gates. Each says what it proves in terms of what breaks without it.
 | Version consistency | one version per release | A user unable to tell which build they are running |
 | Dispatch matrices | generated from skill frontmatter | A new specialist that no router can reach |
 | Generated documentation | reference pages derived from source | A catalog that lists skills which no longer exist |
+| MCP server bundle | `mcp-server/dist/stdio.mjs` is a fresh build of the source | A plugin install starting a server that differs from the one the tests ran |
 | Dependency advisories | the npm advisory database | Shipping a known-vulnerable dependency to every user |
 | Live client session | what Claude Code, Codex and Copilot actually load | The whole cost reduction resting on a field a client might ignore |
 
@@ -102,13 +108,14 @@ npm run verify:conformance  # frontmatter
 npm run verify:budgets      # context budgets
 npm run verify:findings     # findings contract, including WCAG criteria
 npm run verify:report       # report renderer self-test
-npm run verify:mcp          # MCP server, 71 tests
+npm run verify:mcp          # MCP server, 115 tests (2026-10-28)
+node scripts/check-mcp-bundle.mjs   # the committed bundle matches a fresh build
 npm run verify:markdown     # markdown accessibility
 npm run verify:scanner      # the linter's own tests
 npm run verify:release      # version consistency
 npm run verify:deps         # dependency advisories
-npm run verify:live         # a real Claude Code session
-node --test hooks/guard.test.mjs
+npm run verify:live         # real sessions on whichever clients are installed
+node --test hooks/guard.test.mjs   # enforcement gate, 34 tests (2026-10-28)
 ```
 
 ---
@@ -121,16 +128,17 @@ What the package costs before the user has said anything. Measured by
 `skills/a11y-core/scripts/measure-context.mjs`, which reports the same number
 CI checks against `budgets.json`.
 
-| Client | Before | After | Reduction |
+| Client | Before | After (2026-10-27) | Reduction |
 |---|---:|---:|---:|
-| Claude Code | 15,924 | 1,136 | 93% |
-| Codex | 15,074 | 2,417 | 84% |
-| Copilot | 17,347 | 1,136 | 93% |
-| Gemini and Antigravity | 12,848 | 1,136 | 91% |
+| Claude Code | 15,924 | 1,130 | 93% |
+| Codex | 15,074 | 1,130 | 93% |
+| Copilot | 17,347 | 1,130 | 93% |
+| Gemini and Antigravity | 12,848 | 1,130 | 91% |
 
-Codex is higher because it lists user-invocable skills in its catalog, which the
-other clients do not. Sixty-three entries at roughly ninety-five characters is
-the floor for that client, not slack.
+Codex used to cost more because it listed every skill without an
+`agents/openai.yaml` policy file. Every non-router now carries one with
+`allow_implicit_invocation: false`, so Codex lists the six routers like the
+other clients.
 
 ### Dispatch cost
 
@@ -138,7 +146,7 @@ What a router pays to send one specialist to work.
 
 | | Before | After |
 |---|---:|---:|
-| Worst case, tokens | 26,929 | 100 |
+| Worst case, tokens | 26,929 | 101 (2026-10-27) |
 
 Before, a router read a specialist's body into its own context and pasted it
 into the prompt, paying for it twice. Now it sends the skill's name.
@@ -151,8 +159,9 @@ Each measure, with its value.
 |---|---:|
 | Skills | 108 |
 | Model-invocable | 6 |
-| Largest dispatchable body | 6,131 bytes |
-| Skill catalog | 5,995 of 8,000 characters, the Codex cap |
+| Largest dispatchable body | 6,135 bytes (2026-10-28) |
+| Skill catalog the model sees | 871 characters, 6 routers (2026-10-28) |
+| User-invocable catalog | 63 entries, 6,001 of 8,000 characters, the Codex cap (2026-10-28) |
 | Hook injection, per session | 87 tokens, once |
 
 The hook previously injected roughly 570 tokens on every prompt. Over a
@@ -167,8 +176,8 @@ Each before, with its after.
 |---|---:|---:|
 | Copies of each agent | 6 | 1 |
 | Files in per-client trees | 843 | 0 |
-| Validation scripts and workflows | 29 | 11 gates in 1 workflow |
-| Installer size | 215 KB of shell and PowerShell | 8 KB of JavaScript |
+| Validation scripts and workflows | 29 | 16 gates in 1 workflow |
+| Installer size | 215 KB of shell and PowerShell | 10 KB of JavaScript |
 
 ---
 
@@ -235,13 +244,19 @@ behaviour in place.
 
 ## 7. Verified in a running client
 
-Every other gate reads files. This one loads the package into a real Claude Code
-session and measures what the client does with it.
+Every other gate reads files. This one loads the package into real client
+sessions and measures what each client does with it. It measures Claude Code
+and Codex wherever they are installed; Copilot can be measured only with a
+signed-in Copilot CLI.
+
+On Codex (measured by the lead with Codex CLI 0.165.0, 2026-10-28), the model
+sees 6 of 108 skills, 1,188 characters. The Claude Code figures below are from
+this machine, where Codex and Copilot are not installed.
 
 | Measurement | Result |
 |---|---|
-| Model-facing skill listing, without this package | 38 skills, 11,664 characters |
-| Model-facing skill listing, with it | 44 skills, 12,674 characters |
+| Model-facing skill listing, without this package | 37 skills, 20,379 characters (2026-10-27) |
+| Model-facing skill listing, with it | 43 skills, 21,389 characters (2026-10-27) |
 | This package's contribution to the model's context | 6 skills, 1,010 characters |
 | User-invocable skills reachable by name | 63 of 63 |
 | Helpers and reference skills kept out of the menu | 45 |
@@ -263,7 +278,7 @@ Reproduce: `npm run verify:live`
 
 The two items this document previously listed as open are closed.
 
-**Markdown accessibility** reports zero issues across 509 files. Getting there
+**Markdown accessibility** reported zero issues across 509 files at 7.0.0 (on 2026-10-28, zero errors across 528). Getting there
 found three separate causes, only one of which was the documents:
 
 | Cause | Count | Resolution |
@@ -276,12 +291,13 @@ Alongside them, 24 emoji headings were cleaned and 63 malformed code fences
 repaired, where \`\`\`text was used to close a block and instead opened a new one,
 so everything after it read as code.
 
-**Live client checks** are now the twelfth gate, described in section 7.
+**Live client checks** are now a gate, the last of the sixteen, described in section 7.
 
-What remains is deliberate rather than unfinished: `vscode-extension/` is kept
-and marked deprecated so a final version can point existing users at the
-package, and `build/drift-report.md` records what differed between the six
-legacy copies, for review while that git history is still close at hand.
+What remains is deliberate rather than unfinished: the deprecated
+`vscode-extension/` has been removed (VS Code users install the plugin), and
+[the legacy drift report](../history/2026-09-legacy-drift-report.md)
+records what differed between the six legacy copies, for review while that git
+history is still close at hand.
 
 ---
 
@@ -289,17 +305,17 @@ legacy copies, for review while that git history is still close at hand.
 
 ```bash
 npm install                                    # the validation toolchain
-npm run verify                                 # all 11 gates
+npm run verify                                 # all 16 gates
 npm run measure                                # context cost per client
 npm run measure:dispatch                       # router dispatch cost
 npm run probe:mcp                              # the MCP tool surface
-npm run verify:live                            # a real Claude Code session
+npm run verify:live                            # real sessions on installed clients
 node scripts/verify.mjs --json                 # machine-readable gate report
 ```
 
 Historical measurements are committed so the comparison is checkable rather
 than remembered:
 
-- `docs/context-baseline-2026-09.json` before any change
-- `docs/context-after-phase-1.json` after the migration to skills
-- `docs/context-after-phase-6.json` after the legacy trees were removed
+- `docs/history/context-baseline-2026-09.json` before any change
+- `docs/history/context-after-phase-1.json` after the migration to skills
+- `docs/history/context-after-phase-6.json` after the legacy trees were removed

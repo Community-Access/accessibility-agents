@@ -6,8 +6,9 @@ depends on.
 | | |
 |---|---|
 | Specification | <https://modelcontextprotocol.io/specification/latest> |
-| Version relied on | 2025-06-18 handshake, with the tool metadata that carries forward into 2026-07-28 |
-| SDK | `@modelcontextprotocol/sdk` 1.x, `server.registerTool` throughout |
+| Version relied on | what `@modelcontextprotocol/sdk` 1.32.2 implements: protocol revisions up to 2025-11-25 (it also negotiates 2025-06-18, 2025-03-26 and 2024-11-05). It does not implement 2026-07-28 |
+| SDK | `@modelcontextprotocol/sdk` 1.32.2 with zod 4; `server.registerTool` and `server.registerPrompt` throughout, two resource templates |
+| Transports | stdio (`mcp-server/stdio.js`, shipped bundled as `mcp-server/dist/stdio.mjs`) and Streamable HTTP (`mcp-server/server.js`). The legacy HTTP+SSE transport is not offered |
 | Governs here | the 39 tools in `mcp-server/` |
 | Checked by | `mcp-server/mcp-conformance.test.js`, which connects a real client over stdio |
 
@@ -34,12 +35,19 @@ conformance test lists twice and asserts the order is identical.
 
 ## What 2026-07-28 changes, and where this server stands
 
-The latest revision makes sessions stateless, adds `server/discover`, returns
-`ttlMs` and `cacheScope` from `tools/list` for client-side caching, and
-deprecates Roots, Sampling, Logging and HTTP with SSE. This server uses none
-of the deprecated features, runs Streamable HTTP and stdio, and already keeps
-its listing deterministic. Adopting the stateless transport and the caching
-fields is on the roadmap; nothing about the tool surface changes when it lands.
+The latest revision, 2026-07-28, removes `initialize`, the `Mcp-Session-Id`
+header and the HTTP GET endpoint, adds `server/discover`, requires `ttlMs` and
+`cacheScope` on list results for client-side caching, and deprecates Roots,
+Sampling, Logging and the HTTP+SSE transport.
+
+This server does not conform to that revision. It implements what the SDK
+provides. Its Streamable HTTP entry point is stateful by default, with
+`Mcp-Session-Id` sessions and a GET event stream, which 2026-07-28 removes; a
+stateless mode (POST only, no sessions) is available with
+`A11Y_MCP_STATELESS=1`. It does not use the legacy HTTP+SSE transport, and it
+already keeps its tool listing deterministic. Adopting the 2026-07-28 model and
+the caching fields is on the [roadmap](../../ROADMAP.md); nothing about the
+tool surface changes when it lands.
 
 ## The tool surface, measured
 
@@ -80,5 +88,7 @@ hard-coded version string.
 ## Sources
 
 - MCP specification, tools: <https://modelcontextprotocol.io/specification/2026-07-28/server/tools>
-- MCP changelog: <https://modelcontextprotocol.io/specification/latest/changelog>
+- MCP changelog: <https://modelcontextprotocol.io/specification/2026-07-28/changelog>
+- MCP versioning: <https://modelcontextprotocol.io/docs/learn/versioning>
+- SDK releases: <https://registry.npmjs.org/@modelcontextprotocol/sdk>
 - Claude Code MCP guidance, including result size: <https://code.claude.com/docs/en/mcp>

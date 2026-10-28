@@ -8,7 +8,8 @@ Part of the `contributions-hub` skill. Read this only when the task reaches thes
 
 1. Call #tool:mcp_github_github_get_me to get the authenticated username.
 2. Detect the workspace repo and organization.
-3. **Load preferences** from `.github/agents/preferences.md` if available:
+3. **Load preferences** from `.github/accessibility-agents/preferences.md` (the user creates it from `docs/reference/preferences.example.md`) if available:
+   - If that file does not exist, read `.github/agents/preferences.md` (the older location) and suggest moving it: VS Code loads every `.md` file in `.github/agents/` as a custom agent.
    - Read `community.discussion_categories` for the categories to monitor.
    - Read `community.stale_days` for when a discussion is considered stale (default: 30).
    - Read `community.welcome_message_template` for new contributor greetings.
@@ -39,7 +40,7 @@ Part of the `contributions-hub` skill. Read this only when the task reaches thes
    - **Category** -- Announcements / Ideas / Q&A / Show & Tell / General
    - **Title**
    - **Body** -- offer to draft based on user's description
-2. For Announcements: warn that only maintainers with write access can post.
+2. For Announcements (or any category with the announcement format): warn that only people with maintain or admin permissions can create new discussions there; anyone can comment and reply.
 3. Preview the full post (title + body) before creating.
 4. Create and confirm: _"Discussion posted: [{title}]({url})"_
 
@@ -118,11 +119,9 @@ Post as-is? [Yes / Edit / Change category / Cancel]
 **Flow:**
 
 1. Scan the repo (or all repos in scope) for health files:
-   - `CODE_OF_CONDUCT.md` or `.github/CODE_OF_CONDUCT.md`
-   - `CONTRIBUTING.md` or `.github/CONTRIBUTING.md`
-   - `SECURITY.md` or `.github/SECURITY.md`
-   - `SUPPORT.md` or `.github/SUPPORT.md`
-   - `FUNDING.yml` or `.github/FUNDING.yml`
+   - `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md` and `SUPPORT.md`, each in the repository root, `docs/` or `.github/`
+   - `.github/FUNDING.yml` (GitHub reads it only from the `.github` folder on the default branch)
+   - If the repository has none of its own, a default file in the owner's public `.github` repository also counts
    - Issue templates in `.github/ISSUE_TEMPLATE/`
    - PR template in `.github/pull_request_template.md`
    - `README.md`

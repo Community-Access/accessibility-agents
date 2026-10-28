@@ -26,11 +26,11 @@ Use notifications-manager when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@notifications-manager show my unread notifications
-@notifications-manager filter notifications for this repo
-@notifications-manager mark all as read
-@notifications-manager unsubscribe from thread 12345
-@notifications-manager what repos am I watching?
+/notifications-manager show my unread notifications
+/notifications-manager filter notifications for this repo
+/notifications-manager mark all as read
+/notifications-manager unsubscribe from thread 12345
+/notifications-manager what repos am I watching?
 ```
 
 ### Claude Code (Terminal)
@@ -45,8 +45,8 @@ Use notifications-manager when:
 ### Via GitHub Hub
 
 ```text
-@github-hub show my notifications
-@github-hub mark notifications as read
+/github-hub show my notifications
+/github-hub mark notifications as read
 ```
 
 ---

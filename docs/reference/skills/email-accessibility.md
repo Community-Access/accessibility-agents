@@ -1,4 +1,4 @@
-# email-accessibility — Email Accessibility Specialist
+# email-accessibility - Email Accessibility Specialist
 
 > Audits HTML email templates for accessibility under email client rendering constraints. Covers table-based layout, inline styling, image blocking fallbacks, semantic structure, dark mode adaptation, and screen reader compatibility across Outlook, Gmail, and Apple Mail.
 
@@ -43,11 +43,11 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@email-accessibility Audit this MJML email template for screen reader accessibility
+/email-accessibility Audit this MJML email template for screen reader accessibility
 
-@email-accessibility Check our newsletter HTML for image blocking fallbacks and dark mode support
+/email-accessibility Check our newsletter HTML for image blocking fallbacks and dark mode support
 
-@email-accessibility Review this transactional email template for Outlook compatibility
+/email-accessibility Review this transactional email template for Outlook compatibility
 ```
 
 ## Related

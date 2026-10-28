@@ -1,15 +1,30 @@
 {
   "version": 1,
-  "$comment": "Copilot coding agent hooks. Copilot exposes no Stop or compaction event, so the edit gate is the enforcement point here; see docs/MODERNIZATION-CONFORMANCE.md for the per-client coverage table.",
+  "$comment": "Copilot hook events mapped onto hooks/guard.mjs, for a repository install: copy this file to .github/hooks/ in the repository to gate. Paths are relative to that repository's root, so it works only where hooks/guard.mjs is present. The plugin install uses com.github.copilot/hooks/hooks.json instead.",
   "hooks": {
     "userPromptSubmitted": [
-      { "type": "command", "bash": "node hooks/guard.mjs --behaviour detect --client copilot", "powershell": "node hooks/guard.mjs --behaviour detect --client copilot", "timeoutSec": 10 }
+      {
+        "type": "command",
+        "bash": "node hooks/guard.mjs --behaviour detect --client copilot",
+        "powershell": "node hooks/guard.mjs --behaviour detect --client copilot",
+        "timeoutSec": 10
+      }
     ],
     "preToolUse": [
-      { "type": "command", "bash": "node hooks/guard.mjs --behaviour gate --client copilot", "powershell": "node hooks/guard.mjs --behaviour gate --client copilot", "timeoutSec": 10 }
+      {
+        "type": "command",
+        "bash": "node hooks/guard.mjs --behaviour gate --client copilot",
+        "powershell": "node hooks/guard.mjs --behaviour gate --client copilot",
+        "timeoutSec": 10
+      }
     ],
     "postToolUse": [
-      { "type": "command", "bash": "node hooks/guard.mjs --behaviour mark --client copilot", "powershell": "node hooks/guard.mjs --behaviour mark --client copilot", "timeoutSec": 10 }
+      {
+        "type": "command",
+        "bash": "node hooks/guard.mjs --behaviour mark --client copilot",
+        "powershell": "node hooks/guard.mjs --behaviour mark --client copilot",
+        "timeoutSec": 10
+      }
     ]
   }
 }

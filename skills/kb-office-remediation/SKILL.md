@@ -38,7 +38,9 @@ from lxml import etree
 
 doc = Document("input.docx")
 styles_element = doc.styles.element
-rPrDefault = styles_element.find(qn("w:docDefaults/w:rPrDefault/w:rPr"))
+# qn() takes one tag, not a path; use xpath for the path
+found = styles_element.xpath("w:docDefaults/w:rPrDefault/w:rPr")
+rPrDefault = found[0] if found else None
 if rPrDefault is not None:
     lang = rPrDefault.find(qn("w:lang"))
     if lang is None:
@@ -65,7 +67,7 @@ for table in doc.tables:
 doc.save("output.docx")
 ```
 
-### Add Alt Text to Images
+### Find Images Missing Alt Text
 
 ```python
 from docx import Document
@@ -78,12 +80,13 @@ for rel in doc.part.rels.values():
         # Alt text is the 'descr' attribute on the docPr element
         pass
 
-# Direct XML approach for inline images:
+# Direct XML approach for inline images: report missing alt text.
+# Write real descriptions only (docPr.set("descr", text)); never insert a
+# placeholder such as "TODO", which hides the problem from checkers.
 body = doc.element.body
 for docPr in body.iter(qn("wp:docPr")):
     if not docPr.get("descr"):
-        docPr.set("descr", "TODO: Add alt text")
-doc.save("output.docx")
+        print(f"Image '{docPr.get('name')}' (id {docPr.get('id')}) has no alt text")
 ```
 
 ### Fix Heading Levels
@@ -138,7 +141,7 @@ from openpyxl import load_workbook
 wb = load_workbook("input.xlsx")
 for ws in wb.worksheets:
     if ws.title in GENERIC:
-        print(f"Generic sheet name: '{ws.title}' — rename to describe content")
+        print(f"Generic sheet name: '{ws.title}' - rename to describe content")
 ```
 
 ### Detect Merged Cells
@@ -181,7 +184,7 @@ for i, slide in enumerate(prs.slides, 1):
         print(f"Slide {i}: Empty title")
 ```
 
-### Set Alt Text on Images
+### Find Pictures Missing Alt Text
 
 ```python
 from pptx import Presentation
@@ -191,21 +194,22 @@ prs = Presentation("input.pptx")
 for i, slide in enumerate(prs.slides, 1):
     for shape in slide.shapes:
         if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
-            if not getattr(shape, "_element").get("descr", ""):
-                # Access via XML for older python-pptx versions
-                shape._element.set("descr", "TODO: Add alt text")
-prs.save("output.pptx")
+            # descr lives on p:nvPicPr/p:cNvPr, not on the p:pic element
+            cNvPr = shape._element.nvPicPr.cNvPr
+            if not cNvPr.get("descr"):
+                print(f"Slide {i}: picture '{shape.name}' has no alt text")
+                # When a real description is known: cNvPr.set("descr", text)
 ```
 
 ### Check Reading Order
 
 ```python
 from pptx import Presentation
-from lxml import etree
 
 prs = Presentation("input.pptx")
 for i, slide in enumerate(prs.slides, 1):
-    shapes = [(s.left, s.top, s.name) for s in slide.shapes]
+    # left/top can be None for placeholders that inherit position
+    shapes = [(s.left or 0, s.top or 0, s.name) for s in slide.shapes]
     # Visual order (top-to-bottom, left-to-right) vs. XML order
     visual = sorted(shapes, key=lambda s: (s[1], s[0]))
     xml_order = [s.name for s in slide.shapes]
@@ -218,7 +222,7 @@ for i, slide in enumerate(prs.slides, 1):
 
 ## PowerShell COM Automation (Windows + Office)
 
-### Word — Set Title
+### Word - Set Title
 
 ```powershell
 $word = New-Object -ComObject Word.Application
@@ -231,7 +235,7 @@ $word.Quit()
 [System.Runtime.InteropServices.Marshal]::ReleaseComObject($word) | Out-Null
 ```
 
-### Excel — Set Title and Sheet Names
+### Excel - Set Title and Sheet Names
 
 ```powershell
 $excel = New-Object -ComObject Excel.Application
@@ -246,7 +250,7 @@ $excel.Quit()
 [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
 ```
 
-### PowerPoint — Set Title
+### PowerPoint - Set Title
 
 ```powershell
 $ppt = New-Object -ComObject PowerPoint.Application
@@ -286,7 +290,7 @@ Each property, with its file and XML element.
 |----------|------|-------------|
 | Title | `docProps/core.xml` | `<dc:title>` |
 | Author | `docProps/core.xml` | `<dc:creator>` |
-| Language | `word/settings.xml` | `<w:themeFontLang>` |
+| Language (document default) | `word/styles.xml` | `<w:docDefaults><w:rPrDefault><w:rPr><w:lang w:val="en-US">` (`<w:themeFontLang>` in settings.xml only sets theme font languages) |
 | Heading styles | `word/document.xml` | `<w:pStyle w:val="Heading1">` |
 | Alt text | `word/document.xml` | `<wp:docPr descr="...">` |
 | Table headers | `word/document.xml` | `<w:tblHeader/>` |
@@ -296,7 +300,7 @@ Each property, with its file and XML element.
 ## Safety Rules
 
 1. **Always back up** the original file before any modification
-2. **Never overwrite** — use `-fixed` suffix or separate output path
-3. **Validate after fix** — recommend Microsoft Accessibility Checker or re-audit
-4. **COM cleanup** — always `ReleaseComObject` and `Quit()` after COM automation
-5. **Encoding** — OOXML uses UTF-8; preserve BOM if present in core.xml
+2. **Never overwrite** - use `-fixed` suffix or separate output path
+3. **Validate after fix** - recommend Microsoft Accessibility Checker or re-audit
+4. **COM cleanup** - always `ReleaseComObject` and `Quit()` after COM automation
+5. **Encoding** - OOXML uses UTF-8; preserve BOM if present in core.xml

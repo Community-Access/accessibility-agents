@@ -1,12 +1,12 @@
 {
   "name": "accessibility-agents",
-  "version": "7.0.3",
+  "version": "7.1.0",
   "private": true,
   "description": "WCAG 2.2 AA enforcement as Agent Skills, readable by Claude Code, Codex, Copilot, Gemini and Antigravity without per-client copies.",
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "probe:mcp": "node mcp-server/scripts/probe-tools.mjs",
     "serve:mcp": "node mcp-server/server.js",
     "verify:release": "node scripts/check-release-consistency.js",
-    "install": "node scripts/install.mjs",
+    "setup": "node scripts/install.mjs",
     "verify:live": "node scripts/verify-live.mjs",
     "fix:tables": "node scripts/describe-tables.mjs --apply",
     "fix:emoji": "node scripts/strip-heading-emoji.mjs --apply",
@@ -42,8 +42,12 @@
     "audit:recall": "node scripts/audit-recall.mjs"
   },
   "devDependencies": {
-    "@axe-core/cli": "^4.13.0",
-    "markdownlint-cli2": "^0.23.3",
+    "@axe-core/cli": "^4.14.0",
+    "markdownlint-cli2": "^0.24.0",
     "skills-ref": "^0.1.5"
+  },
+  "//overrides": "basic-ftp is pinned past the range get-uri asks for (^5.3.1): every 5.x and 6.x release before 6.2.1 carries the high advisories, get-uri reaches it only to fetch an ftp:// proxy auto-config file, and @axe-core/cli has no release that avoids it. Remove once get-uri accepts ^6.2.3.",
+  "overrides": {
+    "basic-ftp": "^6.2.3"
   }
 }

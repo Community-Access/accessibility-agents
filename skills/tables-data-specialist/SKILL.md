@@ -32,10 +32,9 @@ You own everything related to tabular data accessibility:
 
 ```html
 <th scope="col">
-  <input type="checkbox" 
-         aria-label="Select all users" 
-         id="select-all"
-         aria-checked="mixed">
+  <input type="checkbox"
+         aria-label="Select all users"
+         id="select-all">
 </th>
 ```
 
@@ -43,7 +42,7 @@ Three states:
 
 - **Unchecked**: No rows selected
 - **Checked**: All rows selected
-- **Mixed/indeterminate**: Some rows selected - set via `checkbox.indeterminate = true`
+- **Mixed/indeterminate**: Some rows selected - set via `checkbox.indeterminate = true` (never `aria-checked` on a native checkbox)
 
 When the select-all state changes, announce the result:
 
@@ -60,13 +59,14 @@ selectAll.addEventListener('change', () => {
 
 ```html
 <tr aria-selected="true">
-  <td><input type="checkbox" checked aria-label="Selected: Jane Smith"></td>
+  <td><input type="checkbox" checked aria-label="Select Jane Smith"></td>
   <td>Jane Smith</td>
   <!-- ... -->
 </tr>
 ```
 
 - Use `aria-selected="true"` on selected rows
+- Keep the checkbox label free of state ("Select Jane Smith", not "Selected: Jane Smith"); the checked state is announced separately
 - Bulk action buttons outside the table should be enabled/disabled based on selection
 - Announce selection count changes via live region
 - Provide keyboard shortcut for select all (Ctrl+A when grid is focused)
@@ -152,8 +152,6 @@ Tables used for layout (not data) are an accessibility antipattern. Per WebAIM, 
 - No `<th>`, `<caption>`, `scope`, or `headers` on layout tables
 - The correct fix is always to use CSS Grid or Flexbox instead
 - When remediating legacy layout tables, ensure data is still presented in a logical, meaningful linear order when table structure is removed
-
-## How to Report Issues
 
 ## Reference files
 

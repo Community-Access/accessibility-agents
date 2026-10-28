@@ -52,9 +52,9 @@ Interactive behavior (aria-specialist, keyboard-navigator), form content (forms-
 ### GitHub Copilot
 
 ```text
-@alt-text-headings check alt text on all images in this page
-@alt-text-headings review heading hierarchy in this template
-@alt-text-headings audit SVG icons in the component library
+/alt-text-headings check alt text on all images in this page
+/alt-text-headings review heading hierarchy in this template
+/alt-text-headings audit SVG icons in the component library
 ```
 
 </details>

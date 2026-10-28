@@ -7,35 +7,48 @@ jobs:
     name: Accessibility Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Install dependencies
-        run: npm ci
-        continue-on-error: true
+        run: npm ci --no-audit --no-fund
 
       - name: Run accessibility lint (Node.js)
         run: node .github/scripts/a11y-lint.mjs .
 
-      - name: Run axe-core linter
+      # axe-core against every HTML file outside build output, dependencies and
+      # example/ (a fixture whose defects are planted on purpose). The tag set is
+      # WCAG 2.2 AA: without wcag22aa, target-size never runs. Most other 2.2
+      # criteria have no axe rule and need manual testing. Violations fail the
+      # job; a repository with no HTML files skips the scan.
+      - name: Run axe-core on HTML files
         run: |
-          HTML_FILES=$(find . -name '*.html' -not -path './node_modules/*' -not -path './.git/*' -not -path './dist/*' -not -path './build/*' | head -20)
-          if [ -n "$HTML_FILES" ]; then
-            npx @axe-core/cli --exit --rules wcag2a,wcag2aa --disable color-contrast $HTML_FILES 2>/dev/null || true
-          else
+          mapfile -t HTML_FILES < <(find . -name '*.html' \
+            -not -path '*/node_modules/*' -not -path './.git/*' \
+            -not -path './dist/*' -not -path './build/*' \
+            -not -path './example/*' -not -path './docs/history/*' | sort)
+          if [ "${#HTML_FILES[@]}" -eq 0 ]; then
             echo "No HTML files found for axe-core scan. Skipping."
+            exit 0
           fi
-        continue-on-error: true
+          URLS=()
+          for f in "${HTML_FILES[@]}"; do URLS+=("file://$PWD/${f#./}"); done
+          DRIVER=()
+          if [ -n "${CHROMEWEBDRIVER:-}" ]; then
+            DRIVER=(--chromedriver-path "$CHROMEWEBDRIVER/chromedriver")
+          fi
+          npx --no-install axe "${URLS[@]}" "${DRIVER[@]}" --exit \
+            --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa
 
   eslint-a11y:
     name: ESLint jsx-a11y
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Check for package.json
         id: check-package
@@ -49,9 +62,9 @@ jobs:
 
       - name: Setup Node.js
         if: steps.check-package.outputs.found == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Install dependencies
         if: steps.check-package.outputs.found == 'true'
@@ -90,15 +103,15 @@ jobs:
       A11Y_OUTPUT_FORMAT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.output_format || vars.A11Y_MARKDOWN_FORMAT || 'both' }}
       A11Y_REGRESSION_MODE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.regression_mode || vars.A11Y_REGRESSION_MODE || 'false' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # Fetch enough history for regression mode git diff.
           fetch-depth: 2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Run markdown accessibility lint
         run: |
@@ -115,14 +128,14 @@ jobs:
       - name: Upload markdown a11y SARIF to Code Scanning
         if: always() && (env.A11Y_OUTPUT_FORMAT == 'sarif' || env.A11Y_OUTPUT_FORMAT == 'both') && hashFiles('artifacts/markdown-a11y.sarif') != ''
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: artifacts/markdown-a11y.sarif
           category: markdown-accessibility
 
       - name: Upload markdown a11y SARIF artifact
         if: always() && (env.A11Y_OUTPUT_FORMAT == 'sarif' || env.A11Y_OUTPUT_FORMAT == 'both')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: markdown-a11y-sarif
           path: artifacts/markdown-a11y.sarif
@@ -130,7 +143,7 @@ jobs:
 
   # Optional: GitHub Accessibility Scanner for deployed pages
   # Uncomment and configure URLs to enable automated scanning on PR.
-  # See docs/tools/github-a11y-scanner-integration.md for details.
+  # See docs/reference/tools/github-a11y-scanner-integration.md for details.
   #
   # accessibility-scanner:
   #   name: GitHub Accessibility Scanner
@@ -138,22 +151,26 @@ jobs:
   #   if: github.event_name == 'pull_request'
   #   steps:
   #     - name: Scan deployed pages
-  #       uses: github/accessibility-scanner@v2
+  #       uses: github/accessibility-scanner@v3
   #       with:
   #         urls: |
   #           https://your-site.com
-  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         repository: ${{ github.repository }}
+  #         cache_key: accessibility-scanner
+  #         # v3 needs a fine-grained PAT with contents, issues and
+  #         # pull_requests write; GITHUB_TOKEN is not enough.
+  #         token: ${{ secrets.A11Y_SCANNER_TOKEN }}
 
   # Optional: Lighthouse CI for performance and accessibility scoring
   # Uncomment and configure URLs to enable Lighthouse audits on PR.
-  # See docs/tools/lighthouse-scanner-integration.md for details.
+  # See docs/reference/tools/lighthouse-scanner-integration.md for details.
   #
   # lighthouse-ci:
   #   name: Lighthouse CI
   #   runs-on: ubuntu-latest
   #   if: github.event_name == 'pull_request'
   #   steps:
-  #     - uses: actions/checkout@v6
+  #     - uses: actions/checkout@v7
   #     - name: Run Lighthouse CI
   #       uses: treosh/lighthouse-ci-action@v12
   #       with:

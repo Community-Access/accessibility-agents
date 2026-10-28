@@ -18,8 +18,8 @@ Primary findings export with one row per issue instance.
 | `page_url` | Page where the issue was found | `/index.html` |
 | `severity` | Critical, Serious, Moderate, Minor | `Serious` |
 | `confidence` | High, Medium, Low | `High` |
-| `score_impact` | Points deducted from page score | `-7` |
-| `wcag_criteria` | WCAG 2.2 success criterion | `1.1.1` |
+| `score_impact` | Points deducted from page score | `-5` |
+| `wcag_criteria` | WCAG 2.2 success criterion, or `n/a` for best-practice rules | `1.1.1` |
 | `wcag_level` | A, AA | `A` |
 | `rule_id` | axe-core rule ID or agent rule | `image-alt` |
 | `issue_summary` | One-line description | `Image missing alternative text` |
@@ -28,7 +28,7 @@ Primary findings export with one row per issue instance.
 | `pattern_type` | Systemic, Template, Page-specific | `Systemic` |
 | `remediation_status` | New, Persistent, Fixed, Regressed | `New` |
 | `fix_suggestion` | Actionable fix description | `Add descriptive alt attribute` |
-| `deque_help_url` | Accessibility Insights help link | See URL patterns below |
+| `deque_help_url` | Deque University help link | See URL patterns below |
 | `wcag_url` | WCAG understanding document link | `https://www.w3.org/WAI/WCAG22/Understanding/non-text-content` |
 
 ### 2. WEB-ACCESSIBILITY-SCORECARD.csv
@@ -74,48 +74,61 @@ Prioritized remediation plan with one row per unique issue type.
 | `estimated_effort` | Low, Medium, High | `Low` |
 | `auto_fixable` | Yes, No, Partial | `Yes` |
 | `fix_guidance` | Step-by-step fix instructions | `Add alt="description" to each img` |
-| `deque_help_url` | Accessibility Insights reference | See URL patterns below |
+| `deque_help_url` | Deque University reference | See URL patterns below |
 | `wcag_url` | WCAG understanding document | URL |
 | `roi_score` | Fix impact score (instances x severity weight) | `84` |
 
-## Accessibility Insights Help URL Patterns
+## Deque University Help URL Patterns
 
-Map axe-core rule IDs to Accessibility Insights help pages using these URL patterns:
+Map axe-core rule IDs to Deque University help pages. This is the `helpUrl`
+that axe-core 4.14 itself returns for each rule, without the
+`?application=axeAPI` query string:
 
 ```text
-Base URL: https://accessibilityinsights.io/info-examples/web/
+Base URL: https://dequeuniversity.com/rules/axe/4.14/
 
 Pattern: {base_url}{rule-id}
-Example: https://accessibilityinsights.io/info-examples/web/image-alt/
+Example: https://dequeuniversity.com/rules/axe/4.14/image-alt
 ```
 
-**Common axe-core rule to help URL mappings:**
+When a scan result carries its own `helpUrl`, prefer it: it names the axe-core
+version that actually ran.
+
+**Common axe-core rule to help URL mappings.** The WCAG column follows the
+rule's tags in axe-core 4.14. Rules tagged `best-practice` map to no success
+criterion; record `n/a` in the findings `wcag` field.
 
 | axe-core Rule | Help URL | WCAG |
 |---------------|---------------|------|
-| `image-alt` | `https://accessibilityinsights.io/info-examples/web/image-alt/` | 1.1.1 |
-| `button-name` | `https://accessibilityinsights.io/info-examples/web/button-name/` | 4.1.2 |
-| `color-contrast` | `https://accessibilityinsights.io/info-examples/web/color-contrast/` | 1.4.3 |
-| `label` | `https://accessibilityinsights.io/info-examples/web/label/` | 1.3.1 |
-| `link-name` | `https://accessibilityinsights.io/info-examples/web/link-name/` | 4.1.2 |
-| `html-has-lang` | `https://accessibilityinsights.io/info-examples/web/html-has-lang/` | 3.1.1 |
-| `document-title` | `https://accessibilityinsights.io/info-examples/web/document-title/` | 2.4.2 |
-| `heading-order` | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` | 1.3.1 |
-| `aria-roles` | `https://accessibilityinsights.io/info-examples/web/aria-roles/` | 4.1.2 |
-| `aria-required-attr` | `https://accessibilityinsights.io/info-examples/web/aria-required-attr/` | 4.1.2 |
-| `aria-valid-attr` | `https://accessibilityinsights.io/info-examples/web/aria-valid-attr/` | 4.1.2 |
-| `bypass` | `https://accessibilityinsights.io/info-examples/web/bypass/` | 2.4.1 |
-| `region` | `https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html` | 1.3.1 |
-| `tabindex` | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` | 2.4.3 |
-| `duplicate-id` | `https://accessibilityinsights.io/info-examples/web/duplicate-id/` | 4.1.1 |
-| `focus-order-semantics` | `https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html` | 2.4.3 |
-| `input-image-alt` | `https://accessibilityinsights.io/info-examples/web/input-image-alt/` | 1.1.1 |
-| `meta-viewport` | `https://accessibilityinsights.io/info-examples/web/meta-viewport/` | 1.4.4 |
-| `select-name` | `https://accessibilityinsights.io/info-examples/web/select-name/` | 4.1.2 |
-| `autocomplete-valid` | `https://accessibilityinsights.io/info-examples/web/autocomplete-valid/` | 1.3.5 |
+| `image-alt` | `https://dequeuniversity.com/rules/axe/4.14/image-alt` | 1.1.1 |
+| `button-name` | `https://dequeuniversity.com/rules/axe/4.14/button-name` | 4.1.2 |
+| `color-contrast` | `https://dequeuniversity.com/rules/axe/4.14/color-contrast` | 1.4.3 |
+| `label` | `https://dequeuniversity.com/rules/axe/4.14/label` | 4.1.2 |
+| `link-name` | `https://dequeuniversity.com/rules/axe/4.14/link-name` | 2.4.4, 4.1.2 |
+| `html-has-lang` | `https://dequeuniversity.com/rules/axe/4.14/html-has-lang` | 3.1.1 |
+| `document-title` | `https://dequeuniversity.com/rules/axe/4.14/document-title` | 2.4.2 |
+| `heading-order` | `https://dequeuniversity.com/rules/axe/4.14/heading-order` | n/a (best-practice) |
+| `aria-roles` | `https://dequeuniversity.com/rules/axe/4.14/aria-roles` | 4.1.2 |
+| `aria-required-attr` | `https://dequeuniversity.com/rules/axe/4.14/aria-required-attr` | 4.1.2 |
+| `aria-valid-attr` | `https://dequeuniversity.com/rules/axe/4.14/aria-valid-attr` | 4.1.2 |
+| `bypass` | `https://dequeuniversity.com/rules/axe/4.14/bypass` | 2.4.1 |
+| `region` | `https://dequeuniversity.com/rules/axe/4.14/region` | n/a (best-practice) |
+| `tabindex` | `https://dequeuniversity.com/rules/axe/4.14/tabindex` | n/a (best-practice) |
+| `duplicate-id-aria` | `https://dequeuniversity.com/rules/axe/4.14/duplicate-id-aria` | 4.1.2 |
+| `focus-order-semantics` | `https://dequeuniversity.com/rules/axe/4.14/focus-order-semantics` | n/a (best-practice, experimental) |
+| `input-image-alt` | `https://dequeuniversity.com/rules/axe/4.14/input-image-alt` | 1.1.1, 4.1.2 |
+| `meta-viewport` | `https://dequeuniversity.com/rules/axe/4.14/meta-viewport` | 1.4.4 |
+| `select-name` | `https://dequeuniversity.com/rules/axe/4.14/select-name` | 4.1.2 |
+| `autocomplete-valid` | `https://dequeuniversity.com/rules/axe/4.14/autocomplete-valid` | 1.3.5 |
+| `target-size` | `https://dequeuniversity.com/rules/axe/4.14/target-size` | 2.5.8 |
+
+`duplicate-id` and `duplicate-id-active` are deprecated in axe-core 4.14 and
+tagged only to 4.1.1 Parsing, which is obsolete and removed in WCAG 2.2. Do not
+map them to a WCAG 2.2 criterion. Duplicate IDs that break an ARIA reference
+are reported by `duplicate-id-aria` (4.1.2).
 
 For any axe-core rule not listed above, construct the URL as:
-`https://accessibilityinsights.io/info-examples/web/{rule-id}`
+`https://dequeuniversity.com/rules/axe/4.14/{rule-id}`
 
 For agent-detected issues without axe-core rule IDs, use W3C/WAI topic pages:
 

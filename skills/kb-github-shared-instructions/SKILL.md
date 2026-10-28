@@ -45,7 +45,7 @@ Agents search across **all repos the user has access to** by default. This is th
 
 ### How Discovery Works
 
-1. **Load preferences** from `.github/agents/preferences.md` -- check `repos.discovery` for the configured mode.
+1. **Load preferences** from `.github/accessibility-agents/preferences.md` (the user creates it from `docs/reference/preferences.example.md`) -- check `repos.discovery` for the configured mode. If that file does not exist, read `.github/agents/preferences.md` (the older location) and suggest moving it: VS Code loads every `.md` file in `.github/agents/` as a custom agent.
 2. **If no preferences exist** or `repos.discovery` is not set --> default to `all` (search everything the user can access).
 3. **Apply include/exclude lists** -- always include repos from `repos.include`, always skip repos from `repos.exclude`.
 4. **Apply per-repo overrides** -- when preferences define `repos.overrides` for a specific repo, respect the `track` settings (issues, PRs, discussions, releases, security, CI) and label/path filters.
@@ -95,7 +95,7 @@ Additional per-repo filters:
 
 ## Interactive Questions with askQuestions
 
-**You MUST use the `askQuestions` tool** to present structured choices to the user. Do NOT type out questions as plain chat text — always invoke `askQuestions` so users get a clickable, structured UI they can respond to in one click.
+**You MUST use the `askQuestions` tool** to present structured choices to the user. Do NOT type out questions as plain chat text - always invoke `askQuestions` so users get a clickable, structured UI they can respond to in one click.
 
 ### When to Use askQuestions
 
@@ -116,9 +116,9 @@ Each situation, with its action.
 - **Always mark a recommended option** so the user can confirm in one click.
 - **Batch related questions** into a single call (up to 4 questions).
 - **Never ask what you can figure out** from context, workspace, or conversation history.
-- **Never ask simple yes/no** — just propose and do it, mentioning what you assumed.
-- **Never type choices as plain markdown** — always use the `askQuestions` tool for clickable options.
-- **Present choices, not open questions** — "Which of these?" not "What would you like to do?"
+- **Never ask simple yes/no** - just propose and do it, mentioning what you assumed.
+- **Never type choices as plain markdown** - always use the `askQuestions` tool for clickable options.
+- **Present choices, not open questions** - "Which of these?" not "What would you like to do?"
 
 ### Pattern: Startup Flow
 
@@ -132,7 +132,7 @@ askQuestions([
       { label: "Option A (recommended)", isRecommended: true },
       { label: "Option B" },
       { label: "Option C" },
-      { label: "Something else — describe it" }
+      { label: "Something else - describe it" }
     ]
   }
 ])
@@ -164,10 +164,10 @@ askQuestions([
   {
     question: "I can help with {project} in a few ways:",
     options: [
-      { label: "Debug — crash analysis, error diagnosis" },
-      { label: "Build & Package — PyInstaller, distribution" },
-      { label: "GUI — wxPython layout, controls" },
-      { label: "Architecture — code review, refactoring" }
+      { label: "Debug - crash analysis, error diagnosis" },
+      { label: "Build & Package - PyInstaller, distribution" },
+      { label: "GUI - wxPython layout, controls" },
+      { label: "Architecture - code review, refactoring" }
     ]
   }
 ])
@@ -201,10 +201,10 @@ All HTML documents MUST follow these accessibility standards:
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header role="banner">...</header>
+  <header>...</header>
   <nav aria-label="Document sections">...</nav>
-  <main id="main-content" role="main">...</main>
-  <footer role="contentinfo">...</footer>
+  <main id="main-content">...</main>
+  <footer>...</footer>
 </body>
 </html>
 ```
@@ -212,14 +212,14 @@ All HTML documents MUST follow these accessibility standards:
 #### Mandatory Accessibility Features
 
 1. **Skip link** -- First focusable element, jumps to `<main>`.
-2. **Landmark roles** -- `<header role="banner">`, `<nav>`, `<main role="main">`, `<footer role="contentinfo">`, and `<section>` with `aria-labelledby` for each major section.
+2. **Landmarks** -- `<header>`, `<nav>`, `<main>`, `<footer>` (the elements carry the banner, navigation, main and contentinfo roles, so no `role` attribute), and `<section>` with `aria-labelledby` for each major section.
 3. **Heading hierarchy** -- Strict `h1` --> `h2` --> `h3` cascade. Never skip levels. One `h1` per document.
 4. **Descriptive link text** -- Never "click here" or bare URLs. Always `<a href="...">PR #123: Fix login bug</a>`.
 5. **Table accessibility** -- Every `<table>` gets `<caption>`, `<thead>` with `<th scope="col">`, and row headers with `<th scope="row">` where applicable.
-6. **Status indicators** -- Don't rely on emoji/color alone. Use `<span class="status" aria-label="Needs your action">` with visible text labels alongside any icons.
-7. **Action items** -- Use `<input type="checkbox" id="action-N" aria-label="{description}"><label for="action-N">` for interactive checklists.
+6. **Status indicators** -- Don't rely on emoji/color alone. Use a visible text label, e.g. `<span class="status-action">Needs your action</span>`. Do not put `aria-label` on a plain `span`; ARIA 1.2 prohibits naming the generic role.
+7. **Action items** -- Use `<input type="checkbox" id="action-N"><label for="action-N">{description}</label>` for interactive checklists. The visible label names the checkbox; an extra `aria-label` would override it.
 8. **Live region** -- Dashboard summary section uses `aria-live="polite"` for dynamic updates.
-9. **Contrast** -- All text meets WCAG 2.1 AA contrast ratio (4.5:1 for normal text, 3:1 for large text).
+9. **Contrast** -- All text meets WCAG 2.2 AA contrast ratio (4.5:1 for normal text, 3:1 for large text).
 10. **Focus indicators** -- Visible focus outlines on all interactive elements.
 
 #### Shared HTML Styles
@@ -251,7 +251,7 @@ body {
 }
 .skip-link {
   position: absolute; left: -9999px; top: 0; padding: 0.5rem 1rem;
-  background: var(--accent); color: #fff; z-index: 1000; font-weight: 600;
+  background: var(--accent); color: var(--bg); z-index: 1000; font-weight: 600;
 }
 .skip-link:focus { left: 0; }
 h1 { font-size: 1.75rem; margin-bottom: 0.5rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
@@ -313,7 +313,7 @@ For every issue and PR listed, check reactions and summarize community sentiment
   - **Popular** (5+ positive reactions) -- flag as community-endorsed
   - **Controversial** (mixed +1 and -1) -- flag as needs discussion
   - **Quiet** (0-1 reactions) -- no flag
-- In HTML output, render reactions as: `<span class="reaction" aria-label="5 thumbs up reactions">+1 5</span>`
+- In HTML output, render reactions as: `<span class="reaction"><span aria-hidden="true">+1 5</span><span class="sr-only">5 thumbs up reactions</span></span>`
 - In markdown output: `[+1: 5, heart: 2]`
 
 ### Release Awareness
@@ -441,7 +441,7 @@ When the user wants to do something across multiple items:
 1. **Inline citation format:** Use markdown links: `[WCAG 2.2 SC 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)`
 2. **Sources section:** End every substantive response with a `## Sources` section listing all cited references with full URLs
 3. **No source, no claim:** If no authoritative source exists, explicitly state: "This recommendation is based on practical accessibility testing experience and is not codified in a published standard."
-4. **Authority hierarchy:** Prefer higher-tier sources. See [CITATION_POLICY.md](CITATION_POLICY.md) for the full 6-tier hierarchy (normative specs > informative guidance > platform vendor > AT vendor > peer-reviewed > government/legal)
+4. **Authority hierarchy:** Prefer higher-tier sources. See [citation-policy.md](../../docs/standards/citation-policy.md) for the full 6-tier hierarchy (normative specs > informative guidance > platform vendor > AT vendor > peer-reviewed > government/legal)
 5. **Conflict resolution:** When sources disagree, cite both, note the conflict, and follow the higher-tier source
 
 ### Staying Current
@@ -453,4 +453,4 @@ When the user wants to do something across multiple items:
 
 ### Source Registry
 
-A machine-readable registry of authoritative sources is maintained at `.github/agents/SOURCE_REGISTRY.json`. A weekly GitHub Actions workflow checks these sources for changes and opens issues when updates are detected. When an agent's primary sources are updated, review the agent's guidance for accuracy.
+A machine-readable registry of authoritative sources is maintained at `docs/standards/source-registry.json`. No workflow checks it automatically at present; its `lastVerified` dates record manual checks (see `docs/standards/citation-policy.md`). When an agent's primary sources are updated, review the agent's guidance for accuracy.

@@ -6,33 +6,7 @@ Part of the `alt-text-headings` skill. Read this only when the task reaches thes
 
 When you encounter images in the codebase, follow this workflow:
 
-### VS Code 1.113 Image Workflow
-
-VS Code 1.113 continues the native image-file reading support introduced in 1.112 via the `chat.imageSupport.enabled` setting. This enhances your image analysis capabilities:
-
-**Enable image support:**
-
-```json
-{
-  "chat.imageSupport.enabled": true,
-  "imageCarousel.explorerContextMenu.enabled": true
-}
-```
-
-**What this enables:**
-
-- **Direct image reading:** Read local image files from disk without downloading or converting
-- **Image carousel:** When multiple images are involved, view them in a dedicated carousel UI
-- **Agent output images:** Screenshots from the integrated browser appear as selectable images in chat
-- **Explorer context menu:** Right-click image files or folders > "Open Images in Carousel" for batch review
-
-**Enhanced workflow with 1.113:**
-
-1. Ask the user to enable `chat.imageSupport.enabled` if not already set
-2. Read images directly using the file system tools
-3. Images appear inline in the chat for visual comparison
-4. Use the carousel view for reviewing multiple images at once
-5. Compare existing alt text against what you see in the image
+If your client can read image files, read each image directly and compare its existing alt text against what you see. If it cannot, say which images you could not inspect and flag them for manual review. The steps below do not depend on any editor setting.
 
 ### Step 1: Find All Images
 
@@ -84,7 +58,7 @@ For each image you can access:
 3. **Evaluate the context** -- Look at surrounding HTML/text to understand the image's role on the page
 4. **Compare and assess** -- Does the alt text accurately describe what the image communicates in its context?
 
-### Step 3: Rate the Alt Text Quality
+### Step 4: Rate the Alt Text Quality
 
 For each image, assign a quality rating:
 
@@ -97,7 +71,7 @@ For each image, assign a quality rating:
 | **Missing** | No alt attribute present | Ask about purpose, then suggest text |
 | **Incorrect type** | Image is decorative but has descriptive alt, or meaningful but has empty alt | Suggest correct approach |
 
-### Step 4: Generate Suggestions
+### Step 5: Generate Suggestions
 
 When suggesting alt text, provide 2-3 options at different levels of detail:
 
@@ -117,7 +91,7 @@ Suggested alternatives:
 Which best fits the purpose of this image on your page, or would you like something different?
 ```
 
-### Step 5: Ask Questions When Context Is Ambiguous
+### Step 6: Ask Questions When Context Is Ambiguous
 
 When you cannot determine the image's purpose from context alone, ask the user. Key questions to consider:
 
@@ -135,7 +109,7 @@ I found 3 images that need alt text. To write the best alternatives, I need some
 
 1. "decorative-bg.svg" -- This looks like an abstract geometric pattern. 
    Is this purely decorative, or does the pattern convey meaning (like a brand identity element)?
-   -> If decorative, I'll set alt="" and aria-hidden="true"
+   -> If decorative, I'll set alt=""
    -> If meaningful, I'll describe the pattern
 
 2. "team-member.jpg" -- This shows a person at a desk. 
@@ -154,18 +128,18 @@ When auditing a page or component, produce a structured report:
 ```text
 ## Alt Text Audit Report
 
-###  Good Alt Text
+### Good Alt Text
 - hero-image.jpg: "Customer support agent helping a client via video call" -- Accurate, descriptive, matches context
 
-###  Needs Improvement
+### Needs Improvement
 - product-photo.png: Current: "product" -> Suggested: "Wireless noise-canceling headphones in midnight blue, shown from front angle"
 - team.jpg: Current: "team photo" -> Suggested: "The 12-person engineering team at the 2025 summer offsite"
 
-###  Missing Alt Text
+### Missing Alt Text
 - banner.webp: No alt attribute. [Asking user about purpose...]
-- icon-set.svg: No accessible name. Appears decorative -> Recommending: alt="" aria-hidden="true"
+- icon-set.svg: No accessible name. Appears decorative -> Recommending: alt="" on an img, or aria-hidden="true" on an inline svg
 
-###  Wrong Category
+### Wrong Category
 - divider-line.png: Has alt="decorative line divider" but is purely decorative -> Change to: alt=""
 ```
 

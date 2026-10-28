@@ -1,6 +1,6 @@
 name: Accessibility PR Gate
 
-# Required status check — blocks merge when accessibility violations are found.
+# Required status check: blocks merge when accessibility violations are found.
 # Configure as a required check in Settings > Branches > Branch protection rules.
 
 on:
@@ -27,20 +27,24 @@ jobs:
     name: Accessibility Gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
 
       - name: Get changed UI files
         id: changed
         run: |
           FILES=$(git diff --name-only --diff-filter=ACMR origin/${{ github.base_ref }}...HEAD -- \
             '*.html' '*.htm' '*.jsx' '*.tsx' '*.vue' '*.svelte' '*.astro' '*.css' '*.scss' \
+            ':(exclude)example/**' ':(exclude)docs/history/**' \
             | head -50)
           if [ -z "$FILES" ]; then
             echo "count=0" >> "$GITHUB_OUTPUT"
@@ -135,28 +139,40 @@ jobs:
 
           if [ "$ERRORS" -gt 0 ]; then
             echo ""
-            echo "❌ PR blocked: $ERRORS accessibility error(s) found."
+            echo "FAILED: PR blocked, $ERRORS accessibility error(s) found."
             echo "Fix the errors above before merging."
             exit 1
           else
             echo ""
-            echo "✅ Accessibility gate passed."
+            echo "PASSED: Accessibility gate passed."
           fi
 
+      # WCAG 2.2 AA tag set: without wcag22aa, target-size never runs. Most other
+      # 2.2 criteria have no axe rule and need manual testing. Violations fail
+      # this step, and so the check.
       - name: Run axe-core on HTML files
         if: steps.changed.outputs.count != '0'
+        id: axe
         run: |
-          HTML_FILES=$(grep -E '\.(html|htm)$' /tmp/changed-ui-files.txt 2>/dev/null || true)
-          if [ -z "$HTML_FILES" ]; then
+          mapfile -t HTML_FILES < <(grep -E '\.(html|htm)$' /tmp/changed-ui-files.txt 2>/dev/null || true)
+          if [ "${#HTML_FILES[@]}" -eq 0 ]; then
             echo "No HTML files in changeset. Skipping axe-core."
             exit 0
           fi
-
-          npx @axe-core/cli --exit \
-            --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
-            --disable color-contrast \
-            $HTML_FILES
-        continue-on-error: true
+          URLS=()
+          for f in "${HTML_FILES[@]}"; do
+            [ -f "$f" ] && URLS+=("file://$PWD/$f")
+          done
+          if [ "${#URLS[@]}" -eq 0 ]; then
+            echo "Changed HTML files were deleted. Skipping axe-core."
+            exit 0
+          fi
+          DRIVER=()
+          if [ -n "${CHROMEWEBDRIVER:-}" ]; then
+            DRIVER=(--chromedriver-path "$CHROMEWEBDRIVER/chromedriver")
+          fi
+          npx --no-install axe "${URLS[@]}" "${DRIVER[@]}" --exit \
+            --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa
 
       - name: Post summary comment
         if: always() && steps.changed.outputs.count != '0'
@@ -165,20 +181,22 @@ jobs:
           script: |
             const errors = parseInt('${{ steps.lint.outputs.errors }}' || '0');
             const warnings = parseInt('${{ steps.lint.outputs.warnings }}' || '0');
-            const passed = errors === 0;
+            const axeOutcome = '${{ steps.axe.outcome }}';
+            const passed = errors === 0 && axeOutcome !== 'failure';
 
             const body = [
-              `## ${passed ? '✅' : '❌'} Accessibility Gate ${passed ? 'Passed' : 'Failed'}`,
+              `## Accessibility Gate ${passed ? 'Passed' : 'Failed'}`,
               '',
               `| Metric | Count |`,
               `|--------|-------|`,
               `| Errors | ${errors} |`,
               `| Warnings | ${warnings} |`,
               `| Files checked | ${{ steps.changed.outputs.count }} |`,
+              `| axe-core scan | ${axeOutcome || 'not run'} |`,
               '',
               passed
                 ? 'No blocking accessibility issues found in changed UI files.'
-                : `**${errors} error(s) must be fixed before this PR can be merged.**`,
+                : `**Fix the ${errors} lint error(s) and any axe-core violations in the job log before this PR can be merged.**`,
               '',
               '<details><summary>Checks performed</summary>',
               '',
@@ -187,7 +205,7 @@ jobs:
               '- `<div role="button">` instead of `<button>` (semantic HTML)',
               '- `outline: none` removing focus indicators (WCAG 2.4.7)',
               '- Inputs missing accessible labels (WCAG 1.3.1)',
-              '- axe-core automated scan on HTML files',
+              '- axe-core scan of changed HTML files, WCAG 2.2 AA tags (most 2.2 criteria still need manual testing)',
               '',
               '</details>',
             ].join('\n');
@@ -220,4 +238,4 @@ jobs:
 
       - name: Skip gate (no UI changes)
         if: steps.changed.outputs.count == '0'
-        run: echo "✅ No UI files changed. Accessibility gate not required."
+        run: echo "No UI files changed. Accessibility gate not required."

@@ -12,7 +12,7 @@ Patterns for background execution and isolated scanning contexts when working wi
 
 ### Claude Code: Background Task Pattern
 
-Claude Code supports the `Task` tool for spawning parallel sub-agents. For background-style scanning:
+Claude Code spawns parallel subagents with the Agent tool (called Task before version 2.1.63). For background-style scanning:
 
 ```text
 Scan these 4 document types in parallel:
@@ -32,13 +32,11 @@ Wait for all tasks to complete, then merge results.
 
 ### GitHub Copilot: Sub-Agent Pattern
 
-Copilot agents use the `agents` frontmatter to reference sub-agents:
-
-```yaml
-agents: ['word-accessibility', 'excel-accessibility', 'powerpoint-accessibility', 'pdf-accessibility', 'document-inventory', 'cross-document-analyzer']
-```
-
-The orchestrator (document-accessibility-wizard) delegates to sub-agents sequentially or by type group. True background execution is not yet supported - sub-agents run within the main conversation context.
+The `document-accessibility-wizard` router dispatches its specialists
+(`word-accessibility`, `excel-accessibility`, `powerpoint-accessibility`,
+`pdf-accessibility`, `document-inventory`, `cross-document-analyzer`) by name.
+Whether they run in parallel depends on the client; do not count on true
+background execution.
 
 **Practical pattern for large scans:**
 
@@ -61,10 +59,10 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: node .github/scripts/office-a11y-scan.mjs
       - run: node .github/scripts/pdf-a11y-scan.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: audit-report
           path: DOCUMENT-ACCESSIBILITY-AUDIT.md
@@ -143,7 +141,7 @@ node .github/scripts/office-a11y-scan.mjs --output ../AUDIT-main.md
 
 # Compare results
 cd ..
-# Use compare-audits prompt or diff the reports
+# Ask the document wizard to compare the two reports, or diff them
 git worktree remove compare-branch
 ```
 

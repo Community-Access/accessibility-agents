@@ -68,9 +68,9 @@
 
 ```text
 /epub-accessibility scan textbook.epub
-@epub-accessibility check ebook.epub for EPUB Accessibility 1.1 conformance
-@epub-accessibility audit the /publications folder (all .epub files)
-@epub-accessibility does this epub have valid navigation and accessibility metadata?
+/epub-accessibility check ebook.epub for EPUB Accessibility 1.1 conformance
+/epub-accessibility audit the /publications folder (all .epub files)
+/epub-accessibility does this epub have valid navigation and accessibility metadata?
 ```
 
 </details>
@@ -88,8 +88,8 @@
 **In GitHub Copilot Chat:**
 
 ```text
-@epub-accessibility scan textbook.epub
-@epub-accessibility check the digital course materials for AT compatibility
+/epub-accessibility scan textbook.epub
+/epub-accessibility check the digital course materials for AT compatibility
 ```
 
 **Via document-accessibility-wizard:** For bulk audits of mixed-format collections that include `.epub` files, the wizard discovers and routes each file type to its specialist agent. It will delegate `.epub` files to `epub-accessibility` automatically.
@@ -126,15 +126,17 @@
 
 ### Score Interpretation
 
-Each score, with grade and what it means.
+The score and grade come from the report renderer (`skills/a11y-core/scripts/merge-findings.mjs`), after document checker levels are mapped to the canonical severities. A score is not a conformance claim.
 
-| Score | Grade | What it means |
-|-------|-------|---------------|
-| 90-100 | A | Excellent - meets EPUB Accessibility 1.1 |
-| 75-89 | B | Good - minor gaps, addressable in source |
-| 50-74 | C | Needs work - multiple barriers for AT users |
-| 25-49 | D | Poor - significant structural or metadata issues |
-| 0-24 | F | Failing - missing navigation, alt text, or language declarations |
+Each score band, with its grade.
+
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ### What to Fix First
 

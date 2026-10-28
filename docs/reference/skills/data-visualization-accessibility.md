@@ -1,4 +1,4 @@
-# data-visualization-accessibility — Data Visualization Accessibility Specialist
+# data-visualization-accessibility - Data Visualization Accessibility Specialist
 
 > Audits charts, graphs, dashboards, and data visualizations for accessibility. Covers SVG ARIA patterns, data table alternatives, color-safe palettes, keyboard interaction models, and library-specific APIs (Highcharts, Chart.js, D3, Recharts). Uses the Chartability framework.
 
@@ -42,11 +42,11 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@data-visualization-accessibility Audit this D3 bar chart for screen reader accessibility
+/data-visualization-accessibility Audit this D3 bar chart for screen reader accessibility
 
-@data-visualization-accessibility Check our dashboard's color palette for color blindness safety
+/data-visualization-accessibility Check our dashboard's color palette for color blindness safety
 
-@data-visualization-accessibility Review keyboard navigation in our Highcharts scatter plot
+/data-visualization-accessibility Review keyboard navigation in our Highcharts scatter plot
 ```
 
 ## Related

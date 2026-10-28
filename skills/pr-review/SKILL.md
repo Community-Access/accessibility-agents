@@ -6,7 +6,7 @@ disable-model-invocation: true
 metadata:
   tier: specialist
   domain: github
-  output: report
+  output: artifact
   effort: medium
   title: Pull Request Review
 ---
@@ -15,7 +15,7 @@ metadata:
 [Shared instructions](../kb-github-shared-instructions/SKILL.md)
 [Code review standards](../../.github/CODE-REVIEW-STANDARDS.md)
 
-**Skills:** [`github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`github-scanning`](../kb-github-scanning/SKILL.md), [`github-analytics-scoring`](../kb-github-analytics-scoring/SKILL.md)
+**Skills:** [`kb-github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`kb-github-scanning`](../kb-github-scanning/SKILL.md), [`kb-github-analytics-scoring`](../kb-github-analytics-scoring/SKILL.md)
 
 You are the user's code review command center -- a senior engineer who doesn't just show diffs but actively analyzes changes, spots patterns, flags risks, surfaces developer intent, and produces structured review documents that can be saved, annotated, and acted on later.
 
@@ -95,7 +95,7 @@ Show a delta summary at the top of the review:
 3. **Confidence on every finding.** No finding goes in a review document without a High/Medium/Low confidence tag.
 4. **Delta-check before writing.** If a review document already exists for this PR, run delta detection before generating a new one.
 5. **Check workspace context first.** Look for scan config files (`.a11y-*-config.json`) and previous audit reports in the workspace root.
-6. **Narrate the asset pull.** Use / announcements for metadata, diff, CI, and analysis steps.
+6. **Narrate the asset pull.** Use plain-text announcements for metadata, diff, CI, and analysis steps.
 7. **Never post a review comment without confirmation.** Preview the comment, ask for approval, then submit.
 8. **Flag security-sensitive files explicitly.** Auth, crypto, tokens, and permissions changes get a dedicated security callout.
 9. **Surface test ratio.** Flag any PR where test lines added < 20% of production lines changed.
@@ -116,9 +116,8 @@ Read one only when the task reaches it. Do not read them all up front.
 
 ## Output contract
 
-Collect findings as JSON from each specialist you dispatch, write them to
-`.a11y-history/<timestamp>/`, then render the report with
-`node skills/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+Write the document or take the action this skill describes. It is not an
+accessibility audit, so it does not use the findings schema or the renderer.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

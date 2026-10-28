@@ -38,14 +38,14 @@ Reference data for making charts, graphs, dashboards, and interactive data visua
 
 - Accompany with a data table showing percentages
 - Each segment keyboard-focusable with percentage and label announced
-- Use patterns/hatching — color-only distinction fails WCAG 1.4.1
+- Use patterns/hatching - color-only distinction fails WCAG 1.4.1
 - Consider: pie charts are generally poor for accessibility; a bar chart + table is often better
 
 ### Scatter Plots
 
 - Provide summary statistics (mean, median, correlation) as text
 - Data table with all points is essential
-- Interactive exploration via keyboard may not be feasible for large datasets — prioritize the summary
+- Interactive exploration via keyboard may not be feasible for large datasets - prioritize the summary
 
 ### Treemaps / Heatmaps
 
@@ -72,7 +72,7 @@ Reference data for making charts, graphs, dashboards, and interactive data visua
 ### Interactive Chart
 
 ```html
-<svg role="application" aria-roledescription="interactive chart" aria-label="Monthly Revenue">
+<svg role="group" aria-roledescription="interactive chart" aria-label="Monthly Revenue">
   <g role="list" aria-label="Revenue data points">
     <rect role="listitem" tabindex="0" aria-label="January: $50,000" .../>
     <rect role="listitem" tabindex="0" aria-label="February: $55,000" .../>
@@ -106,16 +106,16 @@ Highcharts.chart('container', {
       order: ['series', 'zoom', 'rangeSelector', 'legend', 'chartMenu']
     }
   },
-  // Highcharts has built-in sonification for data
+  // Sonification needs the sonification module
   sonification: {
     enabled: true
   }
 });
 ```
 
-**Highcharts built-in a11y features:**
+**Highcharts a11y features** (load `modules/accessibility.js`; without it the chart lacks them):
 
-- Automatic `<table>` fallback generation
+- Data table view, which needs the `exporting` and `export-data` modules (`exporting.showTable: true` shows it on render)
 - Keyboard navigation between data points
 - Screen reader announcements for each point
 - Sonification (data as sound)
@@ -135,18 +135,18 @@ new Chart(ctx, {
     }
   }
 });
-// Chart.js renders to <canvas> — provide a fallback table or aria-label on canvas
+// Chart.js renders to <canvas> - provide a fallback table or aria-label on canvas
 ```
 
 **Chart.js limitations:**
 
-- Canvas-based — no DOM elements for screen readers to traverse
+- Canvas-based - no DOM elements for screen readers to traverse
 - Must provide `<canvas aria-label="..." role="img">` or a fallback `<table>`
-- No built-in keyboard navigation — requires custom implementation
+- No built-in keyboard navigation - requires custom implementation
 
 ### D3.js
 
-D3 renders to SVG — accessibility must be manually implemented:
+D3 renders to SVG - accessibility must be manually implemented:
 
 ```javascript
 // Add ARIA to each data element
@@ -169,7 +169,7 @@ bars.on('keydown', (event, d) => {
 </BarChart>
 ```
 
-**Recharts:** `accessibilityLayer` prop adds basic ARIA attributes. Supplement with a data table.
+**Recharts:** `accessibilityLayer` adds keyboard navigation and basic ARIA attributes, and is on by default in Recharts 3 (set it explicitly on 2.x). Supplement with a data table.
 
 ## Data Table Fallback Template
 
@@ -186,7 +186,7 @@ bars.on('keydown', (event, d) => {
       </tr>
     </thead>
     <tbody>
-      <tr><td>January</td><td>50,000</td><td>—</td></tr>
+      <tr><td>January</td><td>50,000</td><td>n/a</td></tr>
       <tr><td>February</td><td>55,000</td><td>+10%</td></tr>
     </tbody>
   </table>
@@ -197,7 +197,7 @@ bars.on('keydown', (event, d) => {
 
 Palettes that remain distinguishable under common forms of color vision deficiency:
 
-### Wong Palette (8 colors — CVD safe)
+### Wong Palette (8 colors - CVD safe)
 
 Each color, with its hex and use.
 
@@ -214,7 +214,7 @@ Each color, with its hex and use.
 
 ### Rules for Color in Charts
 
-- Never use red/green as the only distinction (deuteranopia affects ~8% of males)
+- Never use red/green as the only distinction (red-green color vision deficiency is the most common form)
 - Always add a secondary visual channel: pattern, shape, label, or position
 - Test with CVD simulation tools (Sim Daltonism, Chrome DevTools Emulate vision deficiencies)
 - Ensure adjacent colors in a chart have sufficient contrast with each other (not just against white)

@@ -47,8 +47,8 @@ Every substantive response ends with a `## Sources` section listing all cited re
 
 Prefer current specifications and documentation versions:
 
-- WCAG 2.2 over WCAG 2.1
-- WAI-ARIA 1.2 over WAI-ARIA 1.1
+- WCAG 2.2 over WCAG 2.1 for guidance. W3C says 2.2 does not deprecate or supersede 2.1, and several laws still name an earlier version (ADA Title II and the HHS Section 504 rule: WCAG 2.1 AA; Section 508: WCAG 2.0 AA; EN 301 549 V3.2.1, the version cited for presumption of conformity in the EU: WCAG 2.1). When a finding or report is about one of those obligations, cite the version the law names.
+- WAI-ARIA 1.2 over WAI-ARIA 1.1. WAI-ARIA 1.3 is a Working Draft: cite it as a draft, never as the Recommendation.
 - Current screen reader documentation over archived versions
 - Latest platform vendor docs over older releases
 
@@ -91,4 +91,4 @@ When providing recommendations based on specifications or documentation that may
 
 ## Source Fingerprint Registry
 
-The machine-readable source registry at `skills/SOURCE_REGISTRY.json` tracks authoritative URLs with content fingerprints. A weekly GitHub Actions workflow checks these sources for changes and opens issues when updates are detected. See the [source-currency-check workflow](../.github/workflows/source-currency-check.yml) for details.
+The machine-readable source registry at [source-registry.json](source-registry.json) tracks authoritative URLs with content fingerprints. `.github/scripts/check_source_currency.py` reads this registry, compares the fingerprints and opens an issue when a source changes, but no workflow runs it at present. Until one does, the `lastVerified` dates in the registry record when each source was last checked by hand.

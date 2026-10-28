@@ -17,13 +17,14 @@ You manage `.a11y-epub-config.json` - the scan configuration file for ePub acces
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/schemas/epub-scan-config.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/epub-config.schema.json",
   "version": "1.0",
   "description": "Profile description",
   "epub": {
     "enabled": true,
     "disabledRules": [],
-    "severityFilter": ["error", "warning"]
+    "severityFilter": ["error", "warning"],
+    "maxFileSize": 104857600
   }
 }
 ```
@@ -37,7 +38,11 @@ Each field, with its type and description.
 | `epub.enabled` | boolean | Enable/disable ePub scanning entirely |
 | `epub.disabledRules` | string[] | Rule IDs to skip (e.g., `["EPUB-T002", "EPUB-T003"]`) |
 | `epub.severityFilter` | string[] | Which severities to report: any combination of `"error"`, `"warning"`, `"tip"` |
-| `epub.maxFileSize` | number | Maximum file size in bytes (default: 104857600 = 100 MB) |
+| `epub.maxFileSize` | number | Maximum file size in bytes (104857600 = 100 MB) |
+
+The schema, `.github/schemas/epub-config.schema.json`, requires all four `epub` fields and allows no other keys.
+
+The `EPUB-*` rule IDs below are the ones the `epub-accessibility` skill reports. The `scan_epub_document` MCP tool reads the `epub` block of this schema, but reports its own IDs (for example `epub-title`, `epub-alt-text`), so `disabledRules` for that tool must use those IDs.
 
 ## Profile Presets
 
@@ -48,7 +53,8 @@ Each field, with its type and description.
   "epub": {
     "enabled": true,
     "disabledRules": [],
-    "severityFilter": ["error", "warning", "tip"]
+    "severityFilter": ["error", "warning", "tip"],
+    "maxFileSize": 104857600
   }
 }
 ```
@@ -60,7 +66,8 @@ Each field, with its type and description.
   "epub": {
     "enabled": true,
     "disabledRules": [],
-    "severityFilter": ["error", "warning"]
+    "severityFilter": ["error", "warning"],
+    "maxFileSize": 104857600
   }
 }
 ```
@@ -72,7 +79,8 @@ Each field, with its type and description.
   "epub": {
     "enabled": true,
     "disabledRules": [],
-    "severityFilter": ["error"]
+    "severityFilter": ["error"],
+    "maxFileSize": 104857600
   }
 }
 ```
@@ -104,7 +112,7 @@ Each rule ID, with its name and default severity.
 
 1. **Never modify files outside `.a11y-epub-config.json`.**
 2. **Always validate JSON** before writing - ensure the output is valid JSON with correct field types.
-3. **Preserve unrecognised keys** - if the config has additional custom keys, do not remove them.
+3. **Preserve unrecognised keys** - if the config has additional custom keys, do not remove them, but tell the user the schema does not allow them.
 4. **Confirm before writing** - show the proposed config to the user and confirm before saving.
 5. **Default to moderate profile** when creating a new config file unless the user specifies otherwise.
 

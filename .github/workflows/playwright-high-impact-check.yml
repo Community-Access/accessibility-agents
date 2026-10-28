@@ -36,12 +36,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: "24"
 
       - name: Install Playwright dependencies
         run: |
@@ -63,16 +63,35 @@ jobs:
             echo "TARGET_URL=http://127.0.0.1:4173/example/index.html" >> "$GITHUB_ENV"
           fi
 
+      # On a pull request the target is example/index.html, which is broken on
+      # purpose. There the job is a self-test: it fails if the checker stops
+      # catching that page's known issues. A dispatched run with a URL is a
+      # real gate and fails on violations.
       - name: Run high-impact Playwright checks
         run: |
+          set +e
           node mcp-server/scripts/playwright-high-impact-check.mjs \
             --url "$TARGET_URL" \
             --min-impact "${{ github.event.inputs.min_impact || 'serious' }}" \
             --out-dir artifacts
+          status=$?
+          set -e
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.url }}" ]; then
+            exit "$status"
+          fi
+          node -e '
+            const r = require("./artifacts/playwright-high-impact.json");
+            const problems = [];
+            if (r.pass !== false) problems.push("the example page passed");
+            if (!(r.axe && r.axe.byImpact && r.axe.byImpact.critical > 0)) problems.push("no critical axe violation found");
+            if (!(r.keyboard && r.keyboard.trapDetected)) problems.push("keyboard trap not detected");
+            if (problems.length) { console.error("Self-test failed: " + problems.join("; ")); process.exit(1); }
+            console.log("Self-test passed: the checker caught the known issues in the example page (" + r.axe.totalViolations + " axe violations).");
+          '
 
       - name: Upload Playwright artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-high-impact
           path: |

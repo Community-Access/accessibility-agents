@@ -99,38 +99,38 @@ Key fields in Lighthouse CI config:
 
 ### Accessibility Score
 
-Lighthouse computes a weighted accessibility score from 0-100 based on individual audit results.
+Lighthouse computes a weighted accessibility score from 0-100 based on individual audit results. Its report rates scores in three bands. These are not this package's report grade; that comes from `skills/a11y-core/scripts/merge-findings.mjs` (A 90, B 80, C 70, D 60).
 
-| Score Range | Grade | Interpretation |
+| Score Range | Lighthouse rating | Interpretation |
 |-------------|-------|---------------|
-| 90-100 | A | Good accessibility |
-| 70-89 | B-C | Some issues to address |
-| 50-69 | D | Significant issues |
-| 0-49 | F | Critical accessibility failures |
+| 90-100 | pass | Good accessibility |
+| 50-89 | average | Issues to address |
+| 0-49 | fail | Significant accessibility failures |
 
 ### Individual Audit Results
 
-Each Lighthouse accessibility audit corresponds to an axe-core rule:
+Each Lighthouse accessibility audit corresponds to an axe-core rule. Weights are from the Lighthouse 13 default config (derived from axe impact: critical 10, serious 7, moderate 3, minor 1); WCAG mappings are the axe-core 4.14 tags. Selected audits:
 
 | Audit ID | axe-core Rule | WCAG Criterion | Weight |
 |----------|--------------|----------------|--------|
 | `image-alt` | `image-alt` | 1.1.1 | 10 |
 | `color-contrast` | `color-contrast` | 1.4.3 | 7 |
-| `label` | `label` | 1.3.1 | 7 |
-| `button-name` | `button-name` | 4.1.2 | 7 |
+| `label` | `label` | 4.1.2 | 10 |
+| `button-name` | `button-name` | 4.1.2 | 10 |
 | `link-name` | `link-name` | 2.4.4 | 7 |
 | `html-has-lang` | `html-has-lang` | 3.1.1 | 7 |
 | `document-title` | `document-title` | 2.4.2 | 7 |
-| `heading-order` | `heading-order` | 1.3.1 | 3 |
+| `heading-order` | `heading-order` | none (best-practice) | 3 |
 | `meta-viewport` | `meta-viewport` | 1.4.4 | 10 |
 | `bypass` | `bypass` | 2.4.1 | 7 |
-| `tabindex` | `tabindex` | 2.4.3 | 7 |
+| `tabindex` | `tabindex` | none (best-practice) | 7 |
 | `aria-allowed-attr` | `aria-allowed-attr` | 4.1.2 | 10 |
 | `aria-hidden-body` | `aria-hidden-body` | 4.1.2 | 10 |
 | `aria-required-attr` | `aria-required-attr` | 4.1.2 | 10 |
-| `aria-roles` | `aria-roles` | 4.1.2 | 7 |
-| `aria-valid-attr-value` | `aria-valid-attr-value` | 4.1.2 | 7 |
+| `aria-roles` | `aria-roles` | 4.1.2 | 10 |
+| `aria-valid-attr-value` | `aria-valid-attr-value` | 4.1.2 | 10 |
 | `aria-valid-attr` | `aria-valid-attr` | 4.1.2 | 10 |
+| `target-size` | `target-size` | 2.5.8 | 7 |
 
 ### Severity Mapping
 
@@ -138,10 +138,11 @@ Lighthouse uses weights rather than impact levels. Map to the agent severity mod
 
 | Lighthouse Weight | Audit Status | Agent Severity |
 |------------------|-------------|---------------|
-| 10 | Fail | Critical |
-| 7 | Fail | Serious |
-| 3 | Fail | Moderate |
-| 1 | Fail | Minor |
+| 10 | Fail | critical |
+| 7 | Fail | serious |
+| 3 | Fail | moderate |
+| 1 | Fail | minor |
+| 0 | n/a | Manual-check audits; not scored, not reported as findings |
 | Any | Pass | N/A (not reported) |
 
 ## Correlation with Local Scans
@@ -196,26 +197,18 @@ Each delta, with its severity and action.
 
 ## Structured Output Format
 
-When `lighthouse-bridge` normalizes Lighthouse data, it produces findings in this format:
+When `lighthouse-bridge` normalizes Lighthouse data, each finding follows `skills/a11y-core/schemas/findings.schema.json`. The Lighthouse weight and score delta go in `evidence`; run-level score deltas go in `notes`:
 
 ```json
 {
-  "source": "lighthouse-ci",
-  "ruleId": "color-contrast",
-  "wcagCriterion": "1.4.3",
-  "wcagLevel": "AA",
+  "rule": "color-contrast",
+  "wcag": "1.4.3 AA",
   "severity": "serious",
   "confidence": "high",
-  "url": "https://example.com/login",
-  "element": "button.submit-btn",
-  "description": "Element has insufficient color contrast ratio",
-  "lighthouseWeight": 7,
-  "lighthouseScore": {
-    "overall": 87,
-    "previousOverall": 95,
-    "delta": -8,
-    "status": "regressed"
-  }
+  "location": "https://example.com/login button.submit-btn",
+  "summary": "Element has insufficient color contrast ratio",
+  "fix": "Change the text color or background to reach at least 4.5:1",
+  "evidence": "lighthouse-ci audit color-contrast (weight 7); accessibility score 87, previously 95"
 }
 ```
 

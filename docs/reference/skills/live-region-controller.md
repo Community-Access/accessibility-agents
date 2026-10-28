@@ -45,9 +45,9 @@ Visual styling of notifications (contrast-master), focus management when notific
 **In GitHub Copilot Chat:**
 
 ```text
-@live-region-controller review dynamic content updates in this component
-@live-region-controller add a live region for these search filter results
-@live-region-controller how should I announce loading states?
+/live-region-controller review dynamic content updates in this component
+/live-region-controller add a live region for these search filter results
+/live-region-controller how should I announce loading states?
 ```
 
 ## The Problem This Agent Solves
@@ -94,7 +94,7 @@ function SearchResults({ results, loading }) {
         className="sr-only"
       >
         {loading
-          ? 'Loading results…'
+          ? 'Loading results...'
           : `${results.length} result${results.length !== 1 ? 's' : ''} found`
         }
       </div>
@@ -190,9 +190,9 @@ Each connection, with connect to and when.
 ### GitHub Copilot
 
 ```text
-@live-region-controller review dynamic content updates in this component
-@live-region-controller add a live region for these search filter results
-@live-region-controller how should I announce loading states?
+/live-region-controller review dynamic content updates in this component
+/live-region-controller add a live region for these search filter results
+/live-region-controller how should I announce loading states?
 ```
 
 </details>

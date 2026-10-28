@@ -31,9 +31,9 @@ Use issue-tracker when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@issue-tracker show my open issues
-@issue-tracker triage my backlog
-@issue-tracker deep dive into community-access/accessibility-agents#42
+/issue-tracker show my open issues
+/issue-tracker triage my backlog
+/issue-tracker deep dive into community-access/accessibility-agents#42
 ```
 
 ### Claude Code (Terminal)
@@ -47,8 +47,8 @@ Use issue-tracker when:
 ### Via GitHub Hub
 
 ```text
-@github-hub triage issues
-@github-hub show me my issue backlog
+/github-hub triage issues
+/github-hub show me my issue backlog
 ```
 
 ---
@@ -86,7 +86,7 @@ Use issue-tracker when:
 2. **Progress collection.**
 
    ```text
-    Searching issues across your repos…
+    Searching issues across your repos...
     Found 38 open issues: 6 assigned to you, 12 @mentions, 20 to monitor
    ```
 
@@ -156,38 +156,38 @@ The issue-tracker scores each issue on a 0-100 scale based on multiple signals:
 ### Discovery and Triage
 
 ```text
-@issue-tracker show my open issues from the last 2 weeks
-@issue-tracker triage everything assigned to me
-@issue-tracker what issues are blocking the next release?
-@issue-tracker find all WCAG regression issues
-@issue-tracker show issues with no response in 7+ days
+/issue-tracker show my open issues from the last 2 weeks
+/issue-tracker triage everything assigned to me
+/issue-tracker what issues are blocking the next release?
+/issue-tracker find all WCAG regression issues
+/issue-tracker show issues with no response in 7+ days
 ```
 
 ### Deep Dives
 
 ```text
-@issue-tracker deep dive into #42
-@issue-tracker show the full thread on the focus management issue
-@issue-tracker what's the status of the contrast bug?
-@issue-tracker summarize the discussion on #87
+/issue-tracker deep dive into #42
+/issue-tracker show the full thread on the focus management issue
+/issue-tracker what's the status of the contrast bug?
+/issue-tracker summarize the discussion on #87
 ```
 
 ### Create and Manage
 
 ```text
-@issue-tracker create a bug: tabbing into the modal does not trap focus
-@issue-tracker create 3 issues from this accessibility audit report
-@issue-tracker close #42 as resolved - fixed in PR #88
-@issue-tracker add label "needs-repro" to #64
-@issue-tracker assign @alice to all unassigned critical issues
+/issue-tracker create a bug: tabbing into the modal does not trap focus
+/issue-tracker create 3 issues from this accessibility audit report
+/issue-tracker close #42 as resolved - fixed in PR #88
+/issue-tracker add label "needs-repro" to #64
+/issue-tracker assign @alice to all unassigned critical issues
 ```
 
 ### Report Generation
 
 ```text
-@issue-tracker weekly report for the team meeting
-@issue-tracker generate a status document for all open a11y issues
-@issue-tracker show me a summary of issues closed this month
+/issue-tracker weekly report for the team meeting
+/issue-tracker generate a status document for all open a11y issues
+/issue-tracker show me a summary of issues closed this month
 ```
 
 </details>

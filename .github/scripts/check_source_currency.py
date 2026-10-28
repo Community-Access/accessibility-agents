@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Source currency checker for accessibility-agents.
 
-Reads SOURCE_REGISTRY.json, fetches each source URL, computes a SHA-256
+Reads docs/standards/source-registry.json, fetches each source URL, computes a SHA-256
 fingerprint of the response body, and compares it against the stored hash.
 If a source has changed or is unreachable, opens a GitHub issue.
 
-Run by: .github/workflows/source-currency-check.yml (weekly)
+No workflow runs it at present; run it by hand with GITHUB_TOKEN set.
 """
 
 import hashlib
@@ -17,7 +17,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
-REGISTRY_PATH = Path(__file__).resolve().parent.parent / "agents" / "SOURCE_REGISTRY.json"
+REGISTRY_PATH = Path(__file__).resolve().parents[2] / "docs" / "standards" / "source-registry.json"
 GITHUB_API = "https://api.github.com"
 REPO = os.environ.get("GITHUB_REPOSITORY", "Community-Access/accessibility-agents")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
@@ -132,7 +132,7 @@ def main() -> int:
                 f"### Action Required\n\n"
                 f"1. Verify the URL is still correct\n"
                 f"2. Find the new URL if the resource moved\n"
-                f"3. Update SOURCE_REGISTRY.json\n"
+                f"3. Update docs/standards/source-registry.json\n"
                 f"4. Update affected agent files if source URLs changed\n"
             )
             create_issue(title, body, ["source-broken", "urgent"])
@@ -155,7 +155,7 @@ def main() -> int:
                 f"### Action Required\n\n"
                 f"1. Review the source for relevant changes\n"
                 f"2. Update affected agents if guidance changed\n"
-                f"3. Update SHA-256 and lastVerified in SOURCE_REGISTRY.json\n"
+                f"3. Update SHA-256 and lastVerified in docs/standards/source-registry.json\n"
                 f"4. Update version number if a new spec version was published\n"
             )
             create_issue(title, body, ["source-update", "agent-review-needed"])

@@ -28,11 +28,11 @@ Use repo-manager when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@repo-manager set up this repo
-@repo-manager add issue templates
-@repo-manager scaffold a CI workflow
-@repo-manager create labels for this repo
-@repo-manager draft a release for v2.0
+/repo-manager set up this repo
+/repo-manager add issue templates
+/repo-manager scaffold a CI workflow
+/repo-manager create labels for this repo
+/repo-manager draft a release for v2.0
 ```
 
 ### Claude Code (Terminal)
@@ -47,8 +47,8 @@ Use repo-manager when:
 ### Via GitHub Hub
 
 ```text
-@github-hub set up repo
-@github-hub add templates
+/github-hub set up repo
+/github-hub add templates
 ```
 
 ---
@@ -86,8 +86,8 @@ Use repo-manager when:
 1. **Detection first:**
 
    ```text
-    Detecting project language and framework…
-    Checking existing repo structure for conflicts…
+    Detecting project language and framework...
+    Checking existing repo structure for conflicts...
     Ready to scaffold - 8 files to generate. Previewing before proceeding.
    ```
 
@@ -114,7 +114,7 @@ To build a custom template interactively, use [template-builder](./template-buil
 
 The agent detects your language and generates an appropriate workflow. All generated CI files:
 
-- Use **pinned action versions** (e.g., `actions/checkout@v4`, not `@latest`)
+- Use **pinned action versions** (e.g., `actions/checkout@v7` or a commit SHA, not `@main`)
 - Include a **`permissions:` block** with least-privilege settings
 - Enable **dependency caching** for faster runs
 - Use **concurrency groups** to cancel redundant runs on new pushes
@@ -137,10 +137,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - run: npm test
@@ -175,45 +175,45 @@ Confirm before any `gh` commands are run.
 ### Full Setup
 
 ```text
-@repo-manager set up this repo for open source contributions
-@repo-manager what health files am I missing from this repo?
-@repo-manager scaffold everything - templates, CI, labels, contributing guide
+/repo-manager set up this repo for open source contributions
+/repo-manager what health files am I missing from this repo?
+/repo-manager scaffold everything - templates, CI, labels, contributing guide
 ```
 
 ### Individual Files
 
 ```text
-@repo-manager add a CONTRIBUTING.md
-@repo-manager create a CODE_OF_CONDUCT.md
-@repo-manager add a security policy
-@repo-manager scaffold a README with badges and table of contents
-@repo-manager add a .gitignore for Node.js
-@repo-manager generate a license - help me choose
+/repo-manager add a CONTRIBUTING.md
+/repo-manager create a CODE_OF_CONDUCT.md
+/repo-manager add a security policy
+/repo-manager scaffold a README with badges and table of contents
+/repo-manager add a .gitignore for Node.js
+/repo-manager generate a license - help me choose
 ```
 
 ### CI and Labels
 
 ```text
-@repo-manager scaffold a CI workflow for this project
-@repo-manager add Dependabot config
-@repo-manager create the standard label set for this repo
-@repo-manager add the accessibility label
+/repo-manager scaffold a CI workflow for this project
+/repo-manager add Dependabot config
+/repo-manager create the standard label set for this repo
+/repo-manager add the accessibility label
 ```
 
 ### Releases and Changelogs
 
 ```text
-@repo-manager draft a release for v2.0
-@repo-manager generate a changelog since v1.5
-@repo-manager help me create and push a release tag
+/repo-manager draft a release for v2.0
+/repo-manager generate a changelog since v1.5
+/repo-manager help me create and push a release tag
 ```
 
 ### Contributor Pipeline
 
 ```text
-@repo-manager seed good first issues from this repo's TODOs
-@repo-manager add a PR template with an accessibility checklist
-@repo-manager create issue templates - bug report and feature request
+/repo-manager seed good first issues from this repo's TODOs
+/repo-manager add a PR template with an accessibility checklist
+/repo-manager create issue templates - bug report and feature request
 ```
 
 </details>
@@ -259,7 +259,7 @@ Confirm before any `gh` commands are run.
 <summary>Show troubleshooting help</summary>
 
 **"The CI workflow runs but fails on dependency installation."**
-The agent detects your package manager (npm, yarn, pnpm, pip, etc.) from your lockfile. If you use a non-standard setup, say: "generate a CI workflow for pnpm with Node 20" to be explicit.
+The agent detects your package manager (npm, yarn, pnpm, pip, etc.) from your lockfile. If you use a non-standard setup, say: "generate a CI workflow for pnpm with Node 24" to be explicit.
 
 **"My issue templates are not appearing in the GitHub UI."**
 Templates must be in `.github/ISSUE_TEMPLATE/` with `.yml` extensions. There must also be a `config.yml` in that folder. Ask: "check my issue template setup and generate a config.yml."

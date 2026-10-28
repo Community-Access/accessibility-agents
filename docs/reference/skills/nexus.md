@@ -1,12 +1,12 @@
-# nexus — Auto-Routing GitHub Orchestrator
+# nexus - Auto-Routing GitHub Orchestrator
 
-> Auto-routing GitHub orchestrator — describe what you need and Nexus silently routes to the right specialist agent. Unlike GitHub Hub (which presents a menu), Nexus infers your intent from plain English and hands off immediately. Best for experienced users who know what they want.
+> Auto-routing GitHub orchestrator - describe what you need and Nexus silently routes to the right specialist agent. Unlike GitHub Hub (which presents a menu), Nexus infers your intent from plain English and hands off immediately. Best for experienced users who know what they want.
 
 ---
 
 ## What This Agent Is For
 
-Nexus serves the same purpose as GitHub Hub — routing you to the right GitHub specialist — but with a different interaction style. Where GitHub Hub presents menus and guides you step-by-step, Nexus infers your intent from natural language and hands off immediately without asking clarifying questions unless strictly necessary.
+Nexus serves the same purpose as GitHub Hub - routing you to the right GitHub specialist - but with a different interaction style. Where GitHub Hub presents menus and guides you step-by-step, Nexus infers your intent from natural language and hands off immediately without asking clarifying questions unless strictly necessary.
 
 Use Nexus when:
 
@@ -45,7 +45,7 @@ Use **GitHub Hub** instead when:
 ## How It Works
 
 1. Nexus receives your plain English request
-2. It silently analyzes intent — no confirmation menu
+2. It silently analyzes intent - no confirmation menu
 3. It routes immediately to the matching specialist with full context
 4. The specialist takes over and completes your task
 
@@ -87,5 +87,5 @@ Each feature, with its nexus and GitHub hub.
 
 ## Related
 
-- [github-hub](./github-hub.md) — The guided, menu-driven GitHub orchestrator
-- [daily-briefing](./daily-briefing.md) — Morning overview of issues, PRs, CI status
+- [github-hub](./github-hub.md) - The guided, menu-driven GitHub orchestrator
+- [daily-briefing](./daily-briefing.md) - Morning overview of issues, PRs, CI status

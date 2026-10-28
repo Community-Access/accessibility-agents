@@ -51,10 +51,10 @@ At the end, it generates a prioritized report with issues grouped by severity (C
 ### GitHub Copilot
 
 ```text
-@web-accessibility-wizard audit this project for accessibility
-@web-accessibility-wizard guide me through a review of the signup flow
-@web-accessibility-wizard run a full accessibility audit
-@web-accessibility-wizard I am new to accessibility, walk me through everything
+/web-accessibility-wizard audit this project for accessibility
+/web-accessibility-wizard guide me through a review of the signup flow
+/web-accessibility-wizard run a full accessibility audit
+/web-accessibility-wizard I am new to accessibility, walk me through everything
 ```
 
 </details>

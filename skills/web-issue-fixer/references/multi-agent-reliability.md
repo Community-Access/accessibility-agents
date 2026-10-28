@@ -53,7 +53,7 @@ When Playwright MCP tools are available AND `web-accessibility-wizard` provides 
 
 **After applying each fix batch:**
 
-1. Dispatch `playwright-verifier` via the Task tool with the fix list and dev server URL.
+1. Dispatch `playwright-verifier`, with the dispatch prompt in `skills/a11y-core/SKILL.md`, with the fix list and dev server URL.
 2. The verifier runs targeted checks:
    - **Keyboard fix:** Re-runs `run_playwright_keyboard_scan` to confirm the element is now in tab order
    - **Contrast fix:** Re-runs `run_playwright_contrast_scan` on the affected element to confirm ratio meets threshold
@@ -66,7 +66,7 @@ When Playwright MCP tools are available AND `web-accessibility-wizard` provides 
 **Graceful degradation for Playwright verification:**
 
 - If Playwright tools not available: Skip Playwright verification. Set `verification: "NOT_AVAILABLE"`.
-- If @axe-core/playwright not installed: Only keyboard and accessibility tree checks are available.
+- If @axe-core/playwright not installed: Keyboard, contrast, viewport and accessibility tree checks are available; the axe-core scan (`run_axe_scan`) is not.
 - If dev server URL not provided: Skip all Playwright verification.
 
 ### Handoff Transparency

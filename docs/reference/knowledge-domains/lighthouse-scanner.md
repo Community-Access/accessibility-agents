@@ -26,15 +26,16 @@ How to check if a repository uses Lighthouse CI:
 
 ### Accessibility Score Interpretation
 
-Lighthouse produces a 0-100 accessibility score per URL. The skill maps scores to grades:
+Lighthouse produces a 0-100 accessibility score per URL and rates it in three
+bands. These are Lighthouse's own ratings, not this package's report grade,
+which comes from `skills/a11y-core/scripts/merge-findings.mjs` (A 90, B 80,
+C 70, D 60, F below).
 
-| Score Range | Grade |
+| Score Range | Lighthouse rating |
 |------------|-------|
-| 90-100 | A |
-| 80-89 | B |
-| 70-79 | C |
-| 60-69 | D |
-| 0-59 | F |
+| 90-100 | pass |
+| 50-89 | average |
+| 0-49 | fail |
 
 ### Severity Mapping
 
@@ -67,11 +68,11 @@ Tracks accessibility scores across CI runs and classifies changes:
 
 Findings confirmed by multiple sources get confidence upgrades:
 
-- Lighthouse + local axe-core = High confidence
-- Lighthouse + agent review = High confidence
-- Lighthouse + axe-core + agent review = Highest confidence
-- Lighthouse only = Medium confidence
+- Lighthouse + local axe-core = high confidence
+- Lighthouse + agent review = high confidence
+- Lighthouse + axe-core + agent review = high confidence (there is no higher level)
+- Lighthouse only = medium confidence
 
 ## Full Skill Reference
 
-See the complete skill file: [`skills/kb-lighthouse-scanner/SKILL.md`](../../skills/kb-lighthouse-scanner/SKILL.md)
+See the complete skill file: [`skills/kb-lighthouse-scanner/SKILL.md`](../../../skills/kb-lighthouse-scanner/SKILL.md)

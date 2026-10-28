@@ -135,7 +135,7 @@ Part of the `wcag-guide` skill. Read this only when the task reaches these secti
 
 **What:** If keyboard focus enters a component, the user must be able to move focus away using only the keyboard.
 **Why:** A keyboard trap makes the entire page unusable. The user is stuck.
-**Exception:** Modal dialogs intentionally trap focus - but they MUST provide Escape to close.
+**Not a trap:** A modal dialog may keep focus inside it while open, as long as the keyboard can close it. The APG dialog pattern uses Escape. If leaving needs anything other than standard keys, tell the user how.
 
 #### 2.1.4 Character Key Shortcuts (Level A) - *New in 2.1*
 
@@ -155,7 +155,7 @@ Part of the `wcag-guide` skill. Read this only when the task reaches these secti
 
 #### 2.3.1 Three Flashes or Below Threshold (Level A)
 
-**What:** Content must not flash more than three times per second.
+**What:** Content must not flash more than three times in any one-second period, unless the flashes are below the general and red flash thresholds.
 **Why:** Flashing content can trigger seizures in people with photosensitive epilepsy.
 
 #### 2.4.1 Bypass Blocks (Level A)
@@ -166,7 +166,7 @@ Part of the `wcag-guide` skill. Read this only when the task reaches these secti
 
 #### 2.4.2 Page Titled (Level A)
 
-**What:** Every page must have a descriptive, unique `<title>`.
+**What:** Every page must have a `<title>` that describes its topic or purpose. A unique title is good practice, though the criterion does not require uniqueness.
 **Why:** Screen readers announce the title when a page loads. It's how users know where they are.
 **Pattern:** `[Page Name] - [Site Name]` (e.g., "Checkout - Acme Store")
 
@@ -201,9 +201,9 @@ Part of the `wcag-guide` skill. Read this only when the task reaches these secti
 **What:** When an element receives keyboard focus, it must not be entirely hidden by other content (sticky headers, modals, cookie banners).
 **Why:** If the focused element is hidden behind a sticky header, the user can't see where they are.
 
-#### 2.4.12 Focus Appearance (Level AAA) - *Note: AAA, not AA*
+#### 2.4.12 Focus Not Obscured (Enhanced) (Level AAA) and 2.4.13 Focus Appearance (Level AAA) - *Note: AAA, not AA*
 
-This is AAA, not required for AA conformance. But worth knowing: it requires focus indicators to be at least 2px thick and have 3:1 contrast.
+Both are AAA, not required for AA conformance. But worth knowing: 2.4.12 requires that no part of the focused component is hidden by author-created content, and 2.4.13 requires a focus indicator at least as large as a 2 CSS pixel thick perimeter of the unfocused component, with 3:1 contrast between the focused and unfocused states.
 
 #### 2.5.1 Pointer Gestures (Level A) - *New in 2.1*
 
@@ -236,7 +236,7 @@ This is AAA, not required for AA conformance. But worth knowing: it requires foc
 
 **What:** Touch/click targets must be at least 24 x 24 CSS pixels, OR have sufficient spacing from other targets.
 **Why:** Users with motor impairments, tremors, or large fingers need adequately sized targets.
-**Exception:** Inline text links, targets where the size is controlled by the user agent, and essential presentations.
+**Exception:** An equivalent control of sufficient size on the same page, inline targets in a sentence or block of text, targets whose size is set by the user agent and not modified by the author, and presentations that are essential or legally required.
 
 ### Principle 3: Understandable
 
@@ -270,9 +270,9 @@ This is AAA, not required for AA conformance. But worth knowing: it requires foc
 **What:** Components with the same functionality must be identified consistently (same labels, same icons).
 **Why:** A search field labeled "Search" on one page and "Find" on another confuses users.
 
-#### 3.2.6 Consistent Help (Level AA) - *New in 2.2*
+#### 3.2.6 Consistent Help (Level A) - *New in 2.2*
 
-**What:** If help mechanisms (contact info, chat, FAQ) appear on multiple pages, they must be in the same relative location.
+**What:** If help mechanisms (contact info, chat, FAQ) appear on multiple pages, they must be in the same order relative to other page content, unless the user initiates a change.
 **Why:** Users who need help should be able to find it reliably.
 
 #### 3.3.1 Error Identification (Level A)
@@ -297,7 +297,7 @@ This is AAA, not required for AA conformance. But worth knowing: it requires foc
 
 #### 3.3.7 Redundant Entry (Level A) - *New in 2.2*
 
-**What:** Information previously provided by the user must be either auto-populated or available for selection in subsequent steps.
+**What:** Information the user already entered or was given in the same process must be either auto-populated or available for selection, unless re-entering it is essential, required for security, or the earlier entry is no longer valid.
 **Why:** Users with cognitive disabilities or motor impairments shouldn't have to re-enter information they already provided.
 **Example:** If the user enters their address in step 1 of a form, step 3 should not ask for it again. Auto-populate or offer "same as shipping address."
 
@@ -308,6 +308,8 @@ This is AAA, not required for AA conformance. But worth knowing: it requires foc
 **In practice:** Support password managers (don't block paste), support passkeys/biometrics, don't use cognitive CAPTCHAs without alternatives, allow email/SMS codes.
 
 ### Principle 4: Robust
+
+4.1.1 Parsing is obsolete and removed in WCAG 2.2. Do not test it or cite it as a 2.2 requirement.
 
 #### 4.1.2 Name, Role, Value (Level A)
 

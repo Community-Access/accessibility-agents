@@ -6,8 +6,8 @@ record of how 7.0 came to be is in
 [docs/history/2026-09-modernization.md](docs/history/2026-09-modernization.md);
 this file is only about what is next.
 
-Current: 7.0.0. Every gate passes, including live sessions on Claude Code, Codex
-and Copilot. The package costs about 1,100 tokens before a user has spoken, on
+Current: 7.1.0. At 7.0.0 every gate passed, including live sessions on Claude
+Code, Codex and Copilot. The package costs about 1,100 tokens before a user has spoken, on
 every client, and dispatching a specialist costs about 100.
 
 ---
@@ -25,8 +25,8 @@ Not every one reads the way a hand-authored router does. The routers got a
 semantic pass; the specialists have not, and that is the largest remaining
 quality gap.
 
-**Two of the three cross-client claims rest on live measurement; the other
-two do not.** Claude Code, Codex and Copilot were verified in real sessions.
+**Three of the five clients were measured live; the other two were not.**
+Claude Code, Codex and Copilot were verified in real sessions.
 Gemini CLI and Antigravity were not, because neither is installed here. Their
 behaviour is inferred from documentation, which is weaker evidence.
 
@@ -131,9 +131,12 @@ Every number in the dossier gets a second decimal.
 
 ### 3.2 MCP 2026-07-28 transport
 
-The server already keeps a deterministic tool order and uses nothing the new
-revision deprecates. Adopt the stateless transport and return `ttlMs` and
-`cacheScope` from `tools/list`, so clients cache the listing across sessions.
+The server already keeps a deterministic tool order. Its default Streamable
+HTTP mode is stateful (`Mcp-Session-Id` and a GET event stream), which the
+2026-07-28 revision removes; a stateless mode exists behind
+`A11Y_MCP_STATELESS=1`. Adopt the revision's stateless transport and return
+`ttlMs` and `cacheScope` from `tools/list`, so clients cache the listing across
+sessions.
 Nothing about the tool surface changes.
 
 ### 3.3 One skill per finding rule
@@ -144,10 +147,12 @@ identifier with criterion, severity default and help URL, would let the
 renderer link every finding to guidance and let the regression detector
 compare across releases without string matching.
 
-### 3.4 Retire the VS Code extension
+### 3.4 Retire the VS Code extension - DONE
 
-It is deprecated, not deleted, so a final version can point existing users at
-the package. Publish that version, then delete the directory.
+Removed in this release: it only discovered `.github/agents/*.agent.md`
+files, which 7.x does not ship. VS Code users install the plugin (Chat:
+Install Plugin From Source, or later a marketplace listing). The planned final
+Marketplace version pointing users at the package was not published.
 
 ### 3.5 Rule registry as a reference skill
 

@@ -1,4 +1,4 @@
-# performance-accessibility — Performance Accessibility Specialist
+# performance-accessibility - Performance Accessibility Specialist
 
 > Audits the intersection of web performance optimization and accessibility. Covers lazy loading announcements, skeleton screen semantics, Cumulative Layout Shift impact on assistive technology, code splitting with accessible loading states, and progressive enhancement patterns.
 
@@ -42,11 +42,11 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@performance-accessibility Audit lazy loading and skeleton screens in our product listing page
+/performance-accessibility Audit lazy loading and skeleton screens in our product listing page
 
-@performance-accessibility Check if our infinite scroll implementation has a keyboard alternative
+/performance-accessibility Check if our infinite scroll implementation has a keyboard alternative
 
-@performance-accessibility Review the CLS impact of our hero image loading on screen reader users
+/performance-accessibility Review the CLS impact of our hero image loading on screen reader users
 ```
 
 ## Related
