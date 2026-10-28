@@ -100,9 +100,9 @@ baseline = load("axe-baseline.json")
 
 new_violations = current_violations - baseline
 if new_violations.count > 0:
-    FAIL PR - "N new accessibility violations introduced"
+    fail_check("N new accessibility violations introduced")
 else:
-    PASS - "No new violations (M existing in baseline)"
+    succeed_check("No new violations (M existing in baseline)")
 ```
 
 ---
