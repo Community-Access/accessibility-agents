@@ -69,6 +69,24 @@ documentation, checked against primary sources and reviewed independently.
   the package as an agent plugin instead.
 - Two release scripts that checked files removed in 7.0.
 
+### Contributors
+
+Thank you to everyone whose pull requests shaped this release. Ported here,
+with changes:
+
+- [@w9fyi](https://github.com/w9fyi) ([#220](https://github.com/Community-Access/accessibility-agents/pull/220)):
+  the Claude Code Skill-tool mark and `agent_type`, a stop hook that cannot
+  loop (`stop_hook_active`) and gives a usable reason, and the right event
+  name on restored context.
+- [@AdamMagued](https://github.com/AdamMagued) ([#215](https://github.com/Community-Access/accessibility-agents/pull/215),
+  [#212](https://github.com/Community-Access/accessibility-agents/pull/212)): the current PDF/UA-1 source
+  page, and the Headers/IDs exception to TH Scope (Matterhorn 15-003).
+- [@chrisnestrud](https://github.com/chrisnestrud) ([#210](https://github.com/Community-Access/accessibility-agents/pull/210),
+  [#211](https://github.com/Community-Access/accessibility-agents/pull/211),
+  [#208](https://github.com/Community-Access/accessibility-agents/pull/208)): keeping streaming
+  transcripts out of live regions, its screen reader test, and placeholder
+  guidance for labelled fields.
+
 ## [7.0.3] - 2026-09-23
 
 Every MCP tool failed on invocation in 7.0.2. Reported as

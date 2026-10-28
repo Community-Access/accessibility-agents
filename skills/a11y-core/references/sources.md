@@ -258,7 +258,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 ### pdf-remediator
 
-- [PDF/UA-1 (ISO 14289-1)](https://www.pdfa.org/resource/pdfua-in-a-nutshell/)
+- [PDF/UA-1 (ISO 14289-1:2014)](https://pdfa.org/resource/iso-14289-pdfua/)
 - [Matterhorn Protocol](https://www.pdfa.org/resource/the-matterhorn-protocol/)
 - [PDF Techniques for WCAG](https://www.w3.org/WAI/WCAG22/Techniques/#pdf)
 - [pdf-lib](https://pdf-lib.js.org/)

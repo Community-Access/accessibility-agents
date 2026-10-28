@@ -64,6 +64,7 @@ Two records there are current rather than superseded, because they describe
 how this package came to be what it is:
 
 - [The 7.0 modernization](history/2026-09-modernization.md), what changed and why
+- [The 7.1 standards audit](history/2026-10-standards-audit.md), how it was checked, what was decided, where to go next
 - [The first real audit](history/2026-09-first-real-audit.md), what nine
   specialists found against a fixture with a known answer key, and the merge
   defect that only a real run could expose

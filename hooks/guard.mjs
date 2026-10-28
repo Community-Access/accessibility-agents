@@ -263,7 +263,7 @@ process.stdout.write = (chunk, ...rest) => {
   return write(chunk, ...rest);
 };
 
-function emitContext(text) {
+function emitContext(text, event) {
   if (CLIENT === 'antigravity') {
     // PreInvocation output: steps to inject before the model runs.
     process.stdout.write(JSON.stringify({ injectSteps: [{ systemMessage: text }] }));
@@ -271,7 +271,7 @@ function emitContext(text) {
   }
   process.stdout.write(
     JSON.stringify({
-      hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: text },
+      hookSpecificOutput: { hookEventName: event || 'UserPromptSubmit', additionalContext: text },
       additionalContext: text,
       systemMessage: text,
     }),
@@ -297,12 +297,26 @@ function emitDeny(reason) {
   );
 }
 
+/**
+ * A Stop event has no permission decision, so it gets the top-level
+ * decision/reason shape. The reason also goes to stderr, which is what a
+ * client reads as the reason when it takes the exit code alone.
+ */
+function emitBlock(reason) {
+  process.stdout.write(JSON.stringify({ decision: 'block', reason }));
+  process.stderr.write(`${reason}\n`);
+}
+
+function eventName(payload) {
+  return payload.hook_event_name || payload.hookEventName || undefined;
+}
+
 // --------------------------------------------------------------- behaviours
 
 function detect(payload, ids) {
   if (hasMarker(ids, 'reminded')) return 0;
   setMarker(ids, 'reminded');
-  emitContext(REMINDER);
+  emitContext(REMINDER, eventName(payload));
   return 0;
 }
 
@@ -361,6 +375,7 @@ function persist(payload, ids) {
     `Accessibility session state restored. Lead review ${state.reviewed ? 'completed' : 'not yet run'}.` +
       (state.attemptedUiEdit ? ` A UI edit to ${state.attemptedUiEdit} was blocked earlier.` : '') +
       ' The contract is in AGENTS.md.',
+    eventName(payload),
   );
   return 0;
 }
@@ -370,11 +385,12 @@ function persist(payload, ids) {
  * review would otherwise end with the work merged and nobody told.
  */
 function finalize(payload, ids) {
+  if (payload.stop_hook_active || payload.stopHookActive) return 0;
   if (!hasMarker(ids, 'ui-edit-attempted')) return 0;
   if (hasMarker(ids, 'reviewed')) return 0;
-  emitDeny(
-    'A user-facing file was edited without an accessibility review. Dispatch accessibility-lead and let it ' +
-      'complete before finishing this turn.',
+  emitBlock(
+    'An edit to a user-facing file was refused because no accessibility review has run, so the edit was not ' +
+      'made. Dispatch accessibility-lead and retry it, or tell the user the edit is still outstanding.',
   );
   return 2;
 }

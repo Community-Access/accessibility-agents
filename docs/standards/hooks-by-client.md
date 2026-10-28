@@ -106,13 +106,16 @@ names the next action.
 Live, in Claude Code (October 2026): the gate opens after `accessibility-lead`
 runs through the Skill tool, and still blocks an edit made without it.
 
-`hooks/guard.test.mjs`, 32 tests: the reminder fires once; the gate refuses
+`hooks/guard.test.mjs`, 34 tests: the reminder fires once; the gate refuses
 every user-facing extension and ignores build output, tests and dependencies;
 every path key a client might use is recognised; only the lead opens the gate,
 whether it runs as a subagent (`agent_type`) or through the Skill tool;
 session aliases work and session isolation holds; finalize refuses an
-unreviewed UI edit; persist round-trips state; malformed input and unknown
-behaviours are ignored rather than fatal.
+unreviewed UI edit with a stop-event reason the model can act on, and stands
+down when `stop_hook_active` says the client is already continuing because of
+a stop hook, so it cannot loop; persist and detect report the event that fired
+them; persist round-trips state; malformed input and unknown behaviours are
+ignored rather than fatal.
 
 ## Sources
 

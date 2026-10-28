@@ -28,7 +28,7 @@ These map to PDF/UA-1 (ISO 14289-1) through Matterhorn Protocol 1.1 checkpoints.
 | PDFUA.15.001 | warning | Formulas tagged and have alt text |
 | PDFUA.17.001 | error | Artifacts not duplicated in structure tree |
 | PDFUA.19.001 | error | Tables have TH cells |
-| PDFUA.19.002 | error | TH cells have Scope |
+| PDFUA.19.002 | error | TH cells have Scope, unless the table uses Headers and IDs |
 | PDFUA.19.003 | error | Complex tables use Headers attribute |
 | PDFUA.20.001 | error | Lists properly tagged |
 | PDFUA.21.001 | error | Headings properly tagged |
@@ -63,7 +63,7 @@ Each row, with ID, severity and what it checks.
 | PDFBP.NAV.BOOKMARKS_FOR_LONG_DOCS | warning | Long docs have bookmarks |
 | PDFBP.NAV.TOC_LINKED | tip | TOC entries are linked |
 | PDFBP.TAB.TH_PRESENT | error | Tables have headers |
-| PDFBP.TAB.SCOPE_SET | warning | Headers have scope |
+| PDFBP.TAB.SCOPE_SET | warning | Headers have scope, unless Headers and IDs are used |
 | PDFBP.TAB.COMPLEX_HEADERS | warning | Complex tables use Headers attr |
 | PDFBP.FORMS.TAB_ORDER | warning | Form tab order follows structure |
 | PDFBP.FORMS.TOOLTIP_PRESENT | error | Form fields have labels |

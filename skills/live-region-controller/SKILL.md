@@ -62,6 +62,7 @@ The conditional render creates and fills the element simultaneously. The screen 
 12. Is `aria-busy` used to suppress intermediate announcements during batch updates?
 13. Do alerts avoid auto-disappearing without user control?
 14. Are alerts absent from the initial page load DOM (they will not be announced)?
+15. Is a streaming transcript or frequently re-rendered list kept out of the live region, with completed entries announced separately?
 
 ## Common Mistakes You Must Catch
 
@@ -73,6 +74,7 @@ The conditional render creates and fills the element simultaneously. The screen 
 - Announcements during page load that screen reader overrides with its own page load announcement
 - Missing loading state announcements (user does not know anything is happening)
 - Using `display: none` to hide a live region (screen reader ignores it completely)
+- A streaming transcript or re-rendered list inside a live region (screen readers re-read the region, not just the new entry)
 
 ## Structured Output for Sub-Agent Use
 

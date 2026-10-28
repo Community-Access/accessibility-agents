@@ -17,6 +17,7 @@ Requirements:
 
 - `<label>` element with `for` attribute matching the input's `id`
 - Never use `placeholder` as the only label -- it disappears on input and has poor contrast
+- A `placeholder` on a labelled field is exposed as a hint, not a second name. Do not put instructions or format rules only in it; put them in persistent help text linked with `aria-describedby`, and drop a placeholder that only repeats the label
 - Never use `aria-label` when a visible label is possible -- sighted users benefit from visible labels too
 - Label text must be descriptive. "Email address" not "Input 1"
 - Clicking a `<label>` activates its associated control (ARIA labeling via `aria-label`/`aria-labelledby` does NOT provide this click behavior -- this is why `<label>` is always preferred)

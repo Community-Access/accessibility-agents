@@ -43,6 +43,7 @@ Part of the `testing-coach` skill. Read this only when the task reaches these se
 4. Are form fields labeled? (Navigate to each, listen for the label)
 5. Do error messages announce when they appear?
 6. Can you complete the full user journey eyes-closed?
+7. Does a streaming transcript announce only the new turn, not the whole history?
 
 ### VoiceOver (macOS - Built-in)
 

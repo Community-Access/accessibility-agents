@@ -191,6 +191,20 @@ describe('finalize', () => {
     run('mark', { ...SESSION, subagent_type: 'accessibility-lead' });
     assert.equal(run('finalize', SESSION).code, 0);
   });
+
+  test('blocks a stop with decision and reason, not PreToolUse output', () => {
+    run('gate', edit('src/Modal.tsx'));
+    const r = run('finalize', SESSION);
+    assert.equal(r.code, 2);
+    assert.equal(r.json.decision, 'block');
+    assert.match(r.json.reason, /accessibility-lead/);
+    assert.equal(r.json.hookSpecificOutput, undefined);
+  });
+
+  test('does not refuse again while the client is continuing from a refusal', () => {
+    run('gate', edit('src/Modal.tsx'));
+    assert.equal(run('finalize', { ...SESSION, stop_hook_active: true }).code, 0);
+  });
 });
 
 describe('persist', () => {

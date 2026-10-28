@@ -28,7 +28,7 @@ These rules map to Matterhorn Protocol 1.1 checkpoints (PDF/UA-1). Violations me
 | PDFUA.15.001 | 17 | warning | Formula not tagged with /Formula or has no /Alt |
 | PDFUA.17.001 | 01 | error | Content marked as Artifact also appears in structure tree |
 | PDFUA.19.001 | 15 | error | Table has no TH (header) cells |
-| PDFUA.19.002 | 15 | error | TH cell missing /Scope attribute |
+| PDFUA.19.002 | 15 | error | TH cell has no /Scope attribute in a table not organized with Headers attributes and IDs (Matterhorn 15-003) |
 | PDFUA.19.003 | 15 | error | Table does not use Headers attribute for complex spanning |
 | PDFUA.20.001 | 16 | error | List not tagged with /L, /LI, /Lbl, /LBody |
 | PDFUA.21.001 | 14 | error | Heading not tagged with /H or /H1-/H6 |
@@ -63,7 +63,7 @@ These rules go beyond PDF/UA to ensure practical accessibility.
 | PDFBP.NAV.BOOKMARKS_FOR_LONG_DOCS | warning | Document >10 pages without bookmarks |
 | PDFBP.NAV.TOC_LINKED | tip | Table of contents entries should link to their targets |
 | PDFBP.TAB.TH_PRESENT | error | Table has no header cells |
-| PDFBP.TAB.SCOPE_SET | warning | Header cells missing scope attribute |
+| PDFBP.TAB.SCOPE_SET | warning | Header cells missing scope attribute, where the table does not use Headers and IDs |
 | PDFBP.TAB.COMPLEX_HEADERS | warning | Complex table (spanning cells) needs Headers attribute |
 | PDFBP.FORMS.TAB_ORDER | warning | Form tab order should follow structure order |
 | PDFBP.FORMS.TOOLTIP_PRESENT | error | Form field missing tooltip/label |

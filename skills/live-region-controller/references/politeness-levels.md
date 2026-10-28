@@ -63,6 +63,18 @@ Implicit `aria-live="polite"`. Use for sequential content where new entries are 
 </div>
 ```
 
+A log announces well only when each appended entry is complete and the region does not otherwise change. If the newest entry streams in token by token, or the whole list re-renders, screen readers can re-read much more than the new entry. For chat and streaming output, make the transcript non-live (`role="log"` with `aria-live="off"`) and announce each completed turn through a small visually hidden `role="status"` announcer outside it:
+
+```html
+<div id="transcript" role="log" aria-live="off"><!-- messages --></div>
+<div id="transcript-announcer" role="status" aria-live="polite" class="visually-hidden"></div>
+
+<script>
+document.getElementById('transcript-announcer').textContent =
+  'Assistant: ' + completedReplyText;
+</script>
+```
+
 ### `role="timer"`
 
 Use for elements displaying elapsed or remaining time. Its implicit `aria-live` value is `off`, so it is not announced as it changes; set a different value explicitly if you want announcements.

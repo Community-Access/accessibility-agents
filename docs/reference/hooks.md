@@ -19,7 +19,7 @@ The gate is the script, its manifests, and its tests.
 | `hooks/copilot.hooks.json` | Copilot format, version 1, for copying to `.github/hooks/` in a repository |
 | `hooks/gemini.hooks.json` | Gemini CLI event names |
 | `hooks/antigravity.hooks.json` | Antigravity named hooks (`a11y-detect`, `a11y-gate`, `a11y-mark`), written to `~/.gemini/config/hooks.json` by `npm run setup`; tested against the payloads Antigravity documents, not yet in a live Antigravity session |
-| `hooks/guard.test.mjs` | 32 tests; run with `node --test hooks/guard.test.mjs` |
+| `hooks/guard.test.mjs` | 34 tests; run with `node --test hooks/guard.test.mjs` |
 
 ## Behaviours
 

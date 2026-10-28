@@ -32,7 +32,7 @@ Part of the `pdf-accessibility` skill. Read this only when the task reaches thes
 ### Table Remediation
 
 1. Tags panel: ensure /Table contains /TR, /TH, /TD
-2. Set /Scope on TH cells: "Column", "Row", or "Both"
+2. Set /Scope on TH cells: "Column", "Row", or "Both". A table whose data cells name their headers through /Headers and the TH IDs does not need /Scope (Matterhorn 15-003)
 3. For complex tables with spanning cells: use /Headers attribute on TD cells
 4. Consider simplifying complex tables - split into multiple simple tables
 
