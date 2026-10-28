@@ -1,4 +1,21 @@
-# Keep shell/workflow files LF so macOS /bin/bash parses them consistently.
-*.sh                                  text eol=lf
-*.yml                                 text eol=lf
-*.yaml                                text eol=lf
+# Check every text file out with LF line endings, on every platform.
+#
+# Skill bodies have byte budgets, the MCP bundle is compared byte for byte with
+# a fresh build, and clients parse frontmatter, so a Windows checkout with
+# core.autocrlf=true (the Git for Windows default) used to fail three verify
+# gates and inflate every skill. Git detects binary files itself; the lines
+# below only pin types it could guess wrong.
+* text=auto eol=lf
+
+*.png  binary
+*.jpg  binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.docx binary
+*.xlsx binary
+*.pptx binary
+*.epub binary
+*.zip  binary
+*.tgz  binary
+*.gz   binary
