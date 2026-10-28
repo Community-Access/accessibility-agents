@@ -98,6 +98,13 @@ const GATES = [
     proves: 'The linter reports what it should and stays quiet about what it should not, including the table rule that used to demand unrenderable markdown.',
   },
   {
+    id: 'community',
+    name: 'Accessibility report and credit rules',
+    standard: '.github/scripts/a11y-community.mjs',
+    command: [NODE, ['--test', '.github/scripts/__tests__/a11y-community.test.mjs']],
+    proves: 'An accessibility report is acknowledged, chased after five business days and cannot close without an outcome, and a contributor is credited only in the form they chose, checked against a fake GitHub for every branch.',
+  },
+  {
     id: 'wiki',
     name: 'Wiki page names',
     standard: 'one wiki page per file under docs/, plus .github/wiki/',

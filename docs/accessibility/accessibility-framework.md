@@ -152,6 +152,15 @@ technology, and comments on the monthly review issue are welcome.
 - Credits already in the changelog were given without asking first. Each of
   those contributors is asked, when next in contact, whether to keep, change
   or remove the credit.
+- `.github/workflows/accessibility-credits.yml` asks the question on each
+  accessibility contribution from outside the maintainers and records the
+  answer as a `credit: yes`, `credit: anonymous` or `credit: no` label.
+- Release step: before publishing a release, run
+  `node .github/scripts/a11y-credits.mjs --since <previous tag>` and paste the
+  block it prints into the release notes and `CHANGELOG.md`. It lists items
+  labelled `credit: yes` or `credit: anonymous` closed since that tag, as code
+  and other contributions, and warns about `credit: asked` items with no
+  answer after 14 days: leave those contributors out, or ask them again.
 
 ### Progress update practice
 
