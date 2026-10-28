@@ -125,7 +125,7 @@ jobs:
         with: { node-version: 24 }
       - run: npm ci
       - run: npx browser-driver-manager install chrome
-      - run: npx axe $(git diff --name-only origin/${{ github.base_ref }}...HEAD --diff-filter=ACMR -- '*.html' | sed "s#^#file://$PWD/#" | tr '\n' ' ') --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save results.json
+      - run: npx axe $(git diff --name-only origin/${{ github.base_ref }}...HEAD --diff-filter=ACMR -- '*.html' | sed "s#^#file://${{ github.workspace }}/#" | tr '\n' ' ') --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save results.json
       - name: Check results
         run: |
           violations=$(jq '[.[].violations[]] | length' results.json)

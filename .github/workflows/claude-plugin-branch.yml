@@ -1,0 +1,69 @@
+name: Claude plugin branch
+
+# Keeps the claude-plugin branch equal to the plugin alone, built by
+# scripts/build-claude-plugin.mjs from main. The Claude plugin directory
+# listing follows that branch, so it reviews and installs the skills, hooks
+# and MCP server without the repository's development tooling.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/**'
+      - 'skills/**'
+      - 'hooks/hooks.json'
+      - 'hooks/guard.mjs'
+      - 'mcp-server/dist/**'
+      - 'mcp-server/package.json'
+      - 'README.md'
+      - 'PRIVACY.md'
+      - 'LICENSE'
+      - 'scripts/build-claude-plugin.mjs'
+      - '.github/workflows/claude-plugin-branch.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: claude-plugin-branch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Build the plugin tree
+        run: node scripts/build-claude-plugin.mjs "$RUNNER_TEMP/plugin"
+
+      - name: Commit it to the claude-plugin branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin claude-plugin >/dev/null; then
+            git fetch --depth 1 origin claude-plugin
+            git worktree add "$RUNNER_TEMP/branch" FETCH_HEAD
+            git -C "$RUNNER_TEMP/branch" checkout -B claude-plugin
+          else
+            git worktree add --orphan -b claude-plugin "$RUNNER_TEMP/branch"
+          fi
+          cd "$RUNNER_TEMP/branch"
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a "$RUNNER_TEMP/plugin/." .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "claude-plugin is already current."
+            exit 0
+          fi
+          git commit -m "Plugin built from main ${GITHUB_SHA::7}"
+          git push origin claude-plugin

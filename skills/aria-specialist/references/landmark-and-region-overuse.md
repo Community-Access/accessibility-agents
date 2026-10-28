@@ -61,7 +61,7 @@ The following are common misuses. Content inside `<main>` is already in a landma
 ```html
 <!-- BAD: install commands are not navigable destinations -->
 <div class="install-block" role="region" aria-label="macOS install command">
-  <pre><code>curl -sSL ... | bash</code></pre>
+  <pre><code>brew install example-tool</code></pre>
 </div>
 
 <!-- BAD: code demo panels are not navigable destinations -->
@@ -72,7 +72,7 @@ The following are common misuses. Content inside `<main>` is already in a landma
 
 <!-- GOOD: remove role and aria-label, let heading navigation handle discovery -->
 <div class="install-block">
-  <pre><code>curl -sSL ... | bash</code></pre>
+  <pre><code>brew install example-tool</code></pre>
 </div>
 
 <div class="demo-panel">
