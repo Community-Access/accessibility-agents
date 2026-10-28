@@ -14,10 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `package.json` and lockfile, which make Claude Code run `npm ci` on install,
   CI scripts, and over a thousand files, more than the directory inspects.
   `scripts/build-claude-plugin.mjs` builds the plugin alone (skills, hooks, the
-  bundled MCP server, the manifest, README, PRIVACY and LICENSE; 420 files),
-  and `claude-plugin-branch.yml` keeps a `claude-plugin` branch equal to it on
-  every change to `main`. `.claude-plugin/plugin.json` now links the privacy
+  bundled MCP server, the manifests, README, PRIVACY and LICENSE; 423 files),
+  with the Agent Plugins manifest and Copilot hooks as well, and
+  `plugin-branch.yml` keeps a `plugin` branch equal to it on every change to
+  `main` and tags each version on it as `plugin-v<version>`. The Claude plugin
+  directory follows the branch and Awesome Copilot pins the tag. `.claude-plugin/plugin.json` now links the privacy
   policy, and the README has a privacy section naming the GLOW tools.
+- The docs-site manifest workflow no longer opens a pull request when only the
+  manifest's timestamp changed.
 - Four skill lines that the directory's scanner read as credential or
   download-and-run patterns are reworded: a CI example uses
   `${{ github.workspace }}` instead of `$PWD`, an HTML example shows

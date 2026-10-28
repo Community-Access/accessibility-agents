@@ -1,0 +1,81 @@
+name: Plugin branch
+
+# Keeps the plugin branch equal to the plugin alone, built by
+# scripts/build-claude-plugin.mjs from main, and tags each version on it as
+# plugin-v<version>. The Claude plugin directory listing follows the branch,
+# and the Awesome Copilot entry points at the tag, so both review and install
+# the skills, hooks and MCP server without the repository's tooling.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/**'
+      - 'plugin.json'
+      - 'mcp.json'
+      - 'com.github.copilot/**'
+      - 'skills/**'
+      - 'hooks/hooks.json'
+      - 'hooks/guard.mjs'
+      - 'mcp-server/dist/**'
+      - 'mcp-server/package.json'
+      - 'README.md'
+      - 'PRIVACY.md'
+      - 'LICENSE'
+      - 'scripts/build-claude-plugin.mjs'
+      - '.github/workflows/plugin-branch.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: plugin-branch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Build the plugin tree
+        run: node scripts/build-claude-plugin.mjs "$RUNNER_TEMP/plugin"
+
+      - name: Commit it to the plugin branch and tag the version
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          version=$(node -p "require('./.claude-plugin/plugin.json').version")
+          if git ls-remote --exit-code --heads origin plugin >/dev/null; then
+            git fetch --depth 1 origin plugin
+            git worktree add "$RUNNER_TEMP/branch" FETCH_HEAD
+            git -C "$RUNNER_TEMP/branch" checkout -B plugin
+          else
+            git worktree add --orphan -b plugin "$RUNNER_TEMP/branch"
+          fi
+          cd "$RUNNER_TEMP/branch"
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a "$RUNNER_TEMP/plugin/." .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "The plugin branch is already current."
+          else
+            git commit -m "Plugin ${version} built from main ${GITHUB_SHA::7}"
+            git push origin plugin
+          fi
+          # A tag per version, for listings that pin one (Awesome Copilot).
+          # It stays on the first commit of that version.
+          tag="plugin-v${version}"
+          if ! git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null; then
+            git tag "$tag"
+            git push origin "$tag"
+          fi
