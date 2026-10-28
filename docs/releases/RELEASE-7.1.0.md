@@ -1,7 +1,9 @@
 # Accessibility Agents 7.1: The Edit Gate on Every Client
 
-Released 28 October 2026. Pull request
-[#221](https://github.com/Community-Access/accessibility-agents/pull/221).
+Released 28 October 2026. Pull requests
+[#221](https://github.com/Community-Access/accessibility-agents/pull/221) and
+[#225](https://github.com/Community-Access/accessibility-agents/pull/225) to
+[#228](https://github.com/Community-Access/accessibility-agents/pull/228).
 
 ## Overview
 
@@ -9,8 +11,40 @@ Released 28 October 2026. Pull request
 every client. It comes from a full audit of the package against current
 standards and each client's own documentation, checked against primary
 sources, with every change reviewed by a second agent that had not seen it.
+It also brings GitHub's
+[Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/)
+into the package, as skills any repository can use, and into this project's own
+practice.
 
 ## Highlights
+
+### The Open Source Accessibility Framework
+
+The framework sets out 24 actions, in four phases, for making accessibility part
+of how an open source project works. 7.1 puts it to work in two ways.
+
+- **In the skills.** Four new phase skills, `osaf-foundational`,
+  `osaf-workflow`, `osaf-testing` and `osaf-community`, carry out the actions in
+  any repository: all of them, one phase, or a single action. They keep the
+  framework's own action IDs, cadences and Definitions of Done, open a tracking
+  issue, and hand the hands-on parts to the package skills that do them, such
+  as the web and markdown audits. Ask `github-hub` to "adopt the Open Source
+  Accessibility Framework" to start. A reference skill,
+  `kb-open-source-accessibility-framework`, holds the action index, pinned to a
+  known framework version. See [the framework guide](../standards/osaf.md).
+- **In this project.** A new [ACCESSIBILITY.md](../../ACCESSIBILITY.md) sets
+  out what the project commits to: its priorities, what contributors are asked
+  to do, how to report a barrier (an issue form, or privately by email), how
+  severity is judged, and how quickly reports are answered and fixed. The pull
+  request template now has an accessibility checklist, and
+  `CONTRIBUTING.md` an accessibility section.
+
+### Routers can run their specialists
+
+A live test found that the routers could not start their specialists: the
+dispatch prompt gave a path relative to the package, and a subagent starts in
+the user's project. Routers now send the absolute path to the skills folder,
+on every client.
 
 ### The edit gate works everywhere
 
@@ -94,6 +128,10 @@ The table lists each client with its install commands.
 - **The VS Code extension.** The `@a11y` extension discovered
   `.github/agents/*.agent.md` files that 7.x no longer ships. VS Code installs
   the package natively as an agent plugin instead.
+- **Files nothing used.** About 100 pre-7.0 planning and migration documents,
+  the Go CLI (it inspected folders 7.0 removed), one-off migration scripts, a
+  duplicate release workflow and other leftovers. The records of 7.0 and 7.1
+  are kept, and git history keeps the rest.
 
 ## Upgrading from 7.0
 
