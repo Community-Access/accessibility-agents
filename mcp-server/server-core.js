@@ -127,7 +127,9 @@ function contrastRatio(hex1, hex2) {
 }
 
 // ---------------------------------------------------------------------------
-// APCA contrast (WCAG 3.0 draft - Accessible Perceptual Contrast Algorithm)
+// APCA contrast (Accessible Perceptual Contrast Algorithm). Experimental and
+// non-normative: the WCAG 3.0 draft of 10 Sep 2026 does not name APCA; its
+// contrast measure is still to be determined.
 // Based on APCA-W3 0.0.98G-4g specification.
 // ---------------------------------------------------------------------------
 
@@ -885,11 +887,11 @@ export function createServer() {
   server.registerTool(
     "check_apca_contrast",
     {
-      title: "Check APCA Contrast (WCAG 3.0 Draft)",
+      title: "Check APCA Contrast (Experimental)",
       // One sentence: a client shows this in a picker. WCAG 3 is still a draft,
       // so the caveat stays in the description rather than only in the docs.
       description:
-        "Calculate APCA lightness contrast between two colours, the perceptual algorithm drafted for WCAG 3 and not yet normative.",
+        "Calculate APCA lightness contrast between two colours, an experimental perceptual method that no WCAG standard, and not the current WCAG 3.0 draft, includes.",
       inputSchema: z.object({
         foreground: z.string().describe('Text color as hex (e.g. "#1a1a1a" or "#fff")'),
         background: z.string().describe('Background color as hex (e.g. "#ffffff" or "#000")'),
