@@ -1,7 +1,7 @@
 """Tests for check_source_currency.py.
 
 The checker opened a new "Source Unavailable" issue on every run while a
-source stayed down, thirteen times for pdf-ua-1 (#170 to #204). These tests
+source stayed down, eleven times for pdf-ua-1 (#170 to #204). These tests
 pin the two fixes: an open issue with the same title is updated rather than
 duplicated, and a bot-check refusal (401, 403, 429) files nothing.
 

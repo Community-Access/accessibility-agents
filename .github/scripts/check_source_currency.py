@@ -8,7 +8,7 @@ per source and kind of problem.
 
 One issue, not one per run. The checker used to open a new issue every time a
 source failed, and nothing ever updated the registry, so a source that stayed
-down filed a fresh "Source Unavailable" issue every week: thirteen of them for
+down filed a fresh "Source Unavailable" issue every week: eleven of them for
 pdf-ua-1 between July and September 2026 (#170 to #204). It now looks for an
 open issue with the same title first and updates that issue's body instead.
 
