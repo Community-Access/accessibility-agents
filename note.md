@@ -189,6 +189,34 @@ gate does not catch, and grade bands that disagreed with the renderer).
   toggle buttons, combobox); invalid ARIA removed.
 - About ten files switched from prose replies to the findings JSON.
 
+## Done and committed (e366de9): web skills part 2
+
+15 skills, with the web accessibility wizard (the main web entry point).
+Independent review: 129 of 132 hunks correct; its findings fixed.
+
+- The wizard runs the full WCAG 2.2 AA axe tag set and says which 2.2
+  criteria need manual testing; its VPAT handoff uses VPAT 2.5Rev, with the
+  4.1.1 row handled as the template says; its scoring matches the renderer.
+- web-csv-reporter follows axe-core 4.14's rules and help URLs; its ROI
+  weights now match the renderer (decision 5 is done for this file).
+- Native `<dialog>` with `showModal()` first in modal-specialist.
+- testing-coach uses WebAIM Survey #11 figures instead of invented shares.
+- Mobile APIs that did not exist replaced with ones that do.
+- CI samples: actions v7 (verified with git ls-remote), Node 24.
+
+## Done and committed (3e3bc20): document and Markdown skills
+
+18 skills. Independent review installed python-pptx, python-docx and
+openpyxl and validated every preset: 125 of 129 hunks correct; fixed.
+
+- PDF: PDF/UA-1 and PDF/UA-2 plus WCAG 2.2 AA; Matterhorn 1.1 is UA-1
+  only; 19 wrong Matterhorn checkpoint numbers corrected; UA-2 needs
+  `pdfuaid:rev` 2024 as well as `pdfuaid:part`.
+- ePub: the exact EPUB Accessibility 1.1 conformance string and metadata
+  rules.
+- Office: Python calls that did not exist replaced; current menu names;
+  all 16 Accessibility Checker rules mapped.
+
 ## Done and committed (996e929, 9dc3e49): scanner fixes found by the audit
 
 - `run_playwright_viewport_scan` claimed to test zoom and WCAG 1.4.4. It
