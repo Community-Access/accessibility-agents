@@ -40,7 +40,7 @@ item that applies. Write N/A beside an item that does not apply.
 
 ### Release (only when versions or release files change)
 
-- [ ] `npm run verify:release` passes: every manifest, `mcp-server/package.json` and `server.json` agree
+- [ ] `npm run verify:release` passes: every manifest, `mcp-server/package.json` and `server.json` agree, and `action/README.md` pins the new version
 - [ ] `CHANGELOG.md` has the matching version section, and `docs/releases/RELEASE-{version}.md` exists
 
 ## Accessibility notes
