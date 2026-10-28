@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The GitHub Action's README pinned `action@v6.0.0`**, the release whose
+  `claude-code-plugin/` symlinks GitHub's ZIP download of an action cannot
+  stage, so a workflow copied from it failed before any step ran
+  ([#164](https://github.com/Community-Access/accessibility-agents/issues/164)).
+  7.0.0 removed every symlink; the README now pins `action@v7.1.0`, and the
+  `release` gate fails when the pin and the package version disagree.
 - **The edit gate ignored edits made through a shell.** It watched the edit
   tools only, so `sed -i`, a redirect, a heredoc, `tee`, `cp` or a
   `python3 -c` one-liner changed a `.tsx` file without a review, and Claude

@@ -82,6 +82,21 @@ for (const group of NO_HARDCODED) {
   }
 }
 
+// A workflow copies its `uses:` line from the action's README, so a stale pin
+// there sends users to an old release. The README said action@v6.0.0 through
+// all of 7.x, and v6.0.0 is the release whose symlinks GitHub's ZIP download
+// of an action cannot stage (#164).
+const ACTION_DOCS = ['action/README.md'];
+for (const file of ACTION_DOCS) {
+  const abs = path.join(ROOT, file);
+  if (!fs.existsSync(abs) || !versions[0]) continue;
+  for (const m of fs.readFileSync(abs, 'utf8').matchAll(/accessibility-agents\/action@v(\d+\.\d+\.\d+)/g)) {
+    if (m[1] !== versions[0]) {
+      problems.push(`${file} pins action@v${m[1]}; the package is ${versions[0]}, so update the pin with the release`);
+    }
+  }
+}
+
 if (process.argv.includes('--json')) {
   console.log(JSON.stringify({ version: versions[0] || null, sources: found, problems }, null, 2));
   process.exit(problems.length ? 1 : 0);
@@ -100,5 +115,5 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log(`All ${found.length} manifests agree on ${versions[0]}, and nothing hard-codes it.`);
+console.log(`All ${found.length} manifests agree on ${versions[0]}, the action README pins it, and nothing hard-codes it.`);
 process.exit(0);
