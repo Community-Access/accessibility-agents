@@ -53,6 +53,17 @@ checked, and any deviation stated plainly:
 **[Architecture](architecture/)** - the tier model, the dispatch contract, the
 findings pipeline, and the decisions behind them.
 
+**[Accessibility of this project](accessibility/)** - how Accessibility
+Agents tests and tracks its own accessibility, apart from what it does for
+yours:
+
+- [Testing the core flows](accessibility/accessibility-testing.md), the
+  keyboard, screen reader, manual and documentation checks and every run
+- [Progress updates](accessibility/accessibility-progress.md), monthly
+- [Open Source Accessibility Framework record](accessibility/accessibility-framework.md),
+  action by action with evidence
+- [Resources](accessibility/accessibility-resources.md) other projects can reuse
+
 **[Releases](releases/)** - release notes, one file per version.
 
 **[History](history/)** - the records of how 7.0 and 7.1 came to be. Older
