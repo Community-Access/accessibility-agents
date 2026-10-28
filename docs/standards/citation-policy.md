@@ -91,4 +91,4 @@ When providing recommendations based on specifications or documentation that may
 
 ## Source Fingerprint Registry
 
-The machine-readable source registry at [source-registry.json](source-registry.json) tracks authoritative URLs with content fingerprints. `.github/scripts/check_source_currency.py` reads this registry, compares the fingerprints and opens an issue when a source changes, but no workflow runs it at present. Until one does, the `lastVerified` dates in the registry record when each source was last checked by hand.
+The machine-readable source registry at [source-registry.json](source-registry.json) tracks authoritative URLs with content fingerprints. `.github/scripts/check_source_currency.py` reads this registry, compares the fingerprints and reports a source that changed or went away in one issue per source, which later runs update rather than duplicate. A 401, 403 or 429 is a site refusing automated requests, not a moved page, so it files nothing and asks for a check by hand. No workflow runs it at present. Until one does, the `lastVerified` dates in the registry record when each source was last checked by hand.

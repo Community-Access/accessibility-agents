@@ -105,6 +105,14 @@ const GATES = [
     proves: 'The wiki sync cannot overwrite one page with another or keep a page whose source was deleted, because every page name is unique and comes from a file that exists.',
   },
   {
+    id: 'sources',
+    name: 'Source currency checker',
+    standard: '.github/scripts/check_source_currency.py',
+    command: [NODE, ['scripts/test-source-checker.mjs']],
+    proves: 'A source that stays down is reported in one issue that later runs update, and a site\'s bot check is not mistaken for a moved page.',
+    optional: true,
+  },
+  {
     id: 'release',
     name: 'Version consistency',
     standard: 'one version across every manifest',
