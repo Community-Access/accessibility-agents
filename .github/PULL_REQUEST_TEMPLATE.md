@@ -38,6 +38,17 @@ item that applies. Write N/A beside an item that does not apply.
 - [ ] Reflows at 400 percent zoom and respects reduced motion
 - [ ] Native elements before ARIA
 
+### Terminal and MCP output (the installer, scripts, hooks, MCP tools, report wording)
+
+- [ ] Output is plain ASCII, in the order things happen, with status in words, not a symbol or color alone
+- [ ] No prompt needs a pointer, and every prompt can be left with Ctrl+C or Escape
+- [ ] Errors are a sentence that says what to do next; unknown options are refused, not acted on
+- [ ] Counts match their nouns, and report headings, tables and findings follow [the interface requirements](https://github.com/Community-Access/accessibility-agents/blob/main/ACCESSIBILITY.md#contributor-expectations)
+
+### Dependencies (only when a dependency or a supported client is added or upgraded)
+
+- [ ] A dependency that shapes what users meet has had a short accessibility review, recorded under [Dependencies and upstream blockers](https://github.com/Community-Access/accessibility-agents/blob/main/ACCESSIBILITY.md#dependencies-and-upstream-blockers)
+
 ### Release (only when versions or release files change)
 
 - [ ] `npm run verify:release` passes: every manifest, `mcp-server/package.json` and `server.json` agree, and `action/README.md` pins the new version

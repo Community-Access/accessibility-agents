@@ -27,7 +27,7 @@ This is an accessibility project. We hold ourselves to a higher standard when it
 
 ## Enforcement
 
-Instances of unacceptable behavior may be reported by contacting the project maintainer. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances.
+Instances of unacceptable behavior may be reported by contacting the project maintainer, Jeff Bishop, at [jeff@jeffbishop.com](mailto:jeff@jeffbishop.com). Reports are kept private, and you never need to disclose a disability or other personal information to make one. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances.
 
 ## Attribution
 

@@ -1,0 +1,84 @@
+name: Accessibility feedback and progress
+
+# The recurring half of this project's accessibility practice (ACCESSIBILITY.md,
+# "Progress updates"). On the first of each month this opens one public issue
+# that invites feedback from anyone who uses the agents and lists the review the
+# accessibility owner does that month: the progress entry, open reports, labels,
+# known limitations, dependencies, the testing record and recognition. It closes
+# the previous month's issue with a link to the new one, so exactly one is open
+# at a time. It writes the reminder, not the update.
+
+on:
+  schedule:
+    # 15:23 UTC on the 1st: 08:23 in Arizona, off the top of the hour.
+    - cron: "23 15 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: accessibility-review
+  cancel-in-progress: false
+
+jobs:
+  open-monthly-issue:
+    if: github.repository == 'Community-Access/accessibility-agents'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open this month's issue and close last month's
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          prefix="Accessibility feedback and progress, "
+          title="${prefix}$(date -u +'%B %Y')"
+
+          open_issues="$(gh api "repos/${REPO}/issues?labels=accessibility&state=open&per_page=100" \
+            --jq "[.[] | select(.pull_request == null) | select(.title | startswith(\"${prefix}\")) | {number, title}]")"
+
+          if [ "$(jq --arg t "$title" '[.[] | select(.title == $t)] | length' <<<"$open_issues")" -gt 0 ]; then
+            echo "This month's issue is already open; nothing to do."
+            exit 0
+          fi
+
+          body_file="$(mktemp)"
+          cat > "$body_file" <<'BODY'
+          This is Accessibility Agents' monthly accessibility issue. It has two jobs.
+
+          ## Tell us how Accessibility Agents works for you
+
+          Anyone is welcome to comment here: what works well with your screen reader, braille display, magnifier, voice control or keyboard, and what gets in your way, in the installer, the reports, the MCP tools or the documentation. Partial thoughts are fine. You never need to tell us about a disability or diagnosis.
+
+          A specific barrier is easiest to track as its own report, with the [accessibility issue form](https://github.com/Community-Access/accessibility-agents/issues/new?template=accessibility.yml), or by email to jeff@jeffbishop.com if you would rather not post in public.
+
+          ## The month's review
+
+          For the accessibility owner named in [ACCESSIBILITY.md](https://github.com/Community-Access/accessibility-agents/blob/main/ACCESSIBILITY.md#ownership-and-maintenance). Check each item when it is done.
+
+          - [ ] Add this month's entry to [the progress page](https://github.com/Community-Access/accessibility-agents/blob/main/docs/accessibility/accessibility-progress.md): completed, in progress and open, known limitations, lessons learned, links.
+          - [ ] Every open accessibility report has had an acknowledgement, a severity, an owner and a status update within the targets in ACCESSIBILITY.md; reports closed this month have their outcome written down, and the reporter was offered the chance to confirm the fix.
+          - [ ] Suitable issues carry `good first issue` or `help wanted` with scope, context and acceptance criteria; issues that grew too large have lost `good first issue`.
+          - [ ] "Known limitations" and "Supported environments" in ACCESSIBILITY.md match what is known and what was tested.
+          - [ ] New or upgraded dependencies and client releases are reviewed under "Dependencies and upstream blockers"; upstream issues in the tracking issue have been checked for movement.
+          - [ ] Any keyboard, screen reader or manual runs are recorded in [the testing document](https://github.com/Community-Access/accessibility-agents/blob/main/docs/accessibility/accessibility-testing.md).
+          - [ ] Accessibility contributions are credited where the contributor agreed, in the form they chose.
+          - [ ] Actions whose definition of done is now met are checked in the project's Open Source Accessibility Framework tracking issue.
+          - [ ] Feedback left on this issue is answered, and anything actionable has its own issue.
+          BODY
+
+          new_url="$(gh api "repos/${REPO}/issues" \
+            -f title="$title" \
+            -F body=@"$body_file" \
+            -f 'labels[]=accessibility' \
+            --jq '.html_url')"
+          echo "Opened ${new_url}"
+
+          for number in $(jq -r '.[].number' <<<"$open_issues"); do
+            gh api "repos/${REPO}/issues/${number}/comments" \
+              -f body="This month's accessibility feedback and progress issue is ${new_url}. Closing this one; please continue there." >/dev/null
+            gh api -X PATCH "repos/${REPO}/issues/${number}" -f state=closed -f state_reason=completed >/dev/null
+            echo "Closed #${number}"
+          done

@@ -11,9 +11,40 @@ the checks to run, the documentation rules, and what to test for anything with
 an interface. To report an accessibility barrier in this project, use the
 [accessibility issue form](https://github.com/Community-Access/accessibility-agents/issues/new?template=accessibility.yml),
 or email the address in [ACCESSIBILITY.md](ACCESSIBILITY.md#reporting-accessibility-issues)
-if GitHub is a barrier for you. Accessibility issues that suit new contributors
-are labelled `accessibility` and `good first issue`; ones where we need
-specialist help are labelled `accessibility` and `help wanted`.
+if GitHub is a barrier for you.
+
+### Accessibility work you can pick up
+
+Each of these issues has its scope, what is expected and acceptance criteria:
+
+- [Accessibility good first issues](https://github.com/Community-Access/accessibility-agents/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility+label%3A%22good+first+issue%22):
+  small and self-contained. Some need no code at all, such as a keyboard-only
+  pass of the install flow with the client you already use.
+- [Accessibility help wanted](https://github.com/Community-Access/accessibility-agents/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility+label%3A%22help+wanted%22):
+  where we need specialist knowledge or lived experience, such as daily use of
+  a screen reader. Each issue says what expertise it needs; nobody is asked to
+  disclose a disability.
+- [Everything labelled accessibility](https://github.com/Community-Access/accessibility-agents/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility).
+
+Non-code contributions count just as much: running the core-flow checks in
+[docs/accessibility/accessibility-testing.md](docs/accessibility/accessibility-testing.md),
+reproducing a report, reviewing documentation, or commenting on the month's
+"Accessibility feedback and progress" issue. Ask questions on the issue you are
+working on, in [Discussions](https://github.com/Community-Access/accessibility-agents/discussions),
+or by email; the accessibility owner named in
+[ACCESSIBILITY.md](ACCESSIBILITY.md#ownership-and-maintenance) answers.
+Contributions are credited in the release notes in the way you choose, or not
+at all.
+
+### Ways to take part
+
+Everything here is asynchronous and in text: issues, pull requests,
+Discussions, the support hub below, and email. There are no meetings, and none
+is needed to contribute; if one is ever held, the agenda and notes are posted
+in Discussions and nobody needs a camera or to speak. To request an
+accommodation, or to raise anything privately, email the address in
+[ACCESSIBILITY.md](ACCESSIBILITY.md#reporting-accessibility-issues); you do not
+need to explain why.
 
 ## Support and Community Routing
 

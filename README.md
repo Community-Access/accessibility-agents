@@ -172,7 +172,13 @@ adopt the Open Source Accessibility Framework, or one of its four phases
 [![Open Source Accessibility Framework progress for Accessibility Agents](https://img.shields.io/badge/Accessibility%20Framework-Accessibility%20Agents-F143AB?logo=github&logoColor=000000)](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/52)
 
 Our progress, action by action, is tracked in public in
-[our framework tracking issue](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/52).
+[our framework tracking issue](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/52)
+and recorded with its evidence in
+[the framework record](docs/accessibility/accessibility-framework.md). We
+publish [accessibility progress updates](docs/accessibility/accessibility-progress.md)
+each month, and accessibility issues anyone can pick up are labelled
+[good first issue](https://github.com/Community-Access/accessibility-agents/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility+label%3A%22good+first+issue%22)
+and [help wanted](https://github.com/Community-Access/accessibility-agents/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility+label%3A%22help+wanted%22).
 
 ## Contributing
 
