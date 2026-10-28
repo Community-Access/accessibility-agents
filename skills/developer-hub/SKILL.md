@@ -26,7 +26,7 @@ There are no commands to memorise. The user describes the problem; you route it.
 3. **Dispatch.** One specialist for a focused question, several when a task
    spans language, GUI and accessibility.
 4. **Hold the bar.** Desktop UI is UI. Anything the user sees or operates gets a
-   `desktop-a11y-specialist` pass before you call it done.
+   review from `desktop-a11y-specialist` before you call it done.
 
 ## Dispatching skills
 

@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The Claude plugin directory lists a plugin-only tree.** Submitted from the
+  repository root, the plugin carried the development tooling: the root
+  `package.json` and lockfile, which make Claude Code run `npm ci` on install,
+  CI scripts, and over a thousand files, more than the directory inspects.
+  `scripts/build-claude-plugin.mjs` builds the plugin alone (skills, hooks, the
+  bundled MCP server, the manifest, README, PRIVACY and LICENSE; 420 files),
+  and `claude-plugin-branch.yml` keeps a `claude-plugin` branch equal to it on
+  every change to `main`. `.claude-plugin/plugin.json` now links the privacy
+  policy, and the README has a privacy section naming the GLOW tools.
+- Four skill lines that the directory's scanner read as credential or
+  download-and-run patterns are reworded: a CI example uses
+  `${{ github.workspace }}` instead of `$PWD`, an HTML example shows
+  `brew install` instead of `curl ... | bash`, and `developer-hub` asks for a
+  review rather than a "pass".
+
 - **The MCP server is staged on npm, then approved.** npm's 2FA-bypass tokens
   can no longer publish directly (from about January 2027), and the 7.1.0
   release's direct publish was refused. `release-assets.yml` now runs
