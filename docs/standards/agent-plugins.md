@@ -68,15 +68,17 @@ bundle and installed separately; the tools that need them say how.
 
 Claude Code reads its own manifest format, and Codex keeps a compatibility
 manifest. They carry the same version; `scripts/check-release-consistency.js`
-fails if `package.json`, `plugin.json`, the two manifests below or
-`mcp-server/package.json` disagree. It does not check
+fails if `package.json`, `plugin.json`, the two manifests below,
+`mcp-server/package.json` or the MCP Registry entry `server.json` (its own
+version and the npm package version it points at) disagree, seven versions in
+all. It does not check
 `.claude-plugin/marketplace.json`, which also says 7.1.0.
 
 | File | Read by | Holds |
 |---|---|---|
-| `.claude-plugin/plugin.json` | Claude Code (VS Code also recognises it) | name, version, description, `mcpServers` launching `${CLAUDE_PLUGIN_ROOT}/mcp-server/dist/stdio.mjs` |
+| `.claude-plugin/plugin.json` | Claude Code (VS Code also recognises it) | name, version, description, author (URL `https://community-access.org`), `mcpServers` launching `${CLAUDE_PLUGIN_ROOT}/mcp-server/dist/stdio.mjs`; the icon is the file `.claude-plugin/icon.png` beside it |
 | `hooks/hooks.json` | Claude Code plugin | the hook registrations (Codex no longer loads plugin hooks; it gets the gate from `npm run setup`) |
-| `.codex-plugin/plugin.json` | Codex, as a compatibility fallback to the root `plugin.json` | name, version, description, author (an object), license, homepage, repository, keywords, `skills` |
+| `.codex-plugin/plugin.json` | Codex, as a compatibility fallback to the root `plugin.json` | name, version, description, author (an object, URL `https://community-access.org`), license, homepage, repository, keywords, `skills` |
 
 VS Code recognises root `plugin.json`, `.claude-plugin/plugin.json` and the
 legacy `.plugin/plugin.json`; its documentation does not say which wins when
@@ -108,6 +110,8 @@ Codex         codex plugin marketplace add Community-Access/accessibility-agents
               (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires chat.plugins.enabled)
+Gemini CLI    gemini extensions install https://github.com/Community-Access/accessibility-agents
+              (uses the extension archive attached to each release, from 7.1.0)
 Any client    npm run setup   (copies skills/ to ~/.agents/skills; see Getting started)
 ```
 
@@ -123,13 +127,30 @@ edit gate. For the gate, use `npm run setup` instead, which writes
 with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
 Use one route, not both.
 
+## The Gemini CLI extension
+
+The Gemini CLI extension is a separate archive, `accessibility-agents.tar.gz`,
+built by `node scripts/build-gemini-extension.mjs` and attached to each
+published release by `.github/workflows/release-assets.yml`. It holds
+`gemini-extension.json` at its root (with `AGENTS.md` as the context file),
+the skills, the guard with Gemini's hook manifest as `hooks/hooks.json`, and
+the bundled MCP server. It is separate because a Gemini extension reads
+`hooks/hooks.json`, which in this repository is the Claude Code plugin's hook
+manifest, and one file cannot serve both clients without each warning about
+the other's events. Tested with Gemini CLI 0.66.0: `gemini extensions
+validate` passes, and an install loads `AGENTS.md`, the MCP server and the
+skills. The edit gate inside the extension was not exercised in a live, signed-in
+Gemini session. Listing in the Gemini extensions gallery needs the
+`gemini-cli-extension` repository topic; Gemini's documentation does not say
+outright whether the gallery lists a manifest found only in a release archive.
+
 ## What is checked
 
 Every claim above is checked by a tool.
 
 | Claim | Tool |
 |---|---|
-| The marketplace and plugin manifests are valid | `claude plugin validate .` |
+| The marketplace and plugin manifests are valid | `claude plugin validate .`; on 2026-10-28 it warned only that `CLAUDE.md` is not loaded from a plugin, since the package ships `.claude-plugin/icon.png` (1024 px, white and yellow on #0B3D91, contrast 10.0:1 and 7.1:1) |
 | All manifests and the MCP server agree on one version | `scripts/check-release-consistency.js` |
 | Nothing hard-codes the version | `scripts/check-release-consistency.js` |
 | The plugin loads and exposes exactly the six routers | `scripts/verify-live.mjs` |

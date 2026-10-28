@@ -11,7 +11,7 @@ rather than asserted, and any deviation, plainly.
 | [Agent Plugins 1.0](agent-plugins.md) | `plugin.json`, `mcp.json` and the client manifests | `claude plugin validate .`, `npm run verify:release` |
 | [Model Context Protocol](mcp.md) | the 39 scanner tools | a real client over stdio, `npm run verify:mcp` |
 | [WCAG 2.2](wcag.md) | every criterion a finding cites | `npm run verify:findings` |
-| [Hooks, by client](hooks-by-client.md) | the enforcement gate | 34 tests, `node --test hooks/guard.test.mjs` |
+| [Hooks, by client](hooks-by-client.md) | the enforcement gate | 36 tests, `node --test hooks/guard.test.mjs` |
 | [Dependency supply chain](dependencies.md) | the two dependency trees, root tooling and the MCP server, both gated | the npm advisory database, `npm run verify:deps` |
 
 The [conformance dossier](conformance.md) collects the gates, the measured

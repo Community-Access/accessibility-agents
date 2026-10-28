@@ -52,6 +52,11 @@ documentation, checked against primary sources and reviewed independently.
   Skill tool and reads `agent_type`. Retested live, both ways.
 - **The Codex edit gate never ran**: Codex rejected `~/.codex/hooks.json` over
   a `$comment` key. Now `description`; Codex lists all six hooks.
+- **The Gemini CLI edit gate never opened**: it marked on `AfterAgent`, whose
+  payload names no skill. Gemini loads a skill with `activate_skill`, so the
+  gate now opens on `AfterTool` for that tool, reading `tool_input.name`.
+- **Gemini CLI never saved audit state before compression**: the guard
+  recognised `PreCompact` but not Gemini's `PreCompress`.
 - **`run_axe_scan` never ran** (`@axe-core/playwright` needs a page from a
   browser context); its `wcag` field now uses the findings-contract form.
 - **The three prompts and both resource templates were registered wrongly**:
@@ -74,6 +79,19 @@ documentation, checked against primary sources and reviewed independently.
   Community-Access/accessibility-agents`, then `codex plugin add
   accessibility-agents@community-access` (skills and MCP server; Codex no
   longer loads plugin hooks, so the gate needs `npm run setup`).
+- **Gemini CLI extension**: `scripts/build-gemini-extension.mjs` builds
+  `accessibility-agents.tar.gz` (manifest, `AGENTS.md` as context, skills,
+  Gemini hooks, bundled MCP server), and `.github/workflows/release-assets.yml`
+  attaches it to each release. Install with `gemini extensions install
+  https://github.com/Community-Access/accessibility-agents`. Validated with
+  Gemini CLI 0.66.0; not yet tested in a live, signed-in session.
+- **MCP server on npm and the MCP Registry**: published on release as
+  `@community-access/accessibility-agents-mcp` (the bundle only, no runtime
+  dependencies; Playwright, axe and pdf-lib are optional peers) and as
+  `io.github.Community-Access/accessibility-agents` (`server.json`), by the
+  `mcp-registry` job in `release-assets.yml`.
+- **Plugin icon** (`.claude-plugin/icon.png`) and the Community Access URL in
+  the Claude Code and Codex manifests.
 - **Codespaces**: `.devcontainer/devcontainer.json` and `.vscode/mcp.json`.
 - Live client check verified on Claude Code and Codex.
 

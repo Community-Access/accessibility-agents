@@ -34,6 +34,8 @@ Codex         codex plugin marketplace add Community-Access/accessibility-agents
               (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires chat.plugins.enabled)
+Gemini CLI    gemini extensions install https://github.com/Community-Access/accessibility-agents
+              (uses the extension archive attached to each release, from 7.1.0)
 ```
 
 The plugin loads the skills and the hooks and starts the MCP server from its

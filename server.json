@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Community-Access/accessibility-agents",
+  "title": "Accessibility Agents",
+  "description": "WCAG 2.2 scanners for web pages, Office, PDF, ePub and Markdown: contrast, axe, veraPDF and more.",
+  "websiteUrl": "https://community-access.org",
+  "repository": {
+    "url": "https://github.com/Community-Access/accessibility-agents",
+    "source": "github",
+    "subfolder": "mcp-server"
+  },
+  "version": "7.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@community-access/accessibility-agents-mcp",
+      "version": "7.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

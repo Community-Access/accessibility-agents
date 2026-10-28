@@ -1,7 +1,7 @@
 # Privacy Policy
 
 **Last updated:** October 28, 2026
-**Applies to:** A11y Agent Team MCP Server, distributed in this repository's `mcp-server/` directory and launched by the Accessibility Agents plugin.
+**Applies to:** A11y Agent Team MCP Server, in this repository's `mcp-server/` directory, launched by the Accessibility Agents plugin, and published on npm as `@community-access/accessibility-agents-mcp`.
 
 ## Summary
 

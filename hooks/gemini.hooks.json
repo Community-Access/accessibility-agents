@@ -1,10 +1,16 @@
 {
-  "$comment": "Gemini CLI event names mapped onto hooks/guard.mjs. Antigravity uses hooks/antigravity.hooks.json.",
+  "$comment": "Gemini CLI event names mapped onto hooks/guard.mjs. Gemini loads a skill with the activate_skill tool, so the gate opens on AfterTool for it. Antigravity uses hooks/antigravity.hooks.json.",
   "hooks": {
     "BeforeAgent": [
       {
         "hooks": [
-          { "name": "a11y-detect", "type": "command", "command": "node ${extensionPath}/hooks/guard.mjs --behaviour detect --client gemini", "timeout": 10000, "description": "Inject the accessibility contract once per session" }
+          {
+            "name": "a11y-detect",
+            "type": "command",
+            "command": "node \"${extensionPath}/hooks/guard.mjs\" --behaviour detect --client gemini",
+            "timeout": 10000,
+            "description": "Inject the accessibility contract once per session"
+          }
         ]
       }
     ],
@@ -12,28 +18,53 @@
       {
         "matcher": "write_file|replace|edit",
         "hooks": [
-          { "name": "a11y-gate", "type": "command", "command": "node ${extensionPath}/hooks/guard.mjs --behaviour gate --client gemini", "timeout": 10000, "description": "Block user-facing file edits until the lead has reviewed" }
+          {
+            "name": "a11y-gate",
+            "type": "command",
+            "command": "node \"${extensionPath}/hooks/guard.mjs\" --behaviour gate --client gemini",
+            "timeout": 10000,
+            "description": "Block user-facing file edits until the lead has reviewed"
+          }
         ]
       }
     ],
-    "AfterAgent": [
+    "AfterTool": [
       {
+        "matcher": "activate_skill",
         "hooks": [
-          { "name": "a11y-mark", "type": "command", "command": "node ${extensionPath}/hooks/guard.mjs --behaviour mark --client gemini", "timeout": 10000, "description": "Record that the accessibility lead completed" }
+          {
+            "name": "a11y-mark",
+            "type": "command",
+            "command": "node \"${extensionPath}/hooks/guard.mjs\" --behaviour mark --client gemini",
+            "timeout": 10000,
+            "description": "Record that the accessibility lead was activated"
+          }
         ]
       }
     ],
     "PreCompress": [
       {
         "hooks": [
-          { "name": "a11y-persist", "type": "command", "command": "node ${extensionPath}/hooks/guard.mjs --behaviour persist --client gemini", "timeout": 10000, "description": "Save audit state before context compression" }
+          {
+            "name": "a11y-persist",
+            "type": "command",
+            "command": "node \"${extensionPath}/hooks/guard.mjs\" --behaviour persist --client gemini",
+            "timeout": 10000,
+            "description": "Save audit state before context compression"
+          }
         ]
       }
     ],
     "SessionStart": [
       {
         "hooks": [
-          { "name": "a11y-restore", "type": "command", "command": "node ${extensionPath}/hooks/guard.mjs --behaviour persist --client gemini", "timeout": 10000, "description": "Restore audit state after compression" }
+          {
+            "name": "a11y-restore",
+            "type": "command",
+            "command": "node \"${extensionPath}/hooks/guard.mjs\" --behaviour persist --client gemini",
+            "timeout": 10000,
+            "description": "Restore audit state after compression"
+          }
         ]
       }
     ]

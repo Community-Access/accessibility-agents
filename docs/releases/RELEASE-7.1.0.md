@@ -22,6 +22,9 @@ the change.
   the lead loads through the Skill tool. Tested live, both ways.
 - **Codex:** Codex rejected the hooks file over a `$comment` key, so the gate
   never ran. Fixed; Codex now lists all six hooks.
+- **Gemini CLI:** the gate never opened, because it waited on `AfterAgent`,
+  whose payload names no skill. It now opens when Gemini activates the lead
+  with `activate_skill`.
 - **Antigravity (new):** the gate opens when Antigravity reads the lead's
   `SKILL.md`. Tested against Antigravity's documented hook payloads; not yet in
   a live Antigravity session.
@@ -38,6 +41,17 @@ the change.
   from a plugin install with no `npm install`. A gate checks the bundle matches
   the source.
 - `plugin.json` and `mcp.json` validate against the Agent Plugins 1.0 schemas.
+
+### New ways to install
+
+- **Gemini CLI extension:** an archive attached to each release, with the
+  skills, the hooks, `AGENTS.md` and the MCP server. Validated with Gemini CLI
+  0.66.0; not yet tested in a live, signed-in Gemini session.
+- **The MCP server on npm and the MCP Registry:**
+  `npx -y @community-access/accessibility-agents-mcp`, listed as
+  `io.github.Community-Access/accessibility-agents`. The package is the bundle
+  alone, with no runtime dependencies; Playwright, axe and pdf-lib are optional.
+- The Claude Code plugin now has an icon.
 
 ### The scanners
 
@@ -71,6 +85,8 @@ The table lists each client with its install commands.
 | Copilot CLI | `copilot plugin marketplace add Community-Access/accessibility-agents`, then `copilot plugin install accessibility-agents@community-access` |
 | VS Code | Chat: Install Plugin From Source, with `https://github.com/Community-Access/accessibility-agents` (needs `chat.plugins.enabled`) |
 | Codex | `codex plugin marketplace add Community-Access/accessibility-agents`, then `codex plugin add accessibility-agents@community-access` for skills and scanners. Codex no longer loads plugin hooks, so for the edit gate use `npm run setup` from a checkout instead |
+| Gemini CLI | `gemini extensions install https://github.com/Community-Access/accessibility-agents` (uses the extension archive attached to this release) |
+| MCP server only | `npx -y @community-access/accessibility-agents-mcp` |
 | Any client, from a checkout | `npm run setup` (add `-- --dry-run` to see what it will do first) |
 
 ## Removed
@@ -90,6 +106,10 @@ The table lists each client with its install commands.
 - Node 22 or later is required (Node 20 reached end of life on 30 April 2026).
 - If you merged `~/.claude/a11y-hooks.json` into your Claude Code settings by
   hand, remove those entries and use the plugin or `claude --plugin-dir`.
+- **Gemini CLI:** if you merged `~/.gemini/a11y-hooks.json` into
+  `~/.gemini/settings.json`, replace its `AfterAgent` mark entry with the new
+  `AfterTool` entry for `activate_skill` (re-run `npm run setup` and merge
+  again), or install the extension instead.
 
 ## Thank you
 
