@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Community-Access/accessibility-agents.git",
+    "url": "git+https://github.com/Community-Access/accessibility-agents.git",
     "directory": "mcp-server"
   },
   "homepage": "https://github.com/Community-Access/accessibility-agents/tree/main/mcp-server#readme",
@@ -28,7 +28,7 @@
     "node": ">=22"
   },
   "bin": {
-    "accessibility-agents-mcp": "./dist/stdio.mjs"
+    "accessibility-agents-mcp": "dist/stdio.mjs"
   },
   "files": [
     "dist/",

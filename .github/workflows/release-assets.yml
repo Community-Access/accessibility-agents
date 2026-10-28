@@ -1,6 +1,10 @@
 name: Release assets
 
-# Attaches the Gemini CLI extension archive to each published release.
+# On each published release: attaches the Gemini CLI extension archive,
+# stages the MCP server on npm for a maintainer to approve, and lists it in the
+# MCP Registry once it is public. Run it by hand (Run workflow, with the tag)
+# to redo any of it: a version already on npm is not staged again, and the
+# registry entry is written once the approved package is public.
 # Gemini installs an extension from a release asset with gemini-extension.json
 # at its root; see scripts/build-gemini-extension.mjs for why it is built
 # separately rather than kept at the repository root.
@@ -47,31 +51,35 @@ jobs:
           for p in linux darwin win32; do cp dist/accessibility-agents.tar.gz "dist/$p.accessibility-agents.tar.gz"; done
           gh release upload "$TAG" dist/accessibility-agents.tar.gz dist/linux.accessibility-agents.tar.gz dist/darwin.accessibility-agents.tar.gz dist/win32.accessibility-agents.tar.gz --clobber
 
-  # Publishes the MCP server to npm, then lists it in the MCP Registry under
-  # io.github.Community-Access. Needs an NPM_TOKEN repository secret with
-  # publish rights to the @community-access npm scope; the registry step
-  # authenticates with this workflow's GitHub OIDC token, which proves the
-  # repository belongs to the Community-Access organization.
-  mcp-registry:
+  # Stages the MCP server on npm. npm's 2FA-bypass tokens can no longer publish
+  # directly (from about January 2027), so a release is staged and a
+  # maintainer approves it with 2FA, on npmjs.com (Staged Packages) or with
+  # `npm stage approve <stage-id>`. The job signs in with trusted publishing
+  # (OIDC) when npmjs.com has a trusted publisher for this workflow, and with
+  # an NPM_TOKEN repository secret otherwise.
+  npm-stage:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: github.event_name == 'release'
     permissions:
       contents: read
       id-token: write
     env:
-      MCP_PUBLISHER_VERSION: v1.8.6
+      TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
     steps:
       - name: Checkout the release tag
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ env.TAG }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
+
+      # Staged publishing needs npm 11.15.0 or later.
+      - name: Update npm
+        run: npm install -g npm@^11.15.0
 
       - name: Check versions agree
         run: node scripts/check-release-consistency.js
@@ -82,26 +90,65 @@ jobs:
           npm test --prefix mcp-server
           node scripts/check-mcp-bundle.mjs
 
-      - name: Publish the package to npm
+      - name: Stage the package on npm
         working-directory: mcp-server
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "::error::Add an NPM_TOKEN repository secret with publish rights to @community-access."
-            exit 1
-          fi
           name=$(node -p "require('./package.json').name"); version=$(node -p "require('./package.json').version")
           if npm view "$name@$version" version >/dev/null 2>&1; then
-            echo "$name@$version is already on npm; skipping (re-run)."
+            echo "$name@$version is already on npm; nothing to stage."
+            exit 0
+          fi
+          npm stage publish --provenance --access public
+          {
+            echo "### Approve the npm release"
+            echo ""
+            echo "\`$name@$version\` is staged. It is not public until a maintainer approves it with 2FA:"
+            echo "on npmjs.com under **Staged Packages**, or with \`npm stage list $name\` then \`npm stage approve <stage-id>\`."
+            echo ""
+            echo "Then run this workflow from the Actions tab (**Run workflow**, tag \`$TAG\`) to list it in the MCP Registry."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Lists the npm package in the MCP Registry under io.github.Community-Access.
+  # The registry checks the package on npm, so this waits for the staged
+  # release to be approved: until then it says so and stops. Run it again from
+  # the Actions tab once the package is public. It signs in with this
+  # workflow's GitHub OIDC token, which proves the repository belongs to the
+  # Community-Access organization.
+  mcp-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [npm-stage]
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.6
+      TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+    steps:
+      - name: Checkout the release tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Check the package is public on npm
+        id: npm
+        run: |
+          name=$(node -p "require('./mcp-server/package.json').name"); version=$(node -p "require('./mcp-server/package.json').version")
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "public=true" >> "$GITHUB_OUTPUT"
           else
-            npm publish --provenance --access public
+            echo "public=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$name@$version is not public on npm yet. Approve the staged release, then run this workflow again with tag $TAG."
           fi
 
       - name: Install cosign
+        if: steps.npm.outputs.public == 'true'
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
       - name: Download and verify mcp-publisher
+        if: steps.npm.outputs.public == 'true'
         run: |
           set -euo pipefail
           os="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -119,6 +166,7 @@ jobs:
           rm -f "$archive" "$archive.sigstore.json"
 
       - name: Publish to the MCP Registry
+        if: steps.npm.outputs.public == 'true'
         run: |
           ./mcp-publisher login github-oidc
           ./mcp-publisher publish

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The MCP server is staged on npm, then approved.** npm's 2FA-bypass tokens
+  can no longer publish directly (from about January 2027), and the 7.1.0
+  release's direct publish was refused. `release-assets.yml` now runs
+  `npm stage publish --provenance`, signing in with trusted publishing (OIDC)
+  when npmjs.com has a trusted publisher for the workflow and with the
+  `NPM_TOKEN` secret otherwise. A maintainer approves the staged release with
+  2FA; running the workflow again then lists it in the MCP Registry, which
+  waits until the package is public.
+- `mcp-server/package.json` gives `bin` and `repository.url` in the form npm
+  publishes, so npm 11 no longer warns that it rewrote them.
+
 ## [7.1.0] - 2026-10-28
 
 A full audit of the package against current standards and each client's own
