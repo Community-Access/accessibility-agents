@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **Leftovers that nothing referenced or ran.** About 100 pre-7.0 documents
+  under `docs/history/` (plans, migration records, the 6.x prompt files,
+  superseded guides); the records of 7.0 and 7.1 and the measurements the
+  conformance dossier cites are kept. Also removed: the Go CLI and its build
+  workflow (it inspected `.claude/agents`, `.github/agents` and other trees
+  that 7.0 deleted), the one-off 7.0 migration and docs-reorganization
+  scripts, the Gemini sync check, an unrun scoring test, the optional git
+  pre-commit hook and its installer (which failed under ESM), the config
+  integrity check no workflow ran, the duplicate release
+  consistency workflow (the `release` gate in `npm run verify` runs the same
+  script), the no-op ESLint job, `.github/AGENTS-TEAMS.md`, the 6.x Copilot
+  review and commit-message instruction files, the MCP directory notes and
+  the stale MCPB manifest template, the enterprise config template, `ruff.toml`,
+  the v6 extensions guide, and the VS Code tasks that called removed repair
+  scripts. Git history keeps all of it.
+
+### Changed
+
+- `plugin-packaging.md` and `cross-platform-handoff.md` moved from
+  `.github/docs/` to `docs/guides/advanced/`, beside the other advanced
+  guides; the older duplicates in `.github/docs/` were removed and the wiki
+  sync points at the new paths.
+
 ## [7.1.0] - 2026-10-28
 
 A full audit of the package against current standards and each client's own

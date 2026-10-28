@@ -31,6 +31,10 @@ We will acknowledge receipt within 48 hours and provide a fix or mitigation as q
 - MCP server (mcp-server) exposing data it should not
 - Any file operation that could overwrite or delete user data unexpectedly
 
+## Supply-chain controls
+
+What checks the skills, the hook guard and the two dependency trees today, and what is not in place, is in [Skills supply chain security](.github/SECURITY-SKILLS.md).
+
 ## What Is Not in Scope
 
 - The content of agent instructions (these are prompts, not executable code)

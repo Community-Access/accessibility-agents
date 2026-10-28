@@ -34,10 +34,13 @@ cd example
 ### With GitHub Copilot
 
 ```text
-@workspace /web-accessibility-wizard Review example/index.html
-@workspace /contrast-master Check the colors in example/index.html
-@workspace /forms-specialist Audit the form in example/index.html
+/web-accessibility-wizard Review example/index.html
+Check the colors in example/index.html for contrast problems
+Audit the form in example/index.html
 ```
+
+The specialists (contrast, forms and the rest) are dispatched by the router;
+describe the task and it picks them.
 
 ### With the MCP Tools
 
@@ -64,4 +67,4 @@ node .github/scripts/a11y-lint.mjs example/
 
 ## Expected Findings
 
-When all issues are fixed, matching the patterns in `index-fixed.html`, the agents should report a clean audit. Use this as a learning tool - see how many issues you can identify before running the agents, then compare.
+When all issues are fixed, the agents should report a clean audit. Each planted defect is marked with an `ISSUE` comment in `index.html`, so you can check what was caught. Use this as a learning tool - see how many issues you can identify before running the agents, then compare.
