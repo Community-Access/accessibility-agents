@@ -9,6 +9,7 @@
   "license": "MIT",
   "homepage": "https://github.com/Community-Access/accessibility-agents",
   "repository": "https://github.com/Community-Access/accessibility-agents",
+  "privacyPolicyUrl": "https://github.com/Community-Access/accessibility-agents/blob/main/PRIVACY.md",
   "mcpServers": {
     "accessibility-agents": {
       "command": "node",
