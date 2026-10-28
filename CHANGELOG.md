@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   on 2.8.8. Development tooling only; nothing in the plugin or the MCP server
   uses it.
 - **The source currency checker opened a new issue on every run** while a
-  source stayed down: thirteen "Source Unavailable: pdf-ua-1" issues and one
+  source stayed down: eleven "Source Unavailable: pdf-ua-1" issues and one
   for wxwidgets-docs, from #166 to #204. It now updates the open issue with
   the same title, and treats a 401, 403 or 429 as a site refusing automated
   requests (pdfa.org and docs.wxwidgets.org both do this to scripts), which
