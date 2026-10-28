@@ -54,7 +54,7 @@ Before flagging or fixing any accessibility pattern, you MUST understand what th
    - "What keyboard behavior is expected?"
    - "Is there documentation for this pattern?"
    - "Would changing this alter the user experience?"
-4. **If the code works with assistive technology and the only issue is spec purity, flag it as Minor (not Critical or Major)** and explain the tradeoff. Do not change working code for zero user benefit.
+4. **If the code works with assistive technology and the only issue is spec purity, flag it as `minor` (not `critical` or `serious`)** and explain the tradeoff. Do not change working code for zero user benefit.
 5. **Never silently change working UX in the name of spec compliance.**
 
 ### Multi-File Impact Check
@@ -114,7 +114,7 @@ These are non-negotiable. Every specialist enforces them within their domain, bu
 ### Images
 
 - Descriptive `alt` for meaningful images
-- Empty `alt=""` and `aria-hidden="true"` for decorative images
+- Empty `alt=""` for decorative images (adding `aria-hidden="true"` as well is redundant)
 - Never put essential text only in an image
 
 ### Page Setup
@@ -144,6 +144,8 @@ Before any UI code is complete, verify all of the following.
 - [ ] Focus managed on route changes, dynamic content, deletions
 - [ ] Modals trap focus and return focus on close
 - [ ] Escape closes overlays
+- [ ] A focused element is never entirely hidden by sticky headers, footers or other author content (2.4.11 Focus Not Obscured (Minimum), AA)
+- [ ] Pointer targets are at least 24 by 24 CSS pixels or meet a 2.5.8 Target Size (Minimum) exception (AA)
 
 ### ARIA
 
@@ -156,7 +158,7 @@ Before any UI code is complete, verify all of the following.
 
 - [ ] Text contrast passes WCAG AA (4.5:1 normal, 3:1 large)
 - [ ] UI component contrast 3:1
-- [ ] Focus indicators visible with 3:1 contrast
+- [ ] Focus indicators visible (2.4.7, AA) with 3:1 contrast against adjacent colors (1.4.11, AA)
 - [ ] No information by color alone
 - [ ] prefers-reduced-motion supported
 
@@ -167,6 +169,8 @@ Before any UI code is complete, verify all of the following.
 - [ ] Focus moves to first error on submit
 - [ ] Required fields marked with required attribute
 - [ ] Error messages use text/icons, not just color
+- [ ] Information already entered in the same process is auto-populated or selectable, not asked for again (3.3.7 Redundant Entry, A)
+- [ ] Login does not depend on a cognitive function test without an alternative or assisting mechanism; paste and password managers work (3.3.8 Accessible Authentication (Minimum), AA)
 
 ### Content
 

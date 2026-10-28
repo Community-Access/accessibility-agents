@@ -12,7 +12,7 @@ Identify any time limits on content:
 
 - Are users warned before a session timeout? (at minimum 20 seconds before expiry)
 - Can users request more time - at least 10x the default, or deactivate the timeout entirely?
-- Exception: real-time events (live auctions, timed tests) are exempt, but must still be disclosed upfront.
+- Exceptions: real-time events where no alternative to the time limit is possible (such as an auction), time limits that are essential (such as a timed test), and time limits longer than 20 hours.
 
 **Findings pattern:**
 
@@ -47,7 +47,7 @@ Every abbreviation should be expanded on first use. Flag unexpanded abbreviation
 
 ### 3.1.5 Reading Level (Level AAA - Advisory)
 
-Assess reading level using the Flesch-Kincaid Grade Level formula. Target:
+The criterion asks for supplemental content or a simpler version when text needs reading ability beyond lower secondary education level. Assess reading level using the Flesch-Kincaid Grade Level formula. House targets:
 
 - **General content:** Grade 8 or lower
 - **Legal/medical content:** Grade 10 or lower (with a plain language summary at Grade 6-8)
@@ -61,6 +61,10 @@ Navigation repeated across pages must appear in the same relative order and loca
 
 Components with the same function across pages must be identified consistently (same label, same icon, same accessible name). Flag divergences.
 
+### 3.2.6 Consistent Help (Level A - WCAG 2.2 NEW)
+
+If help mechanisms (human contact details, a human contact mechanism, a self-help option, or a fully automated contact mechanism such as a chatbot) are repeated on multiple pages of a set, they must occur in the same order relative to other page content, unless the user changes it. Flag a help link or chat button that moves between pages.
+
 ### 3.3.2 Labels or Instructions (Level A)
 
 Forms must provide labels or instructions sufficient to complete the form without error:
@@ -73,16 +77,19 @@ Forms must provide labels or instructions sufficient to complete the form withou
 
 For forms that create legal commitments, financial transactions, or modify/delete user-submitted data:
 
-- Provide a review step before final submission
-- Allow reversal (undo/cancel) for at least a brief window after submission
-- Or provide explicit confirmation mechanism
+At least one of these must be true:
+
+- Reversible: submissions can be reversed
+- Checked: data entered is checked for input errors and the user can correct them
+- Confirmed: the user can review, confirm and correct the information before final submission
 
 ### 3.3.7 Redundant Entry (Level A - WCAG 2.2 NEW)
 
-In multi-step forms or wizards, information already entered by the user must not be required again in the same session, unless:
+In multi-step forms or wizards, information previously entered by or provided to the user that is needed again in the same process must be auto-populated or available for the user to select, except when:
 
-- The re-entry is essential for security (e.g., confirming a password)
-- The information has become stale and must be re-confirmed for accuracy
+- Re-entering the information is essential (for example, a memory game)
+- The information is required to ensure the security of the content (e.g., confirming a new password)
+- Previously entered information is no longer valid
 
 **Finding pattern:**
 
@@ -92,22 +99,23 @@ In multi-step forms or wizards, information already entered by the user must not
 
 ### 3.3.8 Accessible Authentication (Minimum) (Level AA - WCAG 2.2 NEW)
 
-Authentication processes must not rely on a cognitive function test (memorizing passwords, solving puzzles, transcribing characters) unless at least one of these alternatives is available:
+No step of an authentication process may require a cognitive function test (remembering a password, solving a puzzle, transcribing characters) unless that step provides at least one of:
 
-- An alternative authentication method that does not require cognitive function test
-- A mechanism to assist the user (e.g., password paste allowed, copy-paste from password manager)
-- A mechanism provided at the object recognition / personal content level
+- Alternative: another authentication method that does not rely on a cognitive function test
+- Mechanism: a mechanism that assists the user (e.g., paste allowed, password manager autofill)
+- Object recognition: the test is to recognize objects
+- Personal content: the test is to identify non-text content the user provided to the site
 
 **Finding pattern:**
 
 - `[FAIL]` - Login form blocks password paste (prevents password manager use)
-- `[FAIL]` - CAPTCHA that requires transcribing distorted text with no audio or image-free alternative
+- `[FAIL]` - CAPTCHA that requires transcribing distorted text with no non-cognitive alternative (an audio CAPTCHA the user must transcribe does not count as the alternative)
 - `[FAIL]` - Security question that requires exact recall of personal information
 - `[PASS]` - Login supports password managers (input type="password", no paste blocking)
-- `[PASS]` - CAPTCHA has audio alternative or "I'm human" checkbox alternative
+- `[PASS]` - CAPTCHA offers a method that is not a cognitive function test (such as a checkbox or a non-interactive check), or is an object-recognition test (allowed at AA, not at AAA)
 
 ### 3.3.9 Accessible Authentication (Enhanced) (Level AAA - Advisory)
 
-Same as 3.3.8 but without the object recognition / personal content exception. No cognitive test of any kind is acceptable.
+Same as 3.3.8 but without the object recognition and personal content exceptions. Only the Alternative and Mechanism options remain.
 
 ---

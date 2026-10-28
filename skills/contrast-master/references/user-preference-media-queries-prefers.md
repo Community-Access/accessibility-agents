@@ -4,16 +4,16 @@ Part of the `contrast-master` skill. Read this only when the task reaches these 
 
 ## User Preference Media Queries (`prefers-*`)
 
-Modern CSS provides media queries that detect user preferences at the OS level. Respecting these preferences is required for WCAG conformance and makes interfaces genuinely adaptive.
+Modern CSS provides media queries that detect user preferences at the OS level. WCAG does not require honouring these queries as such, but they are a practical way to meet criteria such as 2.3.3 Animation from Interactions (AAA), and they make interfaces genuinely adaptive.
 
 ### `prefers-reduced-motion` (WCAG 2.3.3)
 
-Already covered above. Additional guidance:
+The basic pattern is in SKILL.md. Additional guidance:
 
 - Do NOT remove animations entirely if they convey meaning (e.g., a loading spinner). Instead, simplify them (crossfade instead of slide, instant instead of eased).
 - Scroll-triggered animations, parallax effects, and auto-advancing carousels must all be disabled.
 - JavaScript: check `window.matchMedia('(prefers-reduced-motion: reduce)').matches` before starting JS-driven animations.
-- Frameworks: React `framer-motion` supports `reducedMotion="user"`. CSS-based animation libraries should be wrapped in the media query.
+- Frameworks: Motion for React (formerly Framer Motion) supports `<MotionConfig reducedMotion="user">`. CSS-based animation libraries should be wrapped in the media query.
 
 ```js
 const prefersReducedMotion = window.matchMedia(
@@ -25,7 +25,7 @@ if (!prefersReducedMotion) {
 }
 ```
 
-### `prefers-contrast` (WCAG 1.4.11)
+### `prefers-contrast` (related: 1.4.3, 1.4.11)
 
 Users who need higher contrast set this in their OS (macOS "Increase contrast", Windows "Contrast themes"). Respect it.
 
@@ -156,9 +156,9 @@ Key rules:
 - Custom UI controls built from `<div>` and `<span>` often become invisible. Use semantic HTML (`<button>`, `<input>`).
 - Background images used for icons will disappear - use inline SVGs with `fill: currentColor`.
 - CSS gradients vanish. If a gradient conveys information, provide a text or border alternative.
-- Test in Windows with at least two contrast themes (e.g., "High Contrast Black" and "High Contrast White").
+- Test in Windows with at least two contrast themes, one dark and one light.
 
-### `prefers-reduced-transparency` (WCAG 1.4.11)
+### `prefers-reduced-transparency` (related: 1.4.3, 1.4.11)
 
 Some users find transparent or translucent backgrounds difficult to read against. This query is newer and progressively enhanceable.
 
@@ -225,20 +225,22 @@ This criterion defines what a *sufficient* focus indicator looks like. While AAA
 
 **Requirements per W3C Understanding doc:**
 
-- The focus indicator has a minimum area of a **2px thick perimeter** of the focused component
-- The indicator has **3:1 contrast** between its focused and unfocused states (the change-of-contrast test)
-- The indicator is not entirely obscured by author-created content
+- The focus indicator has an area at least as large as a **2 CSS px thick perimeter** of the unfocused component or sub-component
+- That area has **3:1 contrast** between the same pixels in the focused and unfocused states (the change-of-contrast test)
+- Exceptions: the indicator is determined by the user agent and cannot be adjusted by the author, or the author has not modified the indicator or its background
 
-**Relationship to Non-Text Contrast (1.4.11):** Focus Appearance measures the *change between* focused and unfocused states. Non-Text Contrast measures the indicator contrast *against adjacent colors within* a single state. Both must be satisfied.
+Separately, at AA, 2.4.7 Focus Visible requires a visible indicator and 2.4.11 Focus Not Obscured (Minimum) requires that the focused component is not entirely hidden by author-created content (2.4.12, AAA, requires that no part is hidden).
+
+**Relationship to Non-Text Contrast (1.4.11):** Focus Appearance measures the *change between* focused and unfocused states. Non-Text Contrast measures the indicator contrast *against adjacent colors within* a single state. For AAA, both apply.
 
 **C40 Two-Color Focus Technique:**
 
 ```css
-/* Two concentric outlines ensure visibility on any background */
+/* Two concentric rings ensure visibility on any background (pattern from WCAG technique C40) */
 :focus-visible {
-  outline: 2px solid #000000;      /* Dark inner ring */
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px #ffffff;   /* Light outer ring */
+  outline: 2px solid #ffffff;      /* Light inner ring */
+  outline-offset: 0;
+  box-shadow: 0 0 0 4px #000000;   /* Dark outer ring */
 }
 ```
 
@@ -246,7 +248,7 @@ This criterion defines what a *sufficient* focus indicator looks like. While AAA
 
 ### Target Size (2.5.8 -- Level AA)
 
-Interactive targets must be at least **24x24 CSS pixels**, or have sufficient spacing from adjacent targets so that a 24px diameter circle centered on each target does not overlap another target.
+Pointer targets must be at least **24x24 CSS pixels**, unless an exception applies. The spacing exception passes an undersized target when a 24 CSS px diameter circle centered on its bounding box does not intersect another target or the circle of another undersized target.
 
 ```css
 /* Ensure small targets like icon buttons meet minimum size */
@@ -264,10 +266,11 @@ Interactive targets must be at least **24x24 CSS pixels**, or have sufficient sp
 
 **Exceptions (per W3C Understanding doc):**
 
-- **Spacing exception:** Targets smaller than 24px pass if there is sufficient spacing around them (the 24px circle test passes)
-- **Inline:** Targets within a sentence or paragraph of text (underlined links in body copy)
-- **User agent default:** Unmodified browser-default controls
-- **Essential:** A specific presentation is legally or functionally essential
+- **Spacing:** Targets smaller than 24px pass if the 24px circle test above passes
+- **Equivalent:** The same function is available through another control on the same page that meets the size requirement
+- **Inline:** Targets within a sentence, or whose size is constrained by the line-height of non-target text (links in body copy)
+- **User agent control:** The size is determined by the browser and not modified by the author
+- **Essential:** A particular presentation is essential to the information being conveyed, or is legally required
 
 **What to flag:**
 

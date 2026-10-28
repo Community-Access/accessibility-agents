@@ -164,8 +164,6 @@ document.title = 'Product Details - Acme Store';
 - `<aside>` for complementary content
 - Do not add redundant ARIA roles to semantic landmarks
 
-## How to Report Issues
-
 ## Reference files
 
 Read one only when the task reaches it. Do not read them all up front.

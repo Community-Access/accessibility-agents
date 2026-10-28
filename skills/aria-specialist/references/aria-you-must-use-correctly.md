@@ -7,46 +7,49 @@ Part of the `aria-specialist` skill. Read this only when the task reaches these 
 ### Modals
 
 ```html
-<dialog role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <button aria-label="Close">Close</button>
+<!-- Opened with dialog.showModal() -->
+<dialog aria-labelledby="modal-title">
   <h2 id="modal-title">Title</h2>
+  <button>Close</button>
 </dialog>
 ```
 
 Requirements:
 
-- `role="dialog"` and `aria-modal="true"` on `<dialog>`
-- `aria-labelledby` pointing to the heading
-- Focus lands on Close button immediately (no Tab needed)
-- Close button is first element inside modal
-- Escape closes and returns focus to trigger
+- Open a native `<dialog>` with `showModal()`. That makes it modal and gives it the dialog role, so do not add `role="dialog"` (ARIA in HTML marks it not recommended) or `aria-modal`. A custom `div` dialog needs `role="dialog"` and `aria-modal="true"`
+- `aria-labelledby` pointing to the heading (or `aria-label` when there is no visible title)
+- Focus moves into the dialog when it opens: usually the first focusable element; a static element at the top when the content is long; the least destructive button when the action cannot be undone (APG Dialog (Modal) pattern)
+- A visible button that closes the dialog is in its Tab sequence
+- Tab and Shift+Tab stay inside the dialog; Escape closes it and returns focus to the trigger
 - Heading starts at H2 (H1 is the page title)
-- Trigger button gets `aria-haspopup="dialog"`
+- `aria-haspopup="dialog"` on the trigger is valid ARIA 1.2 but optional; the APG dialog pattern does not use it
 
 ### Tabs
 
 ```html
 <div role="tablist" aria-label="Section tabs">
-  <button role="tab" aria-selected="true" aria-controls="panel-1">Tab 1</button>
-  <button role="tab" aria-selected="false" aria-controls="panel-2" tabindex="-1">Tab 2</button>
+  <button role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1">Tab 1</button>
+  <button role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" tabindex="-1">Tab 2</button>
 </div>
 <div role="tabpanel" id="panel-1" aria-labelledby="tab-1">Content</div>
+<div role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden>Content</div>
 ```
 
 Requirements:
 
-- Container has `role="tablist"` with `aria-label`
+- Container has `role="tablist"`, labelled with `aria-labelledby` when a visible label exists, otherwise `aria-label`
 - Each tab is a `<button>` with `role="tab"` and `aria-selected`
 - Unselected tabs have `tabindex="-1"`
 - Panels have `role="tabpanel"` and `aria-labelledby`
-- Arrow keys move between tabs
+- Left and Right Arrow move between tabs in a horizontal tab list (Up and Down in a vertical one, with `aria-orientation="vertical"`), wrapping at the ends; Home and End are optional
+- Tab moves from the active tab into the tab panel
 - Screen reader must announce "Tab 1, selected" not just "Tab 1"
 
 ### Accordions
 
 ```html
 <h2>
-  <button aria-expanded="false" aria-controls="panel-1">Question</button>
+  <button id="accordion-btn-1" aria-expanded="false" aria-controls="panel-1">Question</button>
 </h2>
 <div id="panel-1" role="region" aria-labelledby="accordion-btn-1" hidden>Answer</div>
 ```
@@ -56,8 +59,8 @@ Requirements:
 - Toggle button inside a heading element
 - `aria-expanded` reflects open/closed state
 - `aria-controls` links to panel ID
-- Panel has `role="region"` and `aria-labelledby`
-- Escape closes the open panel
+- Panel may have `role="region"` and `aria-labelledby`; the APG says to avoid this when it causes landmark proliferation, for example with more than about six panels that can be open at once
+- Enter or Space on the header button expands or collapses its panel; Tab moves through the headers and any focusable panel content. Escape is not part of the APG accordion pattern
 
 ### Live Regions
 
@@ -96,7 +99,7 @@ Requirements:
 ### Carousels
 
 ```html
-<div role="group" aria-roledescription="slide" aria-label="Slide 1 of 3">
+<div role="group" aria-roledescription="slide" aria-label="1 of 3">
   <img src="photo.jpg" alt="Descriptive text about what is shown">
 </div>
 ```
@@ -104,9 +107,8 @@ Requirements:
 Requirements:
 
 - Each slide is `role="group"` with `aria-roledescription="slide"`
-- `aria-label` includes position ("Slide 1 of 3")
-- No auto-rotation (or provide a stop button accessible before the carousel)
-- Previous/Next buttons placed before the slides
-- Dot navigation as a list of buttons with labels ("Go to slide 1")
-- Current dot has `aria-current="true"`
+- `aria-label` gives the position ("1 of 3"); it does not repeat the word "slide", because `aria-roledescription` already supplies it
+- No auto-rotation, or a rotation control (stop and start) that is the first element in the Tab sequence inside the carousel; rotation also stops while keyboard focus is inside the carousel or the pointer hovers over it
+- Previous and Next buttons
+- Slide picker controls labelled by slide ("Go to slide 1"); the button for the displayed slide has `aria-disabled="true"`, or, if the pickers are tabs, follow the Tabs pattern and use `aria-selected`
 - All images have descriptive alt text

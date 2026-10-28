@@ -132,14 +132,14 @@ Screen readers already announce the element role ("link"). Adding "link" to the 
 Use the `download` attribute for file downloads and always indicate file type and size:
 
 ```html
-<a href="/report.pdf" download aria-label="Download Annual Report 2025 (PDF, 2.4 MB)">
+<a href="/report.pdf" download>
   Download Annual Report 2025 (PDF, 2.4 MB)
 </a>
 ```
 
 ## Common Mistakes You Must Catch
 
-- "Click here" and "Read more" are the #1 most common link accessibility failures globally
+- "Click here" and "Read more" are among the most common link accessibility failures
 - Multiple "Learn more" links on a single page with no differentiation
 - Card components where the entire card is wrapped in a link with no discernible text
 - Icon-only links (social media icons) without `aria-label`
@@ -148,8 +148,6 @@ Use the `download` attribute for file downloads and always indicate file type an
 - Links where the accessible name does not include the visible text (2.5.3 Label in Name violation)
 - "Read more" links inside `<article>` elements that rely on the article heading for context without programmatic association
 - File download links that don't indicate file type or size
-
-## How to Report Issues
 
 ## Reference files
 

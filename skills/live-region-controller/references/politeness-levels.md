@@ -32,7 +32,7 @@ Never use assertive for routine updates. Interrupting the screen reader is disor
 
 ### `role="status"`
 
-Implicit `aria-live="polite"`. Use for status indicators that update frequently.
+Implicit `aria-live="polite"` and `aria-atomic="true"`. Use for advisory status messages (WCAG 4.1.3 Status Messages).
 
 ```html
 <div role="status">5 items in cart</div>
@@ -40,14 +40,14 @@ Implicit `aria-live="polite"`. Use for status indicators that update frequently.
 
 ### `role="alert"`
 
-Implicit `aria-live="assertive"`. Use for error conditions.
+Implicit `aria-live="assertive"` and `aria-atomic="true"`. Use for important, usually time-sensitive messages such as errors.
 
 **Per W3C APG Alert Pattern:**
 
 - Alerts must not affect keyboard focus -- never move focus to an alert
 - Alerts that are present in the DOM when the page loads are NOT announced -- the screen reader's own page load announcement takes precedence
-- Avoid alerts that automatically disappear: users may not have time to read them (WCAG 2.2.3 No Timing, 2.2.4 Interruptions)
-- Avoid firing alerts too frequently -- each one interrupts the user's current task
+- Avoid alerts that automatically disappear: users may not have time to read them (WCAG 2.2.3 No Timing, AAA)
+- Avoid firing alerts too frequently -- each one interrupts the user's current task (WCAG 2.2.4 Interruptions, AAA)
 
 ```html
 <div role="alert">Payment failed. Please try again.</div>
@@ -65,7 +65,7 @@ Implicit `aria-live="polite"`. Use for sequential content where new entries are 
 
 ### `role="timer"`
 
-Use for elements displaying elapsed or remaining time. Does NOT imply `aria-live` -- add it explicitly if you want announcements.
+Use for elements displaying elapsed or remaining time. Its implicit `aria-live` value is `off`, so it is not announced as it changes; set a different value explicitly if you want announcements.
 
 ```html
 <div role="timer" aria-live="off" aria-label="Session timeout">4:59 remaining</div>
@@ -90,11 +90,11 @@ The HTML `<output>` element has an implicit `role="status"` (polite live region)
 
 **`aria-relevant`** -- Controls which types of changes trigger announcements:
 
-- `additions` (default for most roles) -- new nodes added
+- `additions` -- new nodes added
 - `removals` -- nodes removed (rare; use for "user left the chat" scenarios)
 - `text` -- text content changed
 - `all` -- shorthand for `additions removals text`
-- `additions text` (default) -- most common; new nodes and text changes
+- `additions text` (the default value) -- most common; new nodes and text changes
 
 **`aria-busy`** -- Suppress announcements during batch updates:
 
@@ -237,15 +237,19 @@ For operations over 2 seconds, announce that loading is happening. Do not leave 
 ### Form Submission
 
 ```html
-<div aria-live="polite" id="form-status"></div>
+<div role="status" id="form-status"></div>
+<div role="alert" id="form-error"></div>
 
 <script>
+const formStatus = document.getElementById('form-status');
+const formError = document.getElementById('form-error');
+
 // Success
 formStatus.textContent = 'Changes saved';
 
-// Error
-formStatus.setAttribute('role', 'alert');
-formStatus.textContent = 'Error: Email address is invalid';
+// Error: write into the alert region that is already in the DOM;
+// do not switch the role of an existing region at runtime
+formError.textContent = 'Error: Email address is invalid';
 </script>
 ```
 

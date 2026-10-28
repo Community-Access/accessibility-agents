@@ -8,20 +8,20 @@ Certain components require arrow key navigation per WAI-ARIA Authoring Practices
 
 | Component | Arrow Behavior |
 |-----------|---------------|
-| Tabs | Left/Right moves between tabs |
+| Tabs | Left/Right moves between tabs (Up/Down in a vertical tab list) |
 | Menu | Up/Down moves between items |
 | Combobox | Up/Down moves through options |
 | Radio group | Up/Down or Left/Right moves selection |
 | Tree view | Up/Down moves, Left collapses, Right expands |
 | Grid/Table | All four arrows navigate cells |
-| Toolbar | Left/Right moves between tools |
+| Toolbar | Left/Right moves between tools (Up/Down in a vertical toolbar) |
 | Listbox | Up/Down moves between options |
 
 For all of these:
 
 - Arrow keys move focus between related items
 - Tab moves focus OUT of the component to the next component
-- Home/End jump to first/last item in the group
+- Home/End jump to first/last item in the group (optional in several patterns, such as tabs and toolbar)
 
 ### Roving Tabindex
 
@@ -67,8 +67,8 @@ An alternative to roving tabindex where DOM focus stays on the container and a v
 Requirements per W3C APG:
 
 - The container element (the one with DOM focus) has `aria-activedescendant` set to the `id` of the visually focused item
-- The referenced element must be a DOM descendant of the container OR owned via `aria-owns`
-- The container must have `aria-controls` pointing to the popup
+- The referenced element must be a DOM descendant of the container, OR owned via the container's `aria-owns`, OR (when the container is a combobox, textbox or searchbox) inside the widget the container references with `aria-controls`
+- So `aria-controls` is required for the combobox case, not for every container
 - CSS must visually indicate the active descendant (since it does not have true DOM focus, `:focus` does not apply -- use a class)
 - Clear `aria-activedescendant` (set to `""`) when no item is highlighted
 
@@ -97,7 +97,7 @@ Disabled items inside composite widgets should remain focusable so arrow-key nav
 - Menu items
 - Tabs
 - Tree items
-- Toolbar buttons (for discoverability -- users need to know the button exists even when unavailable)
+- Some toolbar buttons, such as Cut, Copy and Paste, where users need to know the button exists even when unavailable. A button users can infer from a neighbour (an Up button when Down is focusable) can be removed from the focus order instead
 
 ```html
 <!-- Disabled menu item: focusable via arrow keys, announced as disabled -->

@@ -17,8 +17,7 @@ Part of the `forms-specialist` skill. Read this only when the task reaches these
 
 Requirements:
 
-- Show/hide toggle is a `<button>` with `aria-pressed`
-- `aria-label` updates: "Show password" / "Hide password"
-- Use `aria-pressed` to indicate toggle state
+- Show/hide toggle is a `<button>`
+- Pick one way to convey state, not both. Either keep the label fixed ("Show password") and toggle `aria-pressed` between `false` and `true`, or change the label between "Show password" and "Hide password" and omit `aria-pressed`. The APG Button pattern says a toggle's label must not change when its state changes
 - Never disable paste in password fields
 - Requirements text linked via `aria-describedby`

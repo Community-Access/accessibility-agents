@@ -9,7 +9,7 @@ Per the W3C APG Combobox Pattern, a combobox is an input with an associated popu
 ### Two Types
 
 - **Editable combobox:** User can type any value; popup filters suggestions (e.g., address autocomplete)
-- **Select-only combobox:** User selects from a predefined list; typing filters options (custom styled `<select>` replacement)
+- **Select-only combobox:** User selects from a predefined list; typing moves to the option whose name starts with the typed characters (custom styled `<select>` replacement)
 
 ### Required Structure
 
@@ -48,7 +48,7 @@ Each aria-autocomplete, with its behavior.
 - Escape closes the popup without changing the value
 - Enter accepts the highlighted option
 - Live region announces result count: "3 cities match. Use arrow keys to navigate"
-- Set `autocomplete="off"` on the input to prevent browser autocomplete from conflicting
+- Set `autocomplete="off"` on the input to prevent browser autocomplete from conflicting, except when the field collects information about the user (1.3.5 Input Purpose); then keep the matching token, such as `address-level2` for a city
 
 ## Accessible Authentication (WCAG 3.3.8) {#accessible-auth}
 
@@ -61,13 +61,13 @@ Authentication must not require cognitive function tests (memorizing passwords, 
 - **Provide show/hide password toggle** so users can verify what they typed
 - **Support alternative auth:** passkeys/WebAuthn, biometrics, OAuth/social login, email/SMS magic links
 - **Two-factor/verification codes:** the input field must support paste so users can paste from authenticator apps or SMS
-- **CAPTCHAs** are a cognitive function test. If used, provide an alternative (audio CAPTCHA, email verification, or invisible reCAPTCHA)
+- **CAPTCHAs** that ask the user to transcribe text are a cognitive function test. If used, provide an alternative that is not one, such as email verification or a non-interactive bot check. An audio CAPTCHA the user must transcribe does not count. Object-recognition CAPTCHAs are allowed at AA (3.3.8) but not at AAA (3.3.9)
 
 ```html
 <!-- Password field that supports password managers -->
 <label for="password">Password</label>
 <input id="password" type="password" autocomplete="current-password">
-<button type="button" aria-label="Show password" aria-pressed="false">Show</button>
+<button type="button" aria-pressed="false">Show password</button>
 
 <!-- Verification code that supports paste -->
 <label for="code">Verification code</label>

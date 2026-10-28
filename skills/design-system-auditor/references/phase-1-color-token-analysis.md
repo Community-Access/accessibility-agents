@@ -23,7 +23,7 @@ $$\text{ratio} = \frac{L_{lighter} + 0.05}{L_{darker} + 0.05}$$
 | Normal text (< 18pt / < 14pt bold) | 4.5:1 | 7:1 |
 | Large text (>= 18pt / >= 14pt bold) | 3:1 | 4.5:1 |
 | UI components (borders, icons, focus indicators) | 3:1 | - |
-| Focus indicators (WCAG 2.4.13, 2.2) | 3:1 against adjacent colors | - |
+| Focus indicators | 3:1 against adjacent colors (1.4.11) | 3:1 change between focused and unfocused states over a 2 CSS px perimeter area (2.4.13) |
 | Placeholder text | 4.5:1 | - |
 | Disabled state | Exempt (with caveats) | - |
 
@@ -43,7 +43,7 @@ muted -> muted-foreground
 card -> card-foreground
 destructive -> destructive-foreground
 input (border) -> background    [3:1 UI component]
-ring (focus) -> adjacent color  [3:1 focus indicator, WCAG 2.4.13]
+ring (focus) -> adjacent color  [3:1 focus indicator, WCAG 1.4.11]
 ```
 
 ### 1.3 Tailwind Config Analysis
@@ -131,13 +131,13 @@ const theme = createTheme({
   }
 });
 // All combinations of palette.text.* on palette.background.* must pass
-// palette.warning.main (#ed6c02) on white = 2.94:1 -> FAILS AA
+// palette.warning.main (#ed6c02) on white = 3.11:1 -> FAILS AA for normal text (passes 3:1 for large text and UI components)
 ```
 
 ### 1.6 Chakra UI Theme Analysis
 
 ```js
-// Chakra v2/v3 token paths
+// Chakra v2 token paths (Chakra v3 replaced extendTheme with createSystem and defineConfig)
 const theme = extendTheme({
   colors: {
     brand: { 50: '#...',  500: '#...', 900: '#...' },
@@ -159,9 +159,10 @@ const theme = extendTheme({
 
 **WCAG 2.4.13 Focus Appearance (AAA, exceeds AA baseline):** Focus indicator must have:
 
-1. Minimum area: perimeter x 2px (or enclosing component area)
-2. Contrast change >= 3:1 between focused and unfocused states
-3. Not entirely obscured by author-created content
+1. An area at least as large as a 2 CSS px thick perimeter of the unfocused component or sub-component
+2. Contrast change >= 3:1 between the same pixels in the focused and unfocused states
+
+At AA, check instead that a focus indicator is visible (2.4.7), has 3:1 against adjacent colors (1.4.11), and that the focused component is not entirely hidden by author-created content such as sticky headers (2.4.11 Focus Not Obscured (Minimum)).
 
 ### 2.1 CSS Custom Property Focus Tokens
 
@@ -194,8 +195,8 @@ The focus ring color (`--ring`) must contrast >= 3:1 against:
 - Colors adjacent to the focus ring area
 
 ```text
-Example: --ring: hsl(215, 100%, 50%) = #0080FF on white (#FFF)
-Contrast = 3.89:1 -> PASSES 3:1 minimum
+Example: --ring: hsl(215, 100%, 50%) = #006AFF on white (#FFF)
+Contrast = 4.66:1 -> PASSES 3:1 minimum
 ```
 
 ### 2.3 Tailwind Focus Token Patterns

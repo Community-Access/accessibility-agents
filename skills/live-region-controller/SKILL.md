@@ -58,7 +58,7 @@ The conditional render creates and fills the element simultaneously. The screen 
 8. Is `textContent` used to update (not innerHTML or element replacement)?
 9. For React: are live regions unconditionally rendered?
 10. Are toasts announced without stealing focus?
-11. Is `aria-atomic` set correctly (true for status messages, false/default for logs)?
+11. Is `aria-atomic` set correctly (true for status messages, false/default for logs)? `role="status"` and `role="alert"` already imply `aria-atomic="true"`
 12. Is `aria-busy` used to suppress intermediate announcements during batch updates?
 13. Do alerts avoid auto-disappearing without user control?
 14. Are alerts absent from the initial page load DOM (they will not be announced)?
@@ -76,21 +76,18 @@ The conditional render creates and fills the element simultaneously. The screen 
 
 ## Structured Output for Sub-Agent Use
 
-When invoked as a sub-agent by the web-accessibility-wizard, return each finding in this format:
+When invoked as a sub-agent by the web-accessibility-wizard, honour any `## Web Scan Context` block it provides.
 
-```text
-### [severity]: [Brief description]
-- **WCAG:** [criterion number] [criterion name] (Level [A/AA/AAA])
-- **Confidence:** [high | medium | low]
-- **Impact:** [What a real user with a disability would experience - one sentence]
-- **Location:** [file path:line or CSS selector or component name]
+Return findings only as JSON matching `skills/a11y-core/schemas/findings.schema.json`, as the Output contract below requires. Map each issue to the schema fields:
 
-**Current code:**
-[code block showing the problem]
-
-**Recommended fix:**
-[code block showing the corrected code in the detected framework syntax]
-```
+- `rule` - a stable identifier for the check
+- `wcag` - criterion number and level, for example `"1.4.3 AA"`, or `"n/a"` for findings outside WCAG
+- `severity` - `critical`, `serious`, `moderate` or `minor`
+- `confidence` - `high`, `medium` or `low` (omit when high)
+- `location` - file path and line, or a CSS selector: somewhere a person can open (a repeated component goes in `component`)
+- `summary` - one sentence naming the defect and what a user with a disability would experience
+- `fix` - the corrected code or text, in the detected framework's syntax
+- `evidence` - the offending markup or value, kept short
 
 **Confidence rules:**
 
@@ -98,18 +95,7 @@ When invoked as a sub-agent by the web-accessibility-wizard, return each finding
 - **medium** - likely wrong: live region placement may not announce, debouncing absent for high-frequency updates, loading state may be insufficient
 - **low** - possibly wrong: announcement timing may be intentional, toast duration may meet user needs, manual verification with screen reader needed
 
-### Output Summary
-
-End your invocation with this summary block (used by the wizard for / progress announcements):
-
-```text
-## Live Region Controller Findings Summary
-- **Issues found:** [count]
-- **Critical:** [count] | **Serious:** [count] | **Moderate:** [count] | **Minor:** [count]
-- **High confidence:** [count] | **Medium:** [count] | **Low:** [count]
-```
-
-Always explain your reasoning. Developers need to understand why, not just what.
+Put the reasoning in `summary` and `fix`, not in prose around the JSON. Developers need to understand why, not just what.
 
 ## Reference files
 

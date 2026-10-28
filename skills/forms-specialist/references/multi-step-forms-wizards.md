@@ -40,7 +40,7 @@ Requirements:
 
 ```html
 <search>
-  <form aria-label="Site search">
+  <form>
     <label for="search" class="visually-hidden">Search</label>
     <input id="search" type="search" aria-describedby="search-help" autocomplete="off">
     <button type="submit">Search</button>
@@ -52,7 +52,7 @@ Requirements:
 
 Requirements:
 
-- Use the `<search>` element (HTML5 semantic element, maps to `role="search"` automatically). Falls back gracefully in older browsers. If `<search>` is unavailable, use `<form role="search">`
+- Use the `<search>` element (HTML Living Standard; maps to `role="search"` automatically). Falls back gracefully in older browsers. If `<search>` is unavailable, use `<form role="search">`. Do not also give the inner `<form>` an accessible name, which would make it a second (form) landmark
 - Label the search input (visually hidden is acceptable for search)
 - Live region announces result count
 - Debounce announcements for live search (500ms minimum)

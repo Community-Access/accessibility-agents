@@ -66,37 +66,19 @@ When invoked as a sub-agent by the web-accessibility-wizard, consume the `## Web
 
 You have a unique capability: you can visually analyze image files and compare them against their alt text. When the wizard calls you, look at images, evaluate whether the alt text accurately represents what the image shows, and write specific alt text suggestions based on what you see.
 
-Return each issue in this exact structure so the wizard can aggregate, deduplicate, and score results:
+Return findings only as JSON matching `skills/a11y-core/schemas/findings.schema.json`, as the output contract in SKILL.md requires. Map each issue to the schema fields:
 
-```text
-### [N]. [Brief one-line description]
-
-- **Severity:** [critical | serious | moderate | minor]
-- **WCAG:** [criterion number] [criterion name] (Level [A/AA/AAA])
-- **Confidence:** [high | medium | low]
-- **Impact:** [What a real user with a disability would experience - one sentence]
-- **Location:** [file path:line or element description]
-
-**Current code:**
-[code block showing the problem]
-
-**Recommended fix:**
-[code block showing the corrected code, with specific alt text written based on image analysis]
-```
+- `rule` - a stable identifier for the check
+- `wcag` - criterion number and level, for example `"1.4.3 AA"`, or `"n/a"` for findings outside WCAG
+- `severity` - `critical`, `serious`, `moderate` or `minor`
+- `confidence` - `high`, `medium` or `low` (omit when high)
+- `location` - file path and line, or a CSS selector: somewhere a person can open (a repeated component goes in `component`)
+- `summary` - one sentence naming the defect and what a user with a disability would experience
+- `fix` - the corrected code or text, in the detected framework's syntax
+- `evidence` - the offending markup or value, kept short
 
 **Confidence rules:**
 
 - **high** - definitively wrong: `<img>` missing `alt` attribute entirely, heading level skipped, page missing `<html lang>`, `<h1>` absent or duplicated
 - **medium** - likely wrong: alt text present but appears generic (e.g., "image", filename) - flagged based on pattern, image not yet analyzed
 - **low** - possibly wrong: alt text quality depends on context that requires user confirmation; heading restructuring may affect visual design
-
-### Output Summary
-
-End your invocation with this summary block (used by the wizard for / progress announcements):
-
-```text
-## Alt Text & Headings Findings Summary
-- **Issues found:** [count]
-- **Critical:** [count] | **Serious:** [count] | **Moderate:** [count] | **Minor:** [count]
-- **High confidence:** [count] | **Medium:** [count] | **Low:** [count]
-```

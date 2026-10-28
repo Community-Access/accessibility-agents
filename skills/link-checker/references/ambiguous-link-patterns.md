@@ -6,7 +6,7 @@ Part of the `link-checker` skill. Read this only when the task reaches these sec
 
 ### Flagged as Violations
 
-These link texts are always ambiguous and must be rewritten:
+These link texts are ambiguous on their own. They fail 2.4.9 (AAA) unless the accessible name (aria-label, aria-labelledby, or visually hidden text) supplies the purpose, or the link is ambiguous to users in general. For 2.4.4 (A) they pass when the purpose is clear from the accessible name (techniques ARIA7, ARIA8) or from programmatically determined context: the same sentence, paragraph, list item or table cell, or an associated table header cell. A preceding heading alone is not enough (technique H80 is advisory). Rewrite them by default:
 
 | Ambiguous Text | Problem | Better Alternative |
 |----------------|---------|-------------------|
@@ -128,9 +128,8 @@ Flag links that open in a new window/tab without warning the user.
   Example Site (opens in new tab)
 </a>
 
-<!-- ALSO ACCEPTABLE: Using aria-label or visually hidden text -->
-<a href="https://example.com" target="_blank" rel="noopener noreferrer"
-   aria-label="Example Site (opens in new tab)">
+<!-- ALSO ACCEPTABLE: visually hidden text (or an aria-label that starts with the visible text) -->
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
   Example Site
   <span class="visually-hidden">(opens in new tab)</span>
 </a>

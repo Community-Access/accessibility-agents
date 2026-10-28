@@ -30,25 +30,26 @@ These ratios are the minimum. Meeting them is mandatory, not aspirational.
 
 ### Text Contrast (4.5:1 minimum)
 
-- Normal text (under 18px or under 14px bold): 4.5:1 against background
+- Normal text (under 18pt, or under 14pt bold): 4.5:1 against background (1.4.3)
 - This applies to all text including placeholders, captions, timestamps, and secondary text
 - "It's just a caption" is not an excuse for low contrast
 
 ### Large Text Contrast (3:1 minimum)
 
-- Large text (18px+ or 14px+ bold): 3:1 against background
+- Large text (18pt+, or 14pt+ bold; about 24 CSS px, or 18.5 CSS px bold): 3:1
+- AAA (1.4.6): 7:1 normal text, 4.5:1 large text
 - Headings often qualify as large text but verify the actual rendered size
 
 ### Non-Text Contrast (3:1 minimum)
 
-- UI components: buttons, inputs, checkboxes, toggles, cards
-- The component boundary must have 3:1 against adjacent colors
-- Focus indicators must have 3:1 against both the component and surrounding background
-- Icons that convey meaning (not decorative) need 3:1
+- UI components (1.4.11): buttons, inputs, checkboxes, toggles
+- Visual information needed to identify a component or its state (an input border, a checkbox outline) needs 3:1 against adjacent colors; a button identified by its text needs no boundary
+- Focus indicators need 3:1 against adjacent colors
+- Icons and graphics that convey meaning (not decorative) need 3:1
 
 ## How to Check Contrast
 
-Use the WCAG contrast ratio formula. You can calculate or verify with a script:
+Use the WCAG 2 contrast ratio (WCAG 2.2 uses the 0.04045 sRGB threshold; the older 0.03928 makes no practical difference):
 
 ```python
 import sys
@@ -78,11 +79,13 @@ When auditing, extract all color values from CSS/Tailwind and check every text-o
 
 ## Focus Indicators
 
-Every interactive element must have a visible focus indicator.
+Every interactive element must have a visible focus indicator (2.4.7 Focus Visible, AA).
 
 ### Requirements
 
-- Focus indicator must have 3:1 contrast against adjacent colors
+- Focus indicator must have 3:1 contrast against adjacent colors (1.4.11, AA)
+- Focused element never entirely hidden by sticky headers or banners (2.4.11, AA)
+- AAA (2.4.13): indicator area at least a 2 CSS px perimeter, 3:1 between focused and unfocused states
 - Must be visible on both light and dark backgrounds
 - Minimum 2px outline recommended
 - Never use `outline: none` or `outline: 0` without providing an alternative focus style
@@ -142,17 +145,19 @@ When implementing dark mode or themes:
 
 ## Tailwind-Specific Guidance
 
+Hex values are the Tailwind v3 palette; v4 uses OKLCH, so measure rendered colors.
+
 Common Tailwind classes that fail contrast on white backgrounds:
 
-- `text-gray-400` (#9CA3AF) -- 2.85:1, FAILS
-- `text-gray-500` (#6B7280) -- 4.64:1, passes AA normal text
-- `text-gray-300` (#D1D5DB) -- 1.74:1, FAILS badly
+- `text-gray-400` (#9CA3AF) -- 2.54:1, FAILS
+- `text-gray-500` (#6B7280) -- 4.83:1, passes AA normal text
+- `text-gray-300` (#D1D5DB) -- 1.47:1, FAILS badly
 
 Common Tailwind classes that fail on dark backgrounds (`bg-gray-900` #111827):
 
-- `text-gray-500` (#6B7280) -- 3.41:1, FAILS normal text
-- `text-gray-400` (#9CA3AF) -- 5.51:1, passes
-- `text-gray-600` (#4B5563) -- 2.11:1, FAILS
+- `text-gray-500` (#6B7280) -- 3.67:1, FAILS normal text
+- `text-gray-400` (#9CA3AF) -- 6.99:1, passes
+- `text-gray-600` (#4B5563) -- 2.35:1, FAILS
 
 Always verify. Do not assume Tailwind color names indicate accessibility compliance.
 

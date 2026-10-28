@@ -40,7 +40,7 @@ You own everything related to keyboard interaction:
 
 ## Skip Links
 
-Required on web applications and websites.
+Expected on any site or app with blocks of content repeated across pages. 2.4.1 Bypass Blocks (A) can also be met with landmarks or headings, but a skip link is the most dependable mechanism for keyboard users who do not use a screen reader.
 
 ```html
 <body>
@@ -129,7 +129,9 @@ Scrollable regions that are not natively focusable (e.g., a `<div>` with `overfl
 8. Skip link present and working?
 9. Arrow keys work in tabs, menus, comboboxes?
 10. Escape closes overlays and returns focus?
-11. Focus indicators visible on every interactive element?
+11. Focus indicators visible on every interactive element (2.4.7 Focus Visible, AA)?
+12. Focused element never entirely hidden by sticky headers, footers or non-modal overlays (2.4.11 Focus Not Obscured (Minimum), AA)?
+13. Single-character shortcuts can be turned off, remapped or are active only on focus (2.1.4 Character Key Shortcuts, A)?
 
 ## How to Report Issues
 

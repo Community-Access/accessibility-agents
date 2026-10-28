@@ -146,14 +146,14 @@ Do not use `aria-label` on headings, paragraphs, or other content containers -- 
 - **Brief:** 1-3 words when possible. "Save" or "Save draft" -- not "Click this button to save your draft document to the server"
 - **No role name:** "Close" not "Close button" (screen reader already announces "button")
 - **Unique:** Multiple elements with the same name but different functions confuse screen reader users. "Edit profile" and "Edit preferences" not two "Edit" buttons
-- **Capital letter:** Start with a capital letter for screen reader pronunciation consistency
+- **Capital letter:** Start with a capital letter, which helps some screen readers use appropriate inflection, and do not end a name with a period
 
 ### Description Techniques
 
 Descriptions provide supplementary information beyond the name:
 
 - `aria-describedby` -- references visible elements providing additional context
-- `aria-description` -- inline description string (newer, less supported)
+- `aria-description` -- inline description string. It is defined in WAI-ARIA 1.3, which is still a W3C Working Draft, not in the WAI-ARIA 1.2 Recommendation. Browser and screen reader support varies, so prefer `aria-describedby`
 - `title` attribute -- tooltip text, used as description if name comes from another source
 
 ```html
