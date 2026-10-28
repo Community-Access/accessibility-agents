@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "accessibility-agents": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-server/dist/stdio.mjs"]
+    }
+  }
+}

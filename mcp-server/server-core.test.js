@@ -804,3 +804,19 @@ describe("Office and ePub scan configuration", () => {
     }
   });
 });
+
+describe("wcagFromAxeTags", async () => {
+  const { wcagFromAxeTags } = await import("./tools/playwright-tools.js");
+  it("maps axe tags to the findings-contract wcag field", () => {
+    assert.deepEqual(wcagFromAxeTags(["cat.forms", "wcag2a", "wcag412", "wcag131"]), {
+      wcag: "4.1.2 A",
+      also: ["1.3.1 A"],
+    });
+  });
+  it("returns n/a when no criterion tag is present", () => {
+    assert.deepEqual(wcagFromAxeTags(["best-practice"]), { wcag: "n/a", also: [] });
+  });
+  it("maps the WCAG 2.2 target-size tag", () => {
+    assert.equal(wcagFromAxeTags(["wcag22aa", "wcag258"]).wcag, "2.5.8 AA");
+  });
+});

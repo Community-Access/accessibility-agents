@@ -53,9 +53,9 @@
     "zod": "^4.6.7"
   },
   "optionalDependencies": {
-    "@axe-core/playwright": "^4.11.1",
+    "@axe-core/playwright": "^4.14.0",
     "pdf-lib": "^1.17.1",
-    "playwright": "^1.58.2"
+    "playwright": "^1.64.1"
   },
   "//overrides": "Transitive dependencies pinned to their first patched release. Each is within the range its parent asks for, so this raises a floor rather than forcing an incompatible version. Remove an entry once the parent ships a range that cannot resolve below it.",
   "overrides": {

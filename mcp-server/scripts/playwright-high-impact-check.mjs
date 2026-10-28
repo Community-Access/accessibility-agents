@@ -72,7 +72,9 @@ async function run() {
 
   const browser = await chromium.launch({ headless: true });
   try {
-    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    // @axe-core/playwright needs a page opened from a browser context.
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page = await context.newPage();
 
     for (const width of viewports) {
       await page.setViewportSize({ width, height: 900 });

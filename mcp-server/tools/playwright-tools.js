@@ -14,6 +14,24 @@
 
 import { z } from "zod";
 import { errorResult, findingsResult, mapSeverity } from "../results.js";
+import WCAG22 from "../../skills/a11y-core/schemas/wcag22-criteria.json" with { type: "json" };
+
+/**
+ * axe tags a rule with "wcag412" and so on. The findings contract wants one
+ * criterion and its level, "4.1.2 A", or "n/a" for a best-practice rule. The
+ * level comes from the package's own WCAG 2.2 list, so an obsolete criterion
+ * (4.1.1) is never reported.
+ */
+export function wcagFromAxeTags(tags = []) {
+  const criteria = [];
+  for (const tag of tags) {
+    const m = /^wcag(\d)(\d)(\d+)$/.exec(tag);
+    if (!m) continue;
+    const sc = `${m[1]}.${m[2]}.${m[3]}`;
+    if (WCAG22.criteria[sc]) criteria.push(`${sc} ${WCAG22.criteria[sc].level}`);
+  }
+  return { wcag: criteria[0] || "n/a", also: criteria.slice(1) };
+}
 
 let _playwrightAvailable = null;
 
@@ -85,7 +103,10 @@ export function registerPlaywrightTools(server) {
         const { default: AxeBuilder } = await import("@axe-core/playwright");
         const browser = await chromium.launch({ headless: true });
         try {
-          const page = await browser.newPage();
+          // @axe-core/playwright refuses a page from browser.newPage(); it
+          // needs one opened from a browser context.
+          const context = await browser.newContext();
+          const page = await context.newPage();
           await page.goto(safeUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
 
           let builder = new AxeBuilder({ page }).withTags(axeTags);
@@ -132,17 +153,18 @@ export function registerPlaywrightTools(server) {
           }
 
           const structured = violations.map((v) => {
-            const wcagTags = (v.tags || []).filter((t) => t.startsWith("wcag"));
+            const { wcag, also } = wcagFromAxeTags(v.tags);
             const firstNode = (v.nodes || [])[0];
             const out = {
               rule: v.id,
-              wcag: wcagTags.length ? wcagTags.join(", ") : "n/a",
+              wcag,
               severity: mapSeverity(v.impact),
               location: firstNode ? (firstNode.target || []).join(" > ") : safeUrl,
               summary: v.help || v.id,
               fix: v.helpUrl ? `${v.help || v.id}. See ${v.helpUrl}` : (v.help || v.id),
             };
             if (firstNode && firstNode.failureSummary) out.evidence = firstNode.failureSummary.slice(0, 500);
+            if (also.length) out.evidence = `${out.evidence ? out.evidence + "\n" : ""}Also maps to: ${also.join(", ")}`;
             return out;
           });
           return findingsResult(lines.join("\n"), [safeUrl], structured);
