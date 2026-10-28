@@ -451,7 +451,7 @@ the legacy trees.
   - Derived from `.claude/agents/developer-hub.md`. Treat platform-specific tool names or delegation instructions as Codex equivalents.
   - **Custom Skills:** Want to extend the agent ecosystem with your own accessibility rules or domain-specific guidance? See [Creating Custom Skills](../../../../do
 - **gemini** (15 lines), for example:
-  - [Shared instructions](../../.github/agents/shared-instructions.md)
+  - Shared instructions (`.github/agents/shared-instructions.md`, removed in 7.0)
   - **Knowledge domains:** Python Development
   - \| Python debugging, packaging, testing, type checking \| Python Specialist \|
 - **copilot** (159 lines), for example:
@@ -943,7 +943,7 @@ the legacy trees.
   - Derived from `.claude/agents/a11y-tool-builder.md`. Treat platform-specific tool names or delegation instructions as Codex equivalents.
   - You are an **accessibility tool builder** -- an expert in designing and building the scanning tools, rule engines, parsers, and report generators that power acc
 - **gemini** (13 lines), for example:
-  - [Shared instructions](../../.github/agents/shared-instructions.md)
+  - Shared instructions (`.github/agents/shared-instructions.md`, removed in 7.0)
   - You are an **accessibility tool builder** -- an expert in designing and building the scanning tools, rule engines, parsers, and report generators that power acc
   - **Knowledge domains:** Python Development, Web Scanning, Document Scanning
 - **copilot** (199 lines), for example:

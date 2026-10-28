@@ -2,7 +2,7 @@
 
 How Accessibility Agents is packaged, distributed and installed in 7.x. The
 standard behind it, and exactly which manifest each client reads, is in
-[Agent Plugins 1.0](../../docs/standards/agent-plugins.md).
+[Agent Plugins 1.0](../../standards/agent-plugins.md).
 
 ## What ships
 
@@ -67,7 +67,7 @@ npm run setup
 VS Code, Gemini CLI) and to `~/.gemini/config/skills` when Antigravity is
 present, and writes the hook manifest for each client it finds. Claude Code
 does not read `~/.agents/skills`; use the plugin, or `claude --plugin-dir` on
-the checkout. See [Getting started](../../docs/getting-started/README.md).
+the checkout. See [Getting started](../../getting-started/README.md).
 
 ### 3. MCP server only
 
@@ -92,7 +92,7 @@ Claude Desktop config (`claude_desktop_config.json`):
 ```
 
 The server provides 39 tools; the generated
-[MCP tools reference](../../docs/reference/mcp-tools.md) lists them with their
+[MCP tools reference](../../reference/mcp-tools.md) lists them with their
 annotations. Without the skills, a client gets the tools but not the guided
 workflows.
 

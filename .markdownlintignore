@@ -3,5 +3,3 @@ node_modules
 .git
 .history
 .claude
-.gemini
-desktop-extension

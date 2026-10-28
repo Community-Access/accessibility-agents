@@ -10,7 +10,6 @@ node_modules/
 dist/
 !mcp-server/dist/
 artifacts/
-go-cli/bin/
 .accessibility-agents/
 .env
 *.log
@@ -19,7 +18,5 @@ __pycache__/
 .DS_Store
 coverage/
 *.tgz
-.a11y-agent-team-*-plan.json
-.a11y-agent-team-*-summary.json
 build/
 .agents/

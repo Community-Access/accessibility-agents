@@ -117,6 +117,4 @@ Each component, with its role.
 | Component | Role |
 |-----------|------|
 | [web-accessibility-wizard](./web-accessibility-wizard.md) | Orchestrating wizard; calls this agent after page scans and incorporates output into the audit report |
-| [audit-web-multi-page prompt](../../history/prompts/web/audit-web-multi-page.md) | User-facing prompt that triggers this agent for multi-page comparison |
-| [compare-web-audits prompt](../../history/prompts/web/compare-web-audits.md) | User-facing prompt that triggers remediation tracking analysis |
 | [web-severity-scoring skill](../../../skills/kb-web-severity-scoring/SKILL.md) | Scoring formulas and grade table this agent implements |

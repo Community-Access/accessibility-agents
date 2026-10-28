@@ -176,7 +176,7 @@ These changes improve rendering quality in GitHub, VS Code preview, and document
 
 ### New: PDF Quick Start Guide
 
-New standalone guide ([PDF-QUICKSTART.md](mcp-server/PDF-QUICKSTART.md)) for users who only need PDF scanning. Six steps from zero to working PDF accessibility scan, without touching the full agent suite.
+New standalone guide ([PDF-QUICKSTART.md](../../mcp-server/PDF-QUICKSTART.md)) for users who only need PDF scanning. Six steps from zero to working PDF accessibility scan, without touching the full agent suite.
 
 ### Expanded MCP README
 
@@ -220,16 +220,16 @@ The following table lists new documentation pages added in this release.
 
 | Guide | What it covers |
 |-------|---------------|
-| [Troubleshooting Guide](docs/troubleshooting.md) | MCP server connection issues, trust prompts, workspace vs. profile configuration, agent picker problems, frontmatter validation, platform-specific debugging |
-| [Subagent Architecture Guide](docs/subagent-architecture.md) | Coordinator-worker patterns, allowlist validation, internal helper agents, nested subagent policy, platform integration |
-| [Beacon User Guide](docs/beacon/USER_GUIDE.md) | Full telemetry and beacon system documentation |
-| [PDF Quick Start](mcp-server/PDF-QUICKSTART.md) | Minimal-path PDF scanning setup |
+| Troubleshooting Guide (at the time `docs/troubleshooting.md`) | MCP server connection issues, trust prompts, workspace vs. profile configuration, agent picker problems, frontmatter validation, platform-specific debugging |
+| Subagent Architecture Guide (at the time `docs/subagent-architecture.md`) | Coordinator-worker patterns, allowlist validation, internal helper agents, nested subagent policy, platform integration |
+| Beacon User Guide (at the time `docs/beacon/USER_GUIDE.md`) | Full telemetry and beacon system documentation |
+| [PDF Quick Start](../../mcp-server/PDF-QUICKSTART.md) | Minimal-path PDF scanning setup |
 
 ### Updated Documentation
 
-- **[User Guide](docs/USER_GUIDE.md)** - Platform-prefixed section headings for screen reader navigation, prerequisite matrix, MCP port corrected (3100), veraPDF strategy section
-- **[Getting Started](docs/getting-started.md)** - New installer flags documented, JSON summary schema, CI validation workflows, Safe Validation section
-- **[Configuration](docs/configuration.md)** - Four new VS Code 1.113 sections (Chat Customizations, MCP bridging, nested subagents, integrated browser)
+- **User Guide (at the time `docs/USER_GUIDE.md`)** - Platform-prefixed section headings for screen reader navigation, prerequisite matrix, MCP port corrected (3100), veraPDF strategy section
+- **Getting Started (at the time `docs/getting-started.md`)** - New installer flags documented, JSON summary schema, CI validation workflows, Safe Validation section
+- **Configuration (at the time `docs/configuration.md`)** - Four new VS Code 1.113 sections (Chat Customizations, MCP bridging, nested subagents, integrated browser)
 
 ---
 
@@ -324,13 +324,13 @@ gh skill health Community-Access/accessibility-agents
 
 ## Recommended Reading
 
-**New users:** Start with [Getting Started](docs/getting-started.md), then follow the guided installer.
+**New users:** Start with Getting Started (at the time `docs/getting-started.md`), then follow the guided installer.
 
-**Existing users:** Update to 4.5.0, then review [Troubleshooting](docs/troubleshooting.md) if you use MCP tools.
+**Existing users:** Update to 4.5.0, then review Troubleshooting (at the time `docs/troubleshooting.md`) if you use MCP tools.
 
 **Document authors:** The new native-tool-first remediation format means your audit reports now start with Word/Excel/PowerPoint/Acrobat instructions you can act on immediately.
 
-**Agent developers:** Read [Subagent Architecture](docs/subagent-architecture.md) for the coordinator allowlist pattern, and check [Validator Rules](scripts/validate-agents.js) for enforcement details.
+**Agent developers:** Read Subagent Architecture (at the time `docs/subagent-architecture.md`) for the coordinator allowlist pattern, and check Validator Rules (at the time `scripts/validate-agents.js`) for enforcement details.
 
 ---
 
@@ -377,7 +377,7 @@ We especially welcome:
 
 ## Full Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the complete technical changelog covering every change in 4.5.0 and earlier releases.
+See [CHANGELOG.md](../../CHANGELOG.md) for the complete technical changelog covering every change in 4.5.0 and earlier releases.
 
 ---
 
@@ -395,4 +395,4 @@ Special thanks to:
 
 - [Report bugs or request features](https://github.com/Community-Access/accessibility-agents/issues)
 - [Ask questions and share ideas](https://github.com/Community-Access/accessibility-agents/discussions)
-- [How to contribute](CONTRIBUTING.md)
+- [How to contribute](../../CONTRIBUTING.md)

@@ -103,6 +103,4 @@ Each component, with its role.
 | Component | Role |
 |-----------|------|
 | [web-accessibility-wizard](./web-accessibility-wizard.md) | Orchestrating wizard that calls this agent and presents summary to user |
-| [fix-web-issues prompt](../../history/prompts/web/fix-web-issues.md) | User-facing prompt that triggers the full fix workflow |
-| [audit-web-page prompt](../../history/prompts/web/audit-web-page.md) | Users can opt in to auto-fix immediately after an audit |
 | [framework-accessibility skill](../../../skills/kb-framework-accessibility/SKILL.md) | Framework-specific fix patterns and anti-patterns this agent draws from |
