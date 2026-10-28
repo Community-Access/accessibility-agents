@@ -48,6 +48,18 @@
  * SKILL.md, and on UserPromptSubmit when the prompt names the lead with $,
  * which is how a Codex user invokes a skill explicitly.
  *
+ * ## Shell writes
+ *
+ * The gate also reads shell commands (Bash on Claude Code and Codex,
+ * run_shell_command on Gemini CLI), because sed -i, a redirect or a heredoc
+ * changes a .tsx file as surely as Edit does, and Claude Code's auto mode
+ * tells the model to prefer the shell for edits (#199). It finds the files a
+ * command writes by reading it: redirects, tee, sed/perl -i, cp/mv, dd,
+ * PowerShell's Set-Content and Out-File, and an inline interpreter script
+ * that opens a path for writing. It cannot see a path built in a variable or
+ * a script run by name. That is a guardrail against the ordinary edit, not a
+ * sandbox; a bypass now has to be deliberate.
+ *
  * Exit codes follow the common hook convention: 0 proceed, 2 block.
  * Structured decisions are emitted as JSON on stdout where the client reads it.
  *
@@ -87,17 +99,22 @@ const EXEMPT = [
   /\.min\.(css|js)$/i,
 ];
 
-/** Sixty words. Anything longer is repeating what AGENTS.md already says. */
+/**
+ * Sixty words. Anything longer is repeating what AGENTS.md already says.
+ * It names no file: a plugin install ships no AGENTS.md and the user's
+ * project has none, so a pointer at one sends the model looking for nothing
+ * (#219). The lead skill it names is in every install.
+ */
 export const REMINDER =
   'This project enforces WCAG 2.2 AA. Before editing HTML, JSX, TSX, Vue, Svelte, CSS or a template, ' +
   'dispatch the accessibility-lead skill and let it finish. Office and PDF files go to ' +
   'document-accessibility-wizard, markdown to markdown-a11y-assistant. Edits to user-facing files are ' +
-  'blocked until the lead completes. The full contract is in AGENTS.md.';
+  'blocked until the lead completes, including writes made through a shell command.';
 
 /** Forty words. A refusal has to say what to do next, and nothing else. */
 export const REFUSAL =
   'Accessibility review required before editing this file. Dispatch the accessibility-lead skill, let ' +
-  'it finish, then retry the edit. This gate is described in AGENTS.md.';
+  'it finish, then retry the edit.';
 
 const LEAD_SKILLS = new Set([
   'accessibility-lead',
@@ -290,6 +307,95 @@ function patchTargets(command) {
   return out;
 }
 
+// ------------------------------------------------------------ shell writes
+
+/**
+ * Shell tools by the names each client gives them. A shell call can write a
+ * file as surely as Edit can, and Claude Code's auto mode tells the model to
+ * prefer it for edits, so a gate that watched only the edit tools was close to
+ * inert there (#199).
+ */
+const SHELL_TOOLS = new Set(['Bash', 'bash', 'shell', 'exec_command', 'run_shell_command', 'powershell', 'PowerShell']);
+
+/** Commands whose file arguments are all written: tee a.html, sed -i ... a.css. */
+const WRITE_ALL = new Set(['tee', 'truncate', 'set-content', 'sc', 'add-content', 'ac', 'out-file', 'mv', 'move', 'move-item', 'mi', 'rename-item', 'ren']);
+/** Commands that write only their last argument: cp src dest. */
+const WRITE_LAST = new Set(['cp', 'copy', 'copy-item', 'cpi', 'install', 'rsync', 'ln']);
+/** Commands that edit in place only with -i or --in-place. */
+const IN_PLACE = new Set(['sed', 'gsed', 'perl', 'ruby']);
+/** Interpreters whose inline script may open a file for writing. */
+const INTERPRETERS = new Set(['python', 'python3', 'py', 'node', 'deno', 'bun', 'perl', 'ruby', 'php', 'pwsh', 'powershell']);
+const SCRIPT_WRITES =
+  /open\s*\([^)]*,\s*['"][^'"]*[wax+]|\.write_(?:text|bytes)\s*\(|write(?:File|FileSync)\s*\(|append(?:File|FileSync)\s*\(|createWriteStream\s*\(|copyFile(?:Sync)?\s*\(|rename(?:Sync)?\s*\(|shutil\.(?:copy\w*|move)\s*\(|os\.(?:replace|rename)\s*\(|File\.(?:write|open)\s*\(|IO\.write\s*\(|file_put_contents\s*\(|Deno\.writeTextFile|Bun\.write|Set-Content|Out-File/;
+
+/** Heredoc bodies are data, not commands: drop them before reading the script. */
+function stripHeredocs(text) {
+  const lines = text.split('\n');
+  const out = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    out.push(lines[i]);
+    const m = /<<-?\s*(['"]?)([A-Za-z_][A-Za-z0-9_]*)\1/.exec(lines[i]);
+    if (!m) continue;
+    while (i + 1 < lines.length && lines[i + 1].trim() !== m[2]) i += 1;
+    i += 1; // the terminator line
+  }
+  return out.join('\n');
+}
+
+/** Words of one command segment, quotes removed. Good enough to find paths. */
+function words(segment) {
+  return [...segment.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map((m) => m[1] ?? m[2] ?? m[3]);
+}
+
+/**
+ * The files a shell command writes, as far as reading it can tell: redirect
+ * targets, tee, sed/perl -i, cp/mv destinations, PowerShell's Set-Content and
+ * Out-File, and an interpreter one-liner that opens a quoted path for
+ * writing. A path assembled in a variable, or a script run by name, is not
+ * seen; that is the documented limit, and it makes a bypass deliberate rather
+ * than the ordinary way an edit happens.
+ */
+export function shellWriteTargets(command) {
+  const full = shellText(command);
+  const text = stripHeredocs(full);
+  const out = new Set();
+
+  // > file, >> file, 1> file, &> file, >| file. Not 2>&1 or <.
+  for (const m of text.matchAll(/(?:^|[^<>&\d-])(?:[0-9]|&)?>>?\|?\s*(?!&)(["']?)([^\s"'`;&|<>()]+)\1/g)) {
+    out.add(m[2]);
+  }
+
+  let interpreter = false;
+  for (const segment of text.split(/&&|\|\||[;|\n]/)) {
+    const w = words(segment.trim());
+    while (w.length && /^(sudo|command|builtin|env|xargs|nohup|time|\w+=\S*)$/.test(w[0])) w.shift();
+    if (!w.length) continue;
+    const verb = w[0].replace(/^.*[\\/]/, '').replace(/\.exe$/i, '').toLowerCase();
+    const args = w.slice(1);
+    const operands = args.filter((a) => !/^-/.test(a));
+    if (INTERPRETERS.has(verb)) interpreter = true;
+    if (IN_PLACE.has(verb) && args.some((a) => /^-[a-zA-Z]*i/.test(a) || a.startsWith('--in-place'))) {
+      operands.forEach((a) => out.add(a));
+    } else if (WRITE_ALL.has(verb)) {
+      operands.forEach((a) => out.add(a));
+    } else if (WRITE_LAST.has(verb) && operands.length) {
+      out.add(operands[operands.length - 1]);
+    } else if (verb === 'dd') {
+      for (const a of args) if (a.startsWith('of=')) out.add(a.slice(3));
+    }
+  }
+
+  // An inline script (python3 -c, node -e, or a heredoc fed to one) that
+  // writes: every path-shaped word in it counts, and the caller keeps only
+  // the user-facing ones. Read the full text here, since the script is often
+  // the heredoc body.
+  if (interpreter && SCRIPT_WRITES.test(full)) {
+    for (const m of full.matchAll(/[^\s"'`(),;=<>[\]{}]+/g)) out.add(m[0]);
+  }
+
+  return [...out];
+}
+
 /** Clients name the edited path differently. Look everywhere it might be. */
 /** Every path a call edits: one for most tools, several for a Codex patch. */
 function targetPaths(payload) {
@@ -297,6 +403,9 @@ function targetPaths(payload) {
   if (typeof input.command === 'string' && /^\*\*\* Begin Patch/m.test(input.command)) {
     return patchTargets(input.command);
   }
+  const tool = payload.tool_name || payload.toolName || '';
+  const command = input.command ?? input.cmd;
+  if (SHELL_TOOLS.has(tool) && command) return shellWriteTargets(command);
   const one = (
     input.TargetFile ||
     input.file_path ||
@@ -465,8 +574,7 @@ function persist(payload, ids) {
   }
   emitContext(
     `Accessibility session state restored. Lead review ${state.reviewed ? 'completed' : 'not yet run'}.` +
-      (state.attemptedUiEdit ? ` A UI edit to ${state.attemptedUiEdit} was blocked earlier.` : '') +
-      ' The contract is in AGENTS.md.',
+      (state.attemptedUiEdit ? ` A UI edit to ${state.attemptedUiEdit} was blocked earlier.` : ''),
     eventName(payload),
   );
   return 0;
