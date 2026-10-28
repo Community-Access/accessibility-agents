@@ -16,7 +16,7 @@ client has one.
 | Behaviour | Claude Code | Codex | Copilot | Gemini CLI | Antigravity |
 |---|---|---|---|---|---|
 | detect: inject the contract once | `UserPromptSubmit` | `UserPromptSubmit` | `userPromptSubmitted` | `BeforeAgent` | `PreInvocation` |
-| gate: refuse a UI edit before review | `PreToolUse` on Edit, Write, NotebookEdit, MultiEdit | `PreToolUse` on apply_patch, Edit, Write | `preToolUse` | `BeforeTool` on write_file, replace, edit | `PreToolUse` on write_to_file, replace_file_content, multi_replace_file_content |
+| gate: refuse a UI edit before review | `PreToolUse` on Edit, Write, NotebookEdit, MultiEdit, Bash | `PreToolUse` on apply_patch, Edit, Write, Bash | `preToolUse` | `BeforeTool` on write_file, replace, edit, run_shell_command | `PreToolUse` on write_to_file, replace_file_content, multi_replace_file_content |
 | mark: lead completed, open the gate | `PostToolUse` on Skill, and `SubagentStop` | `PostToolUse` on Bash, when the command reads the lead's SKILL.md; `UserPromptSubmit`, when the prompt names it with `$`; and `SubagentStop` | `postToolUse` | `AfterTool` on activate_skill | `PostToolUse` on view_file, when the file read is the lead's SKILL.md |
 | persist: save and restore across compaction | `PreCompact`, `SessionStart` | `PreCompact`, `SessionStart` | - | `PreCompress`, `SessionStart` | - |
 | finalize: refuse to end an unreviewed turn | `Stop` | `Stop` | - | - | - |
@@ -130,7 +130,7 @@ names the next action.
 Live, in Claude Code (October 2026): the gate opens after `accessibility-lead`
 runs through the Skill tool, and still blocks an edit made without it.
 
-`hooks/guard.test.mjs`, 36 tests: the reminder fires once; the gate refuses
+`hooks/guard.test.mjs`, 51 tests: the reminder fires once; the gate refuses
 every user-facing extension and ignores build output, tests and dependencies;
 every path key a client might use is recognised; only the lead opens the gate,
 whether it runs as a subagent (`agent_type`) or through the Skill tool;

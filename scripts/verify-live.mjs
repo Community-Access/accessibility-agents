@@ -8,6 +8,8 @@
  *
  *   1. Exactly the six routers reach the model, on every client.
  *   2. The user can still reach every specialist by name.
+ *   3. On Claude Code, the plugin's hooks load and its MCP server connects
+ *      from an empty project folder, which is where a user runs it.
  *
  * The first is the entire basis of the cost reduction, and it rests on
  * different mechanisms per client: `disable-model-invocation` for Claude Code
@@ -113,12 +115,17 @@ const results = {};
 function probeClaude() {
   if (!has('claude')) return { skipped: 'claude is not on PATH' };
 
+  // Run from an empty folder, as a user's project would be, never from this
+  // checkout: here .claude/settings.json supplies the same hooks and relative
+  // paths resolve, which hid a plugin install that loaded no hooks and no MCP
+  // server (#219).
+  const project = fs.mkdtempSync(path.join(scratch, 'claude-project-'));
   const session = (withPlugin) => {
     const log = path.join(scratch, 'claude-' + (withPlugin ? 'with' : 'without') + '.log');
     const args = ['--print', '--model', CLAUDE_MODEL, '--debug', '--debug-file', log];
-    if (withPlugin) args.push('--plugin-dir', '.', '--output-format', 'stream-json', '--verbose');
+    if (withPlugin) args.push('--plugin-dir', ROOT, '--output-format', 'stream-json', '--verbose');
     args.push('Reply with the single word: ok');
-    const r = run('claude', args, { cwd: ROOT });
+    const r = run('claude', args, { cwd: project });
     let debug = '';
     try {
       debug = fs.readFileSync(log, 'utf8');
@@ -140,9 +147,11 @@ function probeClaude() {
   const after = size(withP.debug);
 
   let menu = null;
+  let servers = null;
   for (const line of withP.stdout.split('\n')) {
     try {
       const e = JSON.parse(line);
+      if (e.type === 'system' && Array.isArray(e.mcp_servers) && !servers) servers = e.mcp_servers;
       if (e.type === 'system' && Array.isArray(e.skills)) {
         menu = e.skills.map(String).filter((s) => s.startsWith(PLUGIN_NAME + ':')).map((s) => s.split(':')[1]);
         break;
@@ -169,6 +178,19 @@ function probeClaude() {
     out.menu = menu.length;
     if (missing.length) out.failures.push(`${missing.length} user-invocable skills missing from the menu`);
     if (leaked.length) out.failures.push(`${leaked.length} hidden skills present in the menu`);
+  }
+
+  // The plugin's hooks and MCP server, which a skill count alone cannot see.
+  if (!new RegExp(`Loading hooks from plugin: ${PLUGIN_NAME}\\b`).test(withP.debug)) {
+    out.failures.push('the plugin registered no hooks');
+  }
+  const ours = (servers || []).find((s) => String(s.name).includes(PLUGIN_NAME));
+  if (/Skipping plugin MCP server discovery/.test(withP.debug)) {
+    out.detail += '; MCP server not checked (plugin MCP servers are disabled in this environment)';
+  } else if (!ours || ours.status !== 'connected') {
+    out.failures.push(`the plugin's MCP server ${ours ? `is ${ours.status}` : 'was not registered'}`);
+  } else {
+    out.detail += `; hooks loaded, MCP server ${ours.status}`;
   }
   return out;
 }

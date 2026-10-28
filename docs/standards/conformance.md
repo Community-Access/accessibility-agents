@@ -116,7 +116,7 @@ npm run verify:scanner      # the linter's own tests
 npm run verify:release      # version consistency
 npm run verify:deps         # dependency advisories
 npm run verify:live         # real sessions on whichever clients are installed
-node --test hooks/guard.test.mjs   # enforcement gate, 36 tests (2026-10-28)
+node --test hooks/guard.test.mjs   # enforcement gate, 51 tests (2026-10-28)
 ```
 
 ---

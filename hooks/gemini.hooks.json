@@ -16,7 +16,7 @@
     ],
     "BeforeTool": [
       {
-        "matcher": "write_file|replace|edit",
+        "matcher": "write_file|replace|edit|run_shell_command",
         "hooks": [
           {
             "name": "a11y-gate",
