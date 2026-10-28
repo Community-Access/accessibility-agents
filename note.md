@@ -155,6 +155,40 @@ The `check_apca_contrast` tool said APCA was "drafted for WCAG 3". The WCAG
 3.0 draft of 10 September 2026 does not name APCA; its contrast measure is
 "to be determined". The tool is now described as experimental.
 
+## Done and committed (1c6316e): standards and law skills
+
+13 skills. Independent review: 64 of 67 hunks correct against primary
+sources; its five small items fixed. Legal content is dated "as of October
+2026" and says it is not legal advice.
+
+- WCAG 2.2 criteria list: all 86 names and levels verified.
+- ADA Title II now 26 April 2027 / 26 April 2028 (interim final rule of 20
+  April 2026, under challenge in NFB v. DOJ); HHS Section 504 11 May 2027 /
+  10 May 2028; no Title III web regulation; Section 508 still WCAG 2.0 AA.
+- EN 301 549 V4.1.1 (WCAG 2.2) published September 2026 but not yet cited
+  in the EU Official Journal, so V3.2.1 still gives presumption of
+  conformity. Canada SOR/2025-255. ISO/IEC 40500:2025 is WCAG 2.2. VPAT
+  2.5Rev (April 2025).
+- WCAG 3.0 described as its 10 September 2026 draft has it: one conformance
+  level, no Bronze/Silver/Gold, no APCA, contrast measure undecided.
+- 2.4.12/2.4.13 labels, 3.2.6 is Level A, all 31 AAA criteria listed.
+- Invented PDF rule IDs and help-page anchors replaced with real ones.
+
+## Done and committed (fa81246): web skills part 1
+
+15 skills (ARIA, contrast, focus, forms, keyboard, live regions, links,
+cognitive, design systems, email, data visualisation, Lighthouse).
+Independent review recomputed every contrast ratio: 112 of 119 hunks
+correct; its findings fixed (including six markdownlint errors the project
+gate does not catch, and grade bands that disagreed with the renderer).
+
+- Large text is 18pt / 14pt bold, not px; every ratio recomputed.
+- Focus criteria separated into AA and AAA correctly; 2.5.8 test fixed.
+- WCAG 2.2: 3.2.6 added; the lead's checklist covers the new AA criteria.
+- ARIA examples now match the APG (tabs, accordion, carousel, dialog,
+  toggle buttons, combobox); invalid ARIA removed.
+- About ten files switched from prose replies to the findings JSON.
+
 ## Done and committed (996e929, 9dc3e49): scanner fixes found by the audit
 
 - `run_playwright_viewport_scan` claimed to test zoom and WCAG 1.4.4. It
@@ -296,5 +330,5 @@ Other:
 
 ## Pushing
 
-Pushed to https://github.com/Community-Access/accessibility-agents/tree/chore/standards-audit-and-codespaces
+Pushed to [the branch on GitHub](https://github.com/Community-Access/accessibility-agents/tree/chore/standards-audit-and-codespaces)
 (see git log; every commit is listed above). No pull request yet; one opens when the audit is done.
