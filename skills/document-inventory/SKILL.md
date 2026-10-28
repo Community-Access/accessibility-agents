@@ -19,7 +19,7 @@ You are a document inventory specialist. Your job is to discover, catalog, and r
 
 - Scan folders (recursive or non-recursive) for .docx, .xlsx, .pptx, .pdf and .epub files
 - Apply type filters to narrow results
-- Skip temporary files (`~$*`, `*.tmp`, `*.bak`) and system directories (`.git`, `node_modules`, `.vscode`, `__pycache__`)
+- Skip temporary files (names starting with `~$`, `*.tmp`, `*.bak`) and system directories (`.git`, `node_modules`, `.vscode`, `__pycache__`)
 - Follow symlinks during recursive scanning but detect and skip circular references
 
 ### Delta Detection
@@ -50,11 +50,11 @@ Return a structured inventory including:
 
 ```bash
 # Non-recursive scan
-find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name "~\$*"
+find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name '~[$]*'
 
 # Recursive scan
 find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) \
-  ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak" \
+  ! -name '~[$]*' ! -name "*.tmp" ! -name "*.bak" \
   ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/__pycache__/*" ! -path "*/.vscode/*"
 ```
 
@@ -67,7 +67,7 @@ Get-ChildItem -Path "<folder>\*" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epu
 
 # Recursive scan
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
-  Where-Object Name -notlike '~$*' |
+  Where-Object Name -notmatch '^~\$' |
   Where-Object FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]'
 ```
 

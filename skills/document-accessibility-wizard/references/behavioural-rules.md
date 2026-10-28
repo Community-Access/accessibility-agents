@@ -150,7 +150,7 @@ echo "Folder: $FOLDER"
 echo "Profile: $PROFILE"
 
 FILES=$(find "$FOLDER" -type f \( -name '*.docx' -o -name '*.xlsx' -o -name '*.pptx' -o -name '*.pdf' \) \
-  ! -name '~\$*' ! -name '*.tmp' ! -name '*.bak' \
+  ! -name '~[$]*' ! -name '*.tmp' ! -name '*.bak' \
   ! -path '*/.git/*' ! -path '*/node_modules/*')
 
 COUNT=$(echo "$FILES" | grep -c . || true)
