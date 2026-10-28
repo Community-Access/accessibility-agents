@@ -99,4 +99,3 @@ Each component, with its role.
 | [document-accessibility-wizard](./document-accessibility-wizard.md) | Orchestrating wizard that calls this agent and incorporates its output into the final report |
 | [document-inventory](./document-inventory.md) | Runs before this agent - provides the file list the wizard scans |
 | [report-generation skill](../../../skills/kb-report-generation/SKILL.md) | Scoring formulas and grade table this agent implements |
-| [compare-audits prompt](../../history/prompts/documents/compare-audits.md) | User-facing prompt that triggers remediation tracking analysis |

@@ -17,9 +17,9 @@ The gate is the script, its manifests, and its tests.
 | `hooks/claude.hooks.json` | Claude Code event names, the same entries `.claude/settings.json` uses to gate this repository's own source; `npm run setup` no longer installs it |
 | `hooks/codex.hooks.json` | Codex event names, written to `~/.codex/hooks.json` by `npm run setup`; the only route to the gate on Codex |
 | `hooks/copilot.hooks.json` | Copilot format, version 1, for copying to `.github/hooks/` in a repository |
-| `hooks/gemini.hooks.json` | Gemini CLI event names |
+| `hooks/gemini.hooks.json` | Gemini CLI event names; marks on `AfterTool` for `activate_skill`. Shipped as `hooks/hooks.json` inside the Gemini extension archive |
 | `hooks/antigravity.hooks.json` | Antigravity named hooks (`a11y-detect`, `a11y-gate`, `a11y-mark`), written to `~/.gemini/config/hooks.json` by `npm run setup`; tested against the payloads Antigravity documents, not yet in a live Antigravity session |
-| `hooks/guard.test.mjs` | 34 tests; run with `node --test hooks/guard.test.mjs` |
+| `hooks/guard.test.mjs` | 36 tests; run with `node --test hooks/guard.test.mjs` |
 
 ## Behaviours
 

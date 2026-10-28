@@ -55,6 +55,11 @@ tests, stories and dependencies are exempt. See [Hooks](../reference/hooks.md).
   loaded. `npm run setup -- --uninstall` deletes the old file.
 - Copilot: the gate opens on `postToolUse` after the lead runs. The plugin
   wires this through `com.github.copilot/hooks/hooks.json`.
+- Gemini CLI: the gate opens on `AfterTool` for `activate_skill`, when the skill
+  activated is `accessibility-lead` or `web-accessibility-wizard`. If you merged
+  an older `~/.gemini/a11y-hooks.json` into `~/.gemini/settings.json`, its mark
+  entry used `AfterAgent` and never opened the gate: re-run `npm run setup` and
+  merge the new entry, or install the extension.
 - Antigravity: the gate opens when Antigravity reads `accessibility-lead/SKILL.md` (or `web-accessibility-wizard/SKILL.md`) with `view_file`. Check that `~/.gemini/config/hooks.json` holds the `a11y-*` entries; if `npm run setup` wrote `hooks.a11y.json` beside an existing file, merge them in. This route is tested against the payloads Antigravity documents, not yet in a live Antigravity session.
 
 To test the guard by hand, see "Testing a manifest by hand" in

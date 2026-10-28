@@ -18,6 +18,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   issue flow and the framing. `github-hub` routes "adopt OSAF", phase and
   action requests to them. See `docs/standards/osaf.md`.
 
+### Removed
+
+- **Leftovers that nothing referenced or ran.** About 100 pre-7.0 documents
+  under `docs/history/` (plans, migration records, the 6.x prompt files,
+  superseded guides); the records of 7.0 and 7.1 and the measurements the
+  conformance dossier cites are kept. Also removed: the Go CLI and its build
+  workflow (it inspected `.claude/agents`, `.github/agents` and other trees
+  that 7.0 deleted), the one-off 7.0 migration and docs-reorganization
+  scripts, the Gemini sync check, an unrun scoring test, the optional git
+  pre-commit hook and its installer (which failed under ESM), the config
+  integrity check no workflow ran, the duplicate release
+  consistency workflow (the `release` gate in `npm run verify` runs the same
+  script), the no-op ESLint job, `.github/AGENTS-TEAMS.md`, the 6.x Copilot
+  review and commit-message instruction files, the MCP directory notes and
+  the stale MCPB manifest template, the enterprise config template, `ruff.toml`,
+  the v6 extensions guide, and the VS Code tasks that called removed repair
+  scripts. Git history keeps all of it.
+
+### Changed
+
+- `plugin-packaging.md` and `cross-platform-handoff.md` moved from
+  `.github/docs/` to `docs/guides/advanced/`, beside the other advanced
+  guides; the older duplicates in `.github/docs/` were removed and the wiki
+  sync points at the new paths.
+
 ## [7.1.0] - 2026-10-28
 
 A full audit of the package against current standards and each client's own
@@ -38,6 +63,11 @@ documentation, checked against primary sources and reviewed independently.
   Skill tool and reads `agent_type`. Retested live, both ways.
 - **The Codex edit gate never ran**: Codex rejected `~/.codex/hooks.json` over
   a `$comment` key. Now `description`; Codex lists all six hooks.
+- **The Gemini CLI edit gate never opened**: it marked on `AfterAgent`, whose
+  payload names no skill. Gemini loads a skill with `activate_skill`, so the
+  gate now opens on `AfterTool` for that tool, reading `tool_input.name`.
+- **Gemini CLI never saved audit state before compression**: the guard
+  recognised `PreCompact` but not Gemini's `PreCompress`.
 - **`run_axe_scan` never ran** (`@axe-core/playwright` needs a page from a
   browser context); its `wcag` field now uses the findings-contract form.
 - **The three prompts and both resource templates were registered wrongly**:
@@ -60,6 +90,19 @@ documentation, checked against primary sources and reviewed independently.
   Community-Access/accessibility-agents`, then `codex plugin add
   accessibility-agents@community-access` (skills and MCP server; Codex no
   longer loads plugin hooks, so the gate needs `npm run setup`).
+- **Gemini CLI extension**: `scripts/build-gemini-extension.mjs` builds
+  `accessibility-agents.tar.gz` (manifest, `AGENTS.md` as context, skills,
+  Gemini hooks, bundled MCP server), and `.github/workflows/release-assets.yml`
+  attaches it to each release. Install with `gemini extensions install
+  https://github.com/Community-Access/accessibility-agents`. Validated with
+  Gemini CLI 0.66.0; not yet tested in a live, signed-in session.
+- **MCP server on npm and the MCP Registry**: published on release as
+  `@community-access/accessibility-agents-mcp` (the bundle only, no runtime
+  dependencies; Playwright, axe and pdf-lib are optional peers) and as
+  `io.github.Community-Access/accessibility-agents` (`server.json`), by the
+  `mcp-registry` job in `release-assets.yml`.
+- **Plugin icon** (`.claude-plugin/icon.png`) and the Community Access URL in
+  the Claude Code and Codex manifests.
 - **Codespaces**: `.devcontainer/devcontainer.json` and `.vscode/mcp.json`.
 - Live client check verified on Claude Code and Codex.
 

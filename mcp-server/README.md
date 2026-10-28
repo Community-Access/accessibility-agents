@@ -44,6 +44,21 @@ npm start
 # -> http://127.0.0.1:3100/mcp
 ```
 
+From npm, with no checkout (from 7.1.0, once published as
+`@community-access/accessibility-agents-mcp`; also listed in the MCP Registry
+as `io.github.Community-Access/accessibility-agents`):
+
+```bash
+npx -y @community-access/accessibility-agents-mcp
+claude mcp add accessibility-agents -- npx -y @community-access/accessibility-agents-mcp
+```
+
+The npm package is the stdio bundle alone. The browser and PDF form tools need
+their optional packages in the same `node_modules`, so for those install the
+server into a folder with them and run it from there:
+`npm install @community-access/accessibility-agents-mcp playwright @axe-core/playwright pdf-lib`,
+`npx playwright install chromium`, then `npx accessibility-agents-mcp`.
+
 For a PDF-only walkthrough, see [PDF-QUICKSTART.md](PDF-QUICKSTART.md).
 
 ## Prerequisite Matrix
@@ -397,7 +412,7 @@ Read-only data endpoints for accessibility reference material. The two with a `{
 FROM node:24-slim
 WORKDIR /app
 COPY package.json .
-RUN npm install --omit=dev
+RUN npm install
 COPY . .
 EXPOSE 3100
 CMD ["node", "server.js"]

@@ -55,19 +55,23 @@ findings pipeline, and the decisions behind them.
 
 **[Releases](releases/)** - release notes, one file per version.
 
-**[History](history/)** - everything that describes the repository as it was
-before 7.0: plans, audits, migration records, the six-copy drift report, and
-superseded guides. Kept for the record, not maintained. Each carries a banner
-saying so.
+**[History](history/)** - the records of how 7.0 and 7.1 came to be. Older
+plans, audits, prompt files and superseded guides were removed after 7.1;
+they remain in the git history.
 
-Two records there are current rather than superseded, because they describe
-how this package came to be what it is:
+The records kept, and what each holds:
 
 - [The 7.0 modernization](history/2026-09-modernization.md), what changed and why
 - [The 7.1 standards audit](history/2026-10-standards-audit.md), how it was checked, what was decided, where to go next
 - [The first real audit](history/2026-09-first-real-audit.md), what nine
   specialists found against a fixture with a known answer key, and the merge
   defect that only a real run could expose
+- [The conformance audit of September 2026](history/CONFORMANCE-AUDIT-2026-09.md),
+  the pre-7.0 audit the modernization answered
+- [The legacy drift report](history/2026-09-legacy-drift-report.md), the lines
+  that differed between the six per-client copies at migration time
+- `history/context-*.json`, the context-cost measurements before, during and
+  after the migration, cited by the [conformance dossier](standards/conformance.md)
 
 ## Conventions
 

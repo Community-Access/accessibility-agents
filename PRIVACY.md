@@ -1,7 +1,7 @@
 # Privacy Policy
 
-**Last updated:** October 27, 2026
-**Applies to:** A11y Agent Team MCP Server, distributed as `@a11y-agent-team/mcp-server` and as an Anthropic MCPB desktop extension.
+**Last updated:** October 28, 2026
+**Applies to:** A11y Agent Team MCP Server, in this repository's `mcp-server/` directory, launched by the Accessibility Agents plugin, and published on npm as `@community-access/accessibility-agents-mcp`.
 
 ## Summary
 
@@ -49,7 +49,7 @@ The server is a developer tool and is not directed at children. The project does
 
 ## Changes to this policy
 
-Updates to this policy will be published in this file and reflected in the `privacy_policies` array of `mcp-server/mcpb-manifest.template.json`. The "Last updated" date at the top of this document will be revised when the policy changes.
+Updates to this policy will be published in this file. The "Last updated" date at the top of this document will be revised when the policy changes.
 
 ## Contact
 

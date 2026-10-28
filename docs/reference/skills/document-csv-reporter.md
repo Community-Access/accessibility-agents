@@ -113,4 +113,3 @@ Each component, with its role.
 | [document-accessibility-wizard](./document-accessibility-wizard.md) | Parent orchestrator that triggers CSV export |
 | [cross-document-analyzer](./cross-document-analyzer.md) | Provides cross-document data for export |
 | [help-url-reference](../knowledge-domains/help-url-reference.md) | Skill providing Microsoft and Adobe URL mappings |
-| [export-document-csv](../../history/prompts/documents/export-document-csv.md) | User-facing prompt that invokes this agent |

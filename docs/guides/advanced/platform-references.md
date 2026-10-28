@@ -168,7 +168,7 @@ This table maps each project feature to the documentation sources that informed 
 | **Batch scanning & severity scoring** | WCAG 2.2, PDF/UA, Matterhorn Protocol | 0-100 severity score with A-F grades. Cross-document pattern detection. |
 | **VPAT/ACR compliance export** | VPAT 2.5Rev / ACR template | Accessibility Conformance Report generation from audit findings. |
 | **Cross-platform handoff** | Claude Code Sub-agents, VS Code Custom agents | Shared artifacts, report format compatibility between platforms. |
-| **Plugin packaging** | Agent Plugins 1.0, Claude Code Plugins reference | Root `plugin.json` and `mcp.json` (Agent Plugins 1.0), `.claude-plugin/plugin.json` and `marketplace.json`, `com.github.copilot/hooks/hooks.json`. See `.github/docs/plugin-packaging.md`. |
+| **Plugin packaging** | Agent Plugins 1.0, Claude Code Plugins reference | Root `plugin.json` and `mcp.json` (Agent Plugins 1.0), `.claude-plugin/plugin.json` and `marketplace.json`, `com.github.copilot/hooks/hooks.json`. See [Plugin packaging](plugin-packaging.md). |
 | **Background scanning patterns** | Claude Code Sub-agents (background, isolation) | Background subagent execution. Worktree isolation for safe parallel scanning. |
 | **Delta scanning (changed files only)** | Git diff integration | `git diff --name-only` for detecting changed documents since last commit. |
 | **Path-specific instructions** | GitHub Custom instructions | `applyTo` glob patterns in `.instructions.md` frontmatter. Historical: this package no longer ships instruction files. |

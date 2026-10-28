@@ -56,7 +56,7 @@ Each class, with requirement, needed for and required.
 | HTTP or development | npm and the MCP server dependencies (`npm install --prefix mcp-server`) | The HTTP server (Option A), the unbundled source | Only for those |
 | Client | MCP-compatible client | Calling the server tools | Yes |
 | Optional feature | Java 11+ + `verapdf` | Deep PDF/UA validation via `run_verapdf_scan` | No |
-| Optional feature | `pdf-lib` (an optional dependency, `npm install --prefix mcp-server`) | `convert_pdf_form_to_html` | No |
+| Optional feature | `pdf-lib` (an optional peer dependency; `npm install --prefix mcp-server` in a checkout installs it) | `convert_pdf_form_to_html` | No |
 
 Python is not required for PDF scanning or for installing the package.
 

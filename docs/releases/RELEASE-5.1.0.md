@@ -93,7 +93,7 @@ Each metric, with its 5.0, 5.1 and change.
 
 ## Full Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the complete list of changes in this release.
+See [CHANGELOG.md](../../CHANGELOG.md) for the complete list of changes in this release.
 
 ---
 
@@ -106,4 +106,4 @@ The 5.2 roadmap focuses on:
 - Codex CLI role definitions aligned with the `.claude/specialists/` on-demand pattern
 - VS Code extension (planned in 5.0 roadmap) — scaffolding begins
 
-See [ROADMAP.md](ROADMAP.md) for details.
+See [ROADMAP.md](../../ROADMAP.md) for details.

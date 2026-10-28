@@ -92,4 +92,3 @@ Each component, with its role.
 | [web-accessibility-wizard](./web-accessibility-wizard.md) | Parent orchestrator that triggers CSV export |
 | [cross-page-analyzer](./cross-page-analyzer.md) | Provides multi-page data for export |
 | [help-url-reference](../knowledge-domains/help-url-reference.md) | Skill providing Accessibility Insights URL mappings |
-| [export-web-csv](../../history/prompts/web/export-web-csv.md) | User-facing prompt that invokes this agent |

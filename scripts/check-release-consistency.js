@@ -30,6 +30,8 @@ const SOURCES = [
   { file: '.claude-plugin/plugin.json', read: (t) => JSON.parse(t).version, why: 'what Claude Code and VS Code read' },
   { file: '.codex-plugin/plugin.json', read: (t) => JSON.parse(t).version, why: 'the Codex compatibility fallback to plugin.json' },
   { file: 'mcp-server/package.json', read: (t) => JSON.parse(t).version, why: 'the MCP server, which reports this at its handshake' },
+  { file: 'server.json', read: (t) => JSON.parse(t).version, why: 'the MCP Registry entry' },
+  { file: 'server.json', read: (t) => JSON.parse(t).packages[0].version, why: 'the npm package the MCP Registry entry points at' },
 ];
 
 /** Version strings that must not be hard-coded anywhere. */
