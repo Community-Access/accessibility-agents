@@ -1,0 +1,22 @@
+{
+  "skill": "keyboard-navigator",
+  "scope": [
+    "src/components/Modal.tsx"
+  ],
+  "findings": [
+    {
+      "rule": "KBD-001",
+      "wcag": "2.1.2 A",
+      "severity": "critical",
+      "confidence": "high",
+      "location": "src/components/Modal.tsx:58",
+      "summary": "Focus is not trapped inside the open dialog.",
+      "fix": "Cycle Tab and Shift+Tab within the dialog, and return focus to the element that opened it on close.",
+      "component": "Modal"
+    }
+  ],
+  "passed": [
+    "Visible focus indicator on every interactive control",
+    "No positive tabindex values"
+  ]
+}

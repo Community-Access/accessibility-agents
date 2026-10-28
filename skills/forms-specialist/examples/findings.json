@@ -1,0 +1,21 @@
+{
+  "skill": "forms-specialist",
+  "scope": [
+    "src/components/SignupForm.tsx"
+  ],
+  "findings": [
+    {
+      "rule": "FORM-002",
+      "wcag": "3.3.1 A",
+      "severity": "serious",
+      "confidence": "high",
+      "location": "src/components/SignupForm.tsx:77",
+      "summary": "Validation errors are shown in colour only and are not linked to their fields.",
+      "fix": "Set aria-describedby on each input to the id of its error text, set aria-invalid, and put the error in a live region.",
+      "component": "SignupForm"
+    }
+  ],
+  "passed": [
+    "Every input has a programmatically associated label"
+  ]
+}

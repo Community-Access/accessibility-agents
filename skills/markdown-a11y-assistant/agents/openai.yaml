@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Markdown Accessibility Assistant"
+  short_description: "Guided WCAG audit of markdown docs: link text, alt text, heading order, tables, emoji, diagrams and anchors."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Compliance Mapping"
+  short_description: "Map findings to Section 508, EN 301 549, EAA, ADA, AODA; build a VPAT."
+policy:
+  allow_implicit_invocation: false

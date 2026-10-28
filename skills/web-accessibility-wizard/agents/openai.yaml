@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Web Accessibility Wizard"
+  short_description: "Guided WCAG 2.2 audit of a web app or site, phase by phase, with severity scores, a written report and optional fixes."
+policy:
+  allow_implicit_invocation: true

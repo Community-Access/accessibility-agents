@@ -1,0 +1,29 @@
+{
+  "skill": "word-accessibility",
+  "scope": [
+    "docs/handbook.docx"
+  ],
+  "findings": [
+    {
+      "rule": "DOCX-003",
+      "wcag": "1.1.1 A",
+      "severity": "serious",
+      "confidence": "high",
+      "location": "docs/handbook.docx, page 4, image 2",
+      "summary": "Inline image has no alternative text.",
+      "fix": "Right-click the image, choose View Alt Text, and describe what the image conveys."
+    },
+    {
+      "rule": "DOCX-001",
+      "wcag": "2.4.2 A",
+      "severity": "moderate",
+      "confidence": "high",
+      "location": "docs/handbook.docx, document properties",
+      "summary": "Document has no title in its properties.",
+      "fix": "Set File, Info, Title to the document name so assistive technology can announce it."
+    }
+  ],
+  "passed": [
+    "Heading styles used rather than manual bold text"
+  ]
+}

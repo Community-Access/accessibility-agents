@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Data Visualization Accessibility"
+  short_description: "Charts, graphs and dashboards: SVG ARIA, table alternatives, safe palettes."
+policy:
+  allow_implicit_invocation: false

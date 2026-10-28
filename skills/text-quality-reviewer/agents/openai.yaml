@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Text Quality Reviewer"
+  short_description: "Catch weak alt text, aria-labels and button names, and template leftovers."
+policy:
+  allow_implicit_invocation: false
