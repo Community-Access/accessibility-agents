@@ -230,131 +230,88 @@ openpyxl and validated every preset: 125 of 129 hunks correct; fixed.
   well as the scanner's own (doc-title and so on). A test checks that every
   mapped ID exists in the rule sets. 112 MCP tests pass.
 
+## Done and committed (17c5a8e): the MCP server ships as a bundle
+
+- `mcp-server/dist/stdio.mjs` is the stdio server and everything it imports,
+  built with esbuild (`npm run build --prefix mcp-server`). A plugin install
+  has no `node_modules`; it now starts the server anyway. Playwright, axe and
+  pdf-lib stay optional and are not bundled.
+- `mcp.json` and `.claude-plugin/plugin.json` launch the bundle.
+- New gate (16 in all): `scripts/check-mcp-bundle.mjs` rebuilds the bundle
+  and fails if the committed one differs.
+- Tested with no `node_modules` at all: 39 tools load; Claude Code with
+  `--plugin-dir` connects.
+
+## Live edit-gate test in Claude Code: passed
+
+Re-run after 0fc0195: an edit to an HTML file was refused before
+`accessibility-lead` ran, and allowed after it ran through the Skill tool.
+
+## Done and committed (60d7c54): run_axe_scan, and Codespaces
+
+- `run_axe_scan` never worked: `@axe-core/playwright` refuses a page from
+  `browser.newPage()`. Found by running it in a fresh dev-container checkout.
+  Fixed there and in the high-impact Playwright check script.
+- Its `wcag` field held raw axe tags; it now uses the findings-contract form
+  (`4.1.2 A`). Three new tests, 115 in all.
+- `.devcontainer/devcontainer.json`: Node 24, installs both packages and
+  Chromium for Playwright, runs `npm run setup` (skills to
+  `~/.agents/skills`, which VS Code reads). `.vscode/mcp.json` registers the
+  bundled server. Tested in a scratch checkout.
+
 ## In progress
 
-Six agents are auditing all 108 skills in parallel and a seventh the docs,
-each against the fact files, editing only its own folders and logging every
-change with its source. Five of them stopped when the session was
-interrupted at 5:17; four were restarted at your OK (standards and law, web
-part 1, web part 2, documents and Markdown). The fifth, batch B (23
-knowledge-base skills: CI, testing, scanning, framework, mobile, media,
-Markdown and GitHub knowledge), had partly edited 6 files and was not
-restarted: see Decisions. When they finish, an
-independent reviewer checks every change against the sources before it is
-committed.
+- Documentation audit (138 files: README, docs/, workflows, templates):
+  edits done, 16 of 16 gates pass; an independent reviewer is checking every
+  change against the code and the sources before it is committed.
+- Batch B (23 knowledge-base skills): still editing.
+- Smaller fixes, written, under independent review:
+  - `npm run setup -- --uninstall` deleted Codex's own `~/.codex/hooks.json`
+    (which may hold your hooks) and left the `*.a11y.json` merge files. It now
+    removes that file only if it holds exactly what the installer wrote.
+  - `action/action.yml`: Node 24, `setup-node@v7`, `upload-sarif@v4`.
+  - `engines` in both package.json files: Node 22 or later (20 is end of
+    life); an unused `playwright-core` dependency dropped.
+  - `.codex-plugin/plugin.json`: dropped the undocumented `mcpServers` key.
+  - `check_source_currency.py` looked for the source registry at a path that
+    no longer exists.
+  - Root `manifest.json` (docs site) regenerated: it listed 7.0-removed files;
+    three empty "Prompts" sections removed from its workflow.
+  - Config templates: `$schema` pointed at `./.github/schemas`, which does not
+    exist once a template is copied into your project; now the GitHub URL.
+  - The dependency gate said "no high or critical advisories in any tree"
+    while the deprecated VS Code extension tree had four high; it now says
+    which tree is not gated, and `npm audit fix` cut that tree to two (in a
+    publishing tool, `@vscode/vsce`, with no fixed release yet).
+  - Decision 6 below.
 
-### Already found, being fixed
+## Decisions: what was done
 
-Standards and law (as of October 2026):
-
-- ADA Title II dates moved by a DOJ interim final rule (91 FR 20902, 20 April
-  2026): 26 April 2027 for populations of 50,000 or more, 26 April 2028 for
-  smaller ones and special districts. WCAG 2.1 AA unchanged. Under challenge
-  in NFB v. DOJ, no ruling yet.
-- HHS Section 504 web dates moved to 11 May 2027 and 10 May 2028.
-- EN 301 549 V4.1.1 (September 2026) is published and uses WCAG 2.2, but is
-  not yet cited in the EU Official Journal, so V3.2.1 still gives presumption
-  of conformity.
-- ISO/IEC 40500:2025 is WCAG 2.2. WCAG 3.0's latest draft (10 September 2026)
-  has no Bronze/Silver/Gold and does not include APCA; its contrast measure is
-  "to be determined".
-- 4.1.1 Parsing cited as live in four places; 2.4.12 labelled "Focus
-  Appearance" (that is 2.4.13); WCAG 2.1 AA presented as the target in
-  several skills; 14 axe commands that omit the 2.2 rules.
-
-Packaging: the most serious finding. Installing as a plugin does not do what
-the README says, on any client:
-
-- No hooks load. Claude Code and Codex read `hooks/hooks.json` (or a `hooks`
-  key in the manifest); Copilot and VS Code read
-  `com.github.copilot/hooks/hooks.json`. The repo has only
-  `hooks/<client>.hooks.json`.
-- The MCP server does not load. Claude Code needs `.mcp.json` or
-  `mcpServers` in its manifest; Agent Plugins 1.0 needs `$schema` and `type`
-  in `mcp.json`. And the server needs its `node_modules`, which a plugin
-  install does not create; the installer does not register it either.
-- `copilot plugin install accessibility-agents` is not valid syntax; it is
-  `copilot plugin marketplace add Community-Access/accessibility-agents`, then
-  `copilot plugin install accessibility-agents@<marketplace>`.
-- The root `plugin.json` uses two keys the closed Agent Plugins schema does
-  not allow (`skills`, `mcp`); `marketplace.json` says 7.0.1, the rest 7.0.3.
-- Antigravity does not read `~/.agents/skills` and does not use Gemini's hook
-  names. Claude Code does not document `~/.agents/skills` either.
-- `npm install` runs `scripts/install.mjs` for real (it is the `install`
-  lifecycle script), before anyone can pass `--dry-run`.
-- The `skills-ref` dev dependency is a third-party npm port, not the
-  specification authors' validator (that one is Python, in agentskills).
-- To check: Claude Code fires `SubagentStop` for subagents. `accessibility-lead`
-  runs as an inline skill, so the gate that waits for it may never open on
-  Claude Code. Claude Code is installed in this workspace, so this will be
-  tested live, not guessed.
-
-Other:
-
-- VS Code loads any `.md` in `.github/agents/` as a custom agent, so the
-  `.github/agents/preferences.md` the GitHub skills read would appear as an
-  agent. Moving to `.github/accessibility-agents/preferences.md`, with the
-  old path read as a fallback.
-- About 60 live documents link to files that no longer exist (moved to
-  docs/history or removed in 7.0). AGENTS.md itself points at two of them.
-- `.github/workflows/a11y-check.yml` passes `--rules wcag2a,wcag2aa` (that
-  flag takes rule IDs, not tags) and ends `|| true`, so it can never fail.
-- About 100 live files break the house style (emoji, arrows, box drawing).
-
-## Decisions for you, with my advice
-
-1. Batch B (23 knowledge-base skills): restarted at 6:01 PM, on "get
-   everything golden". Nothing needed from you.
-
-2. The MCP server cannot start from a plugin install, because a plugin is a
-   git checkout with no `node_modules`.
-   Options: (a) publish `mcp-server` to npm and launch it with `npx -y
-   <package>@<version>`; (b) commit a bundled single file
-   (`mcp-server/dist/stdio.mjs`, built with esbuild, checked by CI to match
-   the source); (c) leave it and document `npm install --prefix mcp-server`.
-   Advice: (b). Plugins install from git, so a bundle works on first run and
-   offline, cannot drift from the skills it ships with, adds no npm
-   publishing step or account, and keeps the 1.1 MB of runtime code
-   reviewable in one place. The optional scanners (Playwright, axe, pdf-lib)
-   stay optional and are not bundled. Choose (a) if you also want the
-   server usable outside the plugin by people who never clone the repo.
-   Until you choose, the docs say plainly that the install step is needed.
-
-3. Re-run the live edit-gate test in Claude Code (my cloud workspace, a few
-   Haiku calls). Advice: yes. The fix is tested offline with Claude Code's
-   real payload shape, but a live run is the only proof the gate now opens
-   after accessibility-lead and still blocks before it.
-
-4. Codespaces. `accessibility-agents.md` in the AHG kit promises "the full
-   version, scanners included" in a codespace; today a codespace gets the
-   repo but VS Code sees neither the skills (root `skills/` is not a
-   discovered location) nor the MCP server (no `.vscode/mcp.json`).
-   Advice: add `.devcontainer/devcontainer.json` that runs `npm ci` and
-   `npm ci --prefix mcp-server`, plus `.vscode/mcp.json` (VS Code's
-   `servers` format) and `chat.agentSkillsLocations` pointing at `skills/`.
-   About 30 lines, and it makes the AHG kit's promise true. Otherwise drop
-   the Codespaces route from the kit. I can do either; say which.
-
-5. One scoring model. The renderer (`merge-findings.mjs`: weights 10/5/2/1,
-   grades 90/80/70/60) is what every report actually uses. The audit made
-   the docs point to it; `web-csv-reporter`'s ROI weights (10/7/3/1) still
-   differ. Advice: the renderer is the single source; align the CSV ROI
-   weights to it.
-
-6. GitHub skills and the findings contract. Several GitHub skills say to
-   collect WCAG findings JSON from specialists they never dispatch, and
-   their output (alerts, metrics) is not WCAG findings. Advice: state in
-   `a11y-core` that the findings contract applies to accessibility audits,
-   and let the GitHub workflow skills report in their own structure.
-
-7. Antigravity has its own hook events and file, so the edit gate does not
-   run there. Advice: add an Antigravity manifest later; low priority until
-   someone uses it.
-
-8. The unverified items in each batch (listed in the batch sections below
-   when they land) are left as they were, not guessed. Advice: none is a
-   risk to users; the "30-40%" and "~30%" statistics have been replaced
-   with "a minority" where found, which is what the evidence supports.
+1. Batch B: restarted; still running.
+2. MCP server: bundled (17c5a8e), as advised.
+3. Live gate test: re-run, passed.
+4. Codespaces: dev container and `.vscode/mcp.json` added (60d7c54).
+5. One scoring model: the renderer is the single source; the CSV reporters
+   and the cross-page skill now point to it.
+6. GitHub skills and the findings contract: `a11y-core` now says the findings
+   schema and renderer are for accessibility audits. Six GitHub workflow
+   skills (pr-review, issue-tracker, daily-briefing, analytics,
+   security-dashboard, insiders-a11y-tracker) now declare `artifact` and
+   write their own documents; `github-hub` renders a report only for an
+   accessibility audit.
+7. Antigravity: not done, on purpose. Its hook format is documented
+   (`.agents/hooks.json`, `PreToolUse`, a `decision: "deny"` reply), so the
+   gate could block edits there. But nothing documented tells a hook that
+   `accessibility-lead` has run (no skill tool, no agent name, no subagent
+   stop event), so the gate would never open: the same deadlock fixed for
+   Claude Code. Shipping it would break Antigravity. When Antigravity
+   documents a skill-load signal, it is a small manifest plus a guard.mjs
+   input mapping.
+8. Unverified items are left as they were, not guessed.
+9. Codex has no plugin install route from this repository (it needs a
+   `.agents/plugins/marketplace.json`, and Codex installs plugins only from
+   the ChatGPT desktop app). The docs say to use `npm run setup` on Codex.
+   Adding a Codex marketplace file is a small follow-up if you want it.
 
 ## Pushing
 
@@ -363,7 +320,7 @@ Pushed to [the branch on GitHub](https://github.com/Community-Access/accessibili
 
 ## Remaining work (running checklist, updated with every push)
 
-Last updated: 27 October 2026, 6:10 PM Mountain (Arizona).
+Last updated: 28 October 2026, 6:00 AM Mountain (Arizona).
 
 - [x] Security advisories, MCP server bugs, plugin packaging, edit gate, installer
 - [x] Skill batch F: GitHub, developer, desktop (24 skills)
@@ -372,12 +329,13 @@ Last updated: 27 October 2026, 6:10 PM Mountain (Arizona).
 - [x] Skill batch D: web part 2 (15 skills)
 - [x] Skill batch E: documents and Markdown (18 skills)
 - [ ] Skill batch B: knowledge base (23 skills): editing, then independent review
-- [ ] Documentation audit (README, docs/, workflows): editing, then independent review
-- [ ] Decision 2: bundle the MCP server so plugin installs can start it
-- [ ] Decision 3: live edit-gate test in Claude Code
-- [ ] Decision 4: Codespaces dev container, VS Code skills and MCP settings
-- [ ] Decision 6: findings contract scoped to accessibility audits in a11y-core
-- [ ] Decision 7: Antigravity hook manifest, if its format can be verified
+- [ ] Documentation audit (README, docs/, workflows): edits done, under independent review
+- [x] Decision 2: bundle the MCP server so plugin installs can start it
+- [x] Decision 3: live edit-gate test in Claude Code
+- [x] Decision 4: Codespaces dev container, VS Code skills and MCP settings
+- [ ] Decision 6: findings contract scoped to accessibility audits in a11y-core: written, under review
+- [x] Decision 7: Antigravity hook manifest: verified, and deliberately not shipped (see Decisions)
+- [ ] Smaller fixes: uninstall, action.yml, engines, Codex manifest, currency script, docs manifest, templates, dependency gate: written, under review
 - [ ] Final full verification: every gate, markdownlint, plugin validate, live client checks
 - [ ] Pull request to main (not merged)
 
