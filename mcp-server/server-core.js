@@ -1,8 +1,9 @@
 /**
  * A11y Agent Team — Server-based MCP Server
  *
- * Provides accessibility scanning tools over HTTP using the MCP Streamable HTTP
- * transport with SSE fallback. Replaces the old stdio-based desktop-extension.
+ * The accessibility scanning tools, prompts and resources, shared by both
+ * entry points: stdio.js for local clients and plugins, and server.js for the
+ * Streamable HTTP transport (no legacy HTTP+SSE transport).
  *
  * Transport modes:
  *   - HTTP (default): Runs on configurable port, compatible with remote clients
