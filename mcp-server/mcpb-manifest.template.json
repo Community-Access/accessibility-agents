@@ -69,6 +69,6 @@
       "8. Test locally by dragging the .mcpb file into Claude Desktop",
       "9. Submit via https://clau.de/desktop-extention-submission"
     ],
-    "auto_update": "Auto-update for MCPB extensions in Claude Desktop follows the Claude Desktop release channel. Version bumps should be coordinated with the @a11y-agent-team/mcp-server npm package version."
+    "auto_update": "Auto-update for MCPB extensions in Claude Desktop follows the Claude Desktop release channel. Version bumps should be coordinated with the @community-access/accessibility-agents-mcp npm package version."
   }
 }

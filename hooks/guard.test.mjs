@@ -300,3 +300,15 @@ describe('arguments sent as a JSON string', () => {
     assert.equal(JSON.parse(result.stdout).decision, 'deny');
   });
 });
+
+describe('gemini', () => {
+  test('activating the lead skill opens the gate; another skill does not', () => {
+    const SESS = { session_id: 'gem-sess' };
+    const activate = (name) => ({ ...SESS, hook_event_name: 'AfterTool', tool_name: 'activate_skill', tool_input: { name } });
+    const write = { ...SESS, hook_event_name: 'BeforeTool', tool_name: 'write_file', tool_input: { file_path: 'src/App.tsx' } };
+    run('mark', activate('aria-specialist'));
+    assert.equal(run('gate', write).code, 2);
+    run('mark', activate('accessibility-lead'));
+    assert.equal(run('gate', write).code, 0);
+  });
+});

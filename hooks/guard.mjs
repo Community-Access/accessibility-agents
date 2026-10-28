@@ -228,6 +228,8 @@ function subagentName(payload) {
   const input = toolInput(payload);
   const skill = skillFileRead(payload, input);
   if (skill) return skill;
+  // Gemini CLI loads a skill with activate_skill({ name }).
+  if (payload.tool_name === 'activate_skill' && typeof input.name === 'string') return input.name;
   return (
     payload.agent_type ||
     payload.agentType ||

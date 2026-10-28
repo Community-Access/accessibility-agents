@@ -1,7 +1,7 @@
 # Privacy Policy
 
 **Last updated:** October 27, 2026
-**Applies to:** A11y Agent Team MCP Server, distributed as `@a11y-agent-team/mcp-server` and as an Anthropic MCPB desktop extension.
+**Applies to:** A11y Agent Team MCP Server, distributed as `@community-access/accessibility-agents-mcp` on npm and as an Anthropic MCPB desktop extension.
 
 ## Summary
 
