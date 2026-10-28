@@ -7,5 +7,14 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/Community-Access/accessibility-agents",
-  "repository": "https://github.com/Community-Access/accessibility-agents"
+  "repository": "https://github.com/Community-Access/accessibility-agents",
+  "hooks": "./hooks/claude.hooks.json",
+  "mcpServers": {
+    "accessibility-agents": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp-server/stdio.js"
+      ]
+    }
+  }
 }

@@ -4,7 +4,11 @@
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "node ${PLUGIN_ROOT}/hooks/guard.mjs --behaviour detect --client codex", "statusMessage": "Checking accessibility dispatch" }
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour detect --client codex",
+            "statusMessage": "Checking accessibility dispatch"
+          }
         ]
       }
     ],
@@ -12,35 +16,53 @@
       {
         "matcher": "apply_patch|Edit|Write|shell",
         "hooks": [
-          { "type": "command", "command": "node ${PLUGIN_ROOT}/hooks/guard.mjs --behaviour gate --client codex", "statusMessage": "Enforcing accessibility review" }
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour gate --client codex",
+            "statusMessage": "Enforcing accessibility review"
+          }
         ]
       }
     ],
     "SubagentStop": [
       {
         "hooks": [
-          { "type": "command", "command": "node ${PLUGIN_ROOT}/hooks/guard.mjs --behaviour mark --client codex", "statusMessage": "Recording accessibility review" }
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour mark --client codex",
+            "statusMessage": "Recording accessibility review"
+          }
         ]
       }
     ],
     "PreCompact": [
       {
         "hooks": [
-          { "type": "command", "command": "node ${PLUGIN_ROOT}/hooks/guard.mjs --behaviour persist --client codex" }
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour persist --client codex"
+          }
         ]
       }
     ],
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "node ${PLUGIN_ROOT}/hooks/guard.mjs --behaviour persist --client codex" }
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour persist --client codex"
+          }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "node ${PLUGIN_ROOT}/hooks/guard.mjs --behaviour finalize --client codex", "timeout": 30 }
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour finalize --client codex",
+            "timeout": 30
+          }
         ]
       }
     ]
