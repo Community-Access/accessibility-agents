@@ -56,6 +56,26 @@ Return the answer, and the path of any file you wrote.
 Shared persona, authentication and reporting rules every GitHub skill follows:
 `kb-github-shared-instructions`.
 
+## Open Source Accessibility Framework
+
+Requests to adopt the Open Source Accessibility Framework (OSAF), or one of its
+phases or actions, go to the phase skill. Phase numbers follow the framework's
+order. Facts: `kb-open-source-accessibility-framework`.
+
+| Request mentions | Dispatch |
+|---|---|
+| Phase 1 or Foundational; creating `ACCESSIBILITY.md`; an accessibility label | `osaf-foundational` |
+| Phase 2 or Workflow; contributor expectations; an accessibility issue template or report path; severity and triage; the PR template's accessibility section; good first issue or help wanted accessibility issues; an accessibility owner; dependencies | `osaf-workflow` |
+| Phase 3 or Testing; an automated accessibility check; keyboard, screen reader or manual test procedures; supported environments and known limitations | `osaf-testing` |
+| Phase 4 or Community; responding to reports; recognition; progress updates; sharing resources | `osaf-community` |
+
+"Adopt the framework": `osaf-foundational` first, with the tracking issue
+prepared. Then the other phases one at a time, in the order the user picks,
+because several actions edit the same `ACCESSIBILITY.md`. A phase skill returns
+hand-offs: dispatch the GitHub ones yourself, send web work to
+`accessibility-lead` or `web-accessibility-wizard`, markdown to
+`markdown-a11y-assistant`, and desktop work to `developer-hub`.
+
 ## Never without asking
 
 Pushing, merging, closing, deleting, changing branch protection, removing

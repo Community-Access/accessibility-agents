@@ -13,6 +13,7 @@ rather than asserted, and any deviation, plainly.
 | [WCAG 2.2](wcag.md) | every criterion a finding cites | `npm run verify:findings` |
 | [Hooks, by client](hooks-by-client.md) | the enforcement gate | 34 tests, `node --test hooks/guard.test.mjs` |
 | [Dependency supply chain](dependencies.md) | the two dependency trees, root tooling and the MCP server, both gated | the npm advisory database, `npm run verify:deps` |
+| [Open Source Accessibility Framework](osaf.md) | the four `osaf-*` phase skills and their reference skill | `npm run verify:skills` for structure; the requirements are pinned to a framework commit and a bundle digest per phase |
 
 The [conformance dossier](conformance.md) collects the gates, the measured
 results, the defects found on the way, and the live-client evidence.

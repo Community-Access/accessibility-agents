@@ -204,8 +204,26 @@
       "version": "ISO 14289-1",
       "agents": ["pdf-accessibility", "document-accessibility-wizard"],
       "checkFrequency": "quarterly"
+    },
+    {
+      "id": "open-source-accessibility-framework",
+      "url": "https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework",
+      "type": "informative-guidance",
+      "lastVerified": "2026-10-28",
+      "sha256": "",
+      "version": "b2ea31a2e38cbab3e774e4142575b78876b9b53f",
+      "agents": ["osaf-foundational", "osaf-workflow", "osaf-testing", "osaf-community", "kb-open-source-accessibility-framework"],
+      "checkFrequency": "monthly"
+    },
+    {
+      "id": "accessibility-toolkit",
+      "url": "https://github.com/open-source-accessibility/accessibility-toolkit",
+      "type": "informative-guidance",
+      "lastVerified": "2026-10-28",
+      "sha256": "",
+      "version": "139322792d83ade29271c9bd3b0f351f649d39aa",
+      "agents": ["osaf-workflow", "osaf-testing", "osaf-community", "kb-open-source-accessibility-framework"],
+      "checkFrequency": "quarterly"
     }
   ]
 }
-
-

@@ -54,13 +54,13 @@ This package sets two fields the specification does not define:
 | `disable-model-invocation` | keeps a skill out of the model's catalog | Claude Code, VS Code |
 | `user-invocable` | keeps a skill out of the user's slash menu | Claude Code, VS Code |
 
-**Why they stay.** They are the entire mechanism by which 102 of this package's
-108 skills cost nothing until a router names one. Removing them would put every
+**Why they stay.** They are the entire mechanism by which 107 of this package's
+113 skills cost nothing until a router names one. Removing them would put every
 specialist description back into every client's context on every turn, which is
 the cost this modernization exists to remove. The specification does not say
 what a client must do with a field it does not define; the clients measured
 live load these skills. The Python reference validator, run on all 108 skills
-on 2026-10-27, reported nothing beyond these two fields.
+on 2026-10-27 (before the five framework skills were added), reported nothing beyond these two fields.
 
 `verify-spec.mjs` is explicit about this rather than silent: a skill whose only
 unexpected fields are those two passes with the extension recorded; any other
@@ -68,9 +68,9 @@ unexpected field fails. Run it with `--strict` to see the package judged without
 the exemption.
 
 ```text
-skills checked          108
-conformant              108
-using documented ext    102 (disable-model-invocation, user-invocable)
+skills checked          113
+conformant              113
+using documented ext    107 (disable-model-invocation, user-invocable)
 failures                0
 ```
 
@@ -157,11 +157,11 @@ Each measure, with its value.
 
 | Measure | Value |
 |---|---:|
-| Skills | 108 |
+| Skills | 113 |
 | Model-invocable | 6 |
 | Largest dispatchable body | 6,135 bytes (2026-10-28) |
 | Skill catalog the model sees | 871 characters, 6 routers (2026-10-28) |
-| User-invocable catalog | 63 entries, 6,001 of 8,000 characters, the Codex cap (2026-10-28) |
+| User-invocable catalog | 67 entries, 6,500 of 8,000 characters, the Codex cap (2026-10-28) |
 | Hook injection, per session | 87 tokens, once |
 
 The hook previously injected roughly 570 tokens on every prompt. Over a

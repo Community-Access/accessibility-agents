@@ -10,7 +10,7 @@ One repository, one copy of each skill. Every client reads the same files.
 
 | Path | What it is |
 |---|---|
-| `skills/` | 108 Agent Skills: 6 routers, and the specialists, helpers and reference skills they dispatch |
+| `skills/` | 113 Agent Skills: 6 routers, and the specialists, helpers and reference skills they dispatch |
 | `plugin.json` | Agent Plugins 1.0 manifest |
 | `mcp.json` | Agent Plugins 1.0 MCP registration |
 | `com.github.copilot/hooks/hooks.json` | Copilot CLI and VS Code plugin hooks |

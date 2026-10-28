@@ -9,7 +9,7 @@ prompt shape in SKILL.md, never by pasting a body.
 
 ## Specialists
 
-The 16 reviewing skills in these domains, with the task each one answers.
+The 20 reviewing skills in these domains, with the task each one answers.
 Each returns findings JSON; none of them edits files.
 
 | Skill | Use it for |
@@ -21,6 +21,10 @@ Each returns findings JSON; none of them edits files.
 | `insiders-a11y-tracker` | Track accessibility changes in VS Code and other repos you follow. |
 | `issue-tracker` | GitHub issues: find, triage, review and respond, with written reports. |
 | `notifications-manager` | GitHub notifications: read, filter, triage and manage from the editor. |
+| `osaf-community` | Open Source Accessibility Framework Community phase: reports, participation, recognition, progress, resources. |
+| `osaf-foundational` | Open Source Accessibility Framework Foundational phase: ACCESSIBILITY.md and an accessibility label. |
+| `osaf-testing` | Open Source Accessibility Framework Testing phase: automated, keyboard, screen reader, manual and docs checks. |
+| `osaf-workflow` | Open Source Accessibility Framework Workflow phase: expectations, reporting, triage, PR template, labels, docs. |
 | `pr-review` | Review pull requests: diffs, comments, context and written review docs. |
 | `projects-manager` | GitHub Projects v2: boards, views, fields, iterations, item workflows. |
 | `release-manager` | GitHub releases: create, edit and manage releases and their assets. |

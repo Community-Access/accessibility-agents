@@ -498,3 +498,34 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [axe-core Rules](https://github.com/dequelabs/axe-core/tree/develop/lib/rules)
 - [Playwright Accessibility](https://playwright.dev/docs/accessibility-testing)
 - [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright)
+
+### kb-open-source-accessibility-framework
+
+- [Open Source Accessibility Framework](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework), pinned to commit `b2ea31a2e38cbab3e774e4142575b78876b9b53f`
+- [Accessibility Toolkit](https://github.com/open-source-accessibility/accessibility-toolkit), pinned to commit `139322792d83ade29271c9bd3b0f351f649d39aa`
+- [Framework project board](https://github.com/orgs/open-source-accessibility/projects/1)
+
+### osaf-foundational
+
+- [Foundational phase](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/blob/b2ea31a2e38cbab3e774e4142575b78876b9b53f/framework/phases/foundational-phase.md)
+- [Accessibility Toolkit](https://github.com/open-source-accessibility/accessibility-toolkit), pinned to commit `139322792d83ade29271c9bd3b0f351f649d39aa`
+
+### osaf-workflow
+
+- [Workflow phase](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/blob/b2ea31a2e38cbab3e774e4142575b78876b9b53f/framework/phases/workflow-phase.md)
+- [Accessibility Toolkit](https://github.com/open-source-accessibility/accessibility-toolkit), pinned to commit `139322792d83ade29271c9bd3b0f351f649d39aa`
+- [Open Source Guides: Accessibility best practices for your project](https://opensource.guide/accessibility-best-practices-for-your-project/)
+
+### osaf-testing
+
+- [Testing phase](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/blob/b2ea31a2e38cbab3e774e4142575b78876b9b53f/framework/phases/testing-phase.md)
+- [Accessibility Toolkit](https://github.com/open-source-accessibility/accessibility-toolkit), pinned to commit `139322792d83ade29271c9bd3b0f351f649d39aa`
+- [Open Source Guides: Accessibility best practices for your project](https://opensource.guide/accessibility-best-practices-for-your-project/)
+- [GitHub Accessibility Scanner](https://github.com/github/accessibility-scanner)
+- [WCAG 2.2](https://www.w3.org/TR/WCAG22/)
+
+### osaf-community
+
+- [Community phase](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/blob/b2ea31a2e38cbab3e774e4142575b78876b9b53f/framework/phases/community-phase.md)
+- [Accessibility Toolkit](https://github.com/open-source-accessibility/accessibility-toolkit), pinned to commit `139322792d83ade29271c9bd3b0f351f649d39aa`
+- [Community Accessibility Resources](https://github.com/open-source-accessibility/accessibility-toolkit/blob/main/resources/community/community.md)

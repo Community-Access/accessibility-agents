@@ -138,7 +138,7 @@ const GATES = [
     name: 'Live client session',
     standard: 'what Claude Code actually loads',
     command: [NODE, ['scripts/verify-live.mjs']],
-    proves: 'On every installed client, exactly the six routers reach the model and the other 102 do not, measured in a real session rather than inferred from frontmatter.',
+    proves: 'On every installed client, exactly the six routers reach the model and the other 107 do not, measured in a real session rather than inferred from frontmatter.',
     optional: true,
   },
 ];

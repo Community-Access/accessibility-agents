@@ -128,7 +128,7 @@ completes. This was the price of one tree instead of six.
 
 **Two frontmatter fields outside the specification.** `disable-model-invocation`
 and `user-invocable` are Claude Code and VS Code extensions. They are what keep
-102 skills out of the catalog. The specification's validator is run and the
+107 skills out of the catalog. The specification's validator is run and the
 deviation is recorded explicitly rather than hidden; see
 [Agent Skills](../standards/agent-skills.md).
 
