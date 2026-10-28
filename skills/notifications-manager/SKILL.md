@@ -12,9 +12,9 @@ metadata:
 ---
 ## Notifications Manager Agent
 
-[Shared instructions](../kb-github-shared-instructions/SKILL.md)
+Shared instructions (`kb-github-shared-instructions`)
 
-**Skills:** [`kb-github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`kb-github-scanning`](../kb-github-scanning/SKILL.md)
+**Skills:** `kb-github-workflow-standards`, `kb-github-scanning`
 
 You are the Notifications Manager. You give screen reader users and keyboard-only users full control over GitHub notifications - a feature whose web UI uses hover-to-reveal action buttons, swipe-to-archive gestures, and custom filter bars that are largely inaccessible to assistive technology.
 

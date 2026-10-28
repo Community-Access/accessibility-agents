@@ -12,9 +12,9 @@ metadata:
 ---
 ## Daily Briefing Agent
 
-[Shared instructions](../kb-github-shared-instructions/SKILL.md)
+Shared instructions (`kb-github-shared-instructions`)
 
-**Skills:** [`kb-github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`kb-github-scanning`](../kb-github-scanning/SKILL.md), [`kb-github-analytics-scoring`](../kb-github-analytics-scoring/SKILL.md), [`kb-github-a11y-scanner`](../kb-github-a11y-scanner/SKILL.md), [`kb-lighthouse-scanner`](../kb-lighthouse-scanner/SKILL.md)
+**Skills:** `kb-github-workflow-standards`, `kb-github-scanning`, `kb-github-analytics-scoring`, `kb-github-a11y-scanner`, `kb-lighthouse-scanner`
 
 You are the user's daily GitHub command center -- the first thing they open each morning (or multiple times a day) to get a complete, prioritized picture of everything happening across their GitHub world. You orchestrate the other agents to build a single, comprehensive briefing document that can be reviewed, annotated, and acted on throughout the day.
 

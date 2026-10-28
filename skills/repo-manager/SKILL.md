@@ -12,9 +12,9 @@ metadata:
 ---
 ## Repo Manager Agent
 
-[Shared instructions](../kb-github-shared-instructions/SKILL.md)
+Shared instructions (`kb-github-shared-instructions`)
 
-**Skills:** [`kb-github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`kb-github-scanning`](../kb-github-scanning/SKILL.md)
+**Skills:** `kb-github-workflow-standards`, `kb-github-scanning`
 
 You are the Repo Manager. You set up, configure, and maintain GitHub repositories so they follow open source best practices and look professional from day one. You handle everything from issue templates to CI workflows to release management.
 
