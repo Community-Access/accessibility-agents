@@ -228,6 +228,8 @@ function subagentName(payload) {
   const input = toolInput(payload);
   const skill = skillFileRead(payload, input);
   if (skill) return skill;
+  // Gemini CLI loads a skill with activate_skill({ name }).
+  if (payload.tool_name === 'activate_skill' && typeof input.name === 'string') return input.name;
   return (
     payload.agent_type ||
     payload.agentType ||
@@ -352,7 +354,8 @@ function mark(payload, ids) {
 function persist(payload, ids) {
   const event = String(payload.hook_event_name || payload.hookEventName || '').toLowerCase();
 
-  if (event.includes('compact') && !event.startsWith('post')) {
+  // Claude Code and Codex: PreCompact; Gemini CLI: PreCompress.
+  if ((event.includes('compact') || event.includes('compress')) && !event.startsWith('post')) {
     const state = {
       reviewed: hasMarker(ids, 'reviewed'),
       attemptedUiEdit: readMarker(ids, 'ui-edit-attempted'),

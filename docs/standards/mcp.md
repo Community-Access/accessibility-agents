@@ -10,6 +10,7 @@ depends on.
 | SDK | `@modelcontextprotocol/sdk` 1.32.2 with zod 4; `server.registerTool` and `server.registerPrompt` throughout, two resource templates |
 | Transports | stdio (`mcp-server/stdio.js`, shipped bundled as `mcp-server/dist/stdio.mjs`) and Streamable HTTP (`mcp-server/server.js`). The legacy HTTP+SSE transport is not offered |
 | Governs here | the 39 tools in `mcp-server/` |
+| Distribution | the bundle inside the plugins, the Gemini extension archive, and, from 7.1.0 once published, npm (`@community-access/accessibility-agents-mcp`, bin `accessibility-agents-mcp`, the bundle only) and the MCP Registry (`io.github.Community-Access/accessibility-agents`, described by `server.json`, schema 2025-12-11) |
 | Checked by | `mcp-server/mcp-conformance.test.js`, which connects a real client over stdio |
 
 ## The clauses this package depends on

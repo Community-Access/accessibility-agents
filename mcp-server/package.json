@@ -1,5 +1,6 @@
 {
-  "name": "@a11y-agent-team/mcp-server",
+  "name": "@community-access/accessibility-agents-mcp",
+  "mcpName": "io.github.Community-Access/accessibility-agents",
   "version": "7.1.0",
   "description": "Server-based MCP server for the A11y Agent Team. Provides accessibility scanning tools over stdio and over the Streamable HTTP transport. Works with any MCP client.",
   "type": "module",
@@ -27,14 +28,10 @@
     "node": ">=22"
   },
   "bin": {
-    "a11y-mcp-server": "./server.js",
-    "a11y-mcp-stdio": "./stdio.js"
+    "accessibility-agents-mcp": "./dist/stdio.mjs"
   },
   "files": [
-    "server.js",
-    "server-core.js",
-    "stdio.js",
-    "tools/",
+    "dist/",
     "README.md",
     "LICENSE"
   ],
@@ -46,16 +43,6 @@
     "test": "node --test server-core.test.js mcp-conformance.test.js",
     "prepublishOnly": "npm test"
   },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.2",
-    "express": "^5.3.0",
-    "zod": "^4.6.7"
-  },
-  "optionalDependencies": {
-    "@axe-core/playwright": "^4.14.0",
-    "pdf-lib": "^1.17.1",
-    "playwright": "^1.64.1"
-  },
   "//overrides": "Transitive dependencies pinned to their first patched release. Each is within the range its parent asks for, so this raises a floor rather than forcing an incompatible version. Remove an entry once the parent ships a range that cannot resolve below it.",
   "overrides": {
     "fast-uri": "^3.1.6",
@@ -63,6 +50,32 @@
     "ip-address": "^10.3.1"
   },
   "devDependencies": {
-    "esbuild": "^0.28.2"
-  }
+    "@axe-core/playwright": "^4.14.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "esbuild": "^0.28.2",
+    "express": "^5.3.0",
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.64.1",
+    "zod": "^4.6.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.64.1"
+  },
+  "peerDependenciesMeta": {
+    "@axe-core/playwright": {
+      "optional": true
+    },
+    "pdf-lib": {
+      "optional": true
+    },
+    "playwright": {
+      "optional": true
+    }
+  },
+  "//peerDependencies": "The scanners that drive a browser or edit PDFs are optional: install them beside the server to enable those tools. They are dev dependencies too, so npm ci in this folder installs them."
 }

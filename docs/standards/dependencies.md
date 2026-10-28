@@ -16,7 +16,7 @@ Each tree, with what it is for and what fails the gate.
 
 | Tree | What it is | Fails on |
 |---|---|---|
-| `mcp-server` | runtime. Executes on a user machine and reads their documents | high, critical |
+| `mcp-server` | the server's build and test tree. The published package `@community-access/accessibility-agents-mcp` has no runtime dependencies: the SDK, `express` and `zod` are devDependencies carried inside the bundle, and `playwright`, `@axe-core/playwright` and `pdf-lib` are optional peer dependencies (also devDependencies, for the tests). Its code executes on a user machine and reads their documents | high, critical |
 | root | tooling only, but runs in CI on every pull request | high, critical |
 
 Offline is not a pass. When the registry cannot be reached the gate exits 2 and
