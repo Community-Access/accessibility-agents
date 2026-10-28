@@ -322,8 +322,16 @@ function checkLinks(all) {
       // an example of a link, not a link.
       const text = readRaw(p).replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
       const where = path.relative(ROOT, p).replace(/\\/g, '/');
+      const skillDir = path.join(SKILLS, path.relative(SKILLS, p).split(path.sep)[0]);
       for (const m of text.matchAll(/\]\((\.\.?\/[^)\s#]+)/g)) {
         const target = path.resolve(path.dirname(p), m[1]);
+        // Agent Skills validators reject a reference that leaves the skill's
+        // own folder, and an installed skill has no repository around it.
+        // Name another skill in backticks; link a repository file by URL.
+        if (!target.startsWith(skillDir + path.sep)) {
+          fail(where, `relative link leaves the skill folder: ${m[1]}`);
+          continue;
+        }
         if (!fs.existsSync(target)) warn(where, `relative link does not resolve: ${m[1]}`);
       }
     }

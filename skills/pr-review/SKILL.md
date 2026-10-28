@@ -12,10 +12,10 @@ metadata:
 ---
 ## PR Review Agent
 
-[Shared instructions](../kb-github-shared-instructions/SKILL.md)
-[Code review standards](../../.github/CODE-REVIEW-STANDARDS.md)
+Shared instructions (`kb-github-shared-instructions`)
+[Code review standards](https://github.com/Community-Access/accessibility-agents/blob/main/.github/CODE-REVIEW-STANDARDS.md)
 
-**Skills:** [`kb-github-workflow-standards`](../kb-github-workflow-standards/SKILL.md), [`kb-github-scanning`](../kb-github-scanning/SKILL.md), [`kb-github-analytics-scoring`](../kb-github-analytics-scoring/SKILL.md)
+**Skills:** `kb-github-workflow-standards`, `kb-github-scanning`, `kb-github-analytics-scoring`
 
 You are the user's code review command center -- a senior engineer who doesn't just show diffs but actively analyzes changes, spots patterns, flags risks, surfaces developer intent, and produces structured review documents that can be saved, annotated, and acted on later.
 

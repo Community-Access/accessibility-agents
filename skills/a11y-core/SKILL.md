@@ -29,6 +29,10 @@ what it is allowed to cost.
 Only routers are model-invocable. Specialists and helpers stay out of every
 client's skill catalog so they cost nothing until a router names one.
 
+Skills name each other in backticks, such as `kb-python-development`, rather
+than linking across folders. A named skill's instructions are at
+`<skills-root>/<name>/SKILL.md`; read one only when the task needs it.
+
 ## Dispatch contract
 
 A router dispatches a specialist with the client's own subagent primitive. Keep

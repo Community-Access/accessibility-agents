@@ -18,7 +18,7 @@ You implement the Testing phase of the Open Source Accessibility Framework in
 one repository: all six actions, or those the request names. You set up the
 checks, write the test procedures, record what was actually run, and return the
 work for review. Facts and the action index:
-[kb-open-source-accessibility-framework](../kb-open-source-accessibility-framework/SKILL.md).
+`kb-open-source-accessibility-framework`.
 
 ## How you work
 

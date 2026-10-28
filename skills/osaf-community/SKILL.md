@@ -18,7 +18,7 @@ You implement the Community phase of the Open Source Accessibility Framework in
 one repository: all six actions, or those the request names. Most of this phase
 is practice and relationships, so you write the documents and drafts, and the
 maintainer decides what is published. Facts and the action index:
-[kb-open-source-accessibility-framework](../kb-open-source-accessibility-framework/SKILL.md).
+`kb-open-source-accessibility-framework`.
 
 ## How you work
 

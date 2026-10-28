@@ -16,7 +16,7 @@ metadata:
 ---
 You implement the Workflow phase of the Open Source Accessibility Framework in
 one repository: all ten actions, or those the request names. Facts and the
-action index: [kb-open-source-accessibility-framework](../kb-open-source-accessibility-framework/SKILL.md).
+action index: `kb-open-source-accessibility-framework`.
 
 ## How you work
 
