@@ -48,6 +48,7 @@
   },
   "//overrides": "basic-ftp is pinned past the range get-uri asks for (^5.3.1): every 5.x and 6.x release before 6.2.1 carries the high advisories, get-uri reaches it only to fetch an ftp:// proxy auto-config file, and @axe-core/cli has no release that avoids it. Remove once get-uri accepts ^6.2.3.",
   "overrides": {
-    "basic-ftp": "^6.2.3"
+    "basic-ftp": "^6.2.3",
+    "katex": "^0.19.1"
   }
 }
