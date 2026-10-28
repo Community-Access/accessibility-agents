@@ -14,6 +14,14 @@ metadata:
 
 ## Web Severity Scoring
 
+> **What reports actually use.** The score and grade in every rendered report
+> come from `skills/a11y-core/scripts/merge-findings.mjs`: severity weights
+> critical 10, serious 5, moderate 2, minor 1; confidence factors high 1.0,
+> medium 0.7, low 0.4; the penalty is scaled by the number of checks run; grades
+> are A 90+, B 80+, C 70+, D 60+, F below 60. Where this file differs, the
+> script decides. A score is not a conformance claim: only a finding-free
+> review against every criterion at the target level supports "conforms".
+
 ## Severity Scoring Formula
 
 ```text
@@ -55,21 +63,21 @@ page_score = 100
 for each finding:
     base = lookup(severity, confidence_level, source_count)  // from table above
     multiplier = 1.2 if confidence_level == "confirmed" else 1.0
-    deduction = base × multiplier
+    deduction = base * multiplier
     page_score = max(0, page_score - deduction)
 ```
 
 The values in the lookup table above are **base deductions** (pre-multiplier).
-"Confirmed" findings (validated by all three sources: axe-core + agent review + Playwright) apply an additional 1.2× multiplier.
+"Confirmed" findings (validated by all three sources: axe-core + agent review + Playwright) apply an additional 1.2x multiplier.
 
-**Example:** One Critical finding at confirmed confidence = 18 (base) × 1.2 = **21.6 points** deducted → page score 78.
+**Example:** One Critical finding at confirmed confidence = 18 (base) x 1.2 = **21.6 points** deducted, giving a page score of 78.
 
 ### Calibration Layer (v2)
 
 To reduce false-positive inflation and stabilize trends, apply a calibration coefficient by rule family:
 
 ```text
-calibrated_deduction = deduction × calibration_coefficient(rule_family)
+calibrated_deduction = deduction * calibration_coefficient(rule_family)
 ```
 
 Recommended initial coefficients:
@@ -90,9 +98,9 @@ Each score, with its grade and meaning.
 
 | Score | Grade | Meaning |
 |-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues, meets WCAG AA |
-| 75-89 | B | Good - some issues, mostly meets WCAG AA |
-| 50-74 | C | Needs Work - multiple issues, partial WCAG AA compliance |
+| 90-100 | A | Excellent - minor or no issues found |
+| 75-89 | B | Good - some issues |
+| 50-74 | C | Needs Work - multiple issues |
 | 25-49 | D | Poor - significant accessibility barriers |
 | 0-24 | F | Failing - critical barriers, likely unusable with AT |
 
@@ -117,7 +125,7 @@ Issues found by all three sources (axe-core + agent review + Playwright behavior
 - Agent code review identifies the same issue
 - Playwright behavioral scan confirms the issue at runtime (e.g., keyboard trap confirmed by actual Tab traversal, contrast failure confirmed by rendered CSS computation)
 
-When Playwright is not available, the maximum achievable confidence remains **High (100%)**. The confirmed tier is additive — it never downgrades findings.
+When Playwright is not available, the maximum achievable confidence remains **High (100%)**. The confirmed tier is additive - it never downgrades findings.
 
 ### Confidence Drift Guard
 

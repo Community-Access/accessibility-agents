@@ -17,15 +17,25 @@ metadata:
 
 Canonical severity definitions shared across web, document, and markdown audit domains.
 
+> **What reports actually use.** The score and grade in every rendered report
+> come from `skills/a11y-core/scripts/merge-findings.mjs`: severity weights
+> critical 10, serious 5, moderate 2, minor 1; confidence factors high 1.0,
+> medium 0.7, low 0.4; the penalty is scaled by the number of checks run; grades
+> are A 90+, B 80+, C 70+, D 60+, F below 60. Where this file differs, the
+> script decides. A score is not a conformance claim: only a finding-free
+> review against every criterion at the target level supports "conforms".
+
+Severity is what a person experiences; WCAG level is what conformance requires. The two are independent, so the conformance column below is typical, not a rule.
+
 ## Canonical Severity Levels
 
 Each level, with its definition, WCAG conformance and score impact.
 
-| Level | Definition | WCAG Conformance | Score Impact |
+| Level | Definition | Typical WCAG Conformance | Score Impact |
 |---|---|---|---|
 | **Critical** | Blocks access entirely for one or more user groups. No workaround exists. | Fails Level A | -15 to -22 points |
 | **Serious** | Severely impairs access; a workaround may exist but is unreasonable. | Fails Level A or AA | -5 to -10 points |
-| **Moderate** | Causes friction or confusion; most users can still complete the task. | Fails Level AA (advisory) | -2 to -4 points |
+| **Moderate** | Causes friction or confusion; most users can still complete the task. | Fails Level A or AA | -2 to -4 points |
 | **Minor** | Polish issue; no meaningful barrier for most users. | Technique deviation | -1 point |
 
 ## Cross-Domain Equivalents
@@ -43,9 +53,9 @@ Each canonical level, with its web (axe-core or playwright), document (office or
 
 Score impacts listed above are **additive per finding**. When the same issue recurs across many elements:
 
-- **First occurrence** — full deduction
-- **Same issue type, same page/file** — no additional deduction (already counted once per issue rule)
-- **Same issue type, different page/file** — full deduction applies again to the new page/file score
+- **First occurrence** - full deduction
+- **Same issue type, same page/file** - no additional deduction (already counted once per issue rule)
+- **Same issue type, different page/file** - full deduction applies again to the new page/file score
 
 ## Conversion Rules (Normalizing Cross-Domain Reports)
 

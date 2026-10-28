@@ -9,8 +9,9 @@
     "authoritative, it survives into a compliance document, and nobody catches",
     "it until an auditor does.",
     "",
-    "Levels are A, AA or AAA. The four criteria removed in 2.2 (4.1.1 Parsing was",
-    "obsoleted) are excluded, so citing one is caught as an error."
+    "Levels are A, AA or AAA. 86 criteria. The one criterion removed in 2.2,",
+    "4.1.1 Parsing (obsolete and removed), is excluded, so citing it is caught",
+    "as an error. Verified against the 12 Dec 2024 Recommendation on 27 Oct 2026."
   ],
   "version": "WCAG 2.2",
   "source": "https://www.w3.org/TR/WCAG22/",
@@ -105,7 +106,7 @@
   "obsoleted": {
     "4.1.1": {
       "name": "Parsing",
-      "note": "Removed in WCAG 2.2. Citing it in a 2.2 audit is an error."
+      "note": "Obsolete and removed in WCAG 2.2; citing it in a 2.2 audit is an error. In WCAG 2.0 and 2.1 (and so in Section 508 and EN 301 549 V3.2.1 reports) errata say it is always satisfied for HTML and XML content."
     }
   }
 }

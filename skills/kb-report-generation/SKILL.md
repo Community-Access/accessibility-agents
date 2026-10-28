@@ -41,6 +41,11 @@ Every audit report MUST include these sections:
 
 ## Severity Scoring Formula
 
+The score and grade in a rendered report come from
+`skills/a11y-core/scripts/merge-findings.mjs` (weights critical 10, serious 5,
+moderate 2, minor 1; confidence high 1.0, medium 0.7, low 0.4; grades A 90+,
+B 80+, C 70+, D 60+). Where the formula below differs, the script decides.
+
 ```text
 Document Score = 100 - (sum of weighted findings)
 
@@ -93,10 +98,17 @@ Each level, with its criteria.
 
 ### Supported VPAT Editions
 
-- **VPAT 2.5 (WCAG)** - maps to WCAG 2.2 criteria
-- **VPAT 2.5 (508)** - maps to Revised Section 508 standards
-- **VPAT 2.5 (EN 301 549)** - maps to EU accessibility directive
+The current ITI template is VPAT 2.5Rev (24 April 2025), as of October 2026.
+
+- **VPAT 2.5 (WCAG)** - maps to WCAG 2.0, 2.1 and 2.2 criteria
+- **VPAT 2.5 (508)** - maps to Revised Section 508 standards (WCAG 2.0 AA)
+- **VPAT 2.5 (EU)** - maps to EN 301 549; the template still points at V3.2.1 (WCAG 2.1 AA)
 - **VPAT 2.5 (INT)** - International edition (all three combined)
+
+4.1.1 Parsing is obsolete in WCAG 2.2 and is never reported as a 2.2 failure.
+For the 4.1.1 rows that 2.0 and 2.1 based tables still carry, follow
+`skills/kb-legal-compliance-mapping/SKILL.md`. Date every ACR and say which
+edition and standard versions it covers.
 
 ## Remediation Tracking
 

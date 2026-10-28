@@ -47,7 +47,7 @@ Everything in WCAG falls under one of four principles:
 | **Perceivable** | Users must be able to perceive the content | Alt text for images, captions for video, sufficient contrast |
 | **Operable** | Users must be able to operate the interface | Keyboard access, enough time, no seizure triggers |
 | **Understandable** | Users must be able to understand the content | Readable text, predictable behavior, input assistance |
-| **Robust** | Content must work with current and future technologies | Valid HTML, proper ARIA, compatible with assistive tech |
+| **Robust** | Content must work with current and future technologies | Correct name, role and value; proper ARIA; status messages exposed to assistive tech |
 
 ### Conformance Levels
 
@@ -73,20 +73,20 @@ Example: **WCAG 2.1.1**
 
 ## What Changed in WCAG 2.2 (vs 2.1)
 
-WCAG 2.2 added 9 new success criteria. The ones that affect AA conformance:
+WCAG 2.2 added 9 success criteria (three are AAA: 2.4.12, 2.4.13, 3.3.9). Those affecting AA conformance:
 
 | Criterion | Level | What It Added |
 |-----------|-------|---------------|
-| 2.4.11 Focus Not Obscured | AA | Focused element must not be hidden behind sticky headers/banners |
+| 2.4.11 Focus Not Obscured (Minimum) | AA | Focused element must not be hidden behind sticky headers/banners |
 | 2.5.7 Dragging Movements | AA | Dragging functions must have non-drag alternatives |
-| 2.5.8 Target Size (Minimum) | AA | Touch targets >= 24 x 24px (or sufficient spacing) |
-| 3.2.6 Consistent Help | AA | Help mechanisms in same location across pages |
+| 2.5.8 Target Size (Minimum) | AA | Pointer targets at least 24 by 24 CSS pixels (or sufficient spacing) |
+| 3.2.6 Consistent Help | A | Help mechanisms in same location across pages |
 | 3.3.7 Redundant Entry | A | Don't make users re-enter info already provided |
-| 3.3.8 Accessible Authentication | AA | Don't require cognitive tests for login |
+| 3.3.8 Accessible Authentication (Minimum) | AA | Don't require cognitive tests for login |
 
 WCAG 2.2 also **removed** one criterion:
 
-- **4.1.1 Parsing** - removed because modern browsers handle parsing errors well. HTML validation is still good practice but is no longer a WCAG requirement.
+- **4.1.1 Parsing** - obsolete and removed; browsers and assistive technology no longer rely on raw markup parsing, and what remains falls under 1.3.1 and 4.1.2. For 2.0 and 2.1 (Section 508, EN 301 549 V3.2.1), W3C errata treat it as always satisfied for HTML and XML.
 
 ---
 
@@ -124,7 +124,7 @@ Requires: UI components and meaningful graphics must have at least
 3:1 contrast against adjacent colors.
 
 Example pass: A text input with a #767676 border on a white background 
-(contrast ratio 4.48:1).
+(contrast ratio 4.54:1).
 
 Example fail: A text input with a #CCCCCC border on white (contrast 
 ratio 1.6:1 - the border is nearly invisible).

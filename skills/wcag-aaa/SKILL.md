@@ -14,7 +14,7 @@ metadata:
 
 You audit web content against WCAG 2.2 Level AAA success criteria. AAA represents the highest level of accessibility conformance.
 
-**Important:** AAA conformance is not required by most legal frameworks. Always confirm the user has achieved AA conformance first — AAA builds on top of AA.
+**Important:** AAA conformance is not required by most legal frameworks. Always confirm the user has achieved AA conformance first - AAA builds on top of AA.
 
 ---
 
@@ -26,10 +26,11 @@ Each SC, with its name, AAA requirement and AA baseline.
 
 | SC | Name | AAA Requirement | AA Baseline |
 |----|------|----------------|-------------|
-| 1.2.6 | Sign Language (Prerecorded) | Sign language for all prerecorded audio | Captions (1.2.2) |
-| 1.2.7 | Extended Audio Description | Extended audio desc for prerecorded video | Audio desc (1.2.5) |
+| 1.2.6 | Sign Language (Prerecorded) | Sign language interpretation for prerecorded audio in synchronized media | Captions (1.2.2) |
+| 1.2.7 | Extended Audio Description (Prerecorded) | Extended audio desc for prerecorded video | Audio desc (1.2.5) |
 | 1.2.8 | Media Alternative (Prerecorded) | Full text transcript for prerecorded media | Captions + audio desc |
 | 1.2.9 | Audio-only (Live) | Text alternative for live audio | None at AA |
+| 1.3.6 | Identify Purpose | Purpose of UI components, icons and regions programmatically determinable | Input purpose (1.3.5) |
 | 1.4.6 | Contrast (Enhanced) | 7:1 for normal text, 4.5:1 for large text | 4.5:1 / 3:1 (1.4.3) |
 | 1.4.7 | Low or No Background Audio | Speech: no background, or 20dB lower | None at AA |
 | 1.4.8 | Visual Presentation | User-selectable colors, max 80 chars/line | None at AA |
@@ -42,7 +43,7 @@ Each SC, with its name and AAA requirement.
 | SC | Name | AAA Requirement |
 |----|------|----------------|
 | 2.1.3 | Keyboard (No Exception) | ALL functionality via keyboard, no exceptions |
-| 2.2.3 | No Timing | No time limits at all |
+| 2.2.3 | No Timing | No time limits, except non-interactive synchronized media and real-time events |
 | 2.2.4 | Interruptions | User can postpone all interruptions |
 | 2.2.5 | Re-authenticating | No data loss on session timeout |
 | 2.2.6 | Timeouts | Warn about inactivity data loss |
@@ -52,7 +53,9 @@ Each SC, with its name and AAA requirement.
 | 2.4.9 | Link Purpose (Link Only) | Link text alone conveys purpose |
 | 2.4.10 | Section Headings | Content organized with headings |
 | 2.4.12 | Focus Not Obscured (Enhanced) | Focused element fully visible |
-| 2.4.13 | Focus Appearance | Focus: 2px perimeter, 3:1 contrast |
+| 2.4.13 | Focus Appearance | Focus indicator at least the area of a 2 CSS px perimeter, 3:1 contrast between focused and unfocused states |
+| 2.5.5 | Target Size (Enhanced) | Targets at least 44 by 44 CSS px, with exceptions |
+| 2.5.6 | Concurrent Input Mechanisms | Do not restrict use of available input modalities |
 
 ### Understandable
 
@@ -67,21 +70,21 @@ Each SC, with its name and AAA requirement.
 | 3.2.5 | Change on Request | Context changes only on user request |
 | 3.3.5 | Help | Context-sensitive help available |
 | 3.3.6 | Error Prevention (All) | All submissions: reversible, checked, confirmed |
-| 3.3.9 | Accessible Auth (Enhanced) | No cognitive function test at all |
+| 3.3.9 | Accessible Authentication (Enhanced) | No cognitive function test unless an alternative or assisting mechanism exists; no object-recognition or personal-content exceptions |
 
 ---
 
 ## Audit Process
 
-### Phase 1 — Prerequisite Check
+### Phase 1 - Prerequisite Check
 
 Confirm AA conformance is achieved or in progress.
 
-### Phase 2 — Scan for AAA Violations
+### Phase 2 - Scan for AAA Violations
 
 Read targets and check each applicable AAA criterion.
 
-### Phase 3 — Report
+### Phase 3 - Report
 
 List findings by WCAG principle with criterion, description, location, and remediation.
 

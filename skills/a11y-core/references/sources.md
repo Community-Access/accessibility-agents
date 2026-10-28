@@ -16,8 +16,8 @@ citation policy is in `docs/` and applies to every skill in this package.
 ### accessibility-lead
 
 - [WAI-ARIA 1.2 Specification](https://www.w3.org/TR/wai-aria-1.2/)
-- [axe DevTools Rules](https://accessibilityinsights.io/info-examples/web/)
-- [PDF/UA-1 (ISO 14289-1:2023)](https://www.pdfa.org/pdfua/)
+- [axe-core Rule Descriptions](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
+- [PDF/UA-1 (ISO 14289-1:2014)](https://pdfa.org/resource/iso-14289-pdfua/)
 - [Microsoft Office Accessibility](https://support.microsoft.com/en-us/office/use-the-accessibility-checker-to-find-accessibility-issues-6d4ee7f0-5783-465a-85a6-3ea1a1e5606f)
 
 ### web-accessibility-wizard
@@ -25,12 +25,12 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [WCAG 2.2 Understanding Documents](https://www.w3.org/WAI/WCAG22/Understanding/)
 - [WAI-ARIA 1.2 Specification](https://www.w3.org/TR/wai-aria-1.2/)
 - [axe-core Rules Reference](https://github.com/dequelabs/axe-core)
-- [axe DevTools University](https://accessibilityinsights.io/info-examples/web/)
+- [axe-core Rule Descriptions](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
 
 ### document-accessibility-wizard
 
-- [PDF/UA-1 (ISO 14289-1:2023)](https://www.pdfa.org/pdfua/)
-- [Matterhorn Protocol](https://www.pdfa.org/matterhorn/)
+- [PDF/UA-1 (ISO 14289-1:2014)](https://pdfa.org/resource/iso-14289-pdfua/)
+- [Matterhorn Protocol](https://www.pdfa.org/resource/the-matterhorn-protocol/)
 - [Microsoft Office Accessibility Checker](https://support.microsoft.com/en-us/office/use-the-accessibility-checker-to-find-accessibility-issues-6d4ee7f0-5783-465a-85a6-3ea1a1e5606f)
 - [EPUB Accessibility 1.1](https://www.w3.org/TR/epub-a11y-11/)
 
@@ -58,7 +58,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 - [WAI-ARIA 1.2 Specification](https://www.w3.org/TR/wai-aria-1.2/)
 - [ARIA Authoring Practices Guide (APG)](https://www.w3.org/WAI/ARIA/apg/)
-- [axe DevTools ARIA Rules](https://accessibilityinsights.io/info-examples/web/)
+- [axe-core Rule Descriptions](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
 - [HTML Living Standard](https://html.spec.whatwg.org/)
 
 ### keyboard-navigator
@@ -95,7 +95,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 ### live-region-controller
 
 - [WAI-ARIA 1.2 - Live Regions](https://www.w3.org/TR/wai-aria-1.2/#live_region_roles)
-- [ARIA Authoring Practices - Live Regions](https://www.w3.org/WAI/ARIA/apg/practices/)
+- [ARIA Authoring Practices - Practices](https://www.w3.org/WAI/ARIA/apg/practices/)
 - [WCAG 4.1.3 Status Messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html)
 - [aria-live, aria-atomic, aria-relevant](https://www.w3.org/TR/wai-aria-1.2/#aria-live)
 
@@ -131,7 +131,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 ### cognitive-accessibility
 
-- [WCAG 2.2 - Cognitive Accessibility](https://www.w3.org/WAI/WCAG22/Understanding/)
+- [WCAG 2.2 Understanding Documents](https://www.w3.org/WAI/WCAG22/Understanding/)
 - [WCAG 3.3.7 Redundant Entry](https://www.w3.org/WAI/WCAG22/Understanding/redundant-entry.html)
 - [WCAG 3.3.8 Accessible Authentication (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-minimum.html)
 - [WCAG 3.3.9 Accessible Authentication (Enhanced)](https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-enhanced.html)
@@ -160,7 +160,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [React Native Accessibility](https://reactnative.dev/docs/accessibility)
 - [iOS Accessibility Programming Guide](https://developer.apple.com/documentation/accessibility)
 - [Android Accessibility](https://developer.android.com/guide/topics/ui/accessibility)
-- [Expo Accessibility](https://reactnative.dev/docs/accessibility)
+- [React Native Accessibility (used by Expo)](https://reactnative.dev/docs/accessibility)
 
 ### screen-reader-lab
 
@@ -197,7 +197,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 - [WCAG 3.0 Working Draft](https://www.w3.org/TR/wcag-3.0/)
 - [WCAG 3.0 Explainer](https://www.w3.org/WAI/standards-guidelines/wcag/wcag3-intro/)
-- [APCA Contrast Algorithm](https://github.com/Myndex/SAPC-APCA)
+- [APCA, an experimental contrast method not named in the WCAG 3.0 draft](https://github.com/Myndex/SAPC-APCA)
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/)
 - [W3C AG Working Group](https://www.w3.org/groups/wg/ag/)
 
@@ -220,24 +220,24 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 - [Microsoft Word Accessibility](https://support.microsoft.com/en-us/office/create-accessible-word-documents-d9bf3683-a084-4c31-9ed2-60a20beac772)
 - [Office Accessibility Checker](https://support.microsoft.com/en-us/office/use-the-accessibility-checker-to-find-accessibility-issues-6d4ee7f0-5783-465a-85a6-3ea1a1e5606f)
-- [Open XML (DOCX) Specification](https://docs.microsoft.com/en-us/openspecs/office_standards/)
+- [Open XML (DOCX) Specification](https://learn.microsoft.com/en-us/openspecs/office_standards/)
 
 ### excel-accessibility
 
 - [Microsoft Excel Accessibility](https://support.microsoft.com/en-us/office/create-accessible-excel-workbooks-47003059-bda5-466b-913d-fe0065038517)
 - [Office Accessibility Checker](https://support.microsoft.com/en-us/office/use-the-accessibility-checker-to-find-accessibility-issues-6d4ee7f0-5783-465a-85a6-3ea1a1e5606f)
-- [Open XML (XLSX) Specification](https://docs.microsoft.com/en-us/openspecs/office_standards/)
+- [Open XML (XLSX) Specification](https://learn.microsoft.com/en-us/openspecs/office_standards/)
 
 ### powerpoint-accessibility
 
 - [Microsoft PowerPoint Accessibility](https://support.microsoft.com/en-us/office/create-accessible-powerpoint-presentations-6f7db7eb-d335-4b7e-835c-f373f9099e3e)
 - [Office Accessibility Checker](https://support.microsoft.com/en-us/office/use-the-accessibility-checker-to-find-accessibility-issues-6d4ee7f0-5783-465a-85a6-3ea1a1e5606f)
-- [Open XML (PPTX) Specification](https://docs.microsoft.com/en-us/openspecs/office_standards/)
+- [Open XML (PPTX) Specification](https://learn.microsoft.com/en-us/openspecs/office_standards/)
 
 ### pdf-accessibility
 
-- [PDF/UA-1 (ISO 14289-1:2023)](https://www.pdfa.org/pdfua/)
-- [Matterhorn Protocol](https://www.pdfa.org/matterhorn/)
+- [PDF/UA-1 (ISO 14289-1:2014)](https://pdfa.org/resource/iso-14289-pdfua/)
+- [Matterhorn Protocol](https://www.pdfa.org/resource/the-matterhorn-protocol/)
 - [Adobe PDF Accessibility](https://www.adobe.com/accessibility/pdf.html)
 - [PDF Reference (ISO 32000)](https://pdfa.org/resource/pdf-specification-index/)
 
@@ -286,7 +286,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 ### desktop-a11y-specialist
 
 - [UI Automation Specification (Windows)](https://learn.microsoft.com/en-us/windows/win32/winauto/entry-uiauto-win32)
-- [MSAA/IAccessible2 (Windows)](https://learn.microsoft.com/en-us/windows/win32/winauto/microsoft-active-accessibility)
+- [Microsoft Active Accessibility (MSAA)](https://learn.microsoft.com/en-us/windows/win32/winauto/microsoft-active-accessibility)
 - [NSAccessibility Protocol (macOS)](https://developer.apple.com/documentation/appkit/nsaccessibility)
 
 ### desktop-a11y-testing-coach
@@ -309,7 +309,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [GitHub REST API - Pull Requests](https://docs.github.com/en/rest/pulls)
 - [GitHub REST API - Reviews](https://docs.github.com/en/rest/pulls/reviews)
 - [GitHub REST API - Commits](https://docs.github.com/en/rest/commits)
-- [GitHub Diff Format](https://git-scm.com/docs/diff-format)
+- [Git Diff Format](https://git-scm.com/docs/diff-format)
 
 ### actions-manager
 
@@ -414,7 +414,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 ### cross-document-analyzer
 
-- [PDF/UA-1 (ISO 14289-1:2023)](https://www.pdfa.org/pdfua/)
+- [PDF/UA-1 (ISO 14289-1:2014)](https://pdfa.org/resource/iso-14289-pdfua/)
 - [Microsoft Office Accessibility](https://support.microsoft.com/en-us/office/)
 
 ### cross-page-analyzer
@@ -426,7 +426,7 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 - [WAI-ARIA 1.2 Specification](https://www.w3.org/TR/wai-aria-1.2/)
 - [ARIA Authoring Practices Guide (APG)](https://www.w3.org/WAI/ARIA/apg/)
-- [axe DevTools Rules](https://accessibilityinsights.io/info-examples/web/)
+- [axe-core Rule Descriptions](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
 - [HTML Living Standard](https://html.spec.whatwg.org/)
 
 ### markdown-scanner
@@ -449,25 +449,25 @@ citation policy is in `docs/` and applies to every skill in this package.
 
 ### web-csv-reporter
 
-- [Accessibility Insights - axe Rules](https://accessibilityinsights.io/info-examples/web/)
+- [axe-core Rule Descriptions](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
 - [Understanding WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/)
 
 ### document-csv-reporter
 
-- [PDF/UA-1 (ISO 14289-1:2023)](https://www.pdfa.org/pdfua/)
+- [PDF/UA-1 (ISO 14289-1:2014)](https://pdfa.org/resource/iso-14289-pdfua/)
 - [Microsoft Office Accessibility Help](https://support.microsoft.com/en-us/office/)
 - [Adobe PDF Accessibility](https://www.adobe.com/accessibility/pdf.html)
 - [WCAG Understanding Documents](https://www.w3.org/WAI/WCAG22/Understanding/)
 
 ### office-scan-config
 
-- [Microsoft Accessibility Checker](https://support.microsoft.com/en-us/office/rules-for-the-accessibility-checker-651e08f2-0fc3-4e10-aaca-74b4a67101c1)
+- [Microsoft Accessibility Checker](https://support.microsoft.com/en-us/accessibility/office-accessibility/rules-for-the-accessibility-checker)
 - [Open XML File Formats](https://learn.microsoft.com/en-us/openspecs/office_standards/)
 
 ### pdf-scan-config
 
-- [PDF/UA-1 (ISO 14289-1:2023)](https://www.pdfa.org/pdfua/)
-- [Matterhorn Protocol](https://www.pdfa.org/resource/matterhorn-protocol/)
+- [PDF/UA-1 (ISO 14289-1:2014)](https://pdfa.org/resource/iso-14289-pdfua/)
+- [Matterhorn Protocol](https://www.pdfa.org/resource/the-matterhorn-protocol/)
 - [Adobe PDF Accessibility](https://www.adobe.com/accessibility/pdf/pdf-accessibility-overview.html)
 
 ### epub-scan-config

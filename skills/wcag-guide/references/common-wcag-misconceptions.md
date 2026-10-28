@@ -10,7 +10,7 @@ Part of the `wcag-guide` skill. Read this only when the task reaches these secti
 
 ### "If axe gives us a clean report, we're WCAG compliant"
 
-**False.** Automated tools catch roughly 30% of WCAG criteria. The remaining 70% require manual testing - correct tab order, meaningful alt text, logical focus management, screen reader announcements.
+**False.** Automated checks find a minority of accessibility barriers, and many criteria can only be judged by a person - correct tab order, meaningful alt text, logical focus management, screen reader announcements. A clean automated report is a floor, not conformance.
 
 ### "alt text should describe what the image looks like"
 
@@ -26,7 +26,7 @@ Part of the `wcag-guide` skill. Read this only when the task reaches these secti
 
 ### "Disabled controls don't need to be accessible"
 
-**Complicated.** WCAG doesn't require disabled controls to be perceivable, but users still need to know they exist and why they're disabled. Best practice: keep disabled controls visible and provide a reason ("Submit disabled - please fix 2 errors above").
+**Complicated.** WCAG exempts inactive (disabled) controls from the contrast requirements (1.4.3 and 1.4.11), but users still need to know they exist and why they're disabled. Best practice: keep disabled controls visible and provide a reason ("Submit disabled - please fix 2 errors above").
 
 ### "We target mobile, so WCAG doesn't apply"
 

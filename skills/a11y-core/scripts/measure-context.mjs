@@ -39,7 +39,10 @@ export function estimateTokens(text) {
   return Math.round(text.length / 4);
 }
 
-// 2% of the context window, per learn.chatgpt.com/docs/build-skills
+// Codex caps its skill catalog at most 2% of the context window, or 8,000
+// characters when the window is unknown; configurable via
+// skills.max_context_tokens. This file checks against the 8,000 fallback.
+// Source: learn.chatgpt.com/docs/build-skills
 const CODEX_CATALOG_CHAR_CAP = 8000;
 
 // ---------------------------------------------------------------- utilities
