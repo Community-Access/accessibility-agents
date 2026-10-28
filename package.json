@@ -29,7 +29,7 @@
     "probe:mcp": "node mcp-server/scripts/probe-tools.mjs",
     "serve:mcp": "node mcp-server/server.js",
     "verify:release": "node scripts/check-release-consistency.js",
-    "install": "node scripts/install.mjs",
+    "setup": "node scripts/install.mjs",
     "verify:live": "node scripts/verify-live.mjs",
     "fix:tables": "node scripts/describe-tables.mjs --apply",
     "fix:emoji": "node scripts/strip-heading-emoji.mjs --apply",
