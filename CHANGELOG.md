@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   policy, and the README has a privacy section naming the GLOW tools.
 - The docs-site manifest workflow no longer opens a pull request when only the
   manifest's timestamp changed.
+- **`kb-design-system` was 508 lines**, over the Agent Skills specification's
+  500, which Awesome Copilot's lint enforces. The framework token paths moved
+  to `references/framework-token-paths.md`, and `validate-skills` now fails
+  any `SKILL.md` over 500 lines.
 - **Skills no longer link outside their own folder.** Awesome Copilot's lint
   rejected 82 relative links to sibling skills and repository files, and
   placeholder link targets such as `(url)`. Skills now name each other in

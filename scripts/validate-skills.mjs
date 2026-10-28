@@ -30,6 +30,7 @@ const MAX_NAME = 64;
 const MAX_DESCRIPTION = 1024;
 // This package's own limits
 const MAX_BODY_BYTES = 6144;
+const MAX_SKILL_LINES = 500;
 const MAX_ROUTER_DESCRIPTION = 160;
 const MAX_OTHER_DESCRIPTION = 120;
 const EXPECTED_ROUTERS = 6;
@@ -184,7 +185,7 @@ function checkSpec(s) {
 }
 
 function checkTier(s) {
-  const { data, body, where } = s;
+  const { data, body, where, raw } = s;
   const meta = data.metadata || {};
   const tier = meta.tier;
 
@@ -224,6 +225,13 @@ function checkTier(s) {
   // to use and nothing loads one unless a skill cites it.
   if (tier !== 'reference' && body.length > MAX_BODY_BYTES) {
     fail(where, `body is ${body.length} bytes, over the ${MAX_BODY_BYTES} budget`);
+  }
+
+  // The Agent Skills specification caps SKILL.md at 500 lines for every tier,
+  // and Awesome Copilot's lint enforces it on the whole file.
+  const lineCount = raw.split(/\r?\n/).length;
+  if (lineCount > MAX_SKILL_LINES) {
+    fail(where, `SKILL.md is ${lineCount} lines, over the specification's ${MAX_SKILL_LINES}; move detail to references/`);
   }
 }
 
