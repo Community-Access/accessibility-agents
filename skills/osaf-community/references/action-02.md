@@ -20,7 +20,7 @@ contributing to it.
 3. Resolution outcomes are documented and, when possible, accessibility fixes
    get validated with affected users.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. In `ACCESSIBILITY.md`, document respectful and constructive guidance on how
    to respond, using the toolkit's

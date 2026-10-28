@@ -23,7 +23,7 @@ community support, governance, and leadership.
 4. Contributors can request accommodations without unnecessary public
    disclosure.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify accessible ways to participate.
    - Create clearly scoped accessibility issues using labels such as

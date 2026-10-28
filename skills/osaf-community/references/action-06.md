@@ -18,7 +18,7 @@ communities to build on proven practices and avoid repeating mistakes.
 2. Resources include enough context for another project to use them.
 3. Ownership for maintaining the resources is identified.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify project materials that could help other teams, such as
    accessibility issue templates, pull request checklists, test procedures,

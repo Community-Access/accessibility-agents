@@ -17,7 +17,7 @@ This action makes contribution easier to start.
    labels.
 2. Each selected issue has a clear scope and contribution context.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify accessibility issues that require specialized knowledge or
    experience.

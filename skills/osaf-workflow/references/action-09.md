@@ -17,7 +17,7 @@ the first place, reducing rework and improving usability for everyone.
 2. New and updated interfaces are reviewed against those requirements.
 3. Keyboard access, focus states, and labels are addressed or tracked.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Review the
    [accessible interface design practices](https://opensource.guide/accessibility-best-practices-for-your-project/#design-accessible-interfaces).

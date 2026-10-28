@@ -17,7 +17,7 @@ This action addresses common visual access barriers.
 2. Information and functionality remain available at the tested settings.
 3. Accessibility issues are fixed or tracked.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify key tasks and user journeys.
 2. Check for quality of alternative text.

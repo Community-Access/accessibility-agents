@@ -20,7 +20,7 @@ expectations for contributors.
 3. The project's `CONTRIBUTING.md` directs contributors to these expectations
    and any relevant accessibility checks and resources.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Add a "Priorities" section to `ACCESSIBILITY.md` that identifies the
    project's accessibility goals, applicable standards, and areas of focus.

@@ -6,7 +6,7 @@
 
 ## What This Skill Is For
 
-One of four phase skills for the [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/), an improvement framework published by GitHub. It implements every action in the phase, or only the ones you name by number, title or ID, and reports each against the framework's Definition of Done.
+One of four phase skills for the [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/), an improvement framework from GitHub's open-source-accessibility organization (MIT, copyright GitHub, Inc.). It implements every action in the phase, or only the ones you name by number, title or ID, and reports each against the framework's Definition of Done.
 
 Use it when:
 

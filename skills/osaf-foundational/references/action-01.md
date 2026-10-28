@@ -17,7 +17,7 @@ information and report barriers.
 2. The file includes a brief statement describing why accessibility matters to
    your project.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Create an `ACCESSIBILITY.md` file in the repository.
 2. Add a brief accessibility statement for your project, using the initial

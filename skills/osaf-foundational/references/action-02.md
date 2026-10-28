@@ -15,7 +15,7 @@ This action makes accessibility work visible, searchable, and trackable.
 1. An `accessibility` label, or an equivalent label with a clear name, exists.
 2. The label is applied to the project's relevant open tracking issues.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Create a label named `accessibility` (or another clearly understood
    equivalent) if there isn't one already.

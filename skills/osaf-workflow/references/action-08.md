@@ -16,7 +16,7 @@ This action makes project information usable for everyone.
 2. Images, diagrams, and videos have appropriate alternatives or supporting text.
 3. Tables and code blocks are presented accessibly.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Review the
    [accessibility best practices for documentation](https://opensource.guide/accessibility-best-practices-for-your-project/#make-docs-accessible-by-default).

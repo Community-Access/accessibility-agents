@@ -24,7 +24,8 @@ file is the index above them.
 
 The Open Source Accessibility Framework helps open source projects make
 accessibility part of how the project works, one practical step at a time. It
-is published by GitHub, Inc. under the MIT license, at
+is released under the MIT license (copyright GitHub, Inc.), hosted by the
+open-source-accessibility organization and sponsored by GitHub and Microsoft, at
 [open-source-accessibility.github.io](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/),
 with source in
 [open-source-accessibility/Open-Source-Accessibility-Framework](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework).
@@ -209,9 +210,12 @@ Definition of Done.
   the section is named "Contributor expectations", so the anchor does not resolve.
 - The toolkit's `resources/community/community.md` numbers the Community actions
   in an older order. Match its resources to actions by title, not number.
-- `framework/maintainers/framework-maintenance.md` lists a foundational
-  verification action, workflow and script that are not in the repository at
-  this commit. Do not tell a user they exist.
+- `framework/maintainers/framework-maintenance.md` links four files that are
+  not in the repository at this commit: `action.yml`, the workflows
+  `verify-foundational.yml` and `foundation-phase-check-comment.yml`, and
+  `scripts/verify_foundational.py`. Do not tell a user they exist.
+- The toolkit's community resources page links `../../phases/community-phase.md#...`,
+  which does not resolve inside the toolkit repository.
 
 ## Links
 

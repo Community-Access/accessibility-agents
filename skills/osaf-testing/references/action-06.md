@@ -20,7 +20,7 @@ available alternatives.
    users, with workarounds, equivalent access, and links to tracked issues
    where available.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. In `ACCESSIBILITY.md`, add a "Supported environments" section. List only
    environments the project supports or has evaluated, include versions where

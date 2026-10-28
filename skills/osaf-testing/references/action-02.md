@@ -21,7 +21,7 @@ This action covers a high-impact baseline.
    - Have no keyboard traps
 3. Accessibility issues are fixed or tracked.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify key tasks and user journeys.
 2. Document a short set of keyboard-only checks for those tasks, using the
@@ -41,11 +41,14 @@ This action covers a high-impact baseline.
    below.
 3. **Run what can be run.** When the project can be served and there is a
    URL, the MCP tool `run_playwright_keyboard_scan` tabs through a page in a
-   real browser and reports focus order, focus visibility and keyboard traps;
+   real browser and reports the order Tab reached elements in, whether each
+   has an outline style, and a short focus cycle that suggests a trap;
    `playwright-scanner` runs it as part of a `web-accessibility-wizard` audit.
-   That is runtime evidence for focusability, traps and an indicator being
-   present. It does not invoke controls, judge whether the order is logical, or
-   complete a multi-step task. Those need a person, or a Playwright test written
+   That is partial runtime evidence: an outline style is not proof of a visible
+   indicator, and a trap is flagged only when focus cycles among fewer than
+   three elements. It does not compare what Tab reached against every control,
+   invoke controls, judge whether the order is logical, or complete a
+   multi-step task. Those need a person, or a Playwright test written
    for the flow.
 4. **Review the code** for the usual causes with `keyboard-navigator`: positive
    `tabindex`, click handlers on non-focusable elements, focus not moved on
@@ -61,7 +64,7 @@ This action covers a high-impact baseline.
 - `keyboard-navigator`, through `accessibility-lead` - review the code behind
   each flow; returns findings.
 - `testing-coach`, through `accessibility-lead` - write the keyboard procedure
-  for a person to follow, or a Playwright test that automates it.
+  for a person to follow.
 - `issue-tracker` - file the failures not fixed.
 
 ## Template: keyboard-only checks for one task

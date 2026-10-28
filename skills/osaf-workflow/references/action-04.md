@@ -16,7 +16,7 @@ This action makes accessibility a consistent part of the review process.
 2. The checklist covers the project's relevant accessibility requirements.
 3. Contributors are prompted to complete each applicable item.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Include an accessibility checklist in your pull request template, creating a
    template if one does not already exist.

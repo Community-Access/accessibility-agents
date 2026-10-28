@@ -17,7 +17,7 @@ This action improves the first experience many users have.
 2. Representative documentation has been reviewed.
 3. Accessibility issues are fixed or tracked.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Review and identify key project documentation, such as Markdown (`.md`)
    files, the README, contributing and accessibility guides, installation and
@@ -39,7 +39,7 @@ documentation is text in the repository. Each area in item 1 and what covers it.
 | Links | `markdown-a11y-assistant`: ambiguous link text, URLs used as link text, broken in-page anchors |
 | Captions | Not scanned in markdown. Check each embedded or linked video by hand; `validate_caption_file` (MCP) checks a WebVTT or SRT file; `media-accessibility` reviews a media player |
 | Tables | `markdown-a11y-assistant`: empty header cells, layout tables, a description before the table |
-| Code blocks | Not scanned. Check by hand: a language identifier on each fence where one applies, code as text rather than an image, long commands explained nearby |
+| Code blocks | Partly: the markdown scanner flags plain fences used for ASCII diagrams, and markdownlint MD040 flags fences without a language. Check the rest by hand: a language identifier on each fence where one applies, code as text rather than an image, long commands explained nearby |
 
 Office, PDF and ePub documentation goes to `document-accessibility-wizard`.
 Issue and pull request templates are YAML or markdown; read their labels and

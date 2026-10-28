@@ -20,7 +20,7 @@ attention, and reducing duplicated effort.
    limitations, and relevant links.
 3. The project maintains a repeatable update practice.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify appropriate public channels, such as issues, release notes, project
    discussions, roadmap updates, newsletters, or community meetings.

@@ -47,8 +47,8 @@ paste its body into a prompt.
 ```text
 Run the skill "<skill-name>": read <skills-root>/<skill-name>/SKILL.md and
 follow it. It is a specialist, hidden from the skill catalog to save context;
-running it this way is intended. Paths written skills/... in it are under
-<skills-root>.
+running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: <one paragraph, what the user wants to accomplish>
 Scope: <repository, or owner/repo list>
 Rules: report, do not push or merge without explicit approval.
@@ -58,7 +58,8 @@ Return the answer, and the path of any file you wrote.
 <skills-root> is the absolute path of the folder that holds this skill's own
 folder: the parent of the directory this SKILL.md was loaded from. Send it
 resolved, never as the relative path skills/...: the subagent starts in the
-user's project, where no skills/ folder exists.
+user's project, where no skills/ folder exists. If the load path is not shown,
+it is the folder that contains a11y-core/SKILL.md.
 
 Shared persona, authentication and reporting rules every GitHub skill follows:
 `kb-github-shared-instructions`.
@@ -102,7 +103,7 @@ Read one only when the task reaches it. Do not read them all up front.
 For an accessibility audit (a repository scan, or an issue or pull request
 checked for accessibility), collect findings as JSON from each specialist you
 dispatch, write them to `.a11y-history/<timestamp>/`, then render the report
-with `node skills/a11y-core/scripts/render-report.mjs`. Do not type that report
+with `node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type that report
 by hand. Other GitHub work returns what the dispatched skill describes.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.

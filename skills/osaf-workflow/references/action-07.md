@@ -15,7 +15,7 @@ This action prevents drift.
 1. The `ACCESSIBILITY.md` identifies an accessibility owner.
 2. Responsibilities are documented.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. In `ACCESSIBILITY.md`, identify a maintainer for triaging accessibility work.
 2. Document the responsibilities of the accessibility owner.

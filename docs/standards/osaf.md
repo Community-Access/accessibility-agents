@@ -41,8 +41,9 @@ them in.
 | Testing | `osaf-testing` | An automated check in CI, keyboard, screen reader and manual test records, documentation checks, supported environments and known limitations |
 | Community | `osaf-community` | Response guidance and draft replies, participation and accommodation routes, consent-based recognition, progress updates, shared resources |
 
-Each phase skill carries its actions' exact IDs, cadences and Definitions of
-Done in `SKILL.md`, so it works offline, and loads one reference file per
+Each phase skill carries its actions' IDs, cadences and Definitions of Done
+in `SKILL.md`, unchanged in substance (ASCII punctuation, one nested list
+flattened), so it works offline, and loads one reference file per
 action only when that action is in scope. The rules come from the framework's
 own generated skills: ask for scope when none is given, inspect the repository
 before editing, never claim a test that has no runtime evidence, never invent
@@ -62,7 +63,8 @@ names it as a hand-off and `github-hub` dispatches it. The main ones:
   `contrast-master`, `cognitive-accessibility`, and the Playwright keyboard,
   viewport and contrast scans through `web-accessibility-wizard`.
 - Testing 5 and Workflow 8 (documentation): `markdown-a11y-assistant`, with
-  captions and code blocks checked by hand because no scanner here covers them.
+  captions checked by hand, and code blocks partly scanned (plain fences used
+  for diagrams, fences without a language) and otherwise checked by hand.
 - Workflow 2 and 3 (reporting, triage): the severity names `critical`,
   `serious`, `moderate`, `minor`, which are this package's findings schema and
   the `fail-on` values of its GitHub Action; `kb-severity-mapping`.
@@ -99,7 +101,7 @@ Each place this package departs from the framework's own material, and why.
 
 | Deviation | Why |
 |---|---|
-| The skills are written for this package, not copied from the framework's generated skills | Those skills carry no knowledge of the tools that do each action; these route to them. The Definitions of Done are the framework's text |
+| The skills are written for this package, not copied from the framework's generated skills | Those skills carry no knowledge of the tools that do each action; these route to them. The Definitions of Done are the framework's, unchanged in substance |
 | Punctuation converted to ASCII, relative links made absolute | This package's house style; the source uses curly quotes and em dashes |
 | The Community phase follows the canonical document, not the framework's generated Community skill | At the pinned commit the generated skill is stale: digest `5bea61d03bf6` against `5c543d1d91eb`, and the framework's own `--check` fails. The difference is wording in two recommended steps |
 | Severity definitions are not merged | The framework's and this package's use the same four names with slightly different wording; both are documented in `kb-open-source-accessibility-framework` and the project's own definitions win |

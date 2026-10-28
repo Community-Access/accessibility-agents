@@ -18,7 +18,7 @@ control.
 3. Known upstream blockers are linked and tracked.
 4. Workarounds or mitigation plans are recorded where applicable.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify major third-party components, frameworks, or tools that affect
    accessibility.

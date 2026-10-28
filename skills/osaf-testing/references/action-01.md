@@ -16,7 +16,7 @@ This action helps catch common regressions.
 2. The check runs against relevant project code or flows.
 3. Accessibility issues are fixed or tracked.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Review the guidance on
    [testing continuously](https://opensource.guide/accessibility-best-practices-for-your-project/#test-accessibility-continuously).

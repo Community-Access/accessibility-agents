@@ -21,7 +21,7 @@ accessibility only after the work is complete.
 3. Contributors can access guidance and maintainer support.
 4. The project maintains an ongoing feedback or advisory practice.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify accessibility tasks that can be completed by community
    contributors.

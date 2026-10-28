@@ -20,7 +20,7 @@ maintainers assess, prioritize, and respond to them consistently.
 3. Response expectations explain how reports are acknowledged, tracked,
    updated, and resolved.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. In `ACCESSIBILITY.md`, define your process for reporting accessibility
    issues.

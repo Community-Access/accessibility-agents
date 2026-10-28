@@ -16,7 +16,7 @@ This action validates real usability beyond automation.
 2. The test environment is recorded.
 3. Accessibility issues are fixed or tracked.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Identify key tasks and user journeys.
 2. Select a supported screen reader and browser combination such as Windows +

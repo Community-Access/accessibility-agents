@@ -28,8 +28,8 @@ Testing 2, `perform-a-keyboard-only-smoke-test-for-core-flows`:
   "Keyboard: sign in", "Keyboard: search", "Keyboard: export".
 - The five properties confirmed:
   - "sign in" - automated evidence only. `run_playwright_keyboard_scan` on
-    `http://localhost:3000/login`, Chromium 141 on Ubuntu 24.04: every control
-    reached, focus visible, no trap. Invoking controls and judging the order
+    `http://localhost:3000/login`, Chromium 141 on Ubuntu 24.04: Tab reached
+    the form's 9 elements, each with an outline style, no short focus cycle. Invoking controls and judging the order
     still need a person.
   - "search" and "export" - not yet run.
 - Fixed or tracked - nothing found yet.

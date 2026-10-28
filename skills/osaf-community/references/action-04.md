@@ -18,7 +18,7 @@ beyond source code, is valued.
 2. Accessibility contributions are publicly recognized with the contributor's
    consent.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Ask contributors how they want to be recognized and obtain their consent.
    - Ask contributors how they would like to receive credit.

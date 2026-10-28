@@ -53,8 +53,8 @@ subagent a prompt under 300 tokens that names the skill:
 ```text
 Run the skill "aria-specialist": read <skills-root>/aria-specialist/SKILL.md
 and follow it. It is a specialist, hidden from the skill catalog to save
-context; running it this way is intended. Paths written skills/... in it are
-under <skills-root>.
+context; running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: <one paragraph>
 Scope: <files>
 Rules: semantic HTML before ARIA; report, do not edit.

@@ -17,7 +17,7 @@ consistent triage.
 2. Submitted accessibility reports follow a documented triage and response
    process.
 
-## Recommended steps, from the framework
+## Recommended steps, adapted from the framework
 
 1. Create and document a reporting method, such as an issue template.
 2. Request useful details, including expected and actual behavior, steps to
@@ -58,15 +58,16 @@ consistent triage.
 
 - `template-builder` - when the maintainer wants to customize the form
   interactively; its guided accessibility template is a fallback, but the form
-  below matches the framework's own example.
+  below is adapted from the framework's own example.
 - `issue-tracker` - label existing open accessibility reports that predate the
   form.
 
 ## Example: accessibility issue form
 
 Adapted from the Accessibility Toolkit's `.github/ISSUE_TEMPLATE/accessibility.yml`.
-Replace `PROJECT` and the placeholders; drop the code of conduct field if the
-project has no code of conduct.
+Replace `PROJECT` and the placeholders. The toolkit's code-of-conduct and
+code-sample fields are left out; add a code-of-conduct checkbox if the project
+has one.
 
 ```yaml
 name: Accessibility issue
