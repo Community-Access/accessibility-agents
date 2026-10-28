@@ -32,7 +32,7 @@ Each tool, with the hints it declares and its one-sentence purpose.
 | `run_playwright_a11y_tree` | yes | no | yes | Capture the accessibility tree of a page via Playwright. Shows how screen readers perceive the page structure. |
 | `run_playwright_keyboard_scan` | yes | no | yes | Test keyboard navigation by tabbing through all interactive elements on a page. Reports focus order, focus visibility, and keyboard traps. |
 | `run_playwright_contrast_scan` | yes | no | yes | Scan a page for text elements that fail WCAG AA contrast requirements by sampling computed styles. |
-| `run_playwright_viewport_scan` | yes | no | yes | Test page at multiple viewport widths and zoom levels for content reflow issues (WCAG 1.4.4, 1.4.10). |
+| `run_playwright_viewport_scan` | yes | no | yes | Load the page at 320, 768, 1024 and 1280 CSS pixels wide and report horizontal scrolling, a WCAG 1.4.10 Reflow check that does not test zoom or text resize. |
 | `run_verapdf_scan` | yes | no | no | Validate a PDF against PDF/UA with veraPDF and return the failed checks as findings. |
 | `check_verapdf_installation` | yes | no | no | Health check for veraPDF CLI. Auto-detects installation, reports version, checks Java dependency, and provides platform-specific installation guidance if missing. |
 | `convert_pdf_form_to_html` | no | no | no | Extract form fields from a PDF and generate an accessible HTML representation. Useful for reviewing PDF form accessibility or migrating paper forms to web. |

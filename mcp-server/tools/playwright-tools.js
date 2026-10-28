@@ -384,8 +384,8 @@ export function registerPlaywrightTools(server) {
   server.registerTool(
     "run_playwright_viewport_scan",
     {
-      title: "Viewport / Zoom Reflow Test",
-      description: "Test page at multiple viewport widths and zoom levels for content reflow issues (WCAG 1.4.4, 1.4.10).",
+      title: "Viewport Reflow Test",
+      description: "Load the page at 320, 768, 1024 and 1280 CSS pixels wide and report horizontal scrolling, a WCAG 1.4.10 Reflow check that does not test zoom or text resize.",
       inputSchema: z.object({
         url: z.string().describe("URL to test"),
       }),
