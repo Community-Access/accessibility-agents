@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 /**
- * build-claude-plugin.mjs - the Claude Code plugin as its own tree.
+ * build-claude-plugin.mjs - the plugin as its own tree, for Claude and Copilot.
  *
  * The Claude plugin directory installs a plugin by copying its folder, and
  * reads the whole folder when it reviews one. Submitted from the repository
  * root, that folder holds the development tooling too: the root package.json
  * and package-lock.json (which make Claude Code run `npm ci` on install), CI
  * scripts, documentation and over a thousand files, more than the directory
- * inspects. This builds the plugin alone, for the `claude-plugin` branch the
- * directory listing follows (see .github/workflows/claude-plugin-branch.yml):
+ * inspects. This builds the plugin alone, for the `plugin` branch that the
+ * Claude plugin directory and Awesome Copilot follow (see
+ * .github/workflows/plugin-branch.yml):
  *
- *   .claude-plugin/plugin.json and icon.png   the manifest
+ *   .claude-plugin/plugin.json and icon.png   the Claude Code manifest
+ *   plugin.json, mcp.json                     the Agent Plugins manifest
+ *                                             (Copilot CLI, VS Code)
+ *   com.github.copilot/hooks/hooks.json       Copilot's edit gate
  *   skills/                                   every skill
  *   hooks/hooks.json, hooks/guard.mjs         the edit gate
  *   mcp-server/dist/stdio.mjs                 the bundled MCP server
@@ -41,6 +45,9 @@ const copy = (rel) => {
 
 copy('.claude-plugin/plugin.json');
 copy('.claude-plugin/icon.png');
+copy('plugin.json');
+copy('mcp.json');
+copy('com.github.copilot/hooks/hooks.json');
 copy('skills');
 copy('hooks/hooks.json');
 copy('hooks/guard.mjs');

@@ -131,6 +131,14 @@ jobs:
           # Validate JSON
           python3 -m json.tool manifest.json > /dev/null
 
+          # Only the timestamp changed: keep the committed file, so no pull
+          # request is opened for a manifest whose pages are the same.
+          strip='1s/"generated": "[^"]*"//'
+          if git show HEAD:manifest.json 2>/dev/null | sed "$strip" | diff -q - <(sed "$strip" manifest.json) >/dev/null; then
+            git checkout -- manifest.json
+            echo "Docs pages unchanged; manifest left as committed."
+          fi
+
       - name: Create pull request with manifest
         uses: peter-evans/create-pull-request@v8
         with:
