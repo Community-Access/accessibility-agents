@@ -1,4 +1,4 @@
-{ "generated": "2026-10-28T14:36:56Z", "sections": [
+{ "generated": "2026-10-28T15:21:05Z", "sections": [
 {"name":"Getting Started","id":"getting-started","items":[
 {"path":"docs/getting-started/README.md","title":"Getting started"}
 ,
@@ -106,6 +106,14 @@
 {"path":"docs/reference/skills/office-remediator.md","title":"office-remediator - Office Document Accessibility Remediator"}
 ,
 {"path":"docs/reference/skills/office-scan-config.md","title":"office-scan-config - Office Scan Configuration"}
+,
+{"path":"docs/reference/skills/osaf-community.md","title":"osaf-community - Open Source Accessibility Framework, Community phase"}
+,
+{"path":"docs/reference/skills/osaf-foundational.md","title":"osaf-foundational - Open Source Accessibility Framework, Foundational phase"}
+,
+{"path":"docs/reference/skills/osaf-testing.md","title":"osaf-testing - Open Source Accessibility Framework, Testing phase"}
+,
+{"path":"docs/reference/skills/osaf-workflow.md","title":"osaf-workflow - Open Source Accessibility Framework, Workflow phase"}
 ,
 {"path":"docs/reference/skills/pdf-accessibility.md","title":"pdf-accessibility - PDF Document Accessibility"}
 ,
