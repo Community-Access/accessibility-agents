@@ -42,7 +42,7 @@ Part of the `contributions-hub` skill. Read this only when the task reaches thes
    - **Body** -- offer to draft based on user's description
 2. For Announcements (or any category with the announcement format): warn that only people with maintain or admin permissions can create new discussions there; anyone can comment and reply.
 3. Preview the full post (title + body) before creating.
-4. Create and confirm: _"Discussion posted: [{title}]({url})"_
+4. Create and confirm: _"Discussion posted: [{title}](https://github.com/{owner}/{repo}/issues/{N})"_
 
 **Draft assist:** If the user gives a brief description, draft a full discussion post:
 
@@ -185,8 +185,8 @@ Post as-is? [Yes / Edit / Change category / Cancel]
 
 | Contributor | First Contribution | Type | Status |
 |-------------|-------------------|------|--------|
-| @{user} | [PR #N: {title}]({url}) | Pull Request | Merged  |
-| @{user} | [Issue #{N}: {title}]({url}) | Issue | Open |
+| @{user} | [PR #N: {title}](https://github.com/{owner}/{repo}/issues/{N}) | Pull Request | Merged  |
+| @{user} | [Issue #{N}: {title}](https://github.com/{owner}/{repo}/issues/{N}) | Issue | Open |
 
 ## Spotlight: Unrecognized Contributions
 Non-code contributions sometimes go unnoticed:

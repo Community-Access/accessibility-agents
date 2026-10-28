@@ -323,6 +323,12 @@ function checkLinks(all) {
       const text = readRaw(p).replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
       const where = path.relative(ROOT, p).replace(/\\/g, '/');
       const skillDir = path.join(SKILLS, path.relative(SKILLS, p).split(path.sep)[0]);
+      // A placeholder target such as (url) is a broken link to every
+      // validator that reads it; write an example URL instead.
+      for (const m of text.matchAll(/\]\(([^)\s#<]+)[^)]*\)/g)) {
+        if (/^(https?:|mailto:|\.\.?\/)/.test(m[1])) continue;
+        if (!fs.existsSync(path.resolve(path.dirname(p), m[1]))) fail(where, `link target does not exist: ${m[1]}`);
+      }
       for (const m of text.matchAll(/\]\((\.\.?\/[^)\s#]+)/g)) {
         const target = path.resolve(path.dirname(p), m[1]);
         // Agent Skills validators reject a reference that leaves the skill's

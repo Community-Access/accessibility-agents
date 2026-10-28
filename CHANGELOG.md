@@ -18,10 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with the Agent Plugins manifest and Copilot hooks as well, and
   `plugin-branch.yml` keeps a `plugin` branch equal to it on every change to
   `main` and tags each version on it as `plugin-v<version>`. The Claude plugin
-  directory follows the branch and Awesome Copilot pins the tag. `.claude-plugin/plugin.json` now links the privacy
+  directory follows the branch. Awesome Copilot's installer rejects a plugin
+  at the repository root, so a `copilot-plugin` branch holds the same tree in
+  `accessibility-agents/`, tagged `copilot-plugin-v<version>-<sha>` per build. `.claude-plugin/plugin.json` now links the privacy
   policy, and the README has a privacy section naming the GLOW tools.
 - The docs-site manifest workflow no longer opens a pull request when only the
   manifest's timestamp changed.
+- **Skills no longer link outside their own folder.** Awesome Copilot's lint
+  rejected 82 relative links to sibling skills and repository files, and
+  placeholder link targets such as `(url)`. Skills now name each other in
+  backticks, link repository files by URL, and use example URLs; and
+  `validate-skills` fails on any of these.
 - Four skill lines that the directory's scanner read as credential or
   download-and-run patterns are reworded: a CI example uses
   `${{ github.workspace }}` instead of `$PWD`, an HTML example shows

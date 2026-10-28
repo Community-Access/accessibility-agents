@@ -1,10 +1,12 @@
 name: Plugin branch
 
-# Keeps the plugin branch equal to the plugin alone, built by
-# scripts/build-claude-plugin.mjs from main, and tags each version on it as
-# plugin-v<version>. The Claude plugin directory listing follows the branch,
-# and the Awesome Copilot entry points at the tag, so both review and install
-# the skills, hooks and MCP server without the repository's tooling.
+# Keeps two branches equal to the plugin alone, built by
+# scripts/build-claude-plugin.mjs from main, so the stores review and install
+# the skills, hooks and MCP server without the repository's tooling:
+#   plugin          the tree at the root, for the Claude plugin directory;
+#                   tagged plugin-v<version> on the first build of a version.
+#   copilot-plugin  the same tree in accessibility-agents/, for Awesome
+#                   Copilot; tagged copilot-plugin-v<version>-<main sha>.
 
 on:
   push:
@@ -47,35 +49,50 @@ jobs:
           node-version: "24"
 
       - name: Build the plugin tree
-        run: node scripts/build-claude-plugin.mjs "$RUNNER_TEMP/plugin"
+        run: |
+          node scripts/build-claude-plugin.mjs "$RUNNER_TEMP/plugin"
+          # Awesome Copilot installs a plugin from a folder inside the tagged
+          # tree; its installer rejects the repository root ("/"). The same
+          # tree goes in an accessibility-agents/ folder on copilot-plugin.
+          mkdir -p "$RUNNER_TEMP/copilot"
+          cp -a "$RUNNER_TEMP/plugin" "$RUNNER_TEMP/copilot/accessibility-agents"
 
-      - name: Commit it to the plugin branch and tag the version
+      - name: Commit the trees to their branches and tag them
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           version=$(node -p "require('./.claude-plugin/plugin.json').version")
-          if git ls-remote --exit-code --heads origin plugin >/dev/null; then
-            git fetch --depth 1 origin plugin
-            git worktree add "$RUNNER_TEMP/branch" FETCH_HEAD
-            git -C "$RUNNER_TEMP/branch" checkout -B plugin
-          else
-            git worktree add --orphan -b plugin "$RUNNER_TEMP/branch"
-          fi
-          cd "$RUNNER_TEMP/branch"
-          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          cp -a "$RUNNER_TEMP/plugin/." .
-          git add -A
-          if git diff --cached --quiet; then
-            echo "The plugin branch is already current."
-          else
-            git commit -m "Plugin ${version} built from main ${GITHUB_SHA::7}"
-            git push origin plugin
-          fi
-          # A tag per version, for listings that pin one (Awesome Copilot).
-          # It stays on the first commit of that version.
-          tag="plugin-v${version}"
-          if ! git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null; then
-            git tag "$tag"
-            git push origin "$tag"
-          fi
+
+          # publish <branch> <tree> <tag>: make <branch> equal to <tree>, then
+          # tag its head as <tag> unless that tag already exists.
+          publish() {
+            local branch=$1 tree=$2 tag=$3 dir="$RUNNER_TEMP/wt-$1"
+            if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+              git fetch --depth 1 origin "$branch"
+              git worktree add "$dir" FETCH_HEAD
+              git -C "$dir" checkout -B "$branch"
+            else
+              git worktree add --orphan -b "$branch" "$dir"
+            fi
+            find "$dir" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+            cp -a "$tree/." "$dir/"
+            git -C "$dir" add -A
+            if git -C "$dir" diff --cached --quiet; then
+              echo "$branch is already current."
+            else
+              git -C "$dir" commit -m "Plugin ${version} built from main ${GITHUB_SHA::7}"
+              git -C "$dir" push origin "$branch"
+            fi
+            if ! git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null; then
+              git -C "$dir" tag "$tag"
+              git -C "$dir" push origin "$tag"
+            fi
+          }
+
+          # The Claude plugin directory follows the plugin branch. One tag per
+          # version, on the first build of that version.
+          publish plugin "$RUNNER_TEMP/plugin" "plugin-v${version}"
+          # Awesome Copilot pins a tag and its commit: one tag per build, so a
+          # fix within a version still gets an immutable ref to submit.
+          publish copilot-plugin "$RUNNER_TEMP/copilot" "copilot-plugin-v${version}-${GITHUB_SHA::7}"
