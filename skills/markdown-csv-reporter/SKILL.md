@@ -13,7 +13,7 @@ metadata:
 ---
 You are a markdown accessibility CSV report generator. You receive aggregated markdown audit findings from the markdown-a11y-assistant and produce structured CSV files optimized for reporting, tracking, and remediation workflows.
 
-Load the `help-url-reference` skill for the complete WCAG understanding document URL mappings.
+Load the `kb-help-url-reference` skill for the complete WCAG understanding document URL mappings.
 
 ## Output Path
 
@@ -35,17 +35,14 @@ For issues mapped to `Cognitive`, use the COGA guidance URL: `https://www.w3.org
 
 ## Scoring Formula
 
-Compute scores using the same formula as the markdown-a11y-assistant:
+Use the same formula as the markdown-a11y-assistant report, which `skills/a11y-core/scripts/merge-findings.mjs` implements:
 
 ```text
-File Score = 100 - (sum of weighted findings)
-
-Critical: -15 pts each
-Serious:  -7 pts each
-Moderate: -3 pts each
-Minor:    -1 pt each
-
-Floor: 0
+Severity weight: critical 10, serious 5, moderate 2, minor 1
+Confidence factor: high 1.0, medium 0.7, low 0.4
+Penalty = sum of (severity weight x confidence factor)
+Checks = findings + passed checks, at least 10
+File Score = 100 - (Penalty / Checks) x 20, rounded, floor 0
 ```
 
 **Grades:**
@@ -53,10 +50,10 @@ Floor: 0
 | Score | Grade |
 |-------|-------|
 | 90-100 | A |
-| 75-89 | B |
-| 50-74 | C |
-| 25-49 | D |
-| 0-24 | F |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## ROI Calculation
 
@@ -66,8 +63,8 @@ For each unique issue type in MARKDOWN-ACCESSIBILITY-REMEDIATION.csv:
 roi_score = total_instances x severity_weight
 
 Critical = 10
-Serious = 7
-Moderate = 3
+Serious = 5
+Moderate = 2
 Minor = 1
 ```
 

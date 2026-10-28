@@ -16,8 +16,8 @@ Write the full audit report to the path specified in Phase 0 (default: `DOCUMENT
 - Begin with the highest-impact fixes using the native app for each format:
   - Word: Accessibility Checker, Styles, Alt Text, Table Design, File > Info > Properties
   - Excel: sheet names, Insert > Table, Alt Text, unmerge cells, File > Info > Properties
-  - PowerPoint: slide titles, Selection Pane reading order, Alt Text, captions, sections
-  - Adobe Acrobat Pro: Accessibility tools, document title, language, tags, reading order, bookmarks
+  - PowerPoint: slide titles, Reading Order pane, Alt Text, captions, sections
+  - Adobe Acrobat Pro: Prepare for accessibility tools, document title, language, tags, reading order, bookmarks
 - Keep this section short, direct, and suitable for someone who just wants to start fixing issues.
 - Do not lead with XML, PDF object model, CLI tooling, or batch scripts.
 
@@ -67,7 +67,7 @@ Write the full audit report to the path specified in Phase 0 (default: `DOCUMENT
 
 ## Findings by File
 
-###  [filename.docx]
+### [filename.docx]
 **Path:** [full path]
 **Sub-agent:** word-accessibility
 **Result:** X errors, Y warnings, Z tips
@@ -86,13 +86,13 @@ Write the full audit report to the path specified in Phase 0 (default: `DOCUMENT
 
 ---
 
-###  [filename.xlsx]
+### [filename.xlsx]
 [...same structure...]
 
-###  [filename.pptx]
+### [filename.pptx]
 [...same structure...]
 
-###  [filename.pdf]
+### [filename.pdf]
 [...same structure...]
 
 ## Findings by Rule (Cross-Reference)
@@ -212,8 +212,8 @@ After the report is written, offer next steps:
 Ask: **"The audit report has been written. What would you like to do next?"**
 Options:
 
-- **Fix issues in a specific file** - delegates to the appropriate sub-agent with the file's findings
-- **Set up scan configuration** - delegates to `office-scan-config` or `pdf-scan-config`
+- **Fix issues in a specific file** - delegates to `office-remediator` (Word, Excel, PowerPoint) or `pdf-remediator` (PDF) with the file's findings
+- **Set up scan configuration** - delegates to `office-scan-config`, `pdf-scan-config` or `epub-scan-config`
 - **Re-scan a subset** - scan specific files again after fixes
 - **Export findings as CSV/JSON** - alternative report format for tracking systems
 - **Export in compliance format (VPAT/ACR)** - generate a Voluntary Product Accessibility Template or Accessibility Conformance Report
@@ -227,7 +227,7 @@ Options:
 When the user wants to fix a specific file, hand off with full context:
 
 ```text
-## Remediation Handoff to [word-accessibility]
+## Remediation Handoff to [office-remediator]
 - **File:** /docs/reports/annual-report.docx
 - **Issues to Fix:**
   1. DOCX-E001 - 3 images missing alt text (pages 4, 7, 12)
@@ -273,10 +273,10 @@ The script MUST include:
 
 If the user selects **Export in compliance format (VPAT/ACR)**, ask which format:
 
-- **VPAT 2.5 (WCAG)** - Voluntary Product Accessibility Template, WCAG edition
-- **VPAT 2.5 (508)** - Voluntary Product Accessibility Template, Section 508 edition
-- **VPAT 2.5 (EN 301 549)** - Voluntary Product Accessibility Template, EU edition
-- **VPAT 2.5 (INT)** - Voluntary Product Accessibility Template, International edition (all three)
+- **VPAT 2.5Rev (WCAG)** - Voluntary Product Accessibility Template, WCAG edition
+- **VPAT 2.5Rev (508)** - Voluntary Product Accessibility Template, Section 508 edition
+- **VPAT 2.5Rev (EU)** - Voluntary Product Accessibility Template, EU edition (EN 301 549; the template still references V3.2.1)
+- **VPAT 2.5Rev (INT)** - Voluntary Product Accessibility Template, International edition (all three)
 - **Custom ACR** - Accessibility Conformance Report in a custom format
 
 Generate the compliance report by mapping findings to the appropriate standard's criteria:

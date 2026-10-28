@@ -19,7 +19,7 @@ Primary findings export with one row per issue instance.
 | `line_number` | Line number in the file | `42` |
 | `severity` | Critical, Serious, Moderate, Minor | `Serious` |
 | `confidence` | High, Medium, Low | `High` |
-| `score_impact` | Points deducted from file score | `-7` |
+| `score_impact` | Severity weight of the finding (critical 10, serious 5, moderate 2, minor 1) | `5` |
 | `wcag_criteria` | WCAG 2.2 success criterion | `2.4.4` |
 | `wcag_level` | A, AA, Cognitive | `A` |
 | `domain` | Scan domain category | `Descriptive Links` |

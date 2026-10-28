@@ -6,7 +6,7 @@ Part of the `pdf-scan-config` skill. Read this only when the task reaches these 
 
 ### Layer 1: PDF/UA Conformance Rules (PDFUA.*)
 
-These map to ISO 14289-1 / Matterhorn Protocol checkpoints. Disabling these means the scan will not catch PDF/UA conformance failures.
+These map to PDF/UA-1 (ISO 14289-1) through Matterhorn Protocol 1.1 checkpoints. The number inside each ID is a project identifier, not always the Matterhorn checkpoint number; `skills/pdf-accessibility/references/rule-layers.md` gives the mapping. Disabling these means the scan will not catch PDF/UA conformance failures.
 
 | ID | Severity | What It Checks |
 |----|----------|---------------|

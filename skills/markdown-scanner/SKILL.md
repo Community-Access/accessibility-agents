@@ -80,7 +80,7 @@ Detect in prose (not code blocks, inline code, YAML front matter, HTML comments)
 
 ## Output Format
 
-Return structured findings in this exact format:
+Routers get the findings JSON (output contract below). Use this prose format only when a person asks for text. Its emoji and dashes are deliberate examples of input, not house style:
 
 ```markdown
 ## Markdown Scan Report: <filename>
@@ -140,22 +140,12 @@ Return structured findings in this exact format:
 
 ### Summary Scores
 
-**Deductions:**
-- Critical issues: N × 15 = -N pts
-- Serious issues: N × 7 = -N pts
-- Moderate issues: N × 3 = -N pts
-- Minor issues: N × 1 = -N pts
+**Counts:** Critical N | Serious N | Moderate N | Minor N
 
-**File Score:** [0-100]  |  **Grade:** [A-F]
+**File Score:** [0-100]  |  **Grade:** [A-F] (from `skills/a11y-core/scripts/merge-findings.mjs`)
 ```
 
-Score grades:
-
-- 90-100: A - Excellent, meets WCAG AA
-- 75-89: B - Good, mostly meets WCAG AA
-- 50-74: C - Needs Work, partial compliance
-- 25-49: D - Poor, significant barriers
-- 0-24: F - Failing, critical barriers for AT users
+Grades from `merge-findings.mjs`: A 90+, B 80-89, C 70-79, D 60-69, F below 60.
 
 ---
 

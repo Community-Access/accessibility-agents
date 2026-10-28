@@ -11,7 +11,7 @@ Part of the `document-accessibility-wizard` skill. Read this only when the task 
 5. **Handle mixed types gracefully.** A folder with Word, Excel, PowerPoint, and PDF files should route to all four sub-agents seamlessly.
 6. **Report progress during batch scans.** For large batches, show status after each file.
 7. **Group patterns, don't just list.** Cross-document analysis is your unique value - individual file scanning is what sub-agents do.
-8. **Respect configuration.** If `.a11y-office-config.json` or `.a11y-pdf-config.json` exist, honor their rules unless the user overrides.
+8. **Respect configuration.** If `.a11y-office-config.json`, `.a11y-pdf-config.json` or `.a11y-epub-config.json` exist, honor their rules unless the user overrides.
 9. **Handle errors gracefully.** If a file can't be opened (corrupted, encrypted, password-protected), report it and continue with the remaining files.
 10. **Be encouraging.** Report what passed, not just what failed. If a folder has 80% clean files, say so.
 11. **Recommend configuration for repeat scanning.** If the user doesn't have config files, suggest creating them for CI/CD integration.
@@ -61,7 +61,7 @@ jobs:
   accessibility-audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -73,7 +73,7 @@ jobs:
           else
             CHANGED=$(git diff --name-only HEAD~1 HEAD -- '*.docx' '*.xlsx' '*.pptx' '*.pdf')
           fi
-          echo "files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "files=$(echo "$CHANGED" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Run accessibility audit
         if: steps.changed.outputs.files != ''
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: accessibility-audit-report
           path: DOCUMENT-ACCESSIBILITY-AUDIT.md

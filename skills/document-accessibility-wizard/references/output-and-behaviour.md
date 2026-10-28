@@ -8,11 +8,11 @@ Write all output files (audit reports, CSV exports) to the current working direc
 
 ### Platform-Aware Delegation
 
-You are the orchestrator. Use the **Task** tool to delegate scanning to specialist sub-agents. Specialists are stored in `.claude/specialists/` -- load each with `Read(".claude/specialists/<name>.md")` and pass the file body (all content after the closing `---` frontmatter delimiter) as the `prompt` parameter. For parallel dispatch, launch multiple `Task` calls in the same turn without waiting between them.
+You are the orchestrator. Dispatch each specialist with the prompt shape in `SKILL.md` ("Dispatching skills"): name the skill and point to `skills/<name>/SKILL.md`. Never read a specialist's body into your own context or paste it into a prompt. For parallel dispatch, start every subagent in the same turn without waiting between them (Claude Code uses the Agent tool; other clients use their own subagent mechanism, as `skills/a11y-core/SKILL.md` describes).
 
-**If the Task tool is available** (top-level invocation): Delegate to sub-agents listed below. Pass the Document Scan Context block to each. Collect and aggregate their findings.
+**If you can start subagents** (top-level invocation): Delegate to the sub-agents listed below. Pass the Document Scan Context block to each. Collect and aggregate their findings.
 
-**If the Task tool is unavailable** (running as a sub-agent of accessibility-lead or another coordinator): Apply the specialist document rules inline yourself. Use the rule prefixes (DOCX-*, XLSX-*, PPTX-*, PDFUA.*, PDFBP.*, PDFQ.*) from the accessibility-rules skill. Do not report that delegation failed; just do the work.
+**If you cannot start subagents** (running as a sub-agent of accessibility-lead or another coordinator): read each specialist's `SKILL.md` yourself, one at a time, and apply its rules. Use the rule prefixes (DOCX-*, XLSX-*, PPTX-*, PDFUA.*, PDFBP.*, PDFQ.*, EPUB-*) and the `kb-accessibility-rules` skill. Do not report that delegation failed; just do the work.
 
 This dual-mode behavior ensures the wizard works correctly whether invoked directly by the user or spawned by another orchestrator.
 
@@ -26,8 +26,10 @@ Each sub-agent, with its handles and rule prefix.
 | **excel-accessibility** | `.xlsx` files - sheet names, table headers, merged cells, charts, color-only data | `XLSX-*` |
 | **powerpoint-accessibility** | `.pptx` files - slide titles, reading order, alt text, captions, animations | `PPTX-*` |
 | **pdf-accessibility** | `.pdf` files - PDF/UA, tagged structure, metadata, forms, bookmarks | `PDFUA.*`, `PDFBP.*`, `PDFQ.*` |
+| **epub-accessibility** | `.epub` files - EPUB Accessibility 1.1, package metadata, navigation, content documents | `EPUB-*` |
 | **office-scan-config** | `.a11y-office-config.json` - rule enable/disable for Office formats | Config management |
 | **pdf-scan-config** | `.a11y-pdf-config.json` - rule enable/disable for PDF scanning | Config management |
+| **epub-scan-config** | `.a11y-epub-config.json` - rule enable/disable for ePub scanning | Config management |
 | **document-inventory** *(hidden helper)* | File discovery, inventory building, delta detection across folders | Discovery |
 | **cross-document-analyzer** *(hidden helper)* | Cross-document pattern detection, severity scoring, template analysis | Analysis |
 
@@ -85,11 +87,12 @@ Ask: **"What is the folder path?"** - Let the user provide the folder path.
 Then ask: **"Which document types should I scan?"**
 Options (multi-select):
 
-- **All supported types** (.docx, .xlsx, .pptx, .pdf)
+- **All supported types** (.docx, .xlsx, .pptx, .pdf, .epub)
 - **Word documents only** (.docx)
 - **Excel workbooks only** (.xlsx)
 - **PowerPoint presentations only** (.pptx)
 - **PDF documents only** (.pdf)
+- **ePub publications only** (.epub)
 - **Office documents only** (.docx, .xlsx, .pptx - no PDFs)
 - **Let me pick specific types** - show checkboxes for each type
 
@@ -101,7 +104,7 @@ Options:
 - **Strict** - All rules, all severities. Best for public-facing or legally required documents (Section 508, EN 301 549).
 - **Moderate** - All rules, errors and warnings only. Good for most organizations.
 - **Minimal** - Errors only. Best for triaging large document libraries to find the worst problems first.
-- **Custom** - Let me configure specific rules (delegates to `office-scan-config` and/or `pdf-scan-config`).
+- **Custom** - Let me configure specific rules (delegates to `office-scan-config`, `pdf-scan-config` and/or `epub-scan-config`).
 
 ### Step 4: Reporting Preferences
 
@@ -122,6 +125,7 @@ Before scanning, check for existing configuration files:
 Look for:
 - .a11y-office-config.json (Office document scan rules)
 - .a11y-pdf-config.json (PDF scan rules)
+- .a11y-epub-config.json (ePub scan rules)
 ```
 
 If found, report current settings and ask: **"I found existing scan configuration. Should I use it, or override with the profile you selected?"**
@@ -135,7 +139,7 @@ If the user selected **Changed files only (delta scan)** or **Re-scan with compa
 Ask: **"How should I detect which files have changed?"**
 Options:
 
-- **Git diff** - use `git diff --name-only` to find files changed since the last commit/tag
+- **Git diff** - use `git diff --name-only` to find files changed in the last commit or since a tag
 - **Since last audit** - compare file modification timestamps against the previous audit report's date
 - **Since a specific date** - let me specify a cutoff date
 - **Against a baseline report** - compare against a specific previous audit report file
@@ -143,7 +147,7 @@ Options:
 If the user selects **Git diff**, ask: **"What git reference should I compare against?"**
 Options:
 
-- **Last commit** - files changed in the most recent commit
+- **Last commit** - files changed in the most recent commit (`git diff --name-only HEAD~1 HEAD`)
 - **Last tag** - files changed since the last git tag
 - **Specific branch/commit** - let me specify a ref
 - **Last N days** - files changed in the last N days
@@ -186,7 +190,7 @@ List matching files in the specified folder only (no subfolders):
 
 ```bash
 # Find documents in the target folder (non-recursive)
-find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" \) ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak"
+find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak"
 ```
 
 ### Folder Scan (Recursive)
@@ -195,7 +199,7 @@ Traverse all subfolders:
 
 ```bash
 # Recursive scan - all subfolders
-find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" \) ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak" ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/__pycache__/*" ! -path "*/.vscode/*"
+find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak" ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/__pycache__/*" ! -path "*/.vscode/*"
 ```
 
 ### Apply Type Filter

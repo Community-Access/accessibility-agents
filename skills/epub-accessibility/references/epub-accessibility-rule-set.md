@@ -14,9 +14,9 @@ Each row, with its ID, name, description and WCAG mapping.
 | EPUB-E002 | missing-unique-identifier | `<dc:identifier>` is absent or does not match the `unique-identifier` attribute on `<package>` | N/A (EPUB spec requirement) |
 | EPUB-E003 | missing-language | `<dc:language>` is absent or empty in the package document | WCAG 3.1.1 Language of Page |
 | EPUB-E004 | missing-nav-toc | Navigation document has no `<nav epub:type="toc">` element (EPUB 3) or NCX is absent (EPUB 2) | WCAG 2.4.5 Multiple Ways |
-| EPUB-E005 | missing-alt-text | `<img>` in a content document has no `alt` attribute or is empty without `role="presentation"` | WCAG 1.1.1 Non-text Content |
+| EPUB-E005 | missing-alt-text | `<img>` in a content document has no `alt` attribute (an empty `alt=""` correctly marks a decorative image) | WCAG 1.1.1 Non-text Content |
 | EPUB-E006 | unordered-spine | Spine `<itemref>` elements do not produce a logical reading order (duplicate or missing manifest items) | WCAG 1.3.2 Meaningful Sequence |
-| EPUB-E007 | missing-a11y-metadata | No `schema:accessMode`, `schema:accessibilityFeature`, or `schema:accessibilitySummary` in package metadata | EPUB Accessibility 1.1 Section 2 |
+| EPUB-E007 | missing-a11y-metadata | Missing any of `schema:accessMode`, `schema:accessibilityFeature` or `schema:accessibilityHazard` (all three are required); `schema:accessibilitySummary` and `schema:accessModeSufficient` are recommended | EPUB Accessibility 1.1 section 2.2 (Package metadata) |
 
 ### Warnings - Degrade the reading experience
 
@@ -24,7 +24,7 @@ Each row, with its ID, name, description and WCAG mapping.
 
 | ID | Name | Description | WCAG Mapping |
 |----|------|-------------|-------------|
-| EPUB-W001 | missing-page-list | Navigation document has no `<nav epub:type="page-list">` (required when print pagination exists) | EPUB Accessibility 1.1 Section 4.1.3 |
+| EPUB-W001 | missing-page-list | Navigation document has no `<nav epub:type="page-list">`. Page navigation is recommended when the publication is the equivalent of a print edition; once page navigation is provided, a page list is required | EPUB Accessibility 1.1 section 3.4.1 (Page navigation) |
 | EPUB-W002 | missing-landmarks | Navigation document has no `<nav epub:type="landmarks">` element | WCAG 2.4.1 Bypass Blocks |
 | EPUB-W003 | heading-hierarchy | Heading levels are skipped (e.g., `<h1>` -> `<h3>`) or the first heading is not `<h1>` within a document section | WCAG 2.4.6 Headings and Labels |
 | EPUB-W004 | table-missing-headers | Data table has no `<th>` elements or `scope` attribute | WCAG 1.3.1 Info and Relationships |
@@ -102,7 +102,7 @@ Read the OPF file and check `<metadata>` section:
   <meta property="schema:accessibilityFeature">alternativeText</meta>
   <meta property="schema:accessibilityHazard">none</meta>
   <meta property="schema:accessibilitySummary">This publication conforms to
-    EPUB Accessibility 1.1 and WCAG 2.1 Level AA.</meta>
+    EPUB Accessibility 1.1 and WCAG 2.2 Level AA.</meta>
 </metadata>
 ```
 
@@ -245,10 +245,10 @@ Minimum navigation document structure:
 <img src="chart-revenue.png" alt="Bar chart showing revenue growth from $2M in 2022 to $5M in 2024"/>
 ```
 
-**Decorative image** - mark as presentational:
+**Decorative image** - use an empty `alt`. Adding `role="presentation"` is redundant:
 
 ```xml
-<img src="ornamental-divider.png" alt="" role="presentation"/>
+<img src="ornamental-divider.png" alt=""/>
 ```
 
 **Complex image (chart/diagram)** - provide short alt text + long description:
@@ -266,20 +266,20 @@ Minimum navigation document structure:
 
 ### EPUB-E007 - Add accessibility metadata
 
-Minimum required metadata for EPUB Accessibility 1.1 conformance:
+Required discovery metadata (`accessMode`, `accessibilityFeature`, `accessibilityHazard`), the recommended summary, and the conformance claim. EPUB Accessibility 1.1 section 3.5 requires the claim as a `dcterms:conformsTo` meta whose value matches the pattern "EPUB Accessibility 1.1 - WCAG [version] Level [A or AA]" exactly, and an `a11y:certifiedBy` property naming who evaluated the publication. The `<link rel="dcterms:conformsTo">` form is not the 1.1 claim.
 
 ```xml
 <meta property="schema:accessMode">textual</meta>
 <meta property="schema:accessibilityFeature">structuralNavigation</meta>
 <meta property="schema:accessibilityHazard">none</meta>
 <meta property="schema:accessibilitySummary">
-  This publication meets EPUB Accessibility 1.1 and WCAG 2.1 Level AA.
+  This publication meets EPUB Accessibility 1.1 and WCAG 2.2 Level AA.
   All images have alternative text. Structure navigation is provided via
   headings and table of contents.
 </meta>
 <!-- Conformance claim -->
-<link rel="dcterms:conformsTo"
-      href="https://www.w3.org/TR/epub-a11y-11/#wcag-aa"/>
+<meta property="dcterms:conformsTo" id="conf">EPUB Accessibility 1.1 - WCAG 2.2 Level AA</meta>
+<meta property="a11y:certifiedBy">Name of the evaluating party</meta>
 ```
 
 ### EPUB-W003 - Fix heading hierarchy

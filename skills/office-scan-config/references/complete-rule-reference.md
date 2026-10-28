@@ -4,6 +4,27 @@ Part of the `office-scan-config` skill. Read this only when the task reaches the
 
 ## Complete Rule Reference
 
+These rule IDs belong to this project. Microsoft's own Accessibility Checker reports its rules in four categories, Error, Warning, Tip and Intelligent Services, listed in [Rules for the Accessibility Checker](https://support.microsoft.com/en-us/accessibility/office-accessibility/rules-for-the-accessibility-checker). The project's severities do not always match Microsoft's category for the same check. This table maps each Microsoft rule to the project rules that cover it.
+
+| Microsoft rule | Microsoft category | Project rules |
+|---|---|---|
+| All non-text content has alternative text (alt text) | Error | `DOCX-E001`, `XLSX-E001`, `PPTX-E001` |
+| Tables specify column header information | Error | `DOCX-E002`, `XLSX-E002`, `PPTX-E004` |
+| All sections have meaningful names | Error | `PPTX-T001` |
+| All slides have titles | Error | `PPTX-E002` |
+| Cells in an Excel worksheet don't use red-only formatting for negative numbers | Error | `XLSX-E007` |
+| Document access is not restricted | Error | `DOCX-E008`, `XLSX-E008`, `PPTX-E007` |
+| All content control fields have titles | Error | `DOCX-E009` |
+| Table has a simple structure | Warning | `DOCX-E005`, `DOCX-W001`, `XLSX-E004`, `XLSX-W003`, `PPTX-W003` |
+| Sheet tabs have meaningful names | Warning | `XLSX-E003`, `XLSX-W004` |
+| Sufficient contrast between text and background | Warning | None; check contrast manually |
+| Closed captions are included for inserted audio and video | Warning | `PPTX-W004` |
+| The reading order of the objects on a slide presentation is logical | Warning | `PPTX-E006` |
+| The section names in a deck are unique | Tip | `PPTX-T001` |
+| Slide titles in a deck are unique | Tip | `PPTX-E003` |
+| Documents use heading styles | Tip | `DOCX-E007` |
+| Suggested alternative text | Intelligent Services | None; review generated alt text under `DOCX-E001`, `XLSX-E001`, `PPTX-E001` |
+
 ### Word (.docx) Rules
 
 #### Errors
@@ -213,7 +234,7 @@ Scan only Word documents:
     "disabledRules": [],
     "severityFilter": ["error", "warning", "tip"]
   },
-  "xlsx": { "enabled": false },
-  "pptx": { "enabled": false }
+  "xlsx": { "enabled": false, "disabledRules": [], "severityFilter": ["error"] },
+  "pptx": { "enabled": false, "disabledRules": [], "severityFilter": ["error"] }
 }
 ```

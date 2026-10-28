@@ -15,7 +15,7 @@ What should I audit?
 1. All *.md files in this repository (recommended)
 2. A specific directory (I'll tell you which)
 3. Specific files (I'll list them)
-4. Only files changed since last git commit (delta scan)
+4. Only files changed in the last git commit (delta scan)
 ```
 
 ### Question 2: Fix Mode
@@ -33,7 +33,7 @@ How should I handle fixes?
 How should I handle emoji?
 1. Remove decorative emoji - emoji in headings, bullets, and consecutive sequences (Default)
 2. Remove all emoji - cleanest for screen readers
-3. Translate emoji to plain English in parentheses - e.g. 🚀 becomes (Launch)
+3. Translate emoji to plain English in parentheses - e.g. the rocket emoji becomes (Launch)
 4. Leave emoji unchanged
 ```
 

@@ -16,9 +16,9 @@ Process each document by delegating to the appropriate sub-agent based on file e
 
 When scanning batches with multiple document types, spawn sub-agents in parallel for maximum efficiency:
 
-1. **Group files by type** - Word, Excel, PowerPoint, PDF
+1. **Group files by type** - Word, Excel, PowerPoint, PDF, ePub
 2. **Spawn one sub-agent per document type** - each runs in its own isolated context
-3. **Sub-agents scan independently** - using the appropriate specialist agent (word-accessibility, excel-accessibility, powerpoint-accessibility, pdf-accessibility)
+3. **Sub-agents scan independently** - using the appropriate specialist agent (word-accessibility, excel-accessibility, powerpoint-accessibility, pdf-accessibility, epub-accessibility)
 4. **Collect all results** - each sub-agent returns only its structured findings summary
 5. **Synthesize in Phase 3** - the wizard combines all results for cross-document analysis
 
@@ -41,21 +41,21 @@ For single-type batches or single files, sub-agents run sequentially as normal.
 
 Apply the word-accessibility agent's complete rule set:
 
-- DOCX-E001 through DOCX-E007 (errors)
+- DOCX-E001 through DOCX-E009 (errors)
 - DOCX-W001 through DOCX-W006 (warnings)
 - DOCX-T001 through DOCX-T003 (tips)
 
 **For `.xlsx` files -> delegate to `excel-accessibility`:**
 Apply the excel-accessibility agent's complete rule set:
 
-- XLSX-E001 through XLSX-E006 (errors)
+- XLSX-E001 through XLSX-E008 (errors)
 - XLSX-W001 through XLSX-W005 (warnings)
 - XLSX-T001 through XLSX-T003 (tips)
 
 **For `.pptx` files -> delegate to `powerpoint-accessibility`:**
 Apply the powerpoint-accessibility agent's complete rule set:
 
-- PPTX-E001 through PPTX-E006 (errors)
+- PPTX-E001 through PPTX-E007 (errors)
 - PPTX-W001 through PPTX-W006 (warnings)
 - PPTX-T001 through PPTX-T004 (tips)
 
@@ -66,29 +66,33 @@ Apply the pdf-accessibility agent's complete rule set across all three layers:
 - PDFBP.* (best practices - 22 rules)
 - PDFQ.* (quality/pipeline - 4 rules)
 
+**For `.epub` files -> delegate to `epub-accessibility`:**
+Apply the epub-accessibility agent's complete rule set:
+
+- EPUB-E001 through EPUB-E007 (errors)
+- EPUB-W001 through EPUB-W006 (warnings)
+- EPUB-T001 through EPUB-T003 (tips)
+
 ### Scan Result Collection
 
-For each file, collect from the sub-agent:
+For each file, collect the findings JSON from the sub-agent. It matches `skills/a11y-core/schemas/findings.schema.json`:
 
-```yaml
-file: "/docs/reports/annual-report.docx"
-type: "docx"
-sub_agent: "word-accessibility"
-scan_time: "2025-01-15T10:30:00Z"
-findings:
-  errors: 3
-  warnings: 2
-  tips: 1
-  details:
-    - rule_id: "DOCX-E001"
-      severity: "error"
-      name: "missing-alt-text"
-      location: "Page 4, Figure 2"
-      description: "Image has no alternative text"
-      impact: "Blind users cannot understand this image"
-      remediation: "Right-click -> Edit Alt Text -> describe the chart content"
-      wcag: "1.1.1 Non-text Content (Level A)"
-      confidence: "high"  # high | medium | low
+```json
+{
+  "skill": "word-accessibility",
+  "scope": ["/docs/reports/annual-report.docx"],
+  "findings": [
+    {
+      "rule": "DOCX-E001",
+      "wcag": "1.1.1 A",
+      "severity": "critical",
+      "confidence": "high",
+      "location": "/docs/reports/annual-report.docx, page 4, Figure 2",
+      "summary": "Image has no alternative text.",
+      "fix": "Right-click the image > View Alt Text, then describe the chart content."
+    }
+  ]
+}
 ```
 
 ### Sub-Agent Confidence Levels
@@ -107,10 +111,7 @@ Confidence levels affect the report:
 - **Medium-confidence findings** are reported with a "Needs Review" flag.
 - **Low-confidence findings** are reported in a separate "For Review" section to avoid false-positive noise.
 
-When aggregating across documents, weight findings by confidence:
-
-- High = 1.0, Medium = 0.7, Low = 0.3
-- Use these weights in severity scoring (Phase 3).
+When aggregating across documents, the renderer weights findings by confidence: high 1.0, medium 0.7, low 0.4 (`skills/a11y-core/scripts/merge-findings.mjs`).
 
 ### Progress Reporting
 
@@ -162,46 +163,23 @@ Folders Needing Most Attention:
 
 ### Severity Scoring
 
-Assign each document a weighted **accessibility risk score** (0-100) based on its findings.
+Each document gets a 0-100 score and a letter grade. Do not compute them by hand: `render-report.mjs` computes them with `skills/a11y-core/scripts/merge-findings.mjs`.
 
-**Scoring Formula:**
-
-```text
-Document Score = 100 - (sum of weighted findings)
-
-Weights:
-  Error (high confidence):   -10 points each
-  Error (medium confidence):  -7 points each
-  Error (low confidence):     -3 points each
-  Warning (high confidence):  -3 points each
-  Warning (medium confidence):-2 points each
-  Warning (low confidence):   -1 point each
-  Tips:                        0 points (informational only)
-
-Floor: 0 (scores cannot go below 0)
-```
-
-**Score Grades:**
-
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues |
-| 75-89 | B | Good - some warnings, few errors |
-| 50-74 | C | Needs Work - multiple errors |
-| 25-49 | D | Poor - significant accessibility barriers |
-| 0-24 | F | Failing - critical barriers, likely unusable with AT |
+- Severity weights: critical 10, serious 5, moderate 2, minor 1, each scaled by confidence (high 1.0, medium 0.7, low 0.4).
+- The weighted sum is scaled against the number of checks run (findings plus passed checks, at least 10), so a large clean document is not punished for its size.
+- Grades: A is 90 and above, B 80 to 89, C 70 to 79, D 60 to 69, F below 60.
 
 Present a scorecard in the cross-document summary:
 
 ```text
  Accessibility Scorecard
 
-  annual-report.docx     72/100 (C) - Needs Work
-  Q3-data.xlsx           91/100 (A) - Excellent
-  presentation.pptx      45/100 (D) - Poor
-  policy.pdf             38/100 (D) - Poor
+  annual-report.docx     72/100 (C)
+  Q3-data.xlsx           91/100 (A)
+  presentation.pptx      45/100 (F)
+  policy.pdf             38/100 (F)
 
-  Overall Average:       61.5/100 (C) - Needs Work
+  Overall Average:       61.5/100 (D)
   Best:  Q3-data.xlsx (91)
   Worst: policy.pdf (38)
 

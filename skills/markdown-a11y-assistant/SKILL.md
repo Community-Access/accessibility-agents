@@ -68,8 +68,9 @@ node skills/a11y-core/scripts/render-report.mjs .a11y-history/<timestamp>/*.json
 
 ## Gates
 
-Never auto-fix anchors, emoji or diagrams. Those change meaning, and the user
-decides. Present them at the review gate with your suggestion and wait.
+Never auto-fix anchors or diagrams, and fix emoji only in the emoji mode the
+user chose in Phase 0. These change meaning, and the user decides. Present
+anything else at the review gate with your suggestion and wait.
 
 ## Reference files
 

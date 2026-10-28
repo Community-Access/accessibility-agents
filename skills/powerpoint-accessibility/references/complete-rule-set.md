@@ -62,7 +62,7 @@ Missing or empty `descr` is a violation. Also check:
 
 **Remediation:**
 
-1. Right-click the image -> Edit Alt Text
+1. Right-click the image -> View Alt Text (or select it, then Picture Format -> Alt Text)
 2. Describe the content and purpose of the image
 3. For decorative images (borders, backgrounds), check "Mark as decorative" (the scanner detects the Office decorative flag and skips these)
 4. Charts: summarize the key data insight, not just "chart"
@@ -90,9 +90,8 @@ The title shape must exist AND contain non-empty text in its `<a:t>` elements.
 **Remediation:**
 
 1. If the slide layout has a title placeholder: click it and type a descriptive title
-2. If the layout lacks a title: Insert -> Text Box -> add title text, then in Selection Pane rename it to include "Title"
-3. Or switch to a layout that includes a title placeholder
-4. If a visible title doesn't fit the design: add a title placeholder and set it off-screen or use the slide's accessible name
+2. If the layout lacks a title: use the Accessibility ribbon to add a slide title, or switch to a layout that includes a title placeholder. A text box renamed "Title" in the Selection Pane is not a slide title.
+3. If a visible title doesn't fit the design: position the title placeholder off the slide (it still counts as the slide title), or hide titles across many slides through the slide master
 
 ### PPTX-E003: Duplicate Slide Title
 
@@ -137,7 +136,8 @@ The title shape must exist AND contain non-empty text in its `<a:t>` elements.
 
 **Remediation:**
 
-1. View tab -> Selection Pane (or Home -> Arrange -> Selection Pane)
-2. Items are listed bottom-to-top (bottom item is read FIRST by screen reader)
-3. Drag items to reorder: title first, then content top-to-bottom, left-to-right
-4. Check every slide - adding/moving objects changes reading order
+1. Review tab -> Check Accessibility, then in the Warnings section select "Check reading order", open a slide's drop-down and choose "Verify object order" (the Reading Order pane)
+2. Objects are listed in the order the screen reader reads them; item 1 is read first, and decorative objects have no number
+3. Drag items, or use Move Up and Move Down, to reorder: title first, then content top-to-bottom, left-to-right
+4. Alternative: Home -> Arrange -> Selection Pane, which lists objects in the reverse of reading order (the bottom item is read first)
+5. Check every slide - adding/moving objects changes reading order

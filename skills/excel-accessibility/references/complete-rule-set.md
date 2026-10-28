@@ -57,10 +57,10 @@ Missing or empty `descr` is a violation.
 
 **Remediation:**
 
-1. Right-click the chart/image -> Edit Alt Text
+1. Right-click the chart/image -> View Alt Text (or select it, then the Format tab -> Alt Text)
 2. Describe what the chart shows - include the data trend, not just "chart"
 3. For complex charts, summarize the key insight: "Sales increased 23% year-over-year"
-4. For decorative images, mark as decorative (the scanner detects the Office decorative flag and skips these)
+4. For decorative images, check "Mark as decorative" in the Alt Text pane (the scanner detects the Office decorative flag and skips these)
 
 ### XLSX-E002: Missing Table Header
 

@@ -66,9 +66,9 @@ Each domain, with why human needed.
 
 ## Output Format
 
-For each file processed, return:
+For each file, return this report (its emoji and dashes are deliberate input examples):
 
-```markdown
+````markdown
 ## Fix Report: <filename>
 
 ### Applied Fixes ([N] total)
@@ -90,20 +90,18 @@ For each review item, present:
 **[Issue Type] - Line [N]**
 
 Current:
-```
-
-[quoted content]
 
 ```text
+[quoted content]
+```
 
 Problem: [specific accessibility impact]
 
 Suggested fix:
-```
-
-[proposed content]
 
 ```text
+[proposed content]
+```
 
 Why this matters: [which users are affected and how]
 
@@ -113,10 +111,10 @@ Apply this fix? (Yes / No / Edit suggestion)
 
 ### File Status
 
-- **Before:** [N] issues  |  **Score:** [before]
-- **After:** [N] remaining  |  **Score:** [after]
+- **Before:** [N] issues
+- **After:** [N] remaining
 - **Fixed:** [N auto] + [N after review]
-```
+````
 
 ---
 
@@ -130,7 +128,7 @@ You are a **state-changing agent**. You modify markdown files to fix accessibili
 
 You may:
 
-- Apply auto-fixable changes (ambiguous links, heading hierarchy, em-dashes, emoji removal/translation, table descriptions, anchor fixes) ONLY after the review gate
+- Apply auto-fixable changes (ambiguous links, heading hierarchy, em-dashes, emoji removal/translation, table descriptions) ONLY after the review gate. Anchors are never auto-fixed
 - Present human-judgment items for user decision (alt text content, plain language rewrites)
 - Report before/after state for each file
 
@@ -151,7 +149,7 @@ For each fix applied, return:
 - `result`: `success` | `skipped` | `needs-review`
 - `reason`: explanation (required if result is not `success`)
 
-File summary MUST include before/after issue count and score.
+File summary MUST include before/after issue count.
 
 ### Handoff Transparency
 
@@ -159,7 +157,7 @@ When invoked by `markdown-a11y-assistant`:
 
 - **Announce start:** "Applying [N] approved fixes to [filename] ([N] auto-fixable, [N] human-judgment)"
 - **Per fix:** Show before/after with accessibility impact explanation
-- **Announce completion:** "Fix pass complete for [filename]: [N] applied, [N] skipped, [N] need review. Score: [before] -> [after]"
+- **Announce completion:** "Fix pass complete for [filename]: [N] applied, [N] skipped, [N] need review."
 - **On failure:** "Fix failed for [target]: [reason]. File left unchanged. Presenting for manual resolution."
 
 You return results to `markdown-a11y-assistant`. Users see each fix with an approval prompt before it is applied.
