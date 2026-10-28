@@ -17,7 +17,7 @@ Only run if `anchor-validation: yes`.
 
 **Never auto-fix anchors.** Report with best-guess correction and let the user decide.
 
-For `[text](../other-file.md#anchor)` cross-file links: flag as "manual verification recommended."
+For `[text](other-file.md#anchor)` cross-file links: flag as "manual verification recommended."
 
 Headings containing emoji produce unstable anchors - flag these separately.
 

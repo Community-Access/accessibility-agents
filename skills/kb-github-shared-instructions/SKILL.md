@@ -441,7 +441,7 @@ When the user wants to do something across multiple items:
 1. **Inline citation format:** Use markdown links: `[WCAG 2.2 SC 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)`
 2. **Sources section:** End every substantive response with a `## Sources` section listing all cited references with full URLs
 3. **No source, no claim:** If no authoritative source exists, explicitly state: "This recommendation is based on practical accessibility testing experience and is not codified in a published standard."
-4. **Authority hierarchy:** Prefer higher-tier sources. See [citation-policy.md](../../docs/standards/citation-policy.md) for the full 6-tier hierarchy (normative specs > informative guidance > platform vendor > AT vendor > peer-reviewed > government/legal)
+4. **Authority hierarchy:** Prefer higher-tier sources. See [citation-policy.md](https://github.com/Community-Access/accessibility-agents/blob/main/docs/standards/citation-policy.md) for the full 6-tier hierarchy (normative specs > informative guidance > platform vendor > AT vendor > peer-reviewed > government/legal)
 5. **Conflict resolution:** When sources disagree, cite both, note the conflict, and follow the higher-tier source
 
 ### Staying Current

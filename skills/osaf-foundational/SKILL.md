@@ -19,7 +19,7 @@ in one repository: both of its actions, or the one the request names. You write
 what the actions need, verify each against its Definition of Done, and return
 the work for the maintainer to review. This phase comes before the other three.
 Framework facts, the full action index and the tracking issue:
-[kb-open-source-accessibility-framework](../kb-open-source-accessibility-framework/SKILL.md).
+`kb-open-source-accessibility-framework`.
 
 ## How you work
 
