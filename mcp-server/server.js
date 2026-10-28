@@ -2,8 +2,10 @@
 /**
  * A11y Agent Team — HTTP MCP Server Entry Point
  *
- * Starts the MCP server over Streamable HTTP transport (with SSE fallback).
- * Compatible with any MCP client that supports HTTP transport.
+ * Starts the MCP server over the Streamable HTTP transport. Stateful by
+ * default, with an Mcp-Session-Id per client and a GET stream for
+ * server-sent events; stateless (POST only) with A11Y_MCP_STATELESS=1.
+ * The legacy HTTP+SSE transport is not offered.
  *
  * Usage:
  *   node server.js                    # Starts on port 3100

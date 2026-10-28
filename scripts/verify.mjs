@@ -32,7 +32,7 @@ const GATES = [
     name: 'Agent Skills specification',
     standard: 'agentskills.io/specification',
     command: [NODE, ['scripts/verify-spec.mjs']],
-    proves: 'Every skill is readable by any client implementing the open standard, checked with the specification authors\' own validator rather than ours.',
+    proves: 'Every skill is readable by any client implementing the open standard, checked with a port of the specification\'s reference validator rather than our own rules.',
   },
   {
     id: 'skills',

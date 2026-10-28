@@ -1,9 +1,17 @@
 #!/usr/bin/env node
 /**
- * verify-spec.mjs - validate every skill against the Agent Skills reference
- * implementation from agentskills.io.
+ * verify-spec.mjs - validate every skill against the Agent Skills
+ * specification's validation rules.
  *
- * It is deliberately the specification authors' validator rather than ours.
+ * It runs skills-ref 0.1.5 from npm, a third-party port of the reference
+ * validator. The reference itself is the Python skills-ref in
+ * github.com/agentskills/agentskills; on 27 October 2026 it was run against
+ * all 108 skills and reported exactly what this port reports: no problems
+ * beyond the two extension fields described below. Run it yourself with
+ * `pip install ./skills-ref` from a clone of that repository, then
+ * `skills-ref validate skills/<name>`.
+ *
+ * It is deliberately a spec validator rather than ours.
  * `validate-skills.mjs` encodes this project's own rules on top of the spec,
  * and a house validator agreeing with itself proves nothing about conformance.
  *
@@ -121,7 +129,7 @@ for (const dir of dirs) {
 }
 
 const report = {
-  validator: 'skills-ref (agentskills.io reference implementation)',
+  validator: 'skills-ref 0.1.5 from npm, a third-party port of the agentskills reference validator (the reference itself is the Python skills-ref in github.com/agentskills/agentskills)',
   skills: checked,
   conformant: checked - failures.length,
   failed: failures.length,

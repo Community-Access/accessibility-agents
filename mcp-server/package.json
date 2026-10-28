@@ -1,7 +1,7 @@
 {
   "name": "@a11y-agent-team/mcp-server",
   "version": "7.0.3",
-  "description": "Server-based MCP server for the A11y Agent Team. Provides accessibility scanning tools over HTTP (Streamable HTTP transport with SSE fallback). Works with Claude Desktop, VS Code Copilot, and any MCP-compatible client.",
+  "description": "Server-based MCP server for the A11y Agent Team. Provides accessibility scanning tools over stdio and over the Streamable HTTP transport. Works with any MCP client.",
   "type": "module",
   "license": "MIT",
   "repository": {
