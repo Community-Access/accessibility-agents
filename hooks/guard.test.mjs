@@ -145,6 +145,97 @@ describe('gate', () => {
   });
 });
 
+describe('shell writes', () => {
+  // #199: Claude Code's auto mode tells the model to edit with Bash, so a gate
+  // that watched only Edit and Write let every such edit through.
+  const bash = (command, extra = {}) => ({ ...SESSION, ...extra, hook_event_name: 'PreToolUse', tool_name: 'Bash', tool_input: { command } });
+
+  test('a shell command that writes a user-facing file is refused before review', () => {
+    for (const command of [
+      "sed -i 's/Submit/Send/' src/components/Form.tsx",
+      "perl -pi -e 's/a/b/' web/styles/site.css",
+      'echo "<h1>Hi</h1>" > public/index.html',
+      'printf x >> src/app.css',
+      "cat > src/Nav.jsx <<'EOF'\nexport default () => <nav />;\nEOF",
+      'echo x | tee src/App.vue',
+      'cp /tmp/draft.tsx src/pages/Home.tsx',
+      'mv src/Old.svelte src/New.svelte',
+      'dd if=/tmp/x of=templates/base.ejs',
+      `python3 -c "open('src/App.tsx','w').write('x')"`,
+      `node -e "require('fs').writeFileSync('site/index.html', '')"`,
+      "python3 - <<'PY'\nfrom pathlib import Path\nPath('src/Card.jsx').write_text('x')\nPY",
+      'cd web && npm run lint && sed -i "s/a/b/" views/home.erb',
+      'Set-Content -Path web\\index.html -Value x',
+    ]) {
+      assert.equal(run('gate', bash(command, { session_id: `sh-${command.length}` })).code, 2, command);
+    }
+  });
+
+  test('the argument-list form Codex sends is read too', () => {
+    assert.equal(run('gate', bash(['bash', '-lc', "sed -i 's/a/b/' src/App.tsx"])).code, 2);
+  });
+
+  test('reading, testing or building UI files through the shell is not refused', () => {
+    for (const command of [
+      'cat src/App.tsx',
+      'grep -n "<h1>" public/index.html',
+      'sed -n 1,40p src/components/Form.tsx',
+      'npx prettier --check src/App.tsx',
+      'git diff src/App.tsx > /tmp/app.diff',
+      'cp src/App.tsx /tmp/App.tsx.bak',
+      'npm test 2>&1 | tee test.log',
+      'npm run build > build/log.txt 2>&1',
+      `python3 -c "print(open('src/App.tsx').read())"`,
+      'python3 scripts/lint.py src/App.tsx > report.txt',
+      "cat > notes.md <<'EOF'\nUpdated > src/App.tsx later\nEOF",
+      "sed -i 's/a/b/' server/db.ts",
+      'ls -la src/*.tsx',
+    ]) {
+      assert.equal(run('gate', bash(command)).code, 0, command);
+    }
+  });
+
+  test('a shell write is allowed once the lead has run', () => {
+    run('mark', { ...SESSION, hook_event_name: 'PostToolUse', tool_name: 'Skill', tool_input: { skill: 'accessibility-lead' } });
+    assert.equal(run('gate', bash("sed -i 's/a/b/' src/App.tsx")).code, 0);
+  });
+
+  test('Gemini CLI run_shell_command is read the same way', () => {
+    const payload = { session_id: 'gem-sh', hook_event_name: 'BeforeTool', tool_name: 'run_shell_command', tool_input: { command: 'echo x > src/App.tsx' } };
+    assert.equal(run('gate', payload).code, 2);
+  });
+
+  test('every manifest that gates edits also gates the shell', () => {
+    const read = (f) => JSON.parse(fs.readFileSync(path.join(HERE, '..', f), 'utf8'));
+    const gateMatchers = (manifest, event) => (manifest.hooks[event] || [])
+      .filter((h) => (h.hooks || []).some((c) => /--behaviour gate/.test(c.command)))
+      .map((h) => h.matcher);
+    for (const [file, event, shell] of [
+      ['hooks/hooks.json', 'PreToolUse', 'Bash'],
+      ['hooks/claude.hooks.json', 'PreToolUse', 'Bash'],
+      ['.claude/settings.json', 'PreToolUse', 'Bash'],
+      ['hooks/codex.hooks.json', 'PreToolUse', 'Bash'],
+      ['hooks/gemini.hooks.json', 'BeforeTool', 'run_shell_command'],
+    ]) {
+      const matchers = gateMatchers(read(file), event);
+      assert.ok(matchers.length, `${file} has no gate on ${event}`);
+      for (const m of matchers) assert.ok(new RegExp(`^(?:${m})$`).test(shell), `${file} gate matcher "${m}" misses ${shell}`);
+    }
+  });
+});
+
+describe('hook text', () => {
+  test('names no file a plugin install does not ship', () => {
+    // #219: a plugin install has no AGENTS.md, and neither does the user's
+    // project, so a pointer at it sent the model looking for nothing.
+    const first = run('detect', { session_id: 'text-1', hook_event_name: 'UserPromptSubmit' });
+    const refused = run('gate', edit('src/App.tsx', { session_id: 'text-1' }));
+    run('persist', { session_id: 'text-1', hook_event_name: 'PreCompact' });
+    const restored = run('persist', { session_id: 'text-1', hook_event_name: 'SessionStart' });
+    for (const out of [first, refused, restored]) assert.doesNotMatch(out.stdout, /AGENTS\.md/);
+  });
+});
+
 describe('mark', () => {
   test('a completed lead opens the gate', () => {
     run('mark', { ...SESSION, subagent_type: 'accessibility-lead' });

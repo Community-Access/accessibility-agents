@@ -19,7 +19,7 @@ The gate is the script, its manifests, and its tests.
 | `hooks/copilot.hooks.json` | Copilot format, version 1, for copying to `.github/hooks/` in a repository |
 | `hooks/gemini.hooks.json` | Gemini CLI event names; marks on `AfterTool` for `activate_skill`. Shipped as `hooks/hooks.json` inside the Gemini extension archive |
 | `hooks/antigravity.hooks.json` | Antigravity named hooks (`a11y-detect`, `a11y-gate`, `a11y-mark`), written to `~/.gemini/config/hooks.json` by `npm run setup`; tested against the payloads Antigravity documents, not yet in a live Antigravity session |
-| `hooks/guard.test.mjs` | 36 tests; run with `node --test hooks/guard.test.mjs` |
+| `hooks/guard.test.mjs` | 51 tests; run with `node --test hooks/guard.test.mjs` |
 
 ## Behaviours
 
@@ -49,6 +49,31 @@ Exempt, because they are not a person's interface: anything under
 `node_modules`, `vendor`, `dist`, `build`, `out`, `coverage`, `.git`, or a
 `__tests__`, `__mocks__` or `__snapshots__` directory; `.test`, `.spec` and
 `.stories` files; and minified assets.
+
+## Edits made through a shell
+
+A shell command can change a file as surely as an edit tool can, and Claude
+Code's auto mode tells the model to prefer the shell for edits. So the gate
+also runs on `Bash` (Claude Code, Codex) and `run_shell_command` (Gemini CLI),
+and reads the command for the files it writes:
+
+- a redirect: `> file`, `>> file`, a heredoc such as `cat > file <<EOF`
+- `tee`, `truncate`, `mv`, and `cp`, `install` or `rsync` to a destination
+- `sed -i`, `perl -i` and `ruby -i`
+- `dd of=file`
+- PowerShell `Set-Content`, `Add-Content`, `Out-File`, `Copy-Item` and `Move-Item`
+- an inline script (`python3 -c`, `node -e`, or a heredoc fed to an
+  interpreter) that opens a file for writing, such as `open(path, 'w')`,
+  `write_text` or `writeFileSync`
+
+A command that only reads a user-facing file (`cat`, `grep`, `sed -n`, a
+linter, `cp` of the file to somewhere else) is not refused.
+
+The limit: the gate reads the command, it does not run it. A path built in a
+shell variable, a script run by name that writes the file, or `git checkout`
+of a file is not seen. This is a guardrail against the ordinary way an edit
+happens, not a sandbox: getting past it now has to be deliberate, and
+`finalize` still refuses to end a turn whose UI edit was refused.
 
 ## Sessions and markers
 

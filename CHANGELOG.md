@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The edit gate ignored edits made through a shell.** It watched the edit
+  tools only, so `sed -i`, a redirect, a heredoc, `tee`, `cp` or a
+  `python3 -c` one-liner changed a `.tsx` file without a review, and Claude
+  Code's auto mode tells the model to prefer the shell for edits. The gate now
+  also runs on `Bash` (Claude Code, Codex) and `run_shell_command` (Gemini
+  CLI) and reads the command for the files it writes; reading a UI file
+  through the shell is still allowed. A path built in a variable or a script
+  run by name is not seen, which `docs/reference/hooks.md` now says. Reported by
+  [@yaheltal](https://github.com/yaheltal) in
+  [#199](https://github.com/Community-Access/accessibility-agents/issues/199).
+  Codex users who installed with `npm run setup` get the new manifest beside
+  their `~/.codex/hooks.json` on the next run, to merge, unless the file is
+  unchanged from what setup wrote.
+- **The hook messages pointed at `AGENTS.md`**, which a plugin install does
+  not ship and a user's project does not have. They now name the
+  `accessibility-lead` skill only. Reported by [@w9fyi](https://github.com/w9fyi) in
+  [#219](https://github.com/Community-Access/accessibility-agents/issues/219).
+- **`verify:live` ran Claude Code from this checkout**, where
+  `.claude/settings.json` supplies the hooks and relative paths resolve, so it
+  could not see a plugin that loaded no hooks or MCP server (#219). It now runs
+  from an empty folder and fails unless the plugin's hooks load and its MCP
+  server connects.
+- **Security**: the root tooling's `re2js`, pinned at 2.8.6 by markdownlint
+  0.42.0, carried a high advisory (GHSA-gg6h-894w-4m9c). An override holds it
+  on 2.8.8. Development tooling only; nothing in the plugin or the MCP server
+  uses it.
+
 ### Changed
 
 - **The Claude plugin directory lists a plugin-only tree.** Submitted from the
