@@ -790,7 +790,10 @@ describe("Office and ePub scan configuration", () => {
     const { OFFICE_RULE_ALIASES } = await import("./server-core.js");
     const fs = await import("node:fs");
     const path = await import("node:path");
-    const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+    const { fileURLToPath } = await import("node:url");
+    // fileURLToPath, not URL.pathname: on Windows the pathname is /D:/..., which
+    // path.resolve turns into D:\D:\...
+    const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
     const sets = {
       ".docx": "skills/word-accessibility/references/complete-rule-set.md",
       ".pptx": "skills/powerpoint-accessibility/references/complete-rule-set.md",
