@@ -259,31 +259,42 @@ Re-run after 0fc0195: an edit to an HTML file was refused before
   `~/.agents/skills`, which VS Code reads). `.vscode/mcp.json` registers the
   bundled server. Tested in a scratch checkout.
 
+## Done and committed (2083bc5): installer, action, engines, scoring
+
+- `--uninstall` no longer deletes Codex's own `~/.codex/hooks.json` unless
+  it holds exactly what the installer wrote; it removes the `*.a11y.json`
+  merge files and this package's own `a11y-hooks.json` files.
+- The installer no longer writes `~/.claude/a11y-hooks.json`: Claude Code
+  does not read `~/.agents/skills`, so those hooks on their own would refuse
+  every UI edit. Use the plugin or `claude --plugin-dir <checkout>`.
+- `action/action.yml`: Node 24, `setup-node@v7` (npm cache off),
+  `upload-sarif@v4`. `engines`: Node 22 or later. Unused `playwright-core`
+  dependency dropped.
+- `.codex-plugin/plugin.json`: undocumented `mcpServers` key dropped.
+- `check_source_currency.py`: registry path fixed.
+- Docs-site `manifest.json` regenerated (it listed files removed in 7.0).
+- Config templates: `$schema` is now the published URL (the relative path
+  did not exist once a template was copied into a project).
+- Removed `release-readiness-check.mjs` and `validate-workflow-invariants.mjs`:
+  they checked files deleted in 7.0 and could never pass.
+- The dependency gate claimed no tree had high advisories while the
+  deprecated VS Code extension tree had four; it now names that tree (two
+  left after `npm audit fix`, in `@vscode/vsce`'s Azure login library, with
+  no fixed release yet).
+- `kb-web-severity-scoring` described a scoring model nothing computes (a
+  "confirmed" tier at 1.2x, point tables, profiles, calibration). It now
+  describes the renderer exactly. Decision 6: GitHub workflow skills now
+  declare `artifact` and write their own documents.
+
 ## In progress
 
-- Documentation audit (138 files: README, docs/, workflows, templates):
-  edits done, 16 of 16 gates pass; an independent reviewer is checking every
-  change against the code and the sources before it is committed.
-- Batch B (23 knowledge-base skills): still editing.
-- Smaller fixes, written, under independent review:
-  - `npm run setup -- --uninstall` deleted Codex's own `~/.codex/hooks.json`
-    (which may hold your hooks) and left the `*.a11y.json` merge files. It now
-    removes that file only if it holds exactly what the installer wrote.
-  - `action/action.yml`: Node 24, `setup-node@v7`, `upload-sarif@v4`.
-  - `engines` in both package.json files: Node 22 or later (20 is end of
-    life); an unused `playwright-core` dependency dropped.
-  - `.codex-plugin/plugin.json`: dropped the undocumented `mcpServers` key.
-  - `check_source_currency.py` looked for the source registry at a path that
-    no longer exists.
-  - Root `manifest.json` (docs site) regenerated: it listed 7.0-removed files;
-    three empty "Prompts" sections removed from its workflow.
-  - Config templates: `$schema` pointed at `./.github/schemas`, which does not
-    exist once a template is copied into your project; now the GitHub URL.
-  - The dependency gate said "no high or critical advisories in any tree"
-    while the deprecated VS Code extension tree had four high; it now says
-    which tree is not gated, and `npm audit fix` cut that tree to two (in a
-    publishing tool, `@vscode/vsce`, with no fixed release yet).
-  - Decision 6 below.
+- Documentation audit (138 files): reviewed (about 465 of 485 hunks
+  correct, nothing that would break an install), six fixes applied; now
+  aligning the scoring pages with the renderer, then commit.
+- Batch B (23 knowledge-base skills, 32 files): edits done; independent
+  review running. Three related skills (kb-severity-mapping,
+  kb-report-generation, cross-page-analyzer) aligned to the renderer's
+  scoring, to commit with the docs.
 
 ## Decisions: what was done
 
@@ -320,7 +331,7 @@ Pushed to [the branch on GitHub](https://github.com/Community-Access/accessibili
 
 ## Remaining work (running checklist, updated with every push)
 
-Last updated: 28 October 2026, 6:00 AM Mountain (Arizona).
+Last updated: 28 October 2026, 6:10 AM Mountain (Arizona).
 
 - [x] Security advisories, MCP server bugs, plugin packaging, edit gate, installer
 - [x] Skill batch F: GitHub, developer, desktop (24 skills)
@@ -328,14 +339,14 @@ Last updated: 28 October 2026, 6:00 AM Mountain (Arizona).
 - [x] Skill batch C: web part 1 (15 skills)
 - [x] Skill batch D: web part 2 (15 skills)
 - [x] Skill batch E: documents and Markdown (18 skills)
-- [ ] Skill batch B: knowledge base (23 skills): editing, then independent review
-- [ ] Documentation audit (README, docs/, workflows): edits done, under independent review
+- [ ] Skill batch B: knowledge base (23 skills): edits done, independent review running
+- [ ] Documentation audit (README, docs/, workflows): reviewed, fixes applied, scoring pages in progress
 - [x] Decision 2: bundle the MCP server so plugin installs can start it
 - [x] Decision 3: live edit-gate test in Claude Code
 - [x] Decision 4: Codespaces dev container, VS Code skills and MCP settings
-- [ ] Decision 6: findings contract scoped to accessibility audits in a11y-core: written, under review
+- [x] Decision 6: findings contract scoped to accessibility audits in a11y-core (2083bc5)
 - [x] Decision 7: Antigravity hook manifest: verified, and deliberately not shipped (see Decisions)
-- [ ] Smaller fixes: uninstall, action.yml, engines, Codex manifest, currency script, docs manifest, templates, dependency gate: written, under review
+- [x] Smaller fixes: uninstall, action.yml, engines, Codex manifest, currency script, docs manifest, templates, dependency gate (2083bc5)
 - [ ] Final full verification: every gate, markdownlint, plugin validate, live client checks
 - [ ] Pull request to main (not merged)
 
