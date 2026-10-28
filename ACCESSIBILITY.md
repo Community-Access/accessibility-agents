@@ -139,7 +139,8 @@ why. Everyone who takes part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 ## Ownership and maintenance
 
 Accessibility is owned by **Jeff Bishop**, project maintainer
-([jeff@jeffbishop.com](mailto:jeff@jeffbishop.com)).
+([@accesswatch](https://github.com/accesswatch) on GitHub,
+[jeff@jeffbishop.com](mailto:jeff@jeffbishop.com)).
 
 The accessibility owner:
 

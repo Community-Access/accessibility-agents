@@ -2,7 +2,7 @@
 
 Thank you for considering a contribution. This is a community-driven project, and every improvement to these agents helps developers ship more inclusive software for blind and low vision users - and everyone else who depends on accessible design.
 
-A sincere thanks goes out to [Taylor Arndt](https://github.com/taylorarndt) and [Jeff Bishop](https://github.com/jeffreybishop) for leading the charge in building this project. Now we want more contributors to help us make more magic. Whether you are a developer, accessibility specialist, screen reader user, or someone who just cares about inclusive software - your contributions are welcome here.
+A sincere thanks goes out to [Taylor Arndt](https://github.com/taylorarndt) and [Jeff Bishop](https://github.com/accesswatch) for leading the charge in building this project. Now we want more contributors to help us make more magic. Whether you are a developer, accessibility specialist, screen reader user, or someone who just cares about inclusive software - your contributions are welcome here.
 
 ## Accessibility expectations
 

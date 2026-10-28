@@ -386,7 +386,7 @@ See [CHANGELOG.md](../../CHANGELOG.md) for the complete technical changelog cove
 Special thanks to:
 
 - [Taylor Arndt](https://github.com/taylorarndt) - Project lead
-- [Jeff Bishop](https://github.com/jeffbis) - 1.113 alignment and release engineering
+- [Jeff Bishop](https://github.com/accesswatch) - 1.113 alignment and release engineering
 - The accessibility community for pushing LLM tooling forward
 
 ---
