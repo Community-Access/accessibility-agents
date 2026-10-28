@@ -322,3 +322,45 @@ describe('gemini compression', () => {
     assert.match(restored.json.additionalContext, /blocked earlier/);
   });
 });
+
+describe('codex', () => {
+  function runCx(behaviour, payload) {
+    const result = spawnSync(process.execPath, [GUARD, '--behaviour', behaviour, '--client', 'codex'], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: { ...process.env, A11Y_GUARD_DIR: scratch },
+    });
+    return { code: result.status };
+  }
+  const SESS = { session_id: 'cx-sess' };
+  const patch = { ...SESS, hook_event_name: 'PreToolUse', tool_name: 'apply_patch', tool_input: { file_path: 'src/App.tsx' } };
+  const shell = (command) => ({ ...SESS, hook_event_name: 'PostToolUse', tool_name: 'Bash', tool_input: { command } });
+
+  test('reading the lead SKILL.md with a shell command opens the gate', () => {
+    assert.equal(runCx('gate', patch).code, 2);
+    runCx('mark', shell("sed -n '1,200p' /home/u/.agents/skills/accessibility-lead/SKILL.md"));
+    assert.equal(runCx('gate', patch).code, 0);
+  });
+
+  test('reading another skill, or writing the lead file, does not open it', () => {
+    runCx('mark', shell('cat /home/u/.agents/skills/aria-specialist/SKILL.md'));
+    runCx('mark', shell('echo x > /home/u/.agents/skills/accessibility-lead/SKILL.md'));
+    runCx('mark', shell('grep -l accessibility-lead skills/*/SKILL.md'));
+    assert.equal(runCx('gate', patch).code, 2);
+  });
+
+  test('a prompt that names the lead with $ opens it', () => {
+    runCx('detect', { ...SESS, hook_event_name: 'UserPromptSubmit', prompt: 'fix the header $accessibility-lead' });
+    assert.equal(runCx('gate', patch).code, 0);
+  });
+
+  test('a prompt that only mentions the lead in words does not', () => {
+    runCx('detect', { ...SESS, hook_event_name: 'UserPromptSubmit', prompt: 'is accessibility-lead installed? costs $5' });
+    assert.equal(runCx('gate', patch).code, 2);
+  });
+
+  test('the lead subagent stopping still opens it', () => {
+    runCx('mark', { ...SESS, hook_event_name: 'SubagentStop', agent_type: 'accessibility-lead' });
+    assert.equal(runCx('gate', patch).code, 0);
+  });
+});

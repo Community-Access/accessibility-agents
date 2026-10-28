@@ -42,6 +42,12 @@
  * manifest marks on PostToolUse for view_file when the file read is the
  * lead's SKILL.md: the same launch-time signal as on Claude Code.
  *
+ * Codex is the same: its subagent events fire only for subagents, and the
+ * model loads a skill by reading its SKILL.md with a shell command. Its
+ * manifest marks on PostToolUse for Bash when the command reads the lead's
+ * SKILL.md, and on UserPromptSubmit when the prompt names the lead with $,
+ * which is how a Codex user invokes a skill explicitly.
+ *
  * Exit codes follow the common hook convention: 0 proceed, 2 block.
  * Structured decisions are emitted as JSON on stdout where the client reads it.
  *
@@ -197,15 +203,36 @@ function toolInput(payload) {
 }
 
 /**
- * Antigravity reads a skill's SKILL.md with view_file. Return the skill's
- * folder name when this call read one, so mark() can recognise the lead.
+ * Antigravity reads a skill's SKILL.md with view_file, and Codex has the model
+ * read it with a shell command. Return the skill's folder name when this call
+ * read one, so mark() can recognise the lead.
  */
 function skillFileRead(payload, input) {
   const tool = (payload.toolCall && payload.toolCall.name) || payload.tool_name || '';
-  if (tool !== 'view_file') return '';
-  const file = String(input.AbsolutePath || input.path || '');
-  const m = /[\\/]([A-Za-z0-9_-]+)[\\/]SKILL\.md$/.exec(file);
-  return m ? m[1] : '';
+  if (tool === 'view_file') {
+    const file = String(input.AbsolutePath || input.path || '');
+    const m = /[\\/]([A-Za-z0-9_-]+)[\\/]SKILL\.md$/.exec(file);
+    return m ? m[1] : '';
+  }
+  if (CLIENT === 'codex' && (tool === 'Bash' || tool === 'exec_command' || tool === 'shell')) {
+    const command = Array.isArray(input.command) ? input.command.join(' ') : String(input.command || input.cmd || '');
+    // Only a lead's SKILL.md counts, and only when the command reads it.
+    if (/(^|[\s;&|])(rm|mv|cp|tee|touch)\s|>\s*\S*SKILL\.md/.test(command)) return '';
+    for (const m of command.matchAll(/[\\/]([A-Za-z0-9_-]+)[\\/]SKILL\.md\b/g)) {
+      if (LEAD_SKILLS.has(m[1])) return m[1];
+    }
+  }
+  return '';
+}
+
+/** Codex: a prompt that names the lead with $ loads it explicitly. */
+function promptNamesLead(payload) {
+  if (CLIENT !== 'codex') return '';
+  const prompt = String(payload.prompt || '');
+  for (const m of prompt.matchAll(/(?:^|\s)\$([A-Za-z0-9_-]+)\b/g)) {
+    if (LEAD_SKILLS.has(m[1])) return m[1];
+  }
+  return '';
 }
 
 /** Clients name the edited path differently. Look everywhere it might be. */
@@ -316,6 +343,8 @@ function eventName(payload) {
 // --------------------------------------------------------------- behaviours
 
 function detect(payload, ids) {
+  const named = promptNamesLead(payload);
+  if (named) setMarker(ids, 'reviewed', `${named} named in the prompt ${new Date().toISOString()}`);
   if (hasMarker(ids, 'reminded')) return 0;
   setMarker(ids, 'reminded');
   emitContext(REMINDER, eventName(payload));

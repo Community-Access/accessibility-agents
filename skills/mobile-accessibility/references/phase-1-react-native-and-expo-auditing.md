@@ -204,6 +204,27 @@ Text("Summary").accessibilitySortPriority(2)
 Button("Details").accessibilitySortPriority(1)
 ```
 
+#### One phrase, one stop
+
+A row built from separate labels (title, subtitle, timestamp) costs one swipe
+per label. When the pieces read as one phrase, make the row one accessibility
+element and give it one label:
+
+- React Native: `accessible={true}` on the container `View` groups its children
+  into one element; set `accessibilityLabel` when the joined text needs a
+  separator or a different order
+- SwiftUI: `.accessibilityElement(children: .combine)`
+- UIKit: `isAccessibilityElement = true` on the container, with the pieces
+  joined in its `accessibilityLabel`
+- Jetpack Compose: `Modifier.semantics(mergeDescendants = true)`
+
+Group static text only. In React Native and UIKit, a control inside a grouped
+row can no longer be reached on its own. For web content in a `WKWebView` or
+mobile Safari, see the `aria-specialist` reference on flex and grid text runs:
+flex and grid items split a phrase the same way, and white space between them
+is dropped, gluing words together. Confirm with the Xcode Accessibility
+Inspector, which lists the elements VoiceOver stops on.
+
 ---
 
 ## Phase 3: Android-Specific Auditing (Jetpack Compose and Views)

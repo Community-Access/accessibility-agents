@@ -60,6 +60,8 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [ARIA Authoring Practices Guide (APG)](https://www.w3.org/WAI/ARIA/apg/)
 - [axe-core Rule Descriptions](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
 - [HTML Living Standard](https://html.spec.whatwg.org/)
+- [CSS Flexbox Level 1, Flex Items](https://www.w3.org/TR/css-flexbox-1/#flex-items)
+- [CSS Grid Layout Level 2, Grid Items](https://www.w3.org/TR/css-grid-2/#grid-items)
 
 ### keyboard-navigator
 
@@ -288,6 +290,8 @@ citation policy is in `docs/` and applies to every skill in this package.
 - [UI Automation Specification (Windows)](https://learn.microsoft.com/en-us/windows/win32/winauto/entry-uiauto-win32)
 - [Microsoft Active Accessibility (MSAA)](https://learn.microsoft.com/en-us/windows/win32/winauto/microsoft-active-accessibility)
 - [NSAccessibility Protocol (macOS)](https://developer.apple.com/documentation/appkit/nsaccessibility)
+- [Qt accessibility overview](https://doc.qt.io/qt-6/accessible.html)
+- [Qt Widgets accessibility source (qtbase)](https://github.com/qt/qtbase/tree/dev/src/widgets/accessible)
 
 ### desktop-a11y-testing-coach
 

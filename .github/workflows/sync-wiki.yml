@@ -1,14 +1,27 @@
 name: Sync Docs to Wiki
 
+# The wiki mirrors docs/: every page comes from a file in the repository, and a
+# page with no source is removed. Home and the sidebar are in .github/wiki/.
+# See scripts/sync-wiki.mjs.
+
 on:
   push:
     branches: [main]
     paths:
       - 'docs/**'
+      - '.github/wiki/**'
+      - 'scripts/sync-wiki.mjs'
+      - '.github/workflows/sync-wiki.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: sync-wiki
+  cancel-in-progress: false
 
 jobs:
   sync-wiki:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
 
@@ -23,83 +36,23 @@ jobs:
           path: wiki
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
       - name: Sync docs to wiki
+        run: node scripts/sync-wiki.mjs wiki
+
+      - name: Push
+        working-directory: wiki
         run: |
-          cd wiki
-
-          # Map docs/ files to wiki page names
-          declare -A FILE_MAP
-          FILE_MAP["docs/getting-started/README.md"]="Getting-Started.md"
-          FILE_MAP["docs/architecture/README.md"]="Architecture.md"
-          FILE_MAP["docs/reference/configuration.md"]="Configuration.md"
-          FILE_MAP["docs/reference/skills/README.md"]="Agents-Overview.md"
-          FILE_MAP["docs/reference/skills/accessibility-lead.md"]="Agent:-Accessibility-Lead.md"
-          FILE_MAP["docs/reference/skills/web-accessibility-wizard.md"]="Agent:-Web-Accessibility-Wizard.md"
-          FILE_MAP["docs/reference/skills/document-accessibility-wizard.md"]="Agent:-Document-Accessibility-Wizard.md"
-          FILE_MAP["docs/reference/skills/alt-text-headings.md"]="Agent:-Alt-Text-and-Headings.md"
-          FILE_MAP["docs/reference/skills/aria-specialist.md"]="Agent:-ARIA-Specialist.md"
-          FILE_MAP["docs/reference/skills/contrast-master.md"]="Agent:-Contrast-Master.md"
-          FILE_MAP["docs/reference/skills/forms-specialist.md"]="Agent:-Forms-Specialist.md"
-          FILE_MAP["docs/reference/skills/keyboard-navigator.md"]="Agent:-Keyboard-Navigator.md"
-          FILE_MAP["docs/reference/skills/link-checker.md"]="Agent:-Link-Checker.md"
-          FILE_MAP["docs/reference/skills/live-region-controller.md"]="Agent:-Live-Region-Controller.md"
-          FILE_MAP["docs/reference/skills/modal-specialist.md"]="Agent:-Modal-Specialist.md"
-          FILE_MAP["docs/reference/skills/tables-data-specialist.md"]="Agent:-Tables-Data-Specialist.md"
-          FILE_MAP["docs/reference/skills/testing-coach.md"]="Agent:-Testing-Coach.md"
-          FILE_MAP["docs/reference/skills/wcag-guide.md"]="Agent:-WCAG-Guide.md"
-          FILE_MAP["docs/reference/skills/word-accessibility.md"]="Agent:-Word-Accessibility.md"
-          FILE_MAP["docs/reference/skills/excel-accessibility.md"]="Agent:-Excel-Accessibility.md"
-          FILE_MAP["docs/reference/skills/powerpoint-accessibility.md"]="Agent:-PowerPoint-Accessibility.md"
-          FILE_MAP["docs/reference/skills/pdf-accessibility.md"]="Agent:-PDF-Accessibility.md"
-          FILE_MAP["docs/reference/skills/office-scan-config.md"]="Agent:-Office-Scan-Config.md"
-          FILE_MAP["docs/reference/skills/pdf-scan-config.md"]="Agent:-PDF-Scan-Config.md"
-          FILE_MAP["docs/guides/scanning/office-scanning.md"]="Office-Scanning.md"
-          FILE_MAP["docs/guides/scanning/pdf-scanning.md"]="PDF-Scanning.md"
-          FILE_MAP["docs/guides/scanning/scan-configuration.md"]="Scan-Configuration.md"
-          FILE_MAP["docs/reference/mcp-tools.md"]="MCP-Tools.md"
-          FILE_MAP["docs/reference/tools/axe-core-integration.md"]="Axe-Core-Integration.md"
-          FILE_MAP["docs/reference/tools/vpat-generation.md"]="VPAT-Generation.md"
-          FILE_MAP["docs/guides/advanced/advanced-scanning-patterns.md"]="Advanced-Scanning-Patterns.md"
-          FILE_MAP["docs/guides/advanced/cross-platform-handoff.md"]="Cross-Platform-Handoff.md"
-          FILE_MAP["docs/guides/advanced/platform-references.md"]="Platform-References.md"
-          FILE_MAP["docs/guides/advanced/plugin-packaging.md"]="Plugin-Packaging.md"
-
-          CHANGED=false
-
-          for src in "${!FILE_MAP[@]}"; do
-            dest="${FILE_MAP[$src]}"
-            src_path="../$src"
-            if [ -f "$src_path" ]; then
-              if [ ! -f "$dest" ] || ! diff -q "$src_path" "$dest" > /dev/null 2>&1; then
-                cp "$src_path" "$dest"
-                echo "Updated: $dest"
-                CHANGED=true
-              fi
-            fi
-          done
-
-          # Also pick up any new docs not in the map
-          for f in $(find ../docs -name "*.md" -type f); do
-            rel="${f#../}"
-            if [[ -z "${FILE_MAP[$rel]}" ]]; then
-              basename=$(basename "$f" .md)
-              wiki_name=$(echo "$basename" | sed 's/ /-/g; s/^./\U&/; s/-./\U&/g')
-              wiki_name="${wiki_name}.md"
-              if [ ! -f "$wiki_name" ]; then
-                cp "$f" "$wiki_name"
-                echo "Added new page: $wiki_name"
-                CHANGED=true
-              fi
-            fi
-          done
-
-          if [ "$CHANGED" = true ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "Sync docs from repo (automated)"
-            git push
-            echo "Wiki updated."
-          else
+          git add -A
+          if git diff --cached --quiet; then
             echo "Wiki already up to date."
+            exit 0
           fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync docs from repo (automated)"
+          git push
