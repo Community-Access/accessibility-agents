@@ -24,6 +24,7 @@
     "verify:markdownlint": "markdownlint-cli2 \"**/*.md\"",
     "verify:mcp": "node --test mcp-server/server-core.test.js mcp-server/mcp-conformance.test.js",
     "verify:scanner": "node scripts/test-markdown-scanner.mjs",
+    "verify:sources": "node scripts/test-source-checker.mjs",
     "measure": "node skills/a11y-core/scripts/measure-context.mjs",
     "measure:dispatch": "node skills/a11y-core/scripts/measure-context.mjs --dispatch",
     "probe:mcp": "node mcp-server/scripts/probe-tools.mjs",

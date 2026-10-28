@@ -78,7 +78,7 @@ failures                0
 
 ## 3. The gates
 
-Seventeen gates. Each says what it proves in terms of what breaks without it. All seventeen passed on 2026-10-28 (the live gate on Claude Code only).
+Eighteen gates. Each says what it proves in terms of what breaks without it. The first seventeen passed on 2026-10-28 (the live gate on Claude Code only); the source currency checker gate was added the same day.
 
 | Gate | Standard | What a failure would cost |
 |---|---|---|
@@ -92,6 +92,7 @@ Seventeen gates. Each says what it proves in terms of what breaks without it. Al
 | MCP server | Model Context Protocol | An approval prompt per document during a bulk scan |
 | Markdown accessibility | this project's own rules | The project failing the standard it enforces on others |
 | Markdown linter | unit tests for the linter | A rule that demands markdown which does not render |
+| Source currency checker | `check_source_currency.py` | A source that stays down filing a new issue every run, or a bot check read as a moved page |
 | Wiki page names | one wiki page per file under `docs/` | A wiki page overwritten by another, or kept after its source was deleted |
 | Version consistency | one version per release | A user unable to tell which build they are running |
 | Dispatch matrices | generated from skill frontmatter | A new specialist that no router can reach |
@@ -113,6 +114,7 @@ npm run verify:mcp          # MCP server, 115 tests (2026-10-28)
 node scripts/check-mcp-bundle.mjs   # the committed bundle matches a fresh build
 npm run verify:markdown     # markdown accessibility
 npm run verify:scanner      # the linter's own tests
+npm run verify:sources      # the source currency checker's tests
 npm run verify:release      # version consistency
 npm run verify:deps         # dependency advisories
 npm run verify:live         # real sessions on whichever clients are installed

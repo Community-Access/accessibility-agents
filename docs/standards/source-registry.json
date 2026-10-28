@@ -147,9 +147,9 @@
     },
     {
       "id": "wxwidgets-docs",
-      "url": "https://docs.wxwidgets.org/stable/",
+      "url": "https://docs.wxwidgets.org/3.2/",
       "type": "platform-vendor",
-      "lastVerified": "2026-03-03",
+      "lastVerified": "2026-10-28",
       "sha256": "",
       "version": "3.2.x",
       "agents": ["wxpython-specialist", "desktop-a11y-specialist"],
