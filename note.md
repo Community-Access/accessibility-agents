@@ -155,6 +155,19 @@ The `check_apca_contrast` tool said APCA was "drafted for WCAG 3". The WCAG
 3.0 draft of 10 September 2026 does not name APCA; its contrast measure is
 "to be determined". The tool is now described as experimental.
 
+## Done and committed (996e929, 9dc3e49): scanner fixes found by the audit
+
+- `run_playwright_viewport_scan` claimed to test zoom and WCAG 1.4.4. It
+  loads four widths and reports horizontal scrolling: a 1.4.10 check only.
+  The description now says so.
+- Office and ePub scan configs had no effect. The config schemas, the
+  templates and the skills all put settings in `docx`/`xlsx`/`pptx` and
+  `epub` blocks; the scanners read only top-level keys. They now read the
+  block for the file's format (the old flat shape still works).
+- `disabledRules` now accepts the skills' rule IDs (DOCX-E004 and so on) as
+  well as the scanner's own (doc-title and so on). A test checks that every
+  mapped ID exists in the rule sets. 112 MCP tests pass.
+
 ## In progress
 
 Six agents are auditing all 108 skills in parallel and a seventh the docs,
@@ -226,19 +239,62 @@ Other:
   flag takes rule IDs, not tags) and ends `|| true`, so it can never fail.
 - About 100 live files break the house style (emoji, arrows, box drawing).
 
-## Decisions for you (nothing blocked on these yet)
+## Decisions for you, with my advice
 
-0. Batch B (23 knowledge-base skills) stopped at 5:17 after partly editing
-   6 files and was not in the four you asked me to restart. Restart it?
-   Until then those 6 files stay uncommitted and the 23 skills unaudited.
+1. Batch B (23 knowledge-base skills): restarted at 6:01 PM, on "get
+   everything golden". Nothing needed from you.
 
-1. The MCP server needs `node_modules` to start, so a plugin install cannot
-   run it as the repo stands. Options: publish `mcp-server` to npm and launch
-   it with `npx`, or commit a bundled single-file build. Until you choose,
-   the docs will say plainly that the scanners need `npm install` in
-   `mcp-server/`.
+2. The MCP server cannot start from a plugin install, because a plugin is a
+   git checkout with no `node_modules`.
+   Options: (a) publish `mcp-server` to npm and launch it with `npx -y
+   <package>@<version>`; (b) commit a bundled single file
+   (`mcp-server/dist/stdio.mjs`, built with esbuild, checked by CI to match
+   the source); (c) leave it and document `npm install --prefix mcp-server`.
+   Advice: (b). Plugins install from git, so a bundle works on first run and
+   offline, cannot drift from the skills it ships with, adds no npm
+   publishing step or account, and keeps the 1.1 MB of runtime code
+   reviewable in one place. The optional scanners (Playwright, axe, pdf-lib)
+   stay optional and are not bundled. Choose (a) if you also want the
+   server usable outside the plugin by people who never clone the repo.
+   Until you choose, the docs say plainly that the install step is needed.
+
+3. Re-run the live edit-gate test in Claude Code (my cloud workspace, a few
+   Haiku calls). Advice: yes. The fix is tested offline with Claude Code's
+   real payload shape, but a live run is the only proof the gate now opens
+   after accessibility-lead and still blocks before it.
+
+4. Codespaces. `accessibility-agents.md` in the AHG kit promises "the full
+   version, scanners included" in a codespace; today a codespace gets the
+   repo but VS Code sees neither the skills (root `skills/` is not a
+   discovered location) nor the MCP server (no `.vscode/mcp.json`).
+   Advice: add `.devcontainer/devcontainer.json` that runs `npm ci` and
+   `npm ci --prefix mcp-server`, plus `.vscode/mcp.json` (VS Code's
+   `servers` format) and `chat.agentSkillsLocations` pointing at `skills/`.
+   About 30 lines, and it makes the AHG kit's promise true. Otherwise drop
+   the Codespaces route from the kit. I can do either; say which.
+
+5. One scoring model. The renderer (`merge-findings.mjs`: weights 10/5/2/1,
+   grades 90/80/70/60) is what every report actually uses. The audit made
+   the docs point to it; `web-csv-reporter`'s ROI weights (10/7/3/1) still
+   differ. Advice: the renderer is the single source; align the CSV ROI
+   weights to it.
+
+6. GitHub skills and the findings contract. Several GitHub skills say to
+   collect WCAG findings JSON from specialists they never dispatch, and
+   their output (alerts, metrics) is not WCAG findings. Advice: state in
+   `a11y-core` that the findings contract applies to accessibility audits,
+   and let the GitHub workflow skills report in their own structure.
+
+7. Antigravity has its own hook events and file, so the edit gate does not
+   run there. Advice: add an Antigravity manifest later; low priority until
+   someone uses it.
+
+8. The unverified items in each batch (listed in the batch sections below
+   when they land) are left as they were, not guessed. Advice: none is a
+   risk to users; the "30-40%" and "~30%" statistics have been replaced
+   with "a minority" where found, which is what the evidence supports.
 
 ## Pushing
 
 Pushed to https://github.com/Community-Access/accessibility-agents/tree/chore/standards-audit-and-codespaces
-(5ddd426, 3058dcf, 0fc0195, 0338a46, d20a0f4, 69b7e85). No pull request yet; one opens when the audit is done.
+(see git log; every commit is listed above). No pull request yet; one opens when the audit is done.
