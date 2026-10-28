@@ -128,12 +128,43 @@ Code names a subagent in.
 - Direct: `npm install`, `npm install --prefix mcp-server`,
   `npm run setup -- --dry-run`, then `npm run setup`.
 
+## Done and committed (325e936): GitHub, developer and desktop skills
+
+24 skills, 40 files. Edited by one agent, then checked hunk by hunk by an
+independent reviewer against primary sources: 161 of 164 hunks correct; the
+three errors it found (a wrong Node 20 end-of-life date, and two NVDA
+statements about nvdaAPIVersions.json) are fixed in the same commit.
+
+- Preferences: `.github/accessibility-agents/preferences.md`, falling back to
+  the old `.github/agents/` path.
+- GitHub MCP tool names now match github-mcp-server (several did not exist;
+  pr-review tried to merge through a read-only tool).
+- GitHub REST enum values, label, branch protection and community health
+  file behaviour match the OpenAPI description and docs.github.com.
+- actions/checkout@v7; Node 24 or 22 (Node 20 ended 30 April 2026).
+- HTML report templates: redundant ARIA landmark roles, and aria-label on
+  elements ARIA does not allow to be named, removed.
+- NVDA (2026.3 current), wxPython, Accessibility Insights for Windows,
+  pywinauto and Windows contrast themes corrected.
+- Left as is, unverified: 8 items, including a "30-40%" statistic with no
+  source and some VS Code chat tool names.
+
+## Done and committed (dafb4b8): APCA
+
+The `check_apca_contrast` tool said APCA was "drafted for WCAG 3". The WCAG
+3.0 draft of 10 September 2026 does not name APCA; its contrast measure is
+"to be determined". The tool is now described as experimental.
+
 ## In progress
 
 Six agents are auditing all 108 skills in parallel and a seventh the docs,
 each against the fact files, editing only its own folders and logging every
-change with its source. Four of them stopped when the session was
-interrupted at 5:17 and were restarted at your OK. When they finish, an
+change with its source. Five of them stopped when the session was
+interrupted at 5:17; four were restarted at your OK (standards and law, web
+part 1, web part 2, documents and Markdown). The fifth, batch B (23
+knowledge-base skills: CI, testing, scanning, framework, mobile, media,
+Markdown and GitHub knowledge), had partly edited 6 files and was not
+restarted: see Decisions. When they finish, an
 independent reviewer checks every change against the sources before it is
 committed.
 
@@ -196,6 +227,10 @@ Other:
 - About 100 live files break the house style (emoji, arrows, box drawing).
 
 ## Decisions for you (nothing blocked on these yet)
+
+0. Batch B (23 knowledge-base skills) stopped at 5:17 after partly editing
+   6 files and was not in the four you asked me to restart. Restart it?
+   Until then those 6 files stay uncommitted and the 23 skills unaudited.
 
 1. The MCP server needs `node_modules` to start, so a plugin install cannot
    run it as the repo stands. Options: publish `mcp-server` to npm and launch
