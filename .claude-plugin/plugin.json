@@ -12,7 +12,7 @@
     "accessibility-agents": {
       "command": "node",
       "args": [
-        "${CLAUDE_PLUGIN_ROOT}/mcp-server/stdio.js"
+        "${CLAUDE_PLUGIN_ROOT}/mcp-server/dist/stdio.mjs"
       ]
     }
   }

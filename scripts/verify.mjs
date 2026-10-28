@@ -119,6 +119,13 @@ const GATES = [
     proves: 'The skills catalog and MCP tools reference describe what is actually shipped.',
   },
   {
+    id: 'bundle',
+    name: 'MCP server bundle',
+    standard: 'mcp-server/dist/stdio.mjs is a fresh build of the source',
+    command: [NODE, ['scripts/check-mcp-bundle.mjs']],
+    proves: 'A plugin install, which has no node_modules, starts the same server the tests ran, because the committed bundle matches a fresh build byte for byte.',
+  },
+  {
     id: 'dependencies',
     name: 'Dependency advisories',
     standard: 'no known-vulnerable dependency ships',

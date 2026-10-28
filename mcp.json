@@ -5,7 +5,7 @@
       "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp-server/stdio.js"
+        "${PLUGIN_ROOT}/mcp-server/dist/stdio.mjs"
       ]
     }
   }

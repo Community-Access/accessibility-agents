@@ -159,7 +159,7 @@ The six entry points. Describe the task and one of these picks it up.
 | [`compliance-mapping`](compliance-mapping.md) | Map findings to Section 508, EN 301 549, EAA, ADA, AODA; build a VPAT. |
 | [`wcag-aaa`](wcag-aaa.md) | WCAG 2.2 Level AAA criteria that go beyond the AA target. |
 | [`wcag-guide`](wcag-guide.md) | Explain WCAG 2.2 criteria, conformance levels and what changed. |
-| [`wcag3-preview`](wcag3-preview.md) | WCAG 3.0 preview: outcomes, APCA contrast and functional needs. |
+| [`wcag3-preview`](wcag3-preview.md) | WCAG 3.0 draft preview: core requirements, tiers, contrast and scope. |
 
 ## Reference skills
 
@@ -173,7 +173,7 @@ Lookup data cited by the skills above: rule tables, URL registries, formulas. Ne
 | `kb-cognitive-accessibility` | Review UI for cognitive load, plain language clarity, and WCAG 2.2 cognitive SC (3.3.7, 3.3.8, 3.3.9). Includes COGA guidance, reading level, auth patterns, and timeout warnings. |
 | `kb-data-visualization-accessibility` | Audit charts and graphs for accessibility: SVG ARIA, data table alternatives, keyboard interaction, color-safe palettes, and library APIs. |
 | `kb-design-system` | Validate design system tokens for WCAG AA/AAA contrast. Compute color token contrast, focus ring validation (WCAG 2.4.13), motion tokens, and spacing for touch targets across frameworks. |
-| `kb-document-scanning` | Discover and inventory documents for accessibility audits. Scans folders for .docx, .xlsx, .pptx, and PDFs. Detects git changes and extracts title, author, and language metadata. |
+| `kb-document-scanning` | Discover and inventory documents for accessibility audits. Scans folders for .docx, .xlsx, .pptx, PDF and ePub files. Detects git changes and extracts title, author, and language metadata. |
 | `kb-email-accessibility` | HTML email accessibility: table layouts, inline styles, dark mode, image fallbacks, and email client rendering constraints. |
 | `kb-framework-accessibility` | Framework-specific accessibility patterns and fix templates for React, Vue, Angular, Svelte, Next.js, and Tailwind CSS. |
 | `kb-github-a11y-scanner` | Integrate GitHub Accessibility Scanner. Detects configuration, parses scanner issues, correlates with local scans, and tracks Copilot-assigned fixes. |

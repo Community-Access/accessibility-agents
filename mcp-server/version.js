@@ -14,13 +14,17 @@ import { dirname, join } from "node:path";
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 function readVersion() {
-  try {
-    return JSON.parse(readFileSync(join(HERE, "package.json"), "utf8")).version;
-  } catch {
-    // A server that cannot read its own manifest should still start; it just
-    // reports an honest unknown rather than a stale number.
-    return "0.0.0-unknown";
+  // The source runs from mcp-server/; the bundle from mcp-server/dist/.
+  for (const dir of [HERE, join(HERE, "..")]) {
+    try {
+      return JSON.parse(readFileSync(join(dir, "package.json"), "utf8")).version;
+    } catch {
+      /* try the next location */
+    }
   }
+  // A server that cannot read its own manifest should still start; it just
+  // reports an honest unknown rather than a stale number.
+  return "0.0.0-unknown";
 }
 
 export const SERVER_VERSION = readVersion();

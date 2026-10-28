@@ -8,6 +8,7 @@ source-validation-results.json
 node_modules/
 *.vsix
 dist/
+!mcp-server/dist/
 artifacts/
 go-cli/bin/
 .accessibility-agents/
