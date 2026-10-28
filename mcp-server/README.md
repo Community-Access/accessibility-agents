@@ -357,7 +357,7 @@ For more background, see [veraPDF integration](../docs/reference/tools/verapdf-i
 
 ```bash
 curl http://127.0.0.1:3100/health
-# {"status":"ok","name":"a11y-agent-team","version":"7.0.3","mode":"stateful"}
+# {"status":"ok","name":"a11y-agent-team","version":"7.1.0","mode":"stateful"}
 ```
 
 ## MCP Prompts

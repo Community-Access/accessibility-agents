@@ -84,8 +84,12 @@ const CLIENTS = [
     detect: () => path.join(HOME, '.codex'),
     // ~/.codex/hooks.json is Codex's own file and may hold the user's hooks.
     hooks: { from: 'hooks/codex.hooks.json', to: path.join(HOME, '.codex', 'hooks.json'), shared: true },
-    note: 'Codex reads ~/.agents/skills and ~/.codex/hooks.json directly. If a merge\n' +
-      '    file was written above, merge it; otherwise nothing further to do.',
+    note:
+      'Codex reads ~/.agents/skills and ~/.codex/hooks.json directly. If a merge\n' +
+      '    file was written above, merge it. For the scanners, register the server:\n' +
+      `    codex mcp add accessibility-agents -- node "${path.join(ROOT, 'mcp-server', 'dist', 'stdio.mjs').replace(/\\/g, '/')}"\n` +
+      '    (The Codex plugin gives skills and the server but no gate: Codex no\n' +
+      '    longer loads plugin hooks. Use this route, not both.)',
   },
   {
     id: 'copilot',
@@ -113,13 +117,12 @@ const CLIENTS = [
     name: 'Antigravity',
     detect: () => path.join(HOME, '.gemini', 'config'),
     skills: path.join(HOME, '.gemini', 'config', 'skills'),
-    hooks: null,
+    // ~/.gemini/config/hooks.json is Antigravity's own global hooks file.
+    hooks: { from: 'hooks/antigravity.hooks.json', to: path.join(HOME, '.gemini', 'config', 'hooks.json'), shared: true },
     note:
       'Antigravity reads ~/.gemini/config/skills, not ~/.agents/skills, so the\n' +
-      '    skills were copied there too. Its hook events differ from Gemini CLI\n' +
-      '    (antigravity.google/docs/hooks), and none tells a hook that\n' +
-      '    accessibility-lead has run, so no Antigravity manifest ships and the\n' +
-      '    edit gate does not run there.',
+      '    skills were copied there too, and its global hooks file gates edits. If\n' +
+      '    a merge file was written above, add its a11y-* entries to hooks.json.',
   },
 ];
 
@@ -164,6 +167,28 @@ function renderManifest(client) {
   return manifest.replace(/\$\{CLAUDE_PLUGIN_ROOT\}|\$\{PLUGIN_ROOT\}|\$\{extensionPath\}/g, ROOT.replace(/\\/g, '/'));
 }
 
+/**
+ * Remove this package's a11y-* entries from an Antigravity hooks file the
+ * user also uses. Returns false if the file could not be read as JSON.
+ */
+function removeNamedHooks(file) {
+  let json;
+  try {
+    json = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return false;
+  }
+  if (!json || typeof json !== 'object' || Array.isArray(json)) return false;
+  const ours = Object.keys(json).filter((k) => /^a11y-/.test(k));
+  if (!ours.length) return true;
+  say('edit', `${file} (removed ${ours.join(', ')}; your other hooks kept)`);
+  if (!dryRun) {
+    for (const k of ours) delete json[k];
+    fs.writeFileSync(file, JSON.stringify(json, null, 2) + '\n', 'utf8');
+  }
+  return true;
+}
+
 // --------------------------------------------------------------------- main
 
 console.log(`Accessibility Agents installer${dryRun ? ' (dry run)' : ''}`);
@@ -200,6 +225,9 @@ if (uninstall) {
     if (!client.hooks.shared || fs.readFileSync(client.hooks.to, 'utf8') === renderManifest(client)) {
       say('remove', client.hooks.to);
       if (!dryRun) fs.rmSync(client.hooks.to, { force: true });
+    } else if (client.id === 'antigravity' && removeNamedHooks(client.hooks.to)) {
+      // Antigravity names each hook at the top level, so ours can be taken
+      // out of the user's file without touching theirs.
     } else {
       say('keep', `${client.hooks.to} (differs from what this installer writes; remove any guard.mjs entries by hand)`);
     }
@@ -247,7 +275,9 @@ for (const client of CLIENTS) {
     // A client's hooks file may already hold the user's own hooks. Overwriting
     // it would silently delete them, so an existing file is never replaced
     // without --force; the manifest is written beside it instead, to merge.
-    const exists = fs.existsSync(client.hooks.to);
+    // A file holding exactly what this installer writes is ours, from an
+    // earlier run: replace it rather than asking the user to merge a copy.
+    const exists = fs.existsSync(client.hooks.to) && fs.readFileSync(client.hooks.to, 'utf8') !== renderManifest(client);
     const target = exists && !force ? client.hooks.to.replace(/\.json$/, '.a11y.json') : client.hooks.to;
 
     if (exists && !force) {
@@ -261,7 +291,8 @@ for (const client of CLIENTS) {
     }
 
     if (exists && !force) {
-      console.log(`    Merge the "hooks" block of ${path.basename(target)} into ${path.basename(client.hooks.to)}.`);
+      const what = client.id === 'antigravity' ? 'the a11y-* entries' : 'the "hooks" block';
+      console.log(`    Merge ${what} of ${path.basename(target)} into ${path.basename(client.hooks.to)}.`);
     }
   }
   console.log(`    ${client.note}`);
@@ -279,6 +310,9 @@ console.log('  Claude Code   /plugin marketplace add Community-Access/accessibil
 console.log('                /plugin install accessibility-agents@community-access');
 console.log('  Copilot CLI   copilot plugin marketplace add Community-Access/accessibility-agents');
 console.log('                copilot plugin install accessibility-agents@community-access');
+console.log('  Codex         codex plugin marketplace add Community-Access/accessibility-agents');
+console.log('                codex plugin add accessibility-agents@community-access');
+console.log('                (skills and MCP server only: Codex does not load plugin hooks)');
 console.log('  VS Code       Chat: Install Plugin From Source, with this repository\'s URL');
 console.log('');
 console.log('The MCP server ships bundled and needs no install. The optional scanners do:');

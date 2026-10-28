@@ -97,7 +97,7 @@ thing whether a skill or a scanner produced it.
 
 One script, `hooks/guard.mjs`, and a manifest per client (the plugin files
 `hooks/hooks.json` and `com.github.copilot/hooks/hooks.json`, and direct-install
-manifests for Claude Code, Codex, Copilot and Gemini CLI) that map each
+manifests for Codex, Copilot, Gemini CLI and Antigravity) that map each
 client's event names onto its five behaviours: detect once per session, gate edits to
 user-facing files, mark when the lead completes, persist across compaction,
 finalize before a turn ends. It fails closed: a crash in the gate refuses the
@@ -105,10 +105,11 @@ edit rather than allowing it.
 
 The gate opens on the lead's completion, not its launch, wherever the client
 reports completion. The previous design opened on launch, so a cancelled review
-unlocked every edit for the rest of the session. The exception is Claude Code
-when the lead runs inline as a skill: there is no completion event, so the gate
-opens when the Skill tool has loaded the lead's instructions, and the finalize
-behaviour remains the backstop.
+unlocked every edit for the rest of the session. The exceptions are Claude Code
+when the lead runs inline as a skill, and Antigravity, which loads a skill by
+reading its `SKILL.md` with `view_file`: neither has a completion event, so the
+gate opens when the lead's instructions are loaded. On Claude Code the finalize
+behaviour remains the backstop; Antigravity has none wired.
 
 ## Measured, budgeted, verified
 

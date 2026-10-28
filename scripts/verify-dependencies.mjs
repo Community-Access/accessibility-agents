@@ -2,7 +2,7 @@
 /**
  * verify-dependencies.mjs - no known-vulnerable dependency ships.
  *
- * This repository carries three independent dependency trees, and until 7.0.1
+ * This repository carries two independent dependency trees, and until 7.0.1
  * nothing checked any of them. GitHub was reporting 58 advisories on the
  * default branch, 24 of them high, and the only reason anyone knew was the
  * warning `git push` prints. A project that enforces accessibility on other
@@ -16,8 +16,6 @@
  *                     their documents.
  *   root              tooling only, but it runs in CI on every pull request.
  *                     Same threshold.
- *   vscode-extension  deprecated, build-time only, published to nobody.
- *                     Reported, never fatal.
  *
  * Offline is not a pass. `npm audit` needs the registry, so when it cannot be
  * reached this exits 2 and says so rather than printing a green line.
@@ -44,7 +42,6 @@ const offlineOk = argv.includes('--offline-ok');
 const TREES = [
   { dir: '.', label: 'root tooling', fatal: ['critical', 'high'] },
   { dir: 'mcp-server', label: 'MCP server', fatal: ['critical', 'high'] },
-  { dir: 'vscode-extension', label: 'VS Code extension (deprecated)', fatal: [] },
 ];
 
 const LEVELS = ['critical', 'high', 'moderate', 'low', 'info'];

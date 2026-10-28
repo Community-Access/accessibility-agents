@@ -1,0 +1,39 @@
+{
+  "a11y-detect": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour detect --client antigravity",
+        "timeout": 10
+      }
+    ]
+  },
+  "a11y-gate": {
+    "PreToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour gate --client antigravity",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "a11y-mark": {
+    "PostToolUse": [
+      {
+        "matcher": "view_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour mark --client antigravity",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

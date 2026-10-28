@@ -20,6 +20,9 @@ Claude Code   /plugin marketplace add Community-Access/accessibility-agents
               /plugin install accessibility-agents@community-access
 Copilot CLI   copilot plugin marketplace add Community-Access/accessibility-agents
               copilot plugin install accessibility-agents@community-access
+Codex         codex plugin marketplace add Community-Access/accessibility-agents
+              codex plugin add accessibility-agents@community-access
+              (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires the chat.plugins.enabled setting)
 ```
@@ -30,9 +33,17 @@ installing: Playwright and `@axe-core/playwright` for the browser scans,
 `pdf-lib` for PDF form conversion, and the veraPDF CLI. The tools that need
 them say how when they are missing.
 
-Codex has no plugin route for this repository yet: `codex plugin marketplace
-add` reads `.agents/plugins/marketplace.json`, which the repository does not
-ship. Use the direct install below.
+On Codex the command is `codex plugin add`, not `install`. Codex reads the
+repository's `.claude-plugin/marketplace.json`. Tested live with Codex CLI
+0.165.0: the install registers the MCP server (`codex mcp list` shows
+`mcp-server/dist/stdio.mjs`) and `codex debug prompt-input` lists exactly the
+six routers. The Codex plugin does not load hooks: Codex 0.165.0 lists its
+`plugin_hooks` feature as removed, and after `codex plugin add` Codex reports
+no hooks. So on Codex the plugin gives the skills and the MCP server but no
+edit gate. For the gate, use `npm run setup` instead, which writes
+`~/.codex/hooks.json` (Codex then lists all six hooks), and register the server
+with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
+Use one route, not both.
 
 ### Directly from a checkout, for any client
 
@@ -50,14 +61,15 @@ installer. The MCP server's stdio bundle needs no install; run
 to work on the server's source. `npm run setup` copies `skills/` to `~/.agents/skills`, the personal
 location Codex, the Copilot CLI, VS Code and Gemini CLI read, and to
 `~/.gemini/config/skills` when Antigravity is present. It writes a hook manifest
-for Codex and Gemini CLI when it finds them and prints what is left to merge by
-hand. It never overwrites a hooks file or a skill you have edited, and
+for Codex, Gemini CLI and Antigravity when it finds them and prints what is
+left to merge by hand. It never overwrites a hooks file or a skill you have edited, and
 `--dry-run` prints every action without doing it. Claude Code does not read
 `~/.agents/skills`, so the installer writes nothing for it: use the plugin, or
 `claude --plugin-dir <checkout>`. For the optional scanners, run
 `npm install --prefix mcp-server`, then `npx playwright install chromium` in
-`mcp-server/`. Antigravity gets the skills but no edit gate: its hook
-events differ from Gemini CLI's, and the package ships no Antigravity manifest because no documented Antigravity hook signal tells the guard that `accessibility-lead` ran, so the gate would never open.
+`mcp-server/`. Antigravity gets its own hook manifest, written to
+`~/.gemini/config/hooks.json`; its gate opens when Antigravity reads the lead's
+`SKILL.md`, and it is tested against the payloads Antigravity documents, not yet in a live Antigravity session.
 
 ### In a GitHub Codespace
 

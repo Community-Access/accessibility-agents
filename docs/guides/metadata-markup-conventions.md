@@ -100,7 +100,7 @@ When writing release notes, include an explicit metadata block to support reprod
 
 ```yaml
 metadata:
-  release: "7.0.3"
+  release: "7.1.0"
   generated-at: "2026-10-28T00:00:00Z"
 ```
 

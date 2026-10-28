@@ -14,10 +14,10 @@ dependency trees of the root tooling and `mcp-server/`.
 ### 1. Dependency advisories
 
 - `node scripts/verify-dependencies.mjs` (the `dependencies` gate in
-  `npm run verify`) runs `npm audit` on the root, `mcp-server/` and
-  `vscode-extension/` trees.
-- It fails on a high or critical advisory in the root or `mcp-server/` tree,
-  and treats the registry being unreachable as "not checked", not as a pass.
+  `npm run verify`) runs `npm audit` on the two dependency trees, the root
+  tooling and `mcp-server/`.
+- It fails on a high or critical advisory in either, and treats the registry
+  being unreachable as "not checked", not as a pass.
 
 ### 2. Version consistency
 
@@ -28,9 +28,7 @@ dependency trees of the root tooling and `mcp-server/`.
 ### 3. Automated update pull requests
 
 - `.github/dependabot.yml` opens weekly update pull requests for GitHub
-  Actions, for npm in `/vscode-extension` only, and for pip in `/scripts`.
-- The root and `mcp-server/` npm trees are not covered by Dependabot; the
-  dependency gate (`scripts/verify-dependencies.mjs`) checks them instead.
+  Actions and for npm in `/` and `/mcp-server`.
 
 ### 4. Review of changes
 

@@ -12,13 +12,17 @@ structured findings rather than from memory.
 ## Install
 
 As a plugin, which loads the skills, the hooks and the MCP server
-registration:
+registration (on Codex, the skills and the MCP server only: Codex no longer
+loads plugin hooks, so use `npm run setup` there for the edit gate):
 
 ```text
 Claude Code   /plugin marketplace add Community-Access/accessibility-agents
               /plugin install accessibility-agents@community-access
 Copilot CLI   copilot plugin marketplace add Community-Access/accessibility-agents
               copilot plugin install accessibility-agents@community-access
+Codex         codex plugin marketplace add Community-Access/accessibility-agents
+              codex plugin add accessibility-agents@community-access
+              (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires the chat.plugins.enabled setting)
 ```
@@ -29,8 +33,8 @@ need installing: Playwright and `@axe-core/playwright` for the browser scans,
 `pdf-lib` for PDF form conversion, and the veraPDF CLI. The tools that need
 them say how when they are missing.
 
-Directly from a checkout, for Codex, Gemini CLI, Antigravity, or any client
-without the plugin:
+Directly from a checkout, for Gemini CLI, Antigravity, or any client without
+the plugin:
 
 ```bash
 npm install
@@ -41,7 +45,7 @@ npm run setup
 `npm run setup` copies the skills to `~/.agents/skills`, the personal location
 Codex, the Copilot CLI, VS Code and Gemini CLI read, and to
 `~/.gemini/config/skills` when Antigravity is present. It writes the hook
-manifest for Codex and Gemini CLI when they are present. It never overwrites a
+manifest for Codex, Gemini CLI and Antigravity when they are present. It never overwrites a
 hooks file or a skill you have edited, and `--dry-run` prints every action
 without doing it. Claude Code does not read `~/.agents/skills`, so the
 installer writes nothing for it: use the plugin, or start Claude Code with

@@ -115,7 +115,7 @@ npm run verify:scanner      # the linter's own tests
 npm run verify:release      # version consistency
 npm run verify:deps         # dependency advisories
 npm run verify:live         # real sessions on whichever clients are installed
-node --test hooks/guard.test.mjs   # enforcement gate, 26 tests (2026-10-27)
+node --test hooks/guard.test.mjs   # enforcement gate, 32 tests (2026-10-28)
 ```
 
 ---
@@ -244,8 +244,14 @@ behaviour in place.
 
 ## 7. Verified in a running client
 
-Every other gate reads files. This one loads the package into a real Claude Code
-session and measures what the client does with it.
+Every other gate reads files. This one loads the package into real client
+sessions and measures what each client does with it. It measures Claude Code
+and Codex wherever they are installed; Copilot can be measured only with a
+signed-in Copilot CLI.
+
+On Codex (measured by the lead with Codex CLI 0.165.0, 2026-10-28), the model
+sees 6 of 108 skills, 1,188 characters. The Claude Code figures below are from
+this machine, where Codex and Copilot are not installed.
 
 | Measurement | Result |
 |---|---|
@@ -287,9 +293,9 @@ so everything after it read as code.
 
 **Live client checks** are now a gate, the last of the sixteen, described in section 7.
 
-What remains is deliberate rather than unfinished: `vscode-extension/` is kept
-and marked deprecated so a final version can point existing users at the
-package, and [the legacy drift report](../history/2026-09-legacy-drift-report.md)
+What remains is deliberate rather than unfinished: the deprecated
+`vscode-extension/` has been removed (VS Code users install the plugin), and
+[the legacy drift report](../history/2026-09-legacy-drift-report.md)
 records what differed between the six legacy copies, for review while that git
 history is still close at hand.
 

@@ -31,7 +31,7 @@ This package's manifest, abridged (keywords omitted):
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "accessibility-agents",
-  "version": "7.0.3",
+  "version": "7.1.0",
   "description": "WCAG 2.2 AA enforcement across web UI, Office and PDF documents, markdown and desktop apps. ...",
   "author": { "name": "Community Access" },
   "license": "MIT",
@@ -70,12 +70,12 @@ Claude Code reads its own manifest format, and Codex keeps a compatibility
 manifest. They carry the same version; `scripts/check-release-consistency.js`
 fails if `package.json`, `plugin.json`, the two manifests below or
 `mcp-server/package.json` disagree. It does not check
-`.claude-plugin/marketplace.json`, which also says 7.0.3.
+`.claude-plugin/marketplace.json`, which also says 7.1.0.
 
 | File | Read by | Holds |
 |---|---|---|
 | `.claude-plugin/plugin.json` | Claude Code (VS Code also recognises it) | name, version, description, `mcpServers` launching `${CLAUDE_PLUGIN_ROOT}/mcp-server/dist/stdio.mjs` |
-| `hooks/hooks.json` | Claude Code and Codex plugins | the hook registrations, one file for both clients |
+| `hooks/hooks.json` | Claude Code plugin | the hook registrations (Codex no longer loads plugin hooks; it gets the gate from `npm run setup`) |
 | `.codex-plugin/plugin.json` | Codex, as a compatibility fallback to the root `plugin.json` | name, version, description, author (an object), license, homepage, repository, keywords, `skills` |
 
 VS Code recognises root `plugin.json`, `.claude-plugin/plugin.json` and the
@@ -93,8 +93,8 @@ directly.
 Before 7.0 there were five packaging surfaces: a Claude plugin directory, a
 Codex plugin directory, a Gemini extension manifest, a Copilot `plugin.yaml`
 and a VS Code extension. Each held its own copy of every agent. They are gone;
-VS Code installs Agent Plugins natively now, which is why the extension is
-deprecated rather than kept.
+VS Code installs Agent Plugins natively now, so the extension has been removed
+too.
 
 ## Installing
 
@@ -103,15 +103,25 @@ Claude Code   /plugin marketplace add Community-Access/accessibility-agents
               /plugin install accessibility-agents@community-access
 Copilot CLI   copilot plugin marketplace add Community-Access/accessibility-agents
               copilot plugin install accessibility-agents@community-access
+Codex         codex plugin marketplace add Community-Access/accessibility-agents
+              codex plugin add accessibility-agents@community-access
+              (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires chat.plugins.enabled)
 Any client    npm run setup   (copies skills/ to ~/.agents/skills; see Getting started)
 ```
 
-Codex installs plugins from a marketplace added with
-`codex plugin marketplace add owner/repo`, which reads
-`.agents/plugins/marketplace.json`. This repository does not ship one, so on
-Codex use `npm run setup`.
+On Codex the command is `codex plugin add`, not `install`. Codex reads the
+repository's `.claude-plugin/marketplace.json`. Tested live with Codex CLI
+0.165.0: the install registers the MCP server (`codex mcp list` shows
+`mcp-server/dist/stdio.mjs`) and `codex debug prompt-input` lists exactly the
+six routers. The Codex plugin does not load hooks: Codex 0.165.0 lists its
+`plugin_hooks` feature as removed, and after `codex plugin add` Codex reports
+no hooks. So on Codex the plugin gives the skills and the MCP server but no
+edit gate. For the gate, use `npm run setup` instead, which writes
+`~/.codex/hooks.json` (Codex then lists all six hooks), and register the server
+with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
+Use one route, not both.
 
 ## What is checked
 

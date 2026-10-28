@@ -1,5 +1,5 @@
 {
-  "$comment": "Gemini CLI and Antigravity event names mapped onto hooks/guard.mjs.",
+  "$comment": "Gemini CLI event names mapped onto hooks/guard.mjs. Antigravity uses hooks/antigravity.hooks.json.",
   "hooks": {
     "BeforeAgent": [
       {

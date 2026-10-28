@@ -4,5 +4,4 @@ node_modules
 .history
 .claude
 .gemini
-vscode-extension/node_modules
 desktop-extension

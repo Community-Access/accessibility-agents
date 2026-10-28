@@ -29,6 +29,9 @@ Claude Code   /plugin marketplace add Community-Access/accessibility-agents
               /plugin install accessibility-agents@community-access
 Copilot CLI   copilot plugin marketplace add Community-Access/accessibility-agents
               copilot plugin install accessibility-agents@community-access
+Codex         codex plugin marketplace add Community-Access/accessibility-agents
+              codex plugin add accessibility-agents@community-access
+              (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires chat.plugins.enabled)
 ```
@@ -38,8 +41,17 @@ bundle, `mcp-server/dist/stdio.mjs`, with no `npm install`. Only the optional
 scanners (Playwright, `@axe-core/playwright`, `pdf-lib`, veraPDF) need
 installing; the tools that need them say how.
 
-Codex reads plugins from a marketplace's `.agents/plugins/marketplace.json`,
-which this repository does not ship; use the direct install there.
+On Codex the command is `codex plugin add`, not `install`. Codex reads the
+repository's `.claude-plugin/marketplace.json`. Tested live with Codex CLI
+0.165.0: the install registers the MCP server (`codex mcp list` shows
+`mcp-server/dist/stdio.mjs`) and `codex debug prompt-input` lists exactly the
+six routers. The Codex plugin does not load hooks: Codex 0.165.0 lists its
+`plugin_hooks` feature as removed, and after `codex plugin add` Codex reports
+no hooks. So on Codex the plugin gives the skills and the MCP server but no
+edit gate. For the gate, use `npm run setup` instead, which writes
+`~/.codex/hooks.json` (Codex then lists all six hooks), and register the server
+with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
+Use one route, not both.
 
 ### 2. Direct install from a checkout
 

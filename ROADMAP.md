@@ -6,7 +6,7 @@ record of how 7.0 came to be is in
 [docs/history/2026-09-modernization.md](docs/history/2026-09-modernization.md);
 this file is only about what is next.
 
-Current: 7.0.3. At 7.0.0 every gate passed, including live sessions on Claude
+Current: 7.1.0. At 7.0.0 every gate passed, including live sessions on Claude
 Code, Codex and Copilot. The package costs about 1,100 tokens before a user has spoken, on
 every client, and dispatching a specialist costs about 100.
 
@@ -147,10 +147,12 @@ identifier with criterion, severity default and help URL, would let the
 renderer link every finding to guidance and let the regression detector
 compare across releases without string matching.
 
-### 3.4 Retire the VS Code extension
+### 3.4 Retire the VS Code extension - DONE
 
-It is deprecated, not deleted, so a final version can point existing users at
-the package. Publish that version, then delete the directory.
+Removed in this release: it only discovered `.github/agents/*.agent.md`
+files, which 7.x does not ship. VS Code users install the plugin (Chat:
+Install Plugin From Source, or later a marketplace listing). The planned final
+Marketplace version pointing users at the package was not published.
 
 ### 3.5 Rule registry as a reference skill
 

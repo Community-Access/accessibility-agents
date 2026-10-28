@@ -29,10 +29,13 @@ skills and other packages' skills in place. It also removes the hook files the
 installer wrote:
 
 - `~/.claude/a11y-hooks.json` (written by older versions) and `~/.gemini/a11y-hooks.json`
-- the `*.a11y.json` side files it wrote for you to merge, such as `~/.codex/hooks.a11y.json`
+- the `*.a11y.json` side files it wrote for you to merge, such as `~/.codex/hooks.a11y.json` and `~/.gemini/config/hooks.a11y.json`
 - `~/.codex/hooks.json`, but only if its content is exactly what the installer
-  wrote. If the file also holds your own hooks, it is kept, and the command
-  tells you to remove the `guard.mjs` entries by hand.
+  wrote. If it also holds your own hooks, it is kept, and the command tells you
+  to remove the `guard.mjs` entries by hand.
+- Antigravity's `~/.gemini/config/hooks.json`: removed if it is exactly what the
+  installer wrote; if you also use it for your own hooks, only the `a11y-*`
+  entries are taken out and your other entries are kept.
 
 Entries you merged into `~/.claude/settings.json` or `~/.gemini/settings.json`
 must be removed by hand.

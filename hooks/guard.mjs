@@ -37,11 +37,16 @@
  * lead's instructions are loaded into the turn. That is launch rather than
  * completion, so the finalize behaviour stays the backstop.
  *
+ * Antigravity has neither a skill tool nor a subagent stop event. It loads a
+ * skill by reading its SKILL.md with view_file (IsSkillFile set), so its
+ * manifest marks on PostToolUse for view_file when the file read is the
+ * lead's SKILL.md: the same launch-time signal as on Claude Code.
+ *
  * Exit codes follow the common hook convention: 0 proceed, 2 block.
  * Structured decisions are emitted as JSON on stdout where the client reads it.
  *
  * Usage (from a client manifest):
- *   node hooks/guard.mjs --behaviour detect|gate|mark|persist|finalize --client claude|codex|copilot|gemini
+ *   node hooks/guard.mjs --behaviour detect|gate|mark|persist|finalize --client claude|codex|copilot|gemini|antigravity
  */
 
 import fs from 'node:fs';
@@ -175,10 +180,39 @@ async function readPayload() {
   }
 }
 
+/**
+ * The tool arguments. Antigravity nests them as toolCall.args, with
+ * PascalCase names (TargetFile, AbsolutePath).
+ */
+function toolInput(payload) {
+  const input = payload.tool_input || payload.toolInput || payload.arguments || (payload.toolCall && payload.toolCall.args) || {};
+  if (typeof input !== 'string') return input;
+  // Some clients send the arguments as a JSON string. Unparsed, the edited
+  // path would be missed and the gate would wave the edit through.
+  try {
+    return JSON.parse(input) || {};
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Antigravity reads a skill's SKILL.md with view_file. Return the skill's
+ * folder name when this call read one, so mark() can recognise the lead.
+ */
+function skillFileRead(payload, input) {
+  const tool = (payload.toolCall && payload.toolCall.name) || payload.tool_name || '';
+  if (tool !== 'view_file') return '';
+  const file = String(input.AbsolutePath || input.path || '');
+  const m = /[\\/]([A-Za-z0-9_-]+)[\\/]SKILL\.md$/.exec(file);
+  return m ? m[1] : '';
+}
+
 /** Clients name the edited path differently. Look everywhere it might be. */
 function targetPath(payload) {
-  const input = payload.tool_input || payload.toolInput || payload.arguments || {};
+  const input = toolInput(payload);
   return (
+    input.TargetFile ||
     input.file_path ||
     input.filePath ||
     input.path ||
@@ -191,7 +225,9 @@ function targetPath(payload) {
 }
 
 function subagentName(payload) {
-  const input = payload.tool_input || payload.toolInput || payload.arguments || {};
+  const input = toolInput(payload);
+  const skill = skillFileRead(payload, input);
+  if (skill) return skill;
   return (
     payload.agent_type ||
     payload.agentType ||
@@ -219,7 +255,20 @@ function isUiFile(file) {
  * a client ignores the keys it does not know, and the exit code carries the
  * decision for any client that reads nothing at all.
  */
+let CLIENT = '';
+let wrote = false;
+const write = process.stdout.write.bind(process.stdout);
+process.stdout.write = (chunk, ...rest) => {
+  wrote = true;
+  return write(chunk, ...rest);
+};
+
 function emitContext(text) {
+  if (CLIENT === 'antigravity') {
+    // PreInvocation output: steps to inject before the model runs.
+    process.stdout.write(JSON.stringify({ injectSteps: [{ systemMessage: text }] }));
+    return;
+  }
   process.stdout.write(
     JSON.stringify({
       hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: text },
@@ -230,6 +279,11 @@ function emitContext(text) {
 }
 
 function emitDeny(reason) {
+  if (CLIENT === 'antigravity') {
+    // Antigravity decides from stdout JSON; "deny" hard-blocks the tool call.
+    process.stdout.write(JSON.stringify({ decision: 'deny', reason }));
+    return;
+  }
   process.stdout.write(
     JSON.stringify({
       hookSpecificOutput: {
@@ -254,12 +308,17 @@ function detect(payload, ids) {
 
 function gate(payload, ids) {
   const file = targetPath(payload);
-  if (!isUiFile(file)) return 0;
-  if (hasMarker(ids, 'reviewed')) return 0;
+  if (!isUiFile(file) || hasMarker(ids, 'reviewed')) {
+    // Antigravity requires a decision on every PreToolUse reply.
+    if (CLIENT === 'antigravity') process.stdout.write(JSON.stringify({ decision: 'allow' }));
+    return 0;
+  }
 
   setMarker(ids, 'ui-edit-attempted', file);
   emitDeny(REFUSAL);
-  return 2;
+  // Antigravity documents its decision as stdout JSON, not an exit code, so
+  // exit 0 there to make sure the JSON is read.
+  return CLIENT === 'antigravity' ? 0 : 2;
 }
 
 function mark(payload, ids) {
@@ -327,9 +386,11 @@ const BEHAVIOURS = { detect, gate, mark, persist, finalize };
 async function main() {
   const argv = process.argv.slice(2);
   const behaviour = argv[argv.indexOf('--behaviour') + 1];
+  if (argv.includes('--client')) CLIENT = argv[argv.indexOf('--client') + 1] || '';
 
   if (!BEHAVIOURS[behaviour]) {
     process.stderr.write(`guard.mjs: unknown behaviour "${behaviour}"\n`);
+    if (CLIENT === 'antigravity') process.stdout.write('{}');
     return 0; // never break a session over a misconfigured manifest
   }
 
@@ -337,12 +398,21 @@ async function main() {
   const ids = sessionIds(payload);
 
   try {
-    return BEHAVIOURS[behaviour](payload, ids);
+    const code = BEHAVIOURS[behaviour](payload, ids);
+    // Antigravity reads a JSON object from every hook; an empty one means
+    // "nothing to add".
+    if (CLIENT === 'antigravity' && !wrote) process.stdout.write('{}');
+    return code;
   } catch (e) {
     process.stderr.write(`guard.mjs: ${e.message}\n`);
     // An enforcement gate that crashes must not silently allow the edit it was
     // there to stop, so gate and finalize fail closed and the rest fail open.
-    return behaviour === 'gate' || behaviour === 'finalize' ? 2 : 0;
+    if (behaviour === 'gate' || behaviour === 'finalize') {
+      if (CLIENT === 'antigravity') emitDeny(REFUSAL);
+      return CLIENT === 'antigravity' ? 0 : 2;
+    }
+    if (CLIENT === 'antigravity' && !wrote) process.stdout.write('{}');
+    return 0;
   }
 }
 

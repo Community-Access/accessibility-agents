@@ -1,5 +1,5 @@
 {
-  "$comment": "Codex event names mapped onto hooks/guard.mjs. Codex exposes SubagentStop and Stop, so it gets the full gate.",
+  "description": "Codex event names mapped onto hooks/guard.mjs. Codex exposes SubagentStop and Stop, so it gets the full gate.",
   "hooks": {
     "UserPromptSubmit": [
       {

@@ -65,7 +65,7 @@ prompt cache lifetime:
 Skill content is stable between turns, so a longer cache lifetime turns most
 of it into cache hits.
 
-**Codex.** Reads `~/.agents/skills` and `~/.codex/hooks.json`. Nothing further.
+**Codex.** Two routes; use one, not both. The plugin (`codex plugin marketplace add Community-Access/accessibility-agents`, then `codex plugin add accessibility-agents@community-access`) gives the skills and the MCP server but no edit gate: Codex 0.165.0 lists `plugin_hooks` as removed and loads no hooks from a plugin. `npm run setup` gives the skills in `~/.agents/skills` and the gate in `~/.codex/hooks.json` (Codex lists all six hooks); register the server with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`. Earlier versions of that hooks file carried a `$comment` key, which Codex rejected silently; it is now `description`.
 Codex caps its skill catalog at 2 percent of the model's context window, or
 8,000 characters when the window is unknown, and the cap is configurable with
 `skills.max_context_tokens`. This package's catalog is about 870 characters.
@@ -84,8 +84,11 @@ cloud agent reads them from the default branch.
 `npm run setup` copies them, and workspace skills from `.agents/skills`. It
 does not use Gemini CLI's hook events or `~/.gemini/settings.json`: its hooks
 (SessionStart, PreToolUse, PostToolUse, PreInvocation, PostInvocation, Stop)
-live in `.agents/hooks.json` or `~/.gemini/config/hooks.json`, and this package
-ships no Antigravity manifest, because no documented Antigravity hook signal tells the guard that `accessibility-lead` ran, so the gate would never open.
+live in `.agents/hooks.json` or `~/.gemini/config/hooks.json`. `npm run setup`
+writes `hooks/antigravity.hooks.json` to `~/.gemini/config/hooks.json`, or, if
+that file exists, beside it as `~/.gemini/config/hooks.a11y.json` for you to
+merge its `a11y-*` entries. The gate opens when Antigravity reads the lead's
+`SKILL.md` with `view_file`; it is tested against the payloads Antigravity documents, not yet in a live Antigravity session.
 
 ## Environment variables
 

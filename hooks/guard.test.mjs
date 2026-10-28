@@ -231,3 +231,58 @@ describe('robustness', () => {
     assert.equal(run('gate', {}).code, 0, 'no file path means no edit to gate');
   });
 });
+
+describe('antigravity', () => {
+  function runAg(behaviour, payload) {
+    const result = spawnSync(process.execPath, [GUARD, '--behaviour', behaviour, '--client', 'antigravity'], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: { ...process.env, A11Y_GUARD_DIR: scratch },
+    });
+    return { code: result.status, json: JSON.parse(result.stdout) };
+  }
+  const CONV = { conversationId: 'ag-conv' };
+  const write = (file) => ({ ...CONV, toolCall: { name: 'write_to_file', args: { TargetFile: file, CodeContent: 'x' } } });
+  const view = (file) => ({ ...CONV, toolCall: { name: 'view_file', args: { AbsolutePath: file, IsSkillFile: true } } });
+
+  test('denies a UI edit with a decision on stdout, not an exit code', () => {
+    const { code, json } = runAg('gate', write('/w/src/App.tsx'));
+    assert.equal(code, 0);
+    assert.equal(json.decision, 'deny');
+    assert.match(json.reason, /accessibility-lead/);
+  });
+
+  test('allows a non-UI edit with an explicit decision', () => {
+    assert.deepEqual(runAg('gate', write('/w/server/db.py')).json, { decision: 'allow' });
+  });
+
+  test('reading the lead SKILL.md opens the gate; another skill does not', () => {
+    runAg('mark', view('/h/.gemini/config/skills/aria-specialist/SKILL.md'));
+    assert.equal(runAg('gate', write('/w/src/App.tsx')).json.decision, 'deny');
+    assert.deepEqual(runAg('mark', view('/h/.gemini/config/skills/accessibility-lead/SKILL.md')).json, {});
+    assert.equal(runAg('gate', write('/w/src/App.tsx')).json.decision, 'allow');
+  });
+
+  test('replace_file_content is gated by TargetFile too', () => {
+    const payload = { ...CONV, toolCall: { name: 'replace_file_content', args: { TargetFile: 'C:\\w\\index.html' } } };
+    assert.equal(runAg('gate', payload).json.decision, 'deny');
+  });
+
+  test('injects the contract once as a system message step', () => {
+    const first = runAg('detect', { ...CONV, invocationNum: 0 });
+    assert.match(first.json.injectSteps[0].systemMessage, /WCAG 2\.2 AA/);
+    assert.deepEqual(runAg('detect', { ...CONV, invocationNum: 1 }).json, {});
+  });
+});
+
+describe('arguments sent as a JSON string', () => {
+  test('a UI edit whose arguments arrive as a string is still gated', () => {
+    const payload = { conversationId: 'str-args', toolCall: { name: 'write_to_file', args: JSON.stringify({ TargetFile: '/w/a.css' }) } };
+    const result = spawnSync(process.execPath, [GUARD, '--behaviour', 'gate', '--client', 'antigravity'], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: { ...process.env, A11Y_GUARD_DIR: scratch },
+    });
+    assert.equal(JSON.parse(result.stdout).decision, 'deny');
+  });
+});
