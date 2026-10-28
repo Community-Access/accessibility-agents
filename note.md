@@ -313,6 +313,14 @@ framework APIs current.
 - markdownlint: 0 issues on 417 files; Markdown accessibility gate clean.
 - MCP bundle matches the source.
 
+## Done and committed (cb8baca): CI on the pull request
+
+The high-impact Playwright check scans the deliberately broken
+`example/index.html` on pull requests, so it could never pass (it used to
+crash before scanning, which hid that). On pull requests it is now a
+self-test that fails if the checker stops catching that page's issues; a
+manual run with a URL is still a real gate. All six checks are green.
+
 ## Pull request
 
 [#221](https://github.com/Community-Access/accessibility-agents/pull/221),
