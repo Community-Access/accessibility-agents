@@ -4,6 +4,17 @@ Thank you for considering a contribution. This is a community-driven project, an
 
 A sincere thanks goes out to [Taylor Arndt](https://github.com/taylorarndt) and [Jeff Bishop](https://github.com/jeffreybishop) for leading the charge in building this project. Now we want more contributors to help us make more magic. Whether you are a developer, accessibility specialist, screen reader user, or someone who just cares about inclusive software - your contributions are welcome here.
 
+## Accessibility expectations
+
+Every contribution follows the [contributor expectations in ACCESSIBILITY.md](ACCESSIBILITY.md#contributor-expectations):
+the checks to run, the documentation rules, and what to test for anything with
+an interface. To report an accessibility barrier in this project, use the
+[accessibility issue form](https://github.com/Community-Access/accessibility-agents/issues/new?template=accessibility.yml),
+or email the address in [ACCESSIBILITY.md](ACCESSIBILITY.md#reporting-accessibility-issues)
+if GitHub is a barrier for you. Accessibility issues that suit new contributors
+are labelled `accessibility` and `good first issue`; ones where we need
+specialist help are labelled `accessibility` and `help wanted`.
+
 ## Support and Community Routing
 
 Use the Community Access support hub for cross-project troubleshooting and Q&A:

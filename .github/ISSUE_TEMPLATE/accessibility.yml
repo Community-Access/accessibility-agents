@@ -1,0 +1,112 @@
+name: Accessibility barrier
+description: Something in this project is hard or impossible to use with your setup, including assistive technology.
+title: "[a11y]: "
+labels: ["accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for telling us. Accessibility reports are expertise, not complaints, and partial reports are welcome: fill in what you can.
+
+        You never need to tell us about a disability or diagnosis. If you would rather not post publicly, or this form is hard to use, email jeff@jeffbishop.com instead.
+
+        We acknowledge reports within 5 business days. How we triage and respond is in [ACCESSIBILITY.md](https://github.com/Community-Access/accessibility-agents/blob/main/ACCESSIBILITY.md).
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened
+      description: What you were trying to do, and what got in the way. Your own words are best.
+      placeholder: "Example: the audit report's findings table is read as one long line by my screen reader, so I cannot tell which fix belongs to which finding."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      description: The part of the project the barrier is in.
+      options:
+        - Installing or updating (plugin, npm run setup, uninstall)
+        - An audit report or other generated output
+        - A skill's guidance or a finding it produced
+        - The MCP server's tools or messages
+        - The edit gate or hook messages
+        - Documentation (README, docs/, a skill's text)
+        - The GitHub repository, issue or pull request templates
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The command, file, page or prompt, and what you did. Optional but very helpful.
+      placeholder: |
+        1. Ran /web-accessibility-wizard on ...
+        2. Opened WEB-ACCESSIBILITY-AUDIT.md in ...
+        3. Moved to the findings table with ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: Optional.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How much it gets in your way
+      description: |
+        Optional; we confirm severity during triage.
+        - Critical: I cannot complete the task at all.
+        - Serious: I can complete it only with real difficulty or a workaround.
+        - Moderate: it works but is confusing, slow or inconsistent.
+        - Minor: a small problem with little effect.
+      options:
+        - Not sure
+        - Critical
+        - Serious
+        - Moderate
+        - Minor
+      default: 0
+    validations:
+      required: false
+
+  - type: input
+    id: client
+    attributes:
+      label: Client and version
+      placeholder: "Claude Code 2.1, Copilot CLI 1.4, VS Code 1.112, Codex 0.165, Gemini CLI 0.66, Antigravity"
+    validations:
+      required: false
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and version
+      placeholder: "Windows 11, macOS 26, Ubuntu 24.04"
+    validations:
+      required: false
+
+  - type: input
+    id: assistive-technology
+    attributes:
+      label: Assistive technology and version
+      description: Optional. Screen reader, magnifier, voice control, switch access or anything else you use.
+      placeholder: "NVDA 2026.3, JAWS 2026, VoiceOver on macOS 26, Dragon 16, ZoomText"
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Workarounds you have tried, related issues, or a recording or screenshot if you are comfortable sharing one.
+    validations:
+      required: false

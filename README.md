@@ -135,12 +135,23 @@ Each standard, with what it governs.
 | [Agent Plugins 1.0](https://agent-plugins.org/) | packaging |
 | [Model Context Protocol](https://modelcontextprotocol.io/) | the scanners |
 | [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | every criterion a finding cites |
+| [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/) | how this project runs accessibility as an open source project, and what the agents help your project adopt |
+
+## Accessibility of this project
+
+How we work on our own accessibility, how to report a barrier (on GitHub or by
+email) and how we respond are in [ACCESSIBILITY.md](ACCESSIBILITY.md). We
+follow GitHub's [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/);
+the agents can apply the same framework to your repository: ask your client to
+adopt the Open Source Accessibility Framework, or one of its four phases
+(foundational, workflow, testing, community).
 
 ## Contributing
 
 Edit `skills/<name>/SKILL.md`, keep the body under 6 KiB, put the long tail in
 `references/`, and run `npm run verify`. Details in
-[CONTRIBUTING.md](./CONTRIBUTING.md).
+[CONTRIBUTING.md](./CONTRIBUTING.md), and the accessibility expectations for
+every contribution in [ACCESSIBILITY.md](ACCESSIBILITY.md#contributor-expectations).
 
 ## History
 

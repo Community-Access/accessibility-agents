@@ -1,74 +1,48 @@
-## Accessibility Checklist
+## What this changes and why
 
-Before submitting, verify all applicable items. If an item doesn't apply, mark it N/A.
+<!-- One or two sentences. Link the issue it closes, if any. -->
 
-### Structure
+## Accessibility checklist
 
-- [ ] Exactly one `<h1>` per page, no skipped heading levels
-- [ ] Semantic landmarks used (`<header>`, `<nav>`, `<main>`, `<footer>`)
-- [ ] Page `<title>` is descriptive and unique
-- [ ] `<html lang="...">` is set correctly
+Accessibility is this project's purpose. Read the contributor expectations in
+[ACCESSIBILITY.md](https://github.com/Community-Access/accessibility-agents/blob/main/ACCESSIBILITY.md#contributor-expectations) and tick each
+item that applies. Write N/A beside an item that does not apply.
 
-### Images & Media
+### Checks
 
-- [ ] Every `<img>` has an `alt` attribute
-- [ ] Meaningful images have descriptive alt text
-- [ ] Decorative images have `alt=""`
-- [ ] SVGs are labeled (`role="img"` + `<title>`) or hidden (`aria-hidden="true"`)
-- [ ] Videos have captions; audio has transcripts
+- [ ] `npm run verify` passes (it includes the Markdown accessibility linter and markdownlint)
+- [ ] No new Markdown accessibility warnings in the files I changed
 
-### Forms
+### Documentation and skill text (any change to Markdown, a skill or a report template)
 
-- [ ] Every input has a programmatically associated `<label>`
-- [ ] Required fields use the `required` attribute
-- [ ] Error messages are linked via `aria-describedby` with `aria-invalid="true"`
-- [ ] Radio/checkbox groups use `<fieldset>` and `<legend>`
-- [ ] Identity/payment fields have `autocomplete` attributes
+- [ ] One H1 per file, and headings do not skip levels
+- [ ] Link text is unique and descriptive (no "click here" or "read more")
+- [ ] Images have meaningful alternative text or are marked decorative; diagrams have a text alternative nearby
+- [ ] Each table has a one-sentence description before it and a header row
+- [ ] Real lists, not typed numbering; code in fenced blocks with a language
+- [ ] Meaning is not carried by color, position or styling alone
+- [ ] Plain language; abbreviations spelled out on first use
+- [ ] House style from [AGENTS.md](https://github.com/Community-Access/accessibility-agents/blob/main/AGENTS.md): no emoji, decorative Unicode or smart punctuation
 
-### Keyboard & Focus
+### Findings and guidance (skill changes)
 
-- [ ] All interactive elements reachable and operable by keyboard
-- [ ] No positive `tabindex` values (> 0)
-- [ ] Visible focus indicators on every interactive element
-- [ ] Focus managed on route changes, dynamic content, and deletions
-- [ ] Skip link to main content is present and functional
+- [ ] Every finding has a WCAG criterion (or `n/a`), a severity, a location and a fix
+- [ ] Factual claims about standards, law or tools link to a primary source, per [the citation policy](https://github.com/Community-Access/accessibility-agents/blob/main/docs/standards/citation-policy.md)
+- [ ] New primary sources are added to `docs/standards/source-registry.json`
 
-### Modals & Overlays
+### Anything with a user interface (generated HTML, `example/`, a dashboard)
 
-- [ ] Uses `<dialog>` with `showModal()` (or equivalent focus trapping)
-- [ ] Focus moves into the dialog on open (by default its first focusable element; for a confirmation, the least destructive action)
-- [ ] Escape closes the modal
-- [ ] Focus returns to trigger on close
+- [ ] Keyboard only: everything reachable and operable, visible focus, logical order, no keyboard trap
+- [ ] Screen reader spot check: headings and landmarks, labels, states and announcements (say which screen reader and browser below)
+- [ ] Text contrast 4.5:1, interface components 3:1, and targets at least 24 by 24 CSS pixels
+- [ ] Reflows at 400 percent zoom and respects reduced motion
+- [ ] Native elements before ARIA
 
-### Color & Contrast
+### Release (only when versions or release files change)
 
-- [ ] Text contrast meets 4.5:1 (normal) or 3:1 (large text)
-- [ ] UI components meet 3:1 contrast
-- [ ] No information conveyed by color alone
-- [ ] `prefers-reduced-motion` respected for animations
+- [ ] `npm run verify:release` passes: every manifest, `mcp-server/package.json` and `server.json` agree
+- [ ] `CHANGELOG.md` has the matching version section, and `docs/releases/RELEASE-{version}.md` exists
 
-### Dynamic Content
+## Accessibility notes
 
-- [ ] Live regions announce content updates (`aria-live="polite"`)
-- [ ] Loading states announced for operations over 2 seconds
-- [ ] Search/filter result counts announced
-
-### Testing
-
-- [ ] Tested with keyboard-only navigation (Tab, Enter, Escape, Arrow keys)
-- [ ] Tested with screen reader (VoiceOver, NVDA, or JAWS) if available
-- [ ] No new accessibility linting warnings
-
-### Source Citations (Skill Changes Only)
-
-- [ ] All factual claims include inline links to authoritative sources
-- [ ] Sources section included at end of any new skill or substantive guidance
-- [ ] Source URLs verified as reachable and current
-- [ ] New sources added to `docs/standards/source-registry.json` if they are primary references for a skill's domain
-
-### Release Readiness (When Version/Release Files Change)
-
-- [ ] `package.json`, `plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json` and `mcp-server/package.json` versions are aligned (`npm run verify:release` checks all but the marketplace file)
-- [ ] `CHANGELOG.md` contains the matching version section
-- [ ] `RELEASE-{version}.md` exists and includes `## Overview`, `## Highlights`, and `## Full Changelog`
-- [ ] Public action examples use the current tag (for example, `action@v{version}`)
+<!-- Optional: what you tested and with what (for example NVDA 2026.3 with Chrome), known limitations, or follow-up issues. -->
