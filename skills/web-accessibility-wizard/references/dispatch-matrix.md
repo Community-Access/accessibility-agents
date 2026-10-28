@@ -10,7 +10,7 @@ prompt shape in SKILL.md, never by pasting a body.
 ## Specialists
 
 The 28 reviewing skills in these domains, with the task each one answers.
-Each returns findings JSON; none of them edits files.
+A skill whose output is findings returns findings JSON and edits nothing; one whose output is artifact writes the files it describes.
 
 | Skill | Use it for |
 |---|---|

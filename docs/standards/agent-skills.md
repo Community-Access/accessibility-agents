@@ -8,7 +8,7 @@ The open format every skill in this package is written in.
 | Steward | Originally developed by Anthropic and released as an open standard, open to contributions; adopters listed at <https://agentskills.io/> |
 | Adopted by | Claude Code, Claude, ChatGPT and Codex, GitHub Copilot, VS Code, Gemini CLI, Cursor, OpenCode, OpenHands, Goose, JetBrains, Amp, Kiro and others |
 | Reference validator | `skills-ref`, the Python package in <https://github.com/agentskills/agentskills/tree/main/skills-ref> (`skills-ref validate ./my-skill`) |
-| Governs here | all 108 directories under `skills/` |
+| Governs here | all 113 directories under `skills/` |
 | Checked by | `npm run verify:spec`, which runs `skills-ref validate` from the npm package `skills-ref` 0.1.5, a third-party port of the reference validator, on every skill |
 
 ## What the specification requires
@@ -73,19 +73,20 @@ package sets two it does not define:
 | `disable-model-invocation: true` | the skill's description leaves the model's context; the user can still invoke it | Claude Code, VS Code, Copilot CLI |
 | `user-invocable: false` | the skill leaves the user's `/` menu. On Claude Code, with both fields set, neither the user nor the model can invoke it through the Skill tool, so a router reaches it by reading its file. On VS Code the model can still load it | Claude Code, VS Code |
 
-They are the mechanism by which 102 of 108 skills cost nothing until named.
+They are the mechanism by which 107 of 113 skills cost nothing until named.
 The specification does not say what a client must do with a field it does not
 define. The clients measured live (Claude Code, Codex, Copilot) load these
 skills, and the live gate confirms that exactly six skills reach the model on
 each.
 
-The Python reference validator was run on all 108 skills on 27 October 2026 and
+The Python reference validator was run on all 108 skills on 27 October 2026,
+before the five Open Source Accessibility Framework skills were added, and
 reported no problem other than these two fields.
 
 `scripts/verify-spec.mjs` runs the reference validator and reports a skill
 whose only unexpected fields are these two as conformant with a documented
 extension. Any other unexpected field fails. Run with `--strict` to see the
-package judged without the exemption; it fails 102 skills, which is the
+package judged without the exemption; it fails 107 skills, which is the
 honest number. The script runs the npm port, not the Python reference, so a
 difference between the two would not show up here.
 

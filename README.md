@@ -74,8 +74,8 @@ Describe the problem. Six entry points route the rest.
 | Python, wxPython, desktop apps, NVDA add-ons, accessibility tooling | `developer-hub` |
 | Issues, pull requests, releases, projects, actions, security, teams, wikis | `github-hub` |
 
-Those six dispatch a further 102 specialist, helper and reference skills by
-name. The other 102 are invisible to the model until a router names one, which
+Those six dispatch a further 107 specialist, helper and reference skills by
+name. The other 107 are invisible to the model until a router names one, which
 is why the whole package costs about 1,100 tokens before you have said anything.
 
 ## What it does
@@ -102,7 +102,7 @@ AGENTS.md                the always-on contract, under 1,200 tokens
 CLAUDE.md                one line, importing AGENTS.md
 plugin.json              Agent Plugins 1.0 manifest
 mcp.json                 MCP server registration
-skills/                  108 skills
+skills/                  113 skills
   a11y-core/             shared contract, findings schema, scripts
   <router>/              the six entry points
   <specialist>/          one domain each, dispatched by a router

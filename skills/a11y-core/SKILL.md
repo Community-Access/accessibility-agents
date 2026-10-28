@@ -36,13 +36,21 @@ the prompt at this shape and this size. Never read a specialist's instructions
 into the router's own context, and never paste a specialist body into a prompt.
 
 ```text
-Activate the skill "aria-specialist". If skill activation is unavailable,
-read skills/aria-specialist/SKILL.md and follow it.
+Run the skill "aria-specialist": read <skills-root>/aria-specialist/SKILL.md
+and follow it. It is a specialist, hidden from the skill catalog to save
+context; running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: <one paragraph, what to check and why>
 Scope: <file list or glob>
 Rules: semantic HTML before ARIA; report, do not edit.
-Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json.
+Return ONLY JSON matching <skills-root>/a11y-core/schemas/findings.schema.json.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists. If the load path is not shown,
+it is the folder that contains a11y-core/SKILL.md.
 
 Per client: Claude Code uses the Agent tool, Codex spawns a worker subagent,
 Copilot uses a subagent or handoff, Gemini and Antigravity use the generalist
@@ -59,7 +67,7 @@ Skills declare `metadata.output`, and it decides what they return.
   no preamble, no restated instructions.
 - **report** - collect findings JSON from each dispatched skill, write them to
   `.a11y-history/<timestamp>/`, then render with
-  `node skills/a11y-core/scripts/render-report.mjs`. Never type a report by hand.
+  `node <skills-root>/a11y-core/scripts/render-report.mjs`. Never type a report by hand.
 - **artifact** - produce the file or script asked for; report the paths written
   and what each changes.
 - **guidance** - answer the question, cite the criterion or API by name, stop.

@@ -10,11 +10,11 @@ dispatched. Only routers are visible to the model.
 | Tier | Count | Model invokes | User invokes | Cost until dispatched |
 |---|---:|---|---|---|
 | Router | 6 | yes | yes | one description line, every turn |
-| Specialist | 57 | no | by name | nothing |
+| Specialist | 61 | no | by name | nothing |
 | Helper | 16 | no | no | nothing |
-| Reference | 29 | no | no | nothing |
+| Reference | 30 | no | no | nothing |
 
-108 skills in total.
+113 skills in total.
 
 ## Routers
 
@@ -25,7 +25,7 @@ The six entry points. Describe the task and one of these picks it up.
 | [`accessibility-lead`](accessibility-lead.md) | Web UI accessibility lead. Use before writing or changing HTML, JSX, TSX, Vue, Svelte, CSS or templates. Picks specialists and merges their findings. |
 | [`developer-hub`](developer-hub.md) | Start here for Python, wxPython, desktop app, NVDA add-on and accessibility tooling work. Routes to the right specialist. |
 | [`document-accessibility-wizard`](document-accessibility-wizard.md) | Guided accessibility audit of Word, Excel, PowerPoint, PDF and ePub files, one at a time or by the folder, with a scored report. |
-| [`github-hub`](github-hub.md) | Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis. |
+| [`github-hub`](github-hub.md) | Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis, and for adopting the Open Source Accessibility Framework in a repository. |
 | [`markdown-a11y-assistant`](markdown-a11y-assistant.md) | Guided WCAG audit of markdown docs: link text, alt text, heading order, tables, emoji, diagrams and anchors. |
 | [`web-accessibility-wizard`](web-accessibility-wizard.md) | Guided WCAG 2.2 audit of a web app or site, phase by phase, with severity scores, a written report and optional fixes. |
 
@@ -106,7 +106,7 @@ The six entry points. Describe the task and one of these picks it up.
 
 ## Github
 
-16 specialists, each reviewing one domain and returning findings.
+20 specialists, each reviewing one domain and returning findings.
 
 | Skill | Use it for |
 |---|---|
@@ -117,6 +117,10 @@ The six entry points. Describe the task and one of these picks it up.
 | [`insiders-a11y-tracker`](insiders-a11y-tracker.md) | Track accessibility changes in VS Code and other repos you follow. |
 | [`issue-tracker`](issue-tracker.md) | GitHub issues: find, triage, review and respond, with written reports. |
 | [`notifications-manager`](notifications-manager.md) | GitHub notifications: read, filter, triage and manage from the editor. |
+| [`osaf-community`](osaf-community.md) | Open Source Accessibility Framework Community phase: reports, participation, recognition, progress, resources. |
+| [`osaf-foundational`](osaf-foundational.md) | Open Source Accessibility Framework Foundational phase: ACCESSIBILITY.md and an accessibility label. |
+| [`osaf-testing`](osaf-testing.md) | Open Source Accessibility Framework Testing phase: automated, keyboard, screen reader, manual and docs checks. |
+| [`osaf-workflow`](osaf-workflow.md) | Open Source Accessibility Framework Workflow phase: expectations, reporting, triage, PR template, labels, docs. |
 | [`pr-review`](pr-review.md) | Review pull requests: diffs, comments, context and written review docs. |
 | [`projects-manager`](projects-manager.md) | GitHub Projects v2: boards, views, fields, iterations, item workflows. |
 | [`release-manager`](release-manager.md) | GitHub releases: create, edit and manage releases and their assets. |
@@ -188,6 +192,7 @@ Lookup data cited by the skills above: rule tables, URL registries, formulas. Ne
 | `kb-media-accessibility` | Video/audio accessibility: WebVTT/SRT/TTML captions, audio descriptions, accessible media player ARIA, and WCAG 1.2.x compliance. |
 | `kb-mobile-accessibility` | Audit React Native, Expo, iOS, Android for accessibility. Review accessibilityLabel, accessibilityRole, accessibilityHint, touch targets (44x44pt min), screen reader support, and platform semantics. |
 | `kb-office-remediation` | Remediate Office documents (Word/Excel/PowerPoint) for accessibility. Generates Python scripts via python-docx, openpyxl, python-pptx API references. |
+| `kb-open-source-accessibility-framework` | Open Source Accessibility Framework: phases, action IDs and cadence, tracking issue, framing. |
 | `kb-path-instructions` | Per-file-type accessibility rules: semantic HTML, ARIA patterns, CSS, markdown, testing and terminology. |
 | `kb-playwright-testing` | Browser accessibility testing using Playwright and @axe-core/playwright. Keyboard scans, contrast verification, and accessibility tree snapshots. |
 | `kb-python-development` | Python and wxPython development: packaging (PyInstaller/Nuitka), testing, desktop accessibility APIs, cross-platform paths, and framework patterns. |

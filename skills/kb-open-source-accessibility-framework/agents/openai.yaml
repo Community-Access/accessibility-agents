@@ -1,0 +1,7 @@
+# Codex interface for this skill. Non-routers are dispatched by a router,
+# never picked implicitly, so they stay out of the model-facing catalog.
+interface:
+  display_name: "Open Source Accessibility Framework"
+  short_description: "Reference data, not a reviewer. Open Source Accessibility Framework: phases, action IDs and cadence, tracking issue, framing."
+policy:
+  allow_implicit_invocation: false

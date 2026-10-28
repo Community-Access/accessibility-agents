@@ -41,13 +41,21 @@ subagent primitive using exactly this prompt shape. Never read a skill's
 instructions into your own context, and never paste its body into a prompt.
 
 ```text
-Activate the skill "<skill-name>". If skill activation is unavailable,
-read skills/<skill-name>/SKILL.md and follow it.
+Run the skill "<skill-name>": read <skills-root>/<skill-name>/SKILL.md and
+follow it. It is a specialist, hidden from the skill catalog to save context;
+running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: <one paragraph, what to check and why>
 Scope: <file list or glob>
 Rules: semantic HTML before ARIA; report, do not edit.
-Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json.
+Return ONLY JSON matching <skills-root>/a11y-core/schemas/findings.schema.json.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists. If the load path is not shown,
+it is the folder that contains a11y-core/SKILL.md.
 
 You receive JSON. You do not receive prose, and you should reject and re-dispatch
 anything that arrives as prose.
@@ -82,7 +90,7 @@ Read one only when the task reaches it. Do not read them all up front.
 
 Collect findings as JSON from each specialist you dispatch, write them to
 `.a11y-history/<timestamp>/`, then render the report with
-`node skills/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+`node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

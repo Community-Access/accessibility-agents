@@ -442,7 +442,7 @@ function measureDispatch() {
 
     if (worst === 0) {
       for (const m of r.text.matchAll(/```[\s\S]*?```/g)) {
-        if (!/Activate the skill|Return ONLY JSON|Return only JSON/i.test(m[0])) continue;
+        if (!/Activate the skill|Run the skill "|Return ONLY JSON|Return only JSON/i.test(m[0])) continue;
         const cost = estimateTokens(m[0]);
         if (cost > worst) {
           worst = cost;

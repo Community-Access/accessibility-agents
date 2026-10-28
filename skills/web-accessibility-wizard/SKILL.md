@@ -45,13 +45,21 @@ dispatch them together rather than in sequence. Pick from
 skill's instructions into your own context, and never paste its body.
 
 ```text
-Activate the skill "<skill-name>". If skill activation is unavailable,
-read skills/<skill-name>/SKILL.md and follow it.
+Run the skill "<skill-name>": read <skills-root>/<skill-name>/SKILL.md and
+follow it. It is a specialist, hidden from the skill catalog to save context;
+running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: <one paragraph, what to check and why>
 Scope: <file list or glob>
 Rules: semantic HTML before ARIA; report, do not edit.
-Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json.
+Return ONLY JSON matching <skills-root>/a11y-core/schemas/findings.schema.json.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists. If the load path is not shown,
+it is the folder that contains a11y-core/SKILL.md.
 
 ## Output
 
@@ -59,7 +67,7 @@ Write each specialist's JSON to `.a11y-history/<timestamp>/<skill>.json`, then
 render the report:
 
 ```bash
-node skills/a11y-core/scripts/render-report.mjs .a11y-history/<timestamp>/*.json \
+node <skills-root>/a11y-core/scripts/render-report.mjs .a11y-history/<timestamp>/*.json \
   --template web --out WEB-ACCESSIBILITY-AUDIT.md
 ```
 
@@ -91,7 +99,7 @@ Read one only when the task reaches it. Do not read them all up front.
 
 Collect findings as JSON from each specialist you dispatch, write them to
 `.a11y-history/<timestamp>/`, then render the report with
-`node skills/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+`node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

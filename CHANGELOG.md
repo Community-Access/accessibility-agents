@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Open Source Accessibility Framework adoption.** Four phase skills,
+  `osaf-foundational`, `osaf-workflow`, `osaf-testing` and `osaf-community`,
+  implement the framework's 24 actions in a repository, all of them or one at a
+  time, with the framework's exact IDs, cadences and Definitions of Done, and
+  hand parts of each action to the package skills that do them.
+  `kb-open-source-accessibility-framework` holds the action index, the tracking
+  issue flow and the framing. `github-hub` routes "adopt OSAF", phase and
+  action requests to them. See `docs/standards/osaf.md`.
+
 ### Removed
 
 - **Leftovers that nothing referenced or ran.** About 100 pre-7.0 documents

@@ -119,9 +119,9 @@ Describe the problem. You do not need to name a skill, but you can.
 | "Fix the markdown in docs/" | `markdown-a11y-assistant` scans, shows you the fixes it wants to make, and waits |
 
 Six skills are model-invocable; they are the only ones the model sees. A router
-dispatches the other 102 by name without loading their instructions into its
-own context. 57 of those, such as `/aria-specialist`, are also in the slash
-menu; the 45 reference and helper skills set `user-invocable: false` and are
+dispatches the other 107 by name without loading their instructions into its
+own context. 61 of those, such as `/aria-specialist`, are also in the slash
+menu; the 46 reference and helper skills set `user-invocable: false` and are
 not.
 
 ## What the gate does

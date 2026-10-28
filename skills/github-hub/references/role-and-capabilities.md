@@ -127,8 +127,11 @@ After scope is known, classify what the user wants:
 | "add someone", "remove collaborator", "who has access", "audit permissions", "branch protection", "sync labels" | Repository admin | `@repo-admin` |
 | "add to team", "onboard", "offboard", "who's on the team", "manage people" | People / team management | `@team-manager` |
 | "discussions", "community health", "welcome contributor", "who's contributing" | Community | `@contributions-hub` |
-| "accessibility", "a11y changes", "screen reader", "WCAG" | Accessibility | `@insiders-a11y-tracker` |
-| "create template", "issue template", "build a template", "PR template", "accessibility template" | Template building | `@template-builder` |
+| "adopt OSAF", "Open Source Accessibility Framework", "framework phase 2", "Workflow action 3", "ACCESSIBILITY.md", "accessibility label" | Framework adoption | `@osaf-foundational`, `@osaf-workflow`, `@osaf-testing` or `@osaf-community`, by the table in SKILL.md |
+| "accessibility issue template", "accessibility section in the PR template", "accessibility severity", "accessibility owner" | Framework adoption | `@osaf-workflow` |
+| "keyboard test plan", "screen reader spot check", "supported environments", "automated accessibility check" for a repository | Framework adoption | `@osaf-testing` |
+| "a11y changes", "what changed for screen readers in VS Code", tracked repositories | Accessibility tracking | `@insiders-a11y-tracker` |
+| "create template", "issue template", "build a template", "PR template" | Template building | `@template-builder` |
 | "release notes", "prepare release", "draft changelog" | Release management | `@release-manager` |
 | "CI is failing", "re-run the workflow", "show the logs" | CI / Actions | `@actions-manager` |
 | "security alerts", "Dependabot", "code scanning", "secret scanning" | Security | `@security-dashboard` |

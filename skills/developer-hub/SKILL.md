@@ -35,14 +35,22 @@ prompt shape. Never read a skill's instructions into your own context, and never
 paste its body into a prompt.
 
 ```text
-Activate the skill "<skill-name>". If skill activation is unavailable,
-read skills/<skill-name>/SKILL.md and follow it.
+Run the skill "<skill-name>": read <skills-root>/<skill-name>/SKILL.md and
+follow it. It is a specialist, hidden from the skill catalog to save context;
+running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: <one paragraph, what to build, debug or review>
 Scope: <file list or glob>
 Rules: report, do not edit unless the task says to.
 Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json,
 or, for guidance tasks, the answer with the API or criterion named.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists. If the load path is not shown,
+it is the folder that contains a11y-core/SKILL.md.
 
 ## Routing
 
@@ -72,7 +80,7 @@ Read one only when the task reaches it. Do not read them all up front.
 
 Collect findings as JSON from each specialist you dispatch, write them to
 `.a11y-history/<timestamp>/`, then render the report with
-`node skills/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+`node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

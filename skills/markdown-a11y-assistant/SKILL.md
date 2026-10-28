@@ -45,13 +45,21 @@ dispatch them together. Use exactly this prompt shape. Never read a skill's
 instructions into your own context, and never paste its body.
 
 ```text
-Activate the skill "markdown-scanner". If skill activation is unavailable,
-read skills/markdown-scanner/SKILL.md and follow it.
+Run the skill "markdown-scanner": read <skills-root>/markdown-scanner/SKILL.md
+and follow it. It is a specialist, hidden from the skill catalog to save
+context; running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: scan this file across all nine markdown accessibility domains.
 Scope: <file path>
 Rules: report, do not edit. Emoji mode: <remove|translate>.
 Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists. If the load path is not shown,
+it is the folder that contains a11y-core/SKILL.md.
 
 Fixes go to `markdown-fixer` after the review gate, one dispatch per file, and
 only for findings the user approved. CSV export goes to
@@ -62,7 +70,7 @@ only for findings the user approved. CSV export goes to
 Write each scanner's JSON to `.a11y-history/<timestamp>/<file>.json`, then:
 
 ```bash
-node skills/a11y-core/scripts/render-report.mjs .a11y-history/<timestamp>/*.json \
+node <skills-root>/a11y-core/scripts/render-report.mjs .a11y-history/<timestamp>/*.json \
   --template markdown --out MARKDOWN-ACCESSIBILITY-AUDIT.md
 ```
 
@@ -86,7 +94,7 @@ Read one only when the task reaches it. Do not read them all up front.
 
 Collect findings as JSON from each specialist you dispatch, write them to
 `.a11y-history/<timestamp>/`, then render the report with
-`node skills/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+`node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

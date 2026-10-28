@@ -168,7 +168,7 @@ field for it, and adding native subagent definitions per client is exactly the
 six-copy problem again. The dispatch prompt says "report, do not edit" and the
 gate refuses writes until the lead completes. That is the trade.
 
-**Drop the two non-standard frontmatter fields.** They are what keep 102
+**Drop the two non-standard frontmatter fields.** They are what keep 107
 skills out of every catalog. If the specification adopts an equivalent, one
 flag in `verify-spec.mjs` switches the check.
 

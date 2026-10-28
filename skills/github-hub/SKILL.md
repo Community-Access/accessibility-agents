@@ -1,6 +1,6 @@
 ---
 name: github-hub
-description: "Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis."
+description: "Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis, and for adopting the Open Source Accessibility Framework in a repository."
 license: MIT
 metadata:
   tier: router
@@ -45,16 +45,44 @@ prompt shape. Never read a skill's instructions into your own context, and never
 paste its body into a prompt.
 
 ```text
-Activate the skill "<skill-name>". If skill activation is unavailable,
-read skills/<skill-name>/SKILL.md and follow it.
+Run the skill "<skill-name>": read <skills-root>/<skill-name>/SKILL.md and
+follow it. It is a specialist, hidden from the skill catalog to save context;
+running it this way is intended. Replace a leading skills/ in any path it
+names with <skills-root>/.
 Task: <one paragraph, what the user wants to accomplish>
 Scope: <repository, or owner/repo list>
 Rules: report, do not push or merge without explicit approval.
 Return the answer, and the path of any file you wrote.
 ```
 
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists. If the load path is not shown,
+it is the folder that contains a11y-core/SKILL.md.
+
 Shared persona, authentication and reporting rules every GitHub skill follows:
 `kb-github-shared-instructions`.
+
+## Open Source Accessibility Framework
+
+Requests to adopt the Open Source Accessibility Framework (OSAF), or one of its
+phases or actions, go to the phase skill. Phase numbers follow the framework's
+order. Facts: `kb-open-source-accessibility-framework`.
+
+| Request mentions | Dispatch |
+|---|---|
+| Phase 1 or Foundational; creating `ACCESSIBILITY.md`; an accessibility label | `osaf-foundational` |
+| Phase 2 or Workflow; contributor expectations; an accessibility issue template or report path; severity and triage; the PR template's accessibility section; good first issue or help wanted accessibility issues; an accessibility owner; dependencies | `osaf-workflow` |
+| Phase 3 or Testing; an automated accessibility check; keyboard, screen reader or manual test procedures; supported environments and known limitations | `osaf-testing` |
+| Phase 4 or Community; responding to reports; recognition; progress updates; sharing resources | `osaf-community` |
+
+"Adopt the framework": `osaf-foundational` first, with the tracking issue
+prepared. Then the other phases one at a time, in the order the user picks,
+because several actions edit the same `ACCESSIBILITY.md`. A phase skill returns
+hand-offs: dispatch the GitHub ones yourself, send web work to
+`accessibility-lead` or `web-accessibility-wizard`, markdown to
+`markdown-a11y-assistant`, and desktop work to `developer-hub`.
 
 ## Never without asking
 
@@ -75,7 +103,7 @@ Read one only when the task reaches it. Do not read them all up front.
 For an accessibility audit (a repository scan, or an issue or pull request
 checked for accessibility), collect findings as JSON from each specialist you
 dispatch, write them to `.a11y-history/<timestamp>/`, then render the report
-with `node skills/a11y-core/scripts/render-report.mjs`. Do not type that report
+with `node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type that report
 by hand. Other GitHub work returns what the dispatched skill describes.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
