@@ -17,18 +17,23 @@ client has one.
 |---|---|---|---|---|---|
 | detect: inject the contract once | `UserPromptSubmit` | `UserPromptSubmit` | `userPromptSubmitted` | `BeforeAgent` | `PreInvocation` |
 | gate: refuse a UI edit before review | `PreToolUse` on Edit, Write, NotebookEdit, MultiEdit | `PreToolUse` on apply_patch, Edit, Write | `preToolUse` | `BeforeTool` on write_file, replace, edit | `PreToolUse` on write_to_file, replace_file_content, multi_replace_file_content |
-| mark: lead completed, open the gate | `PostToolUse` on Skill, and `SubagentStop` | `SubagentStop` | `postToolUse` | `AfterAgent` | `PostToolUse` on view_file, when the file read is the lead's SKILL.md |
+| mark: lead completed, open the gate | `PostToolUse` on Skill, and `SubagentStop` | `SubagentStop` | `postToolUse` | `AfterTool` on activate_skill | `PostToolUse` on view_file, when the file read is the lead's SKILL.md |
 | persist: save and restore across compaction | `PreCompact`, `SessionStart` | `PreCompact`, `SessionStart` | - | `PreCompress`, `SessionStart` | - |
 | finalize: refuse to end an unreviewed turn | `Stop` | `Stop` | - | - | - |
 
 Copilot does have `agentStop`, `subagentStop`, `preCompact` and `sessionStart`
-events; the package does not wire them yet. Gemini CLI's `AfterAgent` is used
-to mark the review; the package wires no finalize step there.
+events; the package does not wire them yet. On Gemini CLI the package wires no
+finalize step.
+
+Gemini CLI loads a skill with the `activate_skill` tool (`{ name }`), so the
+gate opens on `AfterTool` for that tool, and the guard reads the skill's name
+from `tool_input.name`. Earlier versions marked on `AfterAgent`, whose payload
+names no skill, so the gate never opened on Gemini.
 
 On Claude Code the lead is a skill that runs inline, which fires no
 `SubagentStop`, so the gate also opens on `PostToolUse` for the Skill tool.
 On every route (Skill tool, `SubagentStop`, Copilot `postToolUse`, Gemini
-`AfterAgent`) the guard opens the gate for exactly two skills,
+`AfterTool` on `activate_skill`) the guard opens the gate for exactly two skills,
 `accessibility-lead` and `web-accessibility-wizard`, with or without a plugin
 prefix such as `accessibility-agents:`. It reads the name from `agent_type`
 (and similar fields) when a review runs as a subagent.
@@ -79,7 +84,7 @@ only the wrapper differs.
 | Codex | `hooks/codex.hooks.json`, written to `~/.codex/hooks.json` by `npm run setup`, same shape, `statusMessage` per hook, top-level `description` (Codex rejects unknown keys such as `$comment`, silently). The Codex plugin loads no hooks | replaced with the checkout path by `npm run setup` | JSON `permissionDecision: "deny"`, or exit 2 |
 | Copilot CLI and VS Code, plugin | `com.github.copilot/hooks/hooks.json`, `version: 1`, `bash` and `powershell` commands, `timeoutSec` | `${PLUGIN_ROOT}` | non-zero exit denies `preToolUse` |
 | Copilot, repository | `hooks/copilot.hooks.json` copied to `.github/hooks/`, same shape | none; paths are repository-relative | as above |
-| Gemini CLI | `hooks/gemini.hooks.json`, named hooks with `description`, timeouts in milliseconds | `${extensionPath}`, replaced with the checkout path by `npm run setup` | JSON `decision`, or exit code |
+| Gemini CLI | `hooks/gemini.hooks.json`, named hooks with `description`, timeouts in milliseconds; the Gemini extension archive carries it as its `hooks/hooks.json` | `${extensionPath}` (quoted in each command), set by Gemini inside an extension and replaced with the checkout path by `npm run setup` | JSON `decision`, or exit code |
 | Antigravity | `hooks/antigravity.hooks.json`, named hooks `a11y-detect`, `a11y-gate`, `a11y-mark`, timeouts in seconds; `npm run setup` writes it to `~/.gemini/config/hooks.json`, or beside an existing file as `hooks.a11y.json` to merge | `${PLUGIN_ROOT}`, replaced with the checkout path by `npm run setup` | stdout JSON `decision`, always exit 0 |
 
 The script emits every client's output field at once. A client reads the key
@@ -106,7 +111,7 @@ names the next action.
 Live, in Claude Code (October 2026): the gate opens after `accessibility-lead`
 runs through the Skill tool, and still blocks an edit made without it.
 
-`hooks/guard.test.mjs`, 34 tests: the reminder fires once; the gate refuses
+`hooks/guard.test.mjs`, 36 tests: the reminder fires once; the gate refuses
 every user-facing extension and ignores build output, tests and dependencies;
 every path key a client might use is recognised; only the lead opens the gate,
 whether it runs as a subagent (`agent_type`) or through the Skill tool;

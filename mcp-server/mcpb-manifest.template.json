@@ -37,11 +37,11 @@
   ],
   "server": {
     "type": "node",
-    "entry_point": "server/stdio.js",
+    "entry_point": "server/dist/stdio.mjs",
     "mcp_config": {
       "command": "node",
       "args": [
-        "${__dirname}/server/stdio.js"
+        "${__dirname}/server/dist/stdio.mjs"
       ],
       "env": {}
     }
@@ -60,12 +60,12 @@
     "_comment": "This file is a template. Generate the final manifest.json by running `mcpb init` and `mcpb pack` from the staged bundle directory. See https://claude.com/docs/connectors/building/mcpb for the full build workflow.",
     "staging_steps": [
       "1. Create a clean bundle directory (e.g., ./mcpb-build/)",
-      "2. Copy mcp-server/{server.js,server-core.js,stdio.js,tools/,package.json,package-lock.json} into ./mcpb-build/server/",
-      "3. Run `npm ci --omit=dev --prefix ./mcpb-build/server`",
+      "2. Copy mcp-server/{dist/,package.json} into ./mcpb-build/server/ (dist/stdio.mjs is the whole server, bundled; it needs no npm install)",
+      "3. Optional: for the browser and PDF form tools, run `npm install --prefix ./mcpb-build/server playwright @axe-core/playwright pdf-lib`",
       "4. Copy this template to ./mcpb-build/manifest.json and remove the _build_notes block",
       "5. Copy a 512x512 PNG icon to ./mcpb-build/icon.png",
       "6. Copy PRIVACY.md to ./mcpb-build/PRIVACY.md (optional, the privacy_policies URL is canonical)",
-      "7. Run `mcpb pack ./mcpb-build/ a11y-agent-team-5.4.0.mcpb`",
+      "7. Run `mcpb pack ./mcpb-build/ accessibility-agents-7.1.0.mcpb`",
       "8. Test locally by dragging the .mcpb file into Claude Desktop",
       "9. Submit via https://clau.de/desktop-extention-submission"
     ],

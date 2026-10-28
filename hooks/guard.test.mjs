@@ -312,3 +312,13 @@ describe('gemini', () => {
     assert.equal(run('gate', write).code, 0);
   });
 });
+
+describe('gemini compression', () => {
+  test('PreCompress saves state and SessionStart restores it', () => {
+    const SESS = { session_id: 'gem-compress' };
+    run('gate', { ...SESS, tool_input: { file_path: 'src/App.tsx' } });
+    run('persist', { ...SESS, hook_event_name: 'PreCompress' });
+    const restored = run('persist', { ...SESS, hook_event_name: 'SessionStart' });
+    assert.match(restored.json.additionalContext, /blocked earlier/);
+  });
+});

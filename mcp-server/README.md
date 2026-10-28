@@ -412,7 +412,7 @@ Read-only data endpoints for accessibility reference material. The two with a `{
 FROM node:24-slim
 WORKDIR /app
 COPY package.json .
-RUN npm install --omit=dev
+RUN npm install
 COPY . .
 EXPOSE 3100
 CMD ["node", "server.js"]

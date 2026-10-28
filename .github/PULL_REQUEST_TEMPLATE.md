@@ -68,7 +68,7 @@ Before submitting, verify all applicable items. If an item doesn't apply, mark i
 
 ### Release Readiness (When Version/Release Files Change)
 
-- [ ] `package.json`, `plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json` and `mcp-server/package.json` versions are aligned (`npm run verify:release` checks all but the marketplace file)
+- [ ] `package.json`, `plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `mcp-server/package.json` and `server.json` versions are aligned (`npm run verify:release` checks all but the marketplace file)
 - [ ] `CHANGELOG.md` contains the matching version section
 - [ ] `RELEASE-{version}.md` exists and includes `## Overview`, `## Highlights`, and `## Full Changelog`
 - [ ] Public action examples use the current tag (for example, `action@v{version}`)
