@@ -36,8 +36,8 @@ Get-ChildItem -Path "<folder>\*" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epu
 
 # Recursive scan
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
-  Where-Object { $_.Name -notlike '~$*' -and $_.Name -notlike '*.tmp' -and $_.Name -notlike '*.bak' } |
-  Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]' }
+  Where-Object Name -notlike '~$*' |
+  Where-Object FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]'
 ```
 
 ### Bash (macOS)
@@ -72,7 +72,7 @@ git log --since="N days ago" --name-only --diff-filter=ACMR --pretty="" -- '*.do
 ```powershell
 # Files modified since a specific date
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
-  Where-Object { $_.LastWriteTime -gt [datetime]"2025-01-01" }
+  Where-Object LastWriteTime -gt ([datetime]"2025-01-01")
 ```
 
 ## Files to Skip
