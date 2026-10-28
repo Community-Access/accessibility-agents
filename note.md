@@ -4,9 +4,9 @@ Branch: `chore/standards-audit-and-codespaces`, from `decf6ba` (main).
 Written by Claude, 27 October 2026. This file lives on the branch so you can
 read it anywhere; delete it before merging.
 
-Status: IN PROGRESS. Work runs in the cloud session; each batch is committed
-and pushed to origin/chore/standards-audit-and-codespaces, and this note is
-updated in the same push. Nothing is written to D:\code\agents any more.
+Status: COMPLETE (28 October 2026). Everything is committed and pushed to
+origin/chore/standards-audit-and-codespaces; pull request #221 is open, not
+merged. Nothing is written to D:\code\agents any more.
 
 ## How the facts were checked
 
@@ -141,7 +141,7 @@ statements about nvdaAPIVersions.json) are fixed in the same commit.
   pr-review tried to merge through a read-only tool).
 - GitHub REST enum values, label, branch protection and community health
   file behaviour match the OpenAPI description and docs.github.com.
-- actions/checkout@v7; Node 24 or 22 (Node 20 ended 30 April 2026).
+- actions/checkout@v7; Node 26, 24 or 22 (Node 20 ended 30 April 2026; 26 became LTS on 28 October 2026).
 - HTML report templates: redundant ARIA landmark roles, and aria-label on
   elements ARIA does not allow to be named, removed.
 - NVDA (2026.3 current), wxPython, Accessibility Insights for Windows,
@@ -286,19 +286,41 @@ Re-run after 0fc0195: an edit to an HTML file was refused before
   describes the renderer exactly. Decision 6: GitHub workflow skills now
   declare `artifact` and write their own documents.
 
-## In progress
+## Done and committed (1092cd1): documentation
 
-- Documentation audit (138 files): reviewed (about 465 of 485 hunks
-  correct, nothing that would break an install), six fixes applied; now
-  aligning the scoring pages with the renderer, then commit.
-- Batch B (23 knowledge-base skills, 32 files): edits done; independent
-  review running. Three related skills (kb-severity-mapping,
-  kb-report-generation, cross-page-analyzer) aligned to the renderer's
-  scoring, to commit with the docs.
+About 160 live documents checked against the code and primary sources,
+reviewed independently twice (about 465 of 485 hunks right first time; the
+rest fixed). Install, uninstall and plugin commands; hooks per client;
+standards and law; Node 26, 24 or 22; scoring pages describe the renderer
+only; workflows fail on violations; conformance numbers re-measured; about
+60 dead links; house style.
+
+## Done and committed (44cc9dc): knowledge-base skills (batch B)
+
+23 skills, 32 files, reviewed independently; four reviewer findings fixed
+(a leftover React Native table, stale email Grid data, the Angular 20.2
+boundary, the Quick scan profile). Lighthouse 13.6 weights, real axe CLI
+flags, Playwright skill rebuilt on the real MCP tools, GitHub HTML
+templates fixed, Office snippets that did not run fixed and tested,
+framework APIs current.
+
+## Final verification (28 October 2026)
+
+- `node scripts/verify.mjs`: 16 of 16 gates pass (115 MCP tests, 26 gate
+  tests, live session on Claude Code; Codex and Copilot not installed here).
+- `claude plugin validate .`: passes (warnings: no icon; CLAUDE.md is not
+  loaded from a plugin).
+- markdownlint: 0 issues on 417 files; Markdown accessibility gate clean.
+- MCP bundle matches the source.
+
+## Pull request
+
+[#221](https://github.com/Community-Access/accessibility-agents/pull/221),
+open against main, not merged. Delete this note.md before merging.
 
 ## Decisions: what was done
 
-1. Batch B: restarted; still running.
+1. Batch B: done (44cc9dc).
 2. MCP server: bundled (17c5a8e), as advised.
 3. Live gate test: re-run, passed.
 4. Codespaces: dev container and `.vscode/mcp.json` added (60d7c54).
@@ -331,7 +353,7 @@ Pushed to [the branch on GitHub](https://github.com/Community-Access/accessibili
 
 ## Remaining work (running checklist, updated with every push)
 
-Last updated: 28 October 2026, 6:10 AM Mountain (Arizona).
+Last updated: 28 October 2026, 6:40 AM Mountain (Arizona).
 
 - [x] Security advisories, MCP server bugs, plugin packaging, edit gate, installer
 - [x] Skill batch F: GitHub, developer, desktop (24 skills)
@@ -339,15 +361,15 @@ Last updated: 28 October 2026, 6:10 AM Mountain (Arizona).
 - [x] Skill batch C: web part 1 (15 skills)
 - [x] Skill batch D: web part 2 (15 skills)
 - [x] Skill batch E: documents and Markdown (18 skills)
-- [ ] Skill batch B: knowledge base (23 skills): edits done, independent review running
-- [ ] Documentation audit (README, docs/, workflows): reviewed, fixes applied, scoring pages in progress
+- [x] Skill batch B: knowledge base (23 skills) (44cc9dc)
+- [x] Documentation audit (README, docs/, workflows) (1092cd1)
 - [x] Decision 2: bundle the MCP server so plugin installs can start it
 - [x] Decision 3: live edit-gate test in Claude Code
 - [x] Decision 4: Codespaces dev container, VS Code skills and MCP settings
 - [x] Decision 6: findings contract scoped to accessibility audits in a11y-core (2083bc5)
 - [x] Decision 7: Antigravity hook manifest: verified, and deliberately not shipped (see Decisions)
 - [x] Smaller fixes: uninstall, action.yml, engines, Codex manifest, currency script, docs manifest, templates, dependency gate (2083bc5)
-- [ ] Final full verification: every gate, markdownlint, plugin validate, live client checks
-- [ ] Pull request to main (not merged)
+- [x] Final full verification: every gate, markdownlint, plugin validate, live client checks
+- [x] Pull request to main (not merged): #221
 
-STATUS: IN PROGRESS
+STATUS: COMPLETE. All work is done and pushed; pull request #221 is open for your review, not merged.
