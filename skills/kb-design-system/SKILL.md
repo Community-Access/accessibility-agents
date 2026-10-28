@@ -482,7 +482,7 @@ find . -type f \( \
 # PowerShell equivalent
 Get-ChildItem -Recurse -File -Include tokens.json,design-tokens.json,colors.json,`
   variables.css,tokens.css,_variables.scss,theme.ts,theme.js,tailwind.config.js,tailwind.config.ts `
-  | Where-Object { $_.FullName -notmatch 'node_modules|\.next|dist' }
+  | Where-Object FullName -notmatch 'node_modules|\.next|dist'
 ```
 
 ---

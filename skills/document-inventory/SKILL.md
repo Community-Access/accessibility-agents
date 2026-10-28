@@ -67,8 +67,8 @@ Get-ChildItem -Path "<folder>\*" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epu
 
 # Recursive scan
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
-  Where-Object { $_.Name -notlike '~$*' -and $_.Name -notlike '*.tmp' -and $_.Name -notlike '*.bak' } |
-  Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]' }
+  Where-Object Name -notlike '~$*' |
+  Where-Object FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]'
 ```
 
 ## Delta Detection Commands
