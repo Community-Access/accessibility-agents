@@ -212,7 +212,7 @@ export function registerTrendTools(server) {
  * Provides an aggregate view across all targets.
  */
 export function registerTrendResource(server) {
-  server.resource(
+  server.registerResource(
     "audit-dashboard",
     "a11y://dashboard/summary",
     {

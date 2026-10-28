@@ -62,7 +62,7 @@ export function registerPlaywrightTools(server) {
         tags: z
           .array(z.string())
           .optional()
-          .describe('axe-core tags to filter by (default: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])'),
+          .describe('axe-core tags to filter by (default: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"], every WCAG 2.2 A and AA rule)'),
         include: z
           .array(z.string())
           .optional()
@@ -78,7 +78,7 @@ export function registerPlaywrightTools(server) {
         return errorResult(NOT_INSTALLED_MSG);
       }
       const safeUrl = validateUrl(url);
-      const axeTags = tags || ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
+      const axeTags = tags || ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
       try {
         const { chromium } = await import("playwright");

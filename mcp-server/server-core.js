@@ -42,7 +42,7 @@
  *   - Input size limits on all file operations
  */
 
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { readFile as fsReadFile, writeFile as fsWriteFile, stat } from "node:fs/promises";
 import { realpathSync, existsSync } from "node:fs";
@@ -2061,18 +2061,18 @@ export function createServer() {
   // MCP Prompts
   // =========================================================================
 
-  server.prompt(
+  server.registerPrompt(
     "audit-page",
     {
       description:
         "Generate an accessibility audit prompt for a web page. Returns a structured audit instruction that guides the model through a comprehensive WCAG 2.2 AA review.",
-      argsSchema: z.object({
+      argsSchema: {
         url: z.string().describe("URL or file path of the page to audit"),
         level: z
           .enum(["A", "AA", "AAA"])
           .optional()
           .describe("WCAG conformance level (default: AA)"),
-      }),
+      },
     },
     async ({ url, level }) => {
       const target = level || "AA";
@@ -2108,18 +2108,18 @@ export function createServer() {
     }
   );
 
-  server.prompt(
+  server.registerPrompt(
     "check-component",
     {
       description:
         "Generate an accessibility review prompt for a specific UI component pattern (modal, tabs, form, etc.).",
-      argsSchema: z.object({
+      argsSchema: {
         component: z
           .string()
           .describe(
             'Component type: modal, tabs, accordion, combobox, carousel, form, live-region, navigation, or general'
           ),
-      }),
+      },
     },
     async ({ component }) => {
       const key = component.toLowerCase().trim();
@@ -2149,18 +2149,18 @@ export function createServer() {
     }
   );
 
-  server.prompt(
+  server.registerPrompt(
     "explain-wcag",
     {
       description:
         "Explain a WCAG success criterion with practical examples and common violations.",
-      argsSchema: z.object({
+      argsSchema: {
         criterion: z
           .string()
           .describe(
             'WCAG criterion number (e.g. "1.4.3") or keyword (e.g. "contrast", "focus")'
           ),
-      }),
+      },
     },
     async ({ criterion }) => {
       return {
@@ -2190,15 +2190,25 @@ export function createServer() {
   // MCP Resources
   // =========================================================================
 
-  server.resource(
+  server.registerResource(
     "wcag-guidelines",
-    "a11y://guidelines/{component}",
+    new ResourceTemplate("a11y://guidelines/{component}", {
+      list: async () => ({
+        resources: Object.keys(GUIDELINES).map((name) => ({
+          uri: `a11y://guidelines/${name}`,
+          name: `wcag-guidelines-${name}`,
+          mimeType: "text/markdown",
+        })),
+      }),
+      complete: { component: () => Object.keys(GUIDELINES) },
+    }),
     {
       description:
         "Component-specific WCAG accessibility guidelines. Available components: modal, tabs, accordion, combobox, carousel, form, live-region, navigation, general.",
+      mimeType: "text/markdown",
     },
-    async (uri) => {
-      const component = uri.pathname.split("/").pop() || "general";
+    async (uri, { component: requested }) => {
+      const component = String(requested || "general");
       const guide = GUIDELINES[component] || GUIDELINES.general;
       return {
         contents: [
@@ -2212,7 +2222,7 @@ export function createServer() {
     }
   );
 
-  server.resource(
+  server.registerResource(
     "supported-tools",
     "a11y://tools",
     {
@@ -2243,15 +2253,24 @@ export function createServer() {
     }
   );
 
-  server.resource(
+  server.registerResource(
     "scan-config-template",
-    "a11y://config/{profile}",
+    new ResourceTemplate("a11y://config/{profile}", {
+      list: async () => ({
+        resources: ["strict", "moderate", "minimal"].map((name) => ({
+          uri: `a11y://config/${name}`,
+          name: `scan-config-${name}`,
+          mimeType: "application/json",
+        })),
+      }),
+      complete: { profile: () => ["strict", "moderate", "minimal"] },
+    }),
     {
       description:
         "Scan configuration templates. Available profiles: strict, moderate, minimal.",
     },
-    async (uri) => {
-      const profile = uri.pathname.split("/").pop() || "moderate";
+    async (uri, { profile: requested }) => {
+      const profile = String(requested || "moderate");
       const validProfiles = ["strict", "moderate", "minimal"];
       if (!validProfiles.includes(profile)) {
         return {
@@ -2278,7 +2297,7 @@ export function createServer() {
         minimal: {
           severity: ["critical", "serious"],
           rules: "all",
-          tags: ["wcag2a", "wcag2aa"],
+          tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"],
         },
       };
       return {

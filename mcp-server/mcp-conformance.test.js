@@ -258,6 +258,34 @@ describe("MCP tool surface", () => {
     }
   });
 
+  test("every templated resource can be read through the protocol", async () => {
+    // Registering a template as a plain resource leaves a literal "{name}" in
+    // its address, and every real read then fails with "not found". Reading
+    // through a client is the only check that catches that.
+    const { resourceTemplates } = await client.listResourceTemplates();
+    const templates = resourceTemplates.map((t) => t.uriTemplate).sort();
+    assert.deepEqual(templates, ["a11y://config/{profile}", "a11y://guidelines/{component}"]);
+    const { resources } = await client.listResources();
+    for (const r of resources) {
+      assert.ok(!r.uri.includes("{"), `${r.uri} is a template listed as a resource`);
+    }
+    for (const uri of ["a11y://guidelines/modal", "a11y://config/strict", "a11y://tools"]) {
+      const result = await client.readResource({ uri });
+      assert.ok(result.contents[0].text.length > 0, `${uri} returned content`);
+    }
+  });
+
+  test("every prompt declares the arguments it uses", async () => {
+    const { prompts } = await client.listPrompts();
+    const args = Object.fromEntries(prompts.map((p) => [p.name, (p.arguments || []).map((a) => a.name).sort()]));
+    assert.deepEqual(args, {
+      "audit-page": ["level", "url"],
+      "check-component": ["component"],
+      "explain-wcag": ["criterion"],
+    });
+    for (const p of prompts) assert.ok(p.description, `${p.name} has a description`);
+  });
+
   test("large-result tools declare a result cap", () => {
     const scanners = tools.filter((t) => t.name.startsWith("scan_") || t.name.startsWith("run_"));
     for (const t of scanners) {

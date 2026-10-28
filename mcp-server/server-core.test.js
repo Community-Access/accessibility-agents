@@ -728,17 +728,18 @@ describe("MCP Resources", () => {
     server = createServer();
   });
 
-  it("registers wcag-guidelines, supported-tools, and scan-config-template resources", () => {
-    const resources = server._registeredResources;
-    const uris = Object.keys(resources);
-    assert.ok(uris.some((u) => u.includes("guidelines")), "wcag-guidelines registered");
-    assert.ok(uris.some((u) => u.includes("tools")), "supported-tools registered");
-    assert.ok(uris.some((u) => u.includes("config")), "scan-config-template registered");
+  it("registers wcag-guidelines and scan-config-template as templates, supported-tools as a resource", () => {
+    const templates = server._registeredResourceTemplates;
+    assert.ok(templates["wcag-guidelines"], "wcag-guidelines registered as a template");
+    assert.ok(templates["scan-config-template"], "scan-config-template registered as a template");
+    assert.equal(templates["wcag-guidelines"].resourceTemplate.uriTemplate.toString(), "a11y://guidelines/{component}");
+    assert.equal(templates["scan-config-template"].resourceTemplate.uriTemplate.toString(), "a11y://config/{profile}");
+    assert.ok(server._registeredResources["a11y://tools"], "supported-tools registered");
   });
 
   it("wcag-guidelines returns markdown content for modal", async () => {
-    const resource = server._registeredResources["a11y://guidelines/{component}"];
-    const result = await resource.readCallback(new URL("a11y://guidelines/modal"), {});
+    const template = server._registeredResourceTemplates["wcag-guidelines"];
+    const result = await template.readCallback(new URL("a11y://guidelines/modal"), { component: "modal" }, {});
     assert.ok(result.contents.length > 0);
     assert.ok(result.contents[0].text.includes("Modal"));
     assert.equal(result.contents[0].mimeType, "text/markdown");
@@ -753,8 +754,8 @@ describe("MCP Resources", () => {
   });
 
   it("scan-config-template returns JSON for moderate profile", async () => {
-    const resource = server._registeredResources["a11y://config/{profile}"];
-    const result = await resource.readCallback(new URL("a11y://config/moderate"), {});
+    const template = server._registeredResourceTemplates["scan-config-template"];
+    const result = await template.readCallback(new URL("a11y://config/moderate"), { profile: "moderate" }, {});
     assert.equal(result.contents[0].mimeType, "application/json");
     const config = JSON.parse(result.contents[0].text);
     assert.ok(Array.isArray(config.severity));
