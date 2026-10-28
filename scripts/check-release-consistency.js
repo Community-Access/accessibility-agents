@@ -28,7 +28,7 @@ const SOURCES = [
   { file: 'package.json', read: (t) => JSON.parse(t).version, why: 'the package manifest' },
   { file: 'plugin.json', read: (t) => JSON.parse(t).version, why: 'the Agent Plugins 1.0 manifest' },
   { file: '.claude-plugin/plugin.json', read: (t) => JSON.parse(t).version, why: 'what Claude Code and VS Code read' },
-  { file: '.codex-plugin/plugin.json', read: (t) => JSON.parse(t).version, why: 'what Codex reads' },
+  { file: '.codex-plugin/plugin.json', read: (t) => JSON.parse(t).version, why: 'the Codex compatibility fallback to plugin.json' },
   { file: 'mcp-server/package.json', read: (t) => JSON.parse(t).version, why: 'the MCP server, which reports this at its handshake' },
 ];
 

@@ -1,7 +1,7 @@
 {
-  "$schema": "./.github/schemas/epub-config.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/epub-config.schema.json",
   "version": "1.0",
-  "description": "Moderate ePub profile — errors and warnings only. Good default for most organizations.",
+  "description": "Moderate ePub profile: errors and warnings only. Good default for most organizations.",
   "epub": {
     "enabled": true,
     "disabledRules": [],

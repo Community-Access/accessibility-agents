@@ -130,7 +130,7 @@ const GATES = [
     name: 'Dependency advisories',
     standard: 'no known-vulnerable dependency ships',
     command: [NODE, ['scripts/verify-dependencies.mjs']],
-    proves: 'None of the three dependency trees carries a high or critical advisory, checked against the registry rather than assumed.',
+    proves: 'Neither gated dependency tree (root tooling, MCP server) carries a high or critical advisory, checked against the registry rather than assumed; the deprecated VS Code extension tree is reported but not gated.',
     optional: true,
   },
   {

@@ -137,5 +137,13 @@ if (unreachable && !offlineOk) {
   process.exit(2);
 }
 
-console.log('No high or critical advisories in any dependency tree.');
+const warned = results.filter((r) => !r.fatal.length && r.counts && (r.counts.critical || r.counts.high));
+if (unreachable) {
+  console.log('No high or critical advisories in the trees that could be audited.');
+} else if (warned.length) {
+  console.log('No high or critical advisories in the gated trees (root tooling, MCP server). Not gated:');
+  for (const r of warned) console.log(`  - ${r.label}: ${r.counts.critical || 0} critical, ${r.counts.high || 0} high`);
+} else {
+  console.log('No high or critical advisories in any dependency tree.');
+}
 process.exit(0);

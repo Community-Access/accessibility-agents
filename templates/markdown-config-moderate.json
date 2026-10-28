@@ -1,5 +1,5 @@
 {
-  "$schema": "./.github/schemas/markdown-config.schema.json",
+  "$schema": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/markdown-config.schema.json",
   "ignoredDirs": [
     "node_modules",
     ".git",

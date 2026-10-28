@@ -59,7 +59,7 @@ for (const expected of expectedMappings) {
 const templateExpectations = [
   {
     path: "templates/markdown-config-moderate.json",
-    schema: "./.github/schemas/markdown-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/markdown-config.schema.json",
     validate: (json) => {
       if (!json.rules || typeof json.rules !== "object") {
         throw new Error("must include rules object");
@@ -68,7 +68,7 @@ const templateExpectations = [
   },
   {
     path: "templates/office-config-strict.json",
-    schema: "./.github/schemas/office-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/office-config.schema.json",
     validate: (json) => {
       for (const key of ["docx", "xlsx", "pptx"]) {
         if (!json[key] || typeof json[key] !== "object") throw new Error(`missing ${key} object`);
@@ -78,17 +78,17 @@ const templateExpectations = [
   },
   {
     path: "templates/office-config-moderate.json",
-    schema: "./.github/schemas/office-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/office-config.schema.json",
     validate: () => {},
   },
   {
     path: "templates/office-config-minimal.json",
-    schema: "./.github/schemas/office-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/office-config.schema.json",
     validate: () => {},
   },
   {
     path: "templates/pdf-config-strict.json",
-    schema: "./.github/schemas/pdf-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/pdf-config.schema.json",
     validate: (json) => {
       if (!Array.isArray(json.severityFilter)) throw new Error("severityFilter must be array");
       if (!hasAll(["error", "warning", "tip"], json.severityFilter)) {
@@ -98,29 +98,29 @@ const templateExpectations = [
   },
   {
     path: "templates/pdf-config-moderate.json",
-    schema: "./.github/schemas/pdf-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/pdf-config.schema.json",
     validate: () => {},
   },
   {
     path: "templates/pdf-config-minimal.json",
-    schema: "./.github/schemas/pdf-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/pdf-config.schema.json",
     validate: () => {},
   },
   {
     path: "templates/epub-config-strict.json",
-    schema: "./.github/schemas/epub-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/epub-config.schema.json",
     validate: (json) => {
       if (!json.epub || typeof json.epub !== "object") throw new Error("must include epub object");
     },
   },
   {
     path: "templates/epub-config-moderate.json",
-    schema: "./.github/schemas/epub-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/epub-config.schema.json",
     validate: () => {},
   },
   {
     path: "templates/epub-config-minimal.json",
-    schema: "./.github/schemas/epub-config.schema.json",
+    schema: "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.github/schemas/epub-config.schema.json",
     validate: () => {},
   },
 ];

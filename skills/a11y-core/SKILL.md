@@ -64,6 +64,10 @@ Skills declare `metadata.output`, and it decides what they return.
   and what each changes.
 - **guidance** - answer the question, cite the criterion or API by name, stop.
 
+The findings schema and the renderer are for accessibility audits. GitHub
+workflow skills (issues, pull requests, briefings, analytics) declare
+`artifact` and write the document their own instructions describe.
+
 Severity is one of `critical`, `serious`, `moderate`, `minor`. Confidence is
 `high`, `medium` or `low`. A finding without a location and a fix is not a
 finding.

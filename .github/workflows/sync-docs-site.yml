@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout accessibility-agents
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build docs manifest
         run: |
@@ -31,7 +31,7 @@ jobs:
           # Getting Started
           echo '{"name":"Getting Started","id":"getting-started","items":[' >> manifest.json
           first=true
-          for f in docs/getting-started.md docs/configuration.md docs/architecture.md; do
+          for f in docs/getting-started/README.md docs/reference/configuration.md docs/architecture/README.md; do
             if [ -f "$f" ]; then
               title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
               [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
@@ -43,9 +43,9 @@ jobs:
           echo ']},' >> manifest.json
 
           # Agents
-          echo '{"name":"Agents","id":"agents","items":[' >> manifest.json
+          echo '{"name":"Skills","id":"agents","items":[' >> manifest.json
           first=true
-          for f in docs/agents/README.md $(find docs/agents -name '*.md' ! -name 'README.md' | sort); do
+          for f in docs/reference/skills/README.md $(find docs/reference/skills -name '*.md' ! -name 'README.md' | sort); do
             if [ -f "$f" ]; then
               title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
               [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
@@ -57,9 +57,9 @@ jobs:
           echo ']},' >> manifest.json
 
           # Skills
-          echo '{"name":"Skills","id":"skills","items":[' >> manifest.json
+          echo '{"name":"Knowledge domains","id":"skills","items":[' >> manifest.json
           first=true
-          for f in $(find docs/skills -name '*.md' | sort); do
+          for f in $(find docs/reference/knowledge-domains -name '*.md' | sort); do
             if [ -f "$f" ]; then
               title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
               [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
@@ -73,7 +73,7 @@ jobs:
           # Tools
           echo '{"name":"Tools","id":"tools","items":[' >> manifest.json
           first=true
-          for f in $(find docs/tools -name '*.md' | sort); do
+          for f in $(find docs/reference/tools -name '*.md' | sort); do
             if [ -f "$f" ]; then
               title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
               [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
@@ -87,49 +87,7 @@ jobs:
           # Scanning
           echo '{"name":"Scanning","id":"scanning","items":[' >> manifest.json
           first=true
-          for f in $(find docs/scanning -name '*.md' | sort); do
-            if [ -f "$f" ]; then
-              title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
-              [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
-              $first || echo ',' >> manifest.json
-              echo "{\"path\":\"$f\",\"title\":\"$title\"}" >> manifest.json
-              first=false
-            fi
-          done
-          echo ']},' >> manifest.json
-
-          # Prompts: Web
-          echo '{"name":"Prompts: Web","id":"prompts-web","items":[' >> manifest.json
-          first=true
-          for f in $(find docs/prompts/web -name '*.md' | sort); do
-            if [ -f "$f" ]; then
-              title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
-              [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
-              $first || echo ',' >> manifest.json
-              echo "{\"path\":\"$f\",\"title\":\"$title\"}" >> manifest.json
-              first=false
-            fi
-          done
-          echo ']},' >> manifest.json
-
-          # Prompts: Documents
-          echo '{"name":"Prompts: Documents","id":"prompts-docs","items":[' >> manifest.json
-          first=true
-          for f in $(find docs/prompts/documents -name '*.md' | sort); do
-            if [ -f "$f" ]; then
-              title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
-              [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
-              $first || echo ',' >> manifest.json
-              echo "{\"path\":\"$f\",\"title\":\"$title\"}" >> manifest.json
-              first=false
-            fi
-          done
-          echo ']},' >> manifest.json
-
-          # Prompts: GitHub
-          echo '{"name":"Prompts: GitHub","id":"prompts-github","items":[' >> manifest.json
-          first=true
-          for f in $(find docs/prompts/github -name '*.md' | sort); do
+          for f in $(find docs/guides/scanning -name '*.md' | sort); do
             if [ -f "$f" ]; then
               title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
               [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')
@@ -143,7 +101,7 @@ jobs:
           # Advanced
           echo '{"name":"Advanced","id":"advanced","items":[' >> manifest.json
           first=true
-          for f in $(find docs/advanced -name '*.md' | sort); do
+          for f in $(find docs/guides/advanced -name '*.md' | sort); do
             if [ -f "$f" ]; then
               title=$(head -5 "$f" | grep -m1 '^#' | sed 's/^#\+ //')
               [ -z "$title" ] && title=$(basename "$f" .md | sed 's/-/ /g')

@@ -23,7 +23,7 @@ You receive handoffs from the Developer Hub when a task involves building access
 ## Core Principles
 
 1. **Rules are data, not code.** Store rules as YAML/JSON with WCAG mappings. Adding a rule should never require code changes.
-2. **Severity scoring is principled.** Consistent formulas: impact x frequency x confidence.
+2. **Severity scoring is principled.** One formula: severity weight x confidence, scaled by the checks run (`kb-web-severity-scoring`).
 3. **Reports serve multiple audiences.** Developers need line numbers. Managers need scores. Compliance needs WCAG references.
 4. **Parsers are the foundation.** Invest in parsing robustness for HTML, DOCX, PDF, UIA trees.
 5. **Cross-team alignment.** Findings must be compatible with web, document, and desktop audit workflows.

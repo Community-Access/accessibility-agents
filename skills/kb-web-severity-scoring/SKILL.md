@@ -14,132 +14,60 @@ metadata:
 
 ## Web Severity Scoring
 
-> **What reports actually use.** The score and grade in every rendered report
-> come from `skills/a11y-core/scripts/merge-findings.mjs`: severity weights
-> critical 10, serious 5, moderate 2, minor 1; confidence factors high 1.0,
-> medium 0.7, low 0.4; the penalty is scaled by the number of checks run; grades
-> are A 90+, B 80+, C 70+, D 60+, F below 60. Where this file differs, the
-> script decides. A score is not a conformance claim: only a finding-free
-> review against every criterion at the target level supports "conforms".
+This file describes the scoring that `skills/a11y-core/scripts/merge-findings.mjs`
+computes for every rendered report. Where this file and the script differ, the
+script decides. A score is not a conformance claim: only a finding-free review
+against every criterion at the target level supports "conforms".
 
-## Severity Scoring Formula
+## Score formula
 
 ```text
-Page Score = 100 - (sum of weighted findings)
-
-Weights:
-  Critical (confirmed, all three sources):   -18 points
-  Critical (high confidence, both sources):  -15 points
-  Critical (high confidence, single source): -10 points
-  Critical (medium confidence):               -7 points
-  Critical (low confidence):                  -3 points
-  Serious (high confidence):                  -7 points
-  Serious (medium confidence):                -5 points
-  Serious (low confidence):                   -2 points
-  Moderate (high confidence):                 -3 points
-  Moderate (medium confidence):               -2 points
-  Moderate (low confidence):                  -1 point
-  Minor:                                      -1 point
-
-Floor: 0 (minimum score)
+penalty = sum over findings of severity_weight x confidence_factor
+checks  = max(number of findings + number of passed checks, 10)
+score   = max(0, round(100 - (penalty / checks) x 20))
 ```
 
-### Scoring Profiles
+Each severity, with its weight.
 
-Use a profile to tune strictness by context while keeping comparable grade bands:
+| Severity | Weight |
+|---|---|
+| critical | 10 |
+| serious | 5 |
+| moderate | 2 |
+| minor | 1 |
 
-| Profile | Intended Use | Multiplier |
-|---------|--------------|------------|
-| balanced (default) | Standard product delivery | 1.0 |
-| strict | Regulated/public-sector releases | 1.15 |
-| advisory | Early design and prototyping | 0.8 |
+Dividing by the number of checks keeps a large audit from scoring lower only
+because it looked at more. The floor of 10 checks stops a tiny audit with one
+finding from scoring near zero.
 
-Apply the profile multiplier to each final deduction after confidence handling.
+**Example:** one critical finding at high confidence and 9 passed checks gives
+penalty 10, checks 10, score 100 - (10 / 10) x 20 = 80, grade B.
 
-### Formula
+## Grades
 
-```pseudocode
-page_score = 100
-for each finding:
-    base = lookup(severity, confidence_level, source_count)  // from table above
-    multiplier = 1.2 if confidence_level == "confirmed" else 1.0
-    deduction = base * multiplier
-    page_score = max(0, page_score - deduction)
-```
+Each score band, with its grade.
 
-The values in the lookup table above are **base deductions** (pre-multiplier).
-"Confirmed" findings (validated by all three sources: axe-core + agent review + Playwright) apply an additional 1.2x multiplier.
+| Score | Grade |
+|---|---|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
-**Example:** One Critical finding at confirmed confidence = 18 (base) x 1.2 = **21.6 points** deducted, giving a page score of 78.
+## Confidence
 
-### Calibration Layer (v2)
+Each level, with its factor and when to use it.
 
-To reduce false-positive inflation and stabilize trends, apply a calibration coefficient by rule family:
+| Level | Factor | When to use |
+|---|---|---|
+| high | 1.0 | Structural and certain (missing alt, no label, no lang), or found by two sources (for example axe-core and code review) |
+| medium | 0.7 | One source, likely an issue (heading edge cases, questionable ARIA, possible keyboard trap) |
+| low | 0.4 | Needs human review (alt text quality, reading order, context-dependent link text) |
 
-```text
-calibrated_deduction = deduction * calibration_coefficient(rule_family)
-```
-
-Recommended initial coefficients:
-
-| Rule Family | Coefficient | Rationale |
-|-------------|-------------|-----------|
-| Keyboard/focus | 1.1 | High functional impact at runtime |
-| Forms/labels/errors | 1.05 | High completion risk for core tasks |
-| Semantics/structure | 1.0 | Baseline scoring |
-| Link text/context | 0.9 | Higher context variance |
-| Content quality (alt/link clarity) | 0.85 | Needs human review more often |
-
-Update coefficients quarterly from confirmed outcomes. Avoid changing coefficients more than +/-0.1 per cycle.
-
-## Score Grades
-
-Each score, with its grade and meaning.
-
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - minor or no issues found |
-| 75-89 | B | Good - some issues |
-| 50-74 | C | Needs Work - multiple issues |
-| 25-49 | D | Poor - significant accessibility barriers |
-| 0-24 | F | Failing - critical barriers, likely unusable with AT |
-
-## Confidence Levels
-
-Each level, with weight and when to use.
-
-| Level | Weight | When to Use |
-|-------|--------|-------------|
-| Confirmed | 120% | Validated by all three sources: axe-core + agent review + Playwright behavioral testing |
-| High | 100% | Confirmed by axe-core + agent, or definitively structural (missing alt, no labels, no lang) |
-| Medium | 70% | Found by one source, likely issue (heading edge cases, questionable ARIA, possible keyboard traps) |
-| Low | 30% | Possible issue, needs human review (alt text quality, reading order, context-dependent link text) |
-
-### Source Correlation
-
-Issues found by both axe-core AND agent review are automatically upgraded to **high confidence** regardless of individual confidence ratings.
-
-Issues found by all three sources (axe-core + agent review + Playwright behavioral testing) are upgraded to **confirmed confidence** with a 1.2x weight multiplier. This applies when:
-
-- axe-core reports a violation
-- Agent code review identifies the same issue
-- Playwright behavioral scan confirms the issue at runtime (e.g., keyboard trap confirmed by actual Tab traversal, contrast failure confirmed by rendered CSS computation)
-
-When Playwright is not available, the maximum achievable confidence remains **High (100%)**. The confirmed tier is additive - it never downgrades findings.
-
-### Confidence Drift Guard
-
-Track predicted confidence versus post-triage outcome and compute drift:
-
-```text
-drift = abs(predicted_confidence_score - observed_confirmation_rate)
-```
-
-Operational guideline:
-
-- drift <= 0.10: stable
-- drift 0.11-0.20: tune coefficients and source mapping
-- drift > 0.20: freeze profile changes and run rule-level review
+A finding confirmed by a third source, such as a Playwright run that tabs
+into the trap, stays `high`; the schema has no higher level. Merging keeps the
+highest confidence any source reported for the same rule at the same location.
 
 ## Scorecard Format
 
@@ -168,7 +96,7 @@ Operational guideline:
 |------|-------|-------|----------|---------|----------|-------|
 | / | 82 | B | 0 | 2 | 3 | 1 |
 | /login | 91 | A | 0 | 0 | 2 | 1 |
-| /dashboard | 45 | D | 2 | 4 | 3 | 2 |
+| /dashboard | 45 | F | 2 | 4 | 3 | 2 |
 | **Average** | **72.7** | **C** | **2** | **6** | **8** | **4** |
 ```
 
@@ -193,7 +121,7 @@ Each status, with its definition.
 | Fixed | Issue was in previous report but no longer present |
 | New | Issue not in previous report, appears now |
 | Persistent | Issue remains from previous report |
-| Regressed | Issue was previously fixed but has returned |
+| Regressed | Issue remains, at a higher severity than in the previous report |
 
 ### Progress Metrics
 
@@ -201,37 +129,6 @@ Each status, with its definition.
 - **Score change:** `current_score - previous_score`
 - **Pages improved:** count of pages with higher scores than previous audit
 - **Trend:** improving (score up 5+), stable (within 5), declining (score down 5+)
-
-### Normalized Trend Metric (Cross-Audit)
-
-When audit scope changes between runs, use normalized change:
-
-```text
-normalized_score = raw_score - (scope_variance_penalty)
-scope_variance_penalty = min(10, abs(previous_pages - current_pages) * 0.8)
-```
-
-Use normalized score for trend charts and use raw score for release gates.
-
-## Output Metadata (Recommended)
-
-Include these fields in generated score artifacts for reproducibility:
-
-```yaml
-scoring:
-  model: web-severity-scoring-v2
-  profile: balanced
-  calibrationVersion: 2026-q2
-  confidenceSources:
-    - axe-core
-    - agent-review
-    - playwright
-  failThresholds:
-    critical: 1
-    score: 75
-```
-
-This metadata allows deterministic re-runs and audit-to-audit comparisons.
 
 ## Issue Severity Categories
 
