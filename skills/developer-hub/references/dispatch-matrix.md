@@ -15,7 +15,7 @@ A skill whose output is findings returns findings JSON and edits nothing; one wh
 | Skill | Use it for |
 |---|---|
 | `a11y-tool-builder` | Build accessibility scanners, rule engines, parsers and report generators. |
-| `desktop-a11y-specialist` | Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility. |
+| `desktop-a11y-specialist` | Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility, Qt Widgets. |
 | `desktop-a11y-testing-coach` | Test desktop apps with NVDA, JAWS, Narrator, VoiceOver and UIA tooling. |
 | `nvda-addon-specialist` | NVDA add-ons: plugin types, manifest, events, scripts and packaging. |
 | `python-specialist` | Python debugging, packaging, testing, typing, async and performance. |

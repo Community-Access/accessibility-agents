@@ -1,6 +1,6 @@
 ---
 name: desktop-a11y-specialist
-description: "Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility."
+description: "Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility, Qt Widgets."
 license: MIT
 disable-model-invocation: true
 metadata:
@@ -77,6 +77,16 @@ class ScorePanelAccessible(wx.Accessible):
 
 ---
 
+## Qt Widgets Accessibility
+
+A Qt widget's accessible name comes from `accessibleName`, its own visible
+text, or a buddy `QLabel` that shares its parent. A `toolTip` or a line edit's
+`placeholderText` becomes the Description, never the Name, so an icon-only
+button with only a tooltip is unnamed even though NVDA speaks the tooltip.
+For `.ui` files and Qt Widgets code, read `references/qt-accessibility.md`.
+
+---
+
 ## Focus Management Rules
 
 1. Focus must be visible on every focused control
@@ -124,6 +134,7 @@ class ScorePanelAccessible(wx.Accessible):
 Read one only when the task reaches it. Do not read them all up front.
 
 - `references/accessibility-audit-mode.md` - Accessibility Audit Mode
+- `references/qt-accessibility.md` - Qt Widgets: where names come from, `.ui` file checks
 
 ## Output contract
 

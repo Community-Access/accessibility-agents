@@ -53,6 +53,13 @@ tests, stories and dependencies are exempt. See [Hooks](../reference/hooks.md).
   `~/.claude/a11y-hooks.json` and you merged it into your settings, remove
   those entries: on their own they refuse UI edits whenever the skills are not
   loaded. `npm run setup -- --uninstall` deletes the old file.
+- Codex: the gate opens when Codex reads `accessibility-lead/SKILL.md` (or
+  `web-accessibility-wizard/SKILL.md`) with a shell command, when the prompt
+  names `$accessibility-lead` or `$web-accessibility-wizard`, or when a lead
+  subagent stops. This needs the
+  `~/.codex/hooks.json` that `npm run setup` writes; the Codex plugin route
+  loads no hooks. If setup wrote `hooks.a11y.json` beside your own file,
+  merge its `hooks` block in, including the `PostToolUse` entry.
 - Copilot: the gate opens on `postToolUse` after the lead runs. The plugin
   wires this through `com.github.copilot/hooks/hooks.json`.
 - Gemini CLI: the gate opens on `AfterTool` for `activate_skill`, when the skill

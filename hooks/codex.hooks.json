@@ -1,5 +1,5 @@
 {
-  "description": "Codex event names mapped onto hooks/guard.mjs. Codex exposes SubagentStop and Stop, so it gets the full gate.",
+  "description": "Codex event names mapped onto hooks/guard.mjs. The gate opens when the lead's SKILL.md is read (PostToolUse for Bash), when the prompt names it with $, or when a lead subagent stops.",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -26,6 +26,18 @@
     ],
     "SubagentStop": [
       {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour mark --client codex",
+            "statusMessage": "Recording accessibility review"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",

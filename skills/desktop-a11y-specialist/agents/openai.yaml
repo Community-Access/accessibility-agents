@@ -3,6 +3,6 @@
 # so they stay out of the model-facing catalog and its two percent cap.
 interface:
   display_name: "Desktop Accessibility Specialist"
-  short_description: "Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility."
+  short_description: "Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility, Qt Widgets."
 policy:
   allow_implicit_invocation: false

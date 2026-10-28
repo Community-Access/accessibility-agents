@@ -54,8 +54,14 @@ the change.
 - **Claude Code:** the gate used to lock edits for the whole session, because
   the lead runs as an inline skill and fires no stop event. It now opens when
   the lead loads through the Skill tool. Tested live, both ways.
-- **Codex:** Codex rejected the hooks file over a `$comment` key, so the gate
-  never ran. Fixed; Codex now lists all six hooks.
+- **Codex:** three faults, all fixed. Codex rejected the hooks file over a
+  `$comment` key, so the gate never ran. Once it ran, it could not see which
+  file a patch edits, because Codex sends the patch text rather than a path,
+  so it allowed every edit; it now reads the patch's file headers. And it
+  waited for a lead subagent to stop, which never happens when the lead runs
+  inline, as it usually does; it now also opens when Codex reads the lead's
+  `SKILL.md`, or when the prompt names `$accessibility-lead`. Tested against
+  Codex's documented hook payloads; not yet in a live Codex session.
 - **Gemini CLI:** the gate never opened, because it waited on `AfterAgent`,
   whose payload names no skill. It now opens when Gemini activates the lead
   with `activate_skill`.
@@ -151,9 +157,12 @@ The table lists each client with its install commands.
 
 ## Thank you
 
-Fixes from [@w9fyi](https://github.com/w9fyi),
-[@AdamMagued](https://github.com/AdamMagued) and
-[@chrisnestrud](https://github.com/chrisnestrud) are in this release.
+Fixes and guidance from [@w9fyi](https://github.com/w9fyi),
+[@AdamMagued](https://github.com/AdamMagued),
+[@chrisnestrud](https://github.com/chrisnestrud) and
+[@Orinks](https://github.com/Orinks) are in this release, including new Qt
+Widgets guidance for desktop audits and a check for flex and grid rows that
+split a phrase or glue words together.
 
 ## Full changelog
 

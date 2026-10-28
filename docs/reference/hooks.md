@@ -69,7 +69,12 @@ guard reads `agent_type`, `subagent_type` and similar fields) or inline through
 Claude Code's Skill tool (`PostToolUse` with matcher `Skill`). The Skill-tool
 route fires when the lead's instructions are loaded, which is launch rather
 than completion, because an inline skill has no completion event; `finalize`
-stays the backstop. An unrelated
+stays the backstop. Gemini CLI opens it on `AfterTool` for `activate_skill`.
+Antigravity and Codex have no skill tool, so it opens when the lead's
+`SKILL.md` is read: with `view_file` on Antigravity, and with a shell read
+(`PostToolUse` for `Bash`) on Codex, where a prompt that names
+`$accessibility-lead` or `$web-accessibility-wizard` also opens it. Listing,
+grepping, diffing or writing the file does not. An unrelated
 subagent or another skill completing does not open it. That is tested too.
 
 ## Failure behaviour

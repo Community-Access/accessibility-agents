@@ -30,7 +30,18 @@ skills and for this project.
   and fires no stop event. The gate now also opens on `PostToolUse` for the
   Skill tool and reads `agent_type`. Retested live, both ways.
 - **The Codex edit gate never ran**: Codex rejected `~/.codex/hooks.json` over
-  a `$comment` key. Now `description`; Codex lists all six hooks.
+  a `$comment` key. Now `description`; Codex loaded all six hooks it then defined.
+- **The Codex edit gate stayed shut when the lead ran inline**: it opened only
+  on `SubagentStop`, and Codex fires that only for subagents. It now also opens
+  on `PostToolUse` for `Bash` when the command reads the lead's `SKILL.md`,
+  which is how Codex loads a skill (a plain read only: listing, grepping,
+  diffing or writing the file does not count), and when the prompt names
+  `$accessibility-lead` or `$web-accessibility-wizard`. Reported by [@Orinks](https://github.com/Orinks) in
+  [#168](https://github.com/Community-Access/accessibility-agents/issues/168).
+- **The Codex edit gate allowed every edit**: Codex sends `apply_patch` with
+  the patch text in `tool_input.command` and no path field, so the guard saw
+  no file and let the edit through. It now reads the edited paths from the
+  patch's file headers, and refuses the patch if any of them is user-facing.
 - **The Gemini CLI edit gate never opened**: it marked on `AfterAgent`, whose
   payload names no skill. Gemini loads a skill with `activate_skill`, so the
   gate now opens on `AfterTool` for that tool, reading `tool_input.name`.
@@ -93,6 +104,16 @@ skills and for this project.
   known limitations), an accessibility issue form and `accessibility` label, an
   accessibility checklist in the pull request template, and an accessibility
   section in `CONTRIBUTING.md`.
+- **Qt Widgets** in `desktop-a11y-specialist`: where a widget's accessible
+  name comes from (checked against the qtbase source), and `.ui` file checks
+  for unnamed icon buttons, placeholder-only fields, buddy labels, `NoFocus`
+  and tab order. A `toolTip` or placeholder is the Description, not the Name,
+  even though NVDA speaks it.
+- **Flex and grid text runs** in `aria-specialist`: flex and grid items split
+  one phrase into several screen reader stops, and white space between them is
+  dropped, gluing words together ("Ada6:37 PM"). With the matching grouping
+  guidance for React Native, SwiftUI, UIKit and Compose in
+  `mobile-accessibility`.
 - **Codespaces**: `.devcontainer/devcontainer.json` and `.vscode/mcp.json`.
 - Live client check verified on Claude Code and Codex.
 
@@ -105,6 +126,14 @@ skills and for this project.
 - About 160 documents corrected: install commands, hooks per client,
   conformance numbers, dead links, house style.
 - Node 22 or later; the GitHub Action uses Node 24 and current action majors.
+- **The wiki now mirrors `docs/`.** The sync copied a page that was not on
+  its fixed list only the first time it appeared, so later edits never reached
+  the wiki, and it never removed anything, so 117 pages from 6.x and earlier
+  lived on. `scripts/sync-wiki.mjs` now writes every page whose source
+  changed, removes pages with no source, gives the four file names that
+  clashed their own pages, and builds Home and the sidebar from
+  `.github/wiki/`. A `Wiki page names` gate in `npm run verify` stops a clash
+  before it merges.
 - `plugin-packaging.md` and `cross-platform-handoff.md` moved from
   `.github/docs/` to `docs/guides/advanced/`, beside the other advanced
   guides; the older duplicates in `.github/docs/` were removed and the wiki
@@ -148,7 +177,13 @@ with changes:
   [#211](https://github.com/Community-Access/accessibility-agents/pull/211),
   [#208](https://github.com/Community-Access/accessibility-agents/pull/208)): keeping streaming
   transcripts out of live regions, its screen reader test, and placeholder
-  guidance for labelled fields.
+  guidance for labelled fields; and
+  ([#218](https://github.com/Community-Access/accessibility-agents/pull/218),
+  [#209](https://github.com/Community-Access/accessibility-agents/pull/209)) the
+  Qt Widgets guidance and flex and grid text runs.
+- [@Orinks](https://github.com/Orinks) ([#169](https://github.com/Community-Access/accessibility-agents/pull/169)):
+  the report and first fix for a Codex gate that stayed shut after a valid
+  review, which the Codex skill-read mark now covers.
 
 ## [7.0.3] - 2026-09-23
 

@@ -72,7 +72,7 @@ const GATES = [
   {
     id: 'hooks',
     name: 'Enforcement gate',
-    standard: 'hooks/guard.mjs across four clients',
+    standard: 'hooks/guard.mjs across five clients',
     command: [NODE, ['--test', 'hooks/guard.test.mjs']],
     proves: 'An edit to a user-facing file is refused until the accessibility lead completes, on every client, and the gate fails closed rather than open.',
   },
@@ -96,6 +96,13 @@ const GATES = [
     standard: 'unit tests for the linter itself',
     command: [NODE, ['scripts/test-markdown-scanner.mjs']],
     proves: 'The linter reports what it should and stays quiet about what it should not, including the table rule that used to demand unrenderable markdown.',
+  },
+  {
+    id: 'wiki',
+    name: 'Wiki page names',
+    standard: 'one wiki page per file under docs/, plus .github/wiki/',
+    command: [NODE, ['scripts/sync-wiki.mjs', '--check']],
+    proves: 'The wiki sync cannot overwrite one page with another or keep a page whose source was deleted, because every page name is unique and comes from a file that exists.',
   },
   {
     id: 'release',

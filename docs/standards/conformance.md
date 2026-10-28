@@ -78,7 +78,7 @@ failures                0
 
 ## 3. The gates
 
-Sixteen gates. Each says what it proves in terms of what breaks without it. All sixteen passed on 2026-10-28 (the live gate on Claude Code only).
+Seventeen gates. Each says what it proves in terms of what breaks without it. All seventeen passed on 2026-10-28 (the live gate on Claude Code only).
 
 | Gate | Standard | What a failure would cost |
 |---|---|---|
@@ -92,6 +92,7 @@ Sixteen gates. Each says what it proves in terms of what breaks without it. All 
 | MCP server | Model Context Protocol | An approval prompt per document during a bulk scan |
 | Markdown accessibility | this project's own rules | The project failing the standard it enforces on others |
 | Markdown linter | unit tests for the linter | A rule that demands markdown which does not render |
+| Wiki page names | one wiki page per file under `docs/` | A wiki page overwritten by another, or kept after its source was deleted |
 | Version consistency | one version per release | A user unable to tell which build they are running |
 | Dispatch matrices | generated from skill frontmatter | A new specialist that no router can reach |
 | Generated documentation | reference pages derived from source | A catalog that lists skills which no longer exist |

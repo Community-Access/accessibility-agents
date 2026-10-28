@@ -322,3 +322,90 @@ describe('gemini compression', () => {
     assert.match(restored.json.additionalContext, /blocked earlier/);
   });
 });
+
+describe('codex', () => {
+  function runCx(behaviour, payload) {
+    const result = spawnSync(process.execPath, [GUARD, '--behaviour', behaviour, '--client', 'codex'], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: { ...process.env, A11Y_GUARD_DIR: scratch },
+    });
+    return { code: result.status };
+  }
+  const SESS = { session_id: 'cx-sess' };
+  const patch = { ...SESS, hook_event_name: 'PreToolUse', tool_name: 'apply_patch', tool_input: { file_path: 'src/App.tsx' } };
+  const shell = (command) => ({ ...SESS, hook_event_name: 'PostToolUse', tool_name: 'Bash', tool_input: { command } });
+
+  test('reading the lead SKILL.md with a shell command opens the gate', () => {
+    assert.equal(runCx('gate', patch).code, 2);
+    runCx('mark', shell("sed -n '1,200p' /home/u/.agents/skills/accessibility-lead/SKILL.md"));
+    assert.equal(runCx('gate', patch).code, 0);
+  });
+
+  test('common ways of reading the file open the gate', () => {
+    const lead = '/home/u/.agents/skills/accessibility-lead/SKILL.md';
+    for (const [i, command] of [
+      `cat ${lead}`,
+      `head -n 200 "${lead}"`,
+      `nl -ba ${lead} | sed -n '1,80p'`,
+      'Get-Content C:\\Users\\u\\.agents\\skills\\accessibility-lead\\SKILL.md',
+      'cat skills/accessibility-lead/SKILL.md; cp a b',
+      'cat accessibility-lead/SKILL.md',
+      'cd ~/.agents/skills/accessibility-lead && cat SKILL.md',
+      ['bash', '-lc', `sed -n '1,200p' ${lead}`],
+    ].entries()) {
+      const sess = { session_id: `cx-read-${i}` };
+      runCx('mark', { ...sess, tool_name: 'Bash', tool_input: { command } });
+      assert.equal(runCx('gate', { ...sess, tool_name: 'apply_patch', tool_input: { file_path: 'src/App.tsx' } }).code, 0, command);
+    }
+  });
+
+  test('mentioning, listing, diffing or writing the lead file does not open it', () => {
+    const lead = '/home/u/.agents/skills/accessibility-lead/SKILL.md';
+    for (const command of [
+      'cat /home/u/.agents/skills/aria-specialist/SKILL.md',
+      `echo x > ${lead}`,
+      `ls -l ${lead}`,
+      `test -f ${lead} && echo yes`,
+      `sed -i 's/a/b/' ${lead}`,
+      `git diff -- ${lead}`,
+      `grep -c gate ${lead}`,
+      `cat ${lead}.bak`,
+      'grep -l accessibility-lead skills/*/SKILL.md',
+      'cd ~/.agents/skills/aria-specialist && cat SKILL.md',
+      'cd ~/.agents/skills/accessibility-lead && ls SKILL.md',
+    ]) {
+      runCx('mark', shell(command));
+      assert.equal(runCx('gate', patch).code, 2, command);
+    }
+  });
+
+  test('an apply_patch that carries only the patch text is gated by its file headers', () => {
+    const body = (file) => `*** Begin Patch\n*** Update File: ${file}\n@@\n-a\n+b\n*** End Patch\n`;
+    const p = (file) => ({ ...SESS, hook_event_name: 'PreToolUse', tool_name: 'apply_patch', tool_input: { command: body(file) } });
+    assert.equal(runCx('gate', p('src/lib/math.ts')).code, 0);
+    assert.equal(runCx('gate', p('src/components/Header.tsx')).code, 2);
+    const two = `*** Begin Patch\n*** Update File: README.md\n@@\n-a\n+b\n*** Add File: web/index.html\n+<p>x</p>\n*** End Patch\n`;
+    assert.equal(runCx('gate', { ...SESS, tool_name: 'apply_patch', tool_input: { command: two } }).code, 2);
+  });
+
+  test('a prompt that names the lead with $ opens it', () => {
+    runCx('detect', { ...SESS, hook_event_name: 'UserPromptSubmit', prompt: 'fix the header $accessibility-lead' });
+    assert.equal(runCx('gate', patch).code, 0);
+  });
+
+  test('a $ mention in brackets or quotes also opens it', () => {
+    runCx('detect', { session_id: 'cx-quote', hook_event_name: 'UserPromptSubmit', prompt: 'run ($accessibility-lead) first' });
+    assert.equal(runCx('gate', { session_id: 'cx-quote', tool_name: 'apply_patch', tool_input: { file_path: 'src/App.tsx' } }).code, 0);
+  });
+
+  test('a prompt that only mentions the lead in words does not', () => {
+    runCx('detect', { ...SESS, hook_event_name: 'UserPromptSubmit', prompt: 'is accessibility-lead installed? costs $5' });
+    assert.equal(runCx('gate', patch).code, 2);
+  });
+
+  test('the lead subagent stopping still opens it', () => {
+    runCx('mark', { ...SESS, hook_event_name: 'SubagentStop', agent_type: 'accessibility-lead' });
+    assert.equal(runCx('gate', patch).code, 0);
+  });
+});

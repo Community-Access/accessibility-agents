@@ -147,7 +147,7 @@ The six entry points. Describe the task and one of these picks it up.
 
 | Skill | Use it for |
 |---|---|
-| [`desktop-a11y-specialist`](desktop-a11y-specialist.md) | Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility. |
+| [`desktop-a11y-specialist`](desktop-a11y-specialist.md) | Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility, Qt Widgets. |
 | [`desktop-a11y-testing-coach`](desktop-a11y-testing-coach.md) | Test desktop apps with NVDA, JAWS, Narrator, VoiceOver and UIA tooling. |
 | [`nvda-addon-specialist`](nvda-addon-specialist.md) | NVDA add-ons: plugin types, manifest, events, scripts and packaging. |
 
