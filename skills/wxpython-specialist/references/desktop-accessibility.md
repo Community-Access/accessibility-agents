@@ -8,7 +8,7 @@ Part of the `wxpython-specialist` skill. Read this only when the task reaches th
 
 - **Inputs and other controls:** NVDA/VoiceOver read the **preceding `wx.StaticText`** as the label. Add a `wx.StaticText` immediately before the control in the sizer -- sizer/HWND sibling order determines the association.
 - **Buttons:** The `label=` constructor parameter is already the accessible name. No extra work needed.
-- **Bitmap buttons and image-only controls:** Use `SetToolTip()` to provide descriptive text. For a programmatic accessible name, subclass `wx.Accessible`.
+- **Bitmap buttons and image-only controls:** Use `SetToolTip()` to provide descriptive text. For a programmatic accessible name, subclass `wx.Accessible` (Windows only: it implements MSAA and is available only in the wxMSW port, so it has no effect on macOS or GTK).
 
 > **Common Mistake to Avoid:** `wx.Window.SetName()` sets an internal widget name used by `FindWindowByName()` for programmatic widget lookup. **It has no effect on screen readers.** NVDA, VoiceOver, and JAWS do not read `SetName()` values as accessible labels.
 
@@ -34,9 +34,9 @@ ctrl.SetName("Username")  # Only affects FindWindowByName() -- screen readers ig
 
 ### Screen Reader Key Event Pitfalls
 
-Screen readers like NVDA and JAWS install a low-level keyboard hook (`WH_KEYBOARD_LL`) that intercepts every keystroke system-wide **before** any window message reaches the application. When the screen reader consumes a key (e.g., Enter on a focused `wx.ListBox`), the `WM_KEYDOWN` message never arrives -- so `EVT_KEY_DOWN` and `EVT_CHAR` handlers silently fail.
+Screen readers like NVDA and JAWS install a low-level keyboard hook (`WH_KEYBOARD_LL`) that sees every keystroke system-wide **before** any window message reaches the application. A key the screen reader consumes as one of its own commands never reaches the application at all, so no wxPython key event fires for it, `EVT_CHAR_HOOK` included.
 
-**Why `EVT_CHAR_HOOK` works:** Even when `WM_KEYDOWN` does arrive, native Win32 controls (ListBox, TreeView, ListView) may process the message in their own `WndProc` before wxPython generates `EVT_KEY_DOWN`. `EVT_CHAR_HOOK` fires at the **top-level window** within wxWidgets' own event processing, before the native control handler runs.
+**Why `EVT_CHAR_HOOK` works:** When `WM_KEYDOWN` does arrive, native Win32 controls (ListBox, TreeView, ListView) may process the message in their own `WndProc` before wxPython generates `EVT_KEY_DOWN`. `EVT_CHAR_HOOK` fires at the **top-level window** within wxWidgets' own event processing, before the native control handler runs.
 
 **Event priority order:**
 
@@ -82,7 +82,7 @@ class MyFrame(wx.Frame):
 
 Semantic events fire regardless of activation method (keyboard, mouse, or assistive technology), making them inherently screen-reader-safe.
 
-> **Note:** `wx.ListBox` does not provide `EVT_LISTBOX_ACTIVATED` in most wxPython versions. Use `EVT_CHAR_HOOK` for ListBox, or migrate to `wx.ListCtrl` which provides `EVT_LIST_ITEM_ACTIVATED`.
+> **Note:** `wx.ListBox` has no activation event (only `EVT_LISTBOX` and `EVT_LISTBOX_DCLICK`). Use `EVT_CHAR_HOOK` for ListBox, or migrate to `wx.ListCtrl` which provides `EVT_LIST_ITEM_ACTIVATED`.
 
 ### Accessibility Audit Mode
 

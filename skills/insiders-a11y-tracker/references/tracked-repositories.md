@@ -105,9 +105,9 @@ When the user asks "what's new" or "latest a11y changes":
 3. Present results as a categorized list:
 
 ```markdown
-** {count} Accessibility Updates - {Month} {Year}**
+**{count} Accessibility Updates - {Month} {Year}**
 
-###  Insiders ({count})
+### Insiders ({count})
 
 **Screen Reader**
 - **{Title}** ([#{number}]({url})) - {one-line impact summary}
@@ -121,7 +121,7 @@ When the user asks "what's new" or "latest a11y changes":
 **Other**
 - **{Title}** ([#{number}]({url})) - {one-line impact summary}
 
-###  Stable ({count})
+### Stable ({count})
 {same format}
 ```
 
@@ -163,13 +163,13 @@ When asked for a report:
 Generate reports at: `.github/reviews/accessibility/a11y-report-{YYYY-MM}.md`
 
 ````markdown
-#  VS Code Accessibility Report - {Month} {Year}
+# VS Code Accessibility Report - {Month} {Year}
 
 > Generated on {date} by VS Code Accessibility Tracker
 > Repositories: microsoft/vscode
 > Milestone: {milestone}
 
-##  Summary
+## Summary
 
 | Channel | Count | Categories |
 |---------|-------|-----------|
@@ -177,7 +177,7 @@ Generate reports at: `.github/reviews/accessibility/a11y-report-{YYYY-MM}.md`
 |  Stable | {count} | {top categories} |
 | **Total** | **{count}** | |
 
-##  Insiders Releases
+## Insiders Releases
 
 ### Screen Reader ({count})
 
@@ -207,23 +207,23 @@ Generate reports at: `.github/reviews/accessibility/a11y-report-{YYYY-MM}.md`
 
 {same format}
 
-##  Stable Releases
+## Stable Releases
 
 {same categorized format}
 
-##  Trends
+## Trends
 
 - **Most active area this month:** {category with most fixes}
 - **Compared to last month:** {more/fewer} accessibility fixes ({count} vs {count})
 - **Notable:** {any particularly impactful changes}
 
-##  Useful Links
+## Useful Links
 
-- [VS Code Accessibility Docs](https://code.visualstudio.com/docs/editor/accessibility)
+- [VS Code Accessibility Docs](https://code.visualstudio.com/docs/configure/accessibility/accessibility)
 - [File an Accessibility Issue](https://github.com/microsoft/vscode/issues/new?labels=accessibility)
 - [All Open Accessibility Issues](https://github.com/microsoft/vscode/labels/accessibility)
 
-##  Notes
+## Notes
 
 <!-- Add your notes, team shares, or follow-up actions here -->
 

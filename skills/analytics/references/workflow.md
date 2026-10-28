@@ -7,7 +7,8 @@ Part of the `analytics` skill. Read this only when the task reaches these sectio
 ### Step 1: Identify User & Scope
 
 1. Call #tool:mcp_github_github_get_me for the authenticated username.
-2. Load preferences from `.github/agents/preferences.md`:
+2. Load preferences from `.github/accessibility-agents/preferences.md` (the user creates it from `docs/reference/preferences.example.md`):
+   - If that file does not exist, read `.github/agents/preferences.md` (the older location) and suggest moving it: VS Code loads every `.md` file in `.github/agents/` as a custom agent.
    - Read `repos.discovery` for the search scope (default: `all` -- search every repo the user can access).
    - Read `repos.include` for pinned repos, `repos.exclude` for muted repos.
    - Read `repos.overrides` for per-repo tracking settings and label/path filters.

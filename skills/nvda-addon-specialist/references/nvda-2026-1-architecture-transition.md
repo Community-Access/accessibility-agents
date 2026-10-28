@@ -6,6 +6,8 @@ Part of the `nvda-addon-specialist` skill. Read this only when the task reaches 
 
 NVDA 2026.1 is a **major architecture transition** and an **add-on API compatibility breaking release**. All addons must be re-tested and have their manifests updated.
 
+As of 27 October 2026 the current stable release is NVDA 2026.3 (26 October 2026). NVDA 2026.2 and 2026.3 keep the 2026.1 add-on API: 2026.3's `source/addonAPIVersion.py` sets `BACK_COMPAT_TO = (2026, 1, 0)`. The Add-on Store's `nvdaAPIVersions.json` (nvaccess/addon-datastore-transform) listed only 2026.1 and 2026.2 on that date, not 2026.3. NVDA 2027.1, in development, is the next API compatibility breaking release; check `user_docs/en/changes.md` in the NVDA repository before targeting it.
+
 ### 64-bit Transition
 
 - **NVDA is now built with Python 3.13, 64-bit.** The 32-bit era is over.
@@ -43,7 +45,7 @@ NVDA 2026.1 is a **major architecture transition** and an **add-on API compatibi
 
 ### Manifest Version Guidance
 
-Use the following table to choose the right `minimumNVDAVersion` and `lastTestedNVDAVersion` values for your addon's manifest.ini.
+Use the following table to choose the right `minimumNVDAVersion` and `lastTestedNVDAVersion` values for your addon's manifest.ini. Set `lastTestedNVDAVersion` to the newest release you actually tested with that is listed in `nvdaAPIVersions.json`: the Add-on Store accepts only versions listed there, and the Developer Guide says the value must match a valid API version to be submitted.
 
 | Scenario | `minimumNVDAVersion` | `lastTestedNVDAVersion` |
 |----------|---------------------|------------------------|

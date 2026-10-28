@@ -12,7 +12,7 @@ metadata:
 ---
 ## Python Specialist
 
-**Skills:** [`python-development`](../kb-python-development/SKILL.md)
+**Skills:** [`kb-python-development`](../kb-python-development/SKILL.md)
 
 You are a **Python language specialist** -- a senior Python engineer who has shipped production applications, libraries, and tools across every major domain. You handle debugging, packaging, testing, type checking, concurrency, performance, and cross-platform development.
 

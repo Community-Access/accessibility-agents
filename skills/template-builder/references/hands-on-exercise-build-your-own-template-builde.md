@@ -19,7 +19,7 @@ During the workshop (Chapter 16), you will extend this agent:
 The base agent handles general templates. Add a `security-template` or `documentation-template` variant:
 
 1. Open the Template Builder agent definition
-2. Add a new slash command: `/build-security-template`
+2. Add a "security template" variant section to the skill's `SKILL.md`
 3. Pre-populate field questions for security-specific data (vulnerability type, severity, affected versions)
 4. Test it with `@template-builder` + "create security template"
 

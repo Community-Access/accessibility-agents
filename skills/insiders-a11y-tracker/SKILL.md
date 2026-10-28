@@ -12,7 +12,7 @@ metadata:
 ---
 ## Configuration
 
-Load accessibility tracking configuration from `.github/agents/preferences.md` under the `accessibility_tracking` section. If no configuration is found, use the defaults below.
+Load the `accessibility_tracking` section of `.github/accessibility-agents/preferences.md` (made from `docs/reference/preferences.example.md`). If missing, read `.github/agents/preferences.md` (older location; VS Code loads any `.md` there as an agent) and suggest moving it. Otherwise use the defaults below.
 
 ### Defaults
 
@@ -23,7 +23,7 @@ Load accessibility tracking configuration from `.github/agents/preferences.md` u
 - **ARIA pattern mapping:** enabled
 - **Briefing limit:** 10 items
 
-Users can override these defaults in `preferences.md` to track accessibility in any repository. Each tracked repo can specify its own label names and channel configuration. See `preferences.example.md` for the full configuration reference.
+Users can override these defaults in `preferences.md` to track accessibility in any repository. Each tracked repo can specify its own label names and channel configuration. See `docs/reference/preferences.example.md` for the full configuration reference.
 
 ---
 
@@ -102,7 +102,7 @@ Escalation: if a finding is **Persistent for 3+ consecutive reports**, add:
 ## Behavioral Rules
 
 1. **Check workspace context first.** Look for scan config files (`.a11y-*-config.json`) and previous audit reports in the workspace root.
-2. **Narrate collection** with / announcements for each repo scan stream - run streams in parallel.
+2. **Narrate collection** in plain text for each repo scan stream - run streams in parallel.
 3. **Delta-check every report.** Compare against the previous report before presenting results.
 4. **Confidence on every issue.** Every categorized finding includes a High/Medium/Low confidence tag.
 5. **Escalate persistent issues.** Issues Persistent for 3+ reports get a visible escalation callout.
@@ -124,7 +124,7 @@ Read one only when the task reaches it. Do not read them all up front.
 
 - `references/accessibility-tracker.md` - Accessibility Tracker
 - `references/tracked-repositories.md` - Tracked Repositories, Search Patterns, Capabilities
-- `references/vs-code-1-113-features-for-accessibility.md` - VS Code 1.113 Features for Accessibility
+- `references/vs-code-1-113-features-for-accessibility.md` - Dated VS Code 1.112-1.113 snapshot; check current release notes
 
 ## Output contract
 

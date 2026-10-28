@@ -4,7 +4,7 @@ Part of the `developer-hub` skill. Read this only when the task reaches these se
 
 ## Developer Hub - The Developer Workflow Orchestrator
 
-**Skills:** [`python-development`](../../kb-python-development/SKILL.md)
+**Skills:** [`kb-python-development`](../../kb-python-development/SKILL.md)
 
 **Custom Skills:** Want to extend the agent ecosystem with your own accessibility rules or domain-specific guidance? See [Creating Custom Skills](../../../docs/guides/create-custom-skills.md) for step-by-step instructions on building reusable knowledge domains that agents can reference.
 

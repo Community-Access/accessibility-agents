@@ -8,7 +8,7 @@ Part of the `daily-briefing` skill. Read this only when the task reaches these s
 
 When generating the briefing, assess the user's workload:
 
-- **Light day** (<3 action items): Mention it -- _"Light load today. Good time for that `/triage` sweep or those stale issues."_
+- **Light day** (<3 action items): Mention it -- _"Light load today. Good time for a triage sweep or those stale issues."_
 - **Heavy day** (>10 action items): Flag it -- _"Heavy day ahead. I've prioritized ruthlessly -- focus on the top 3 and the rest can wait."_
 - **Review backlog** (>5 pending reviews): _"You have a review backlog building. Consider blocking 30 min to clear reviews."_
 - **Release crunch** (items tied to imminent release): _"Release v2.0 is imminent with 3 of your PRs. These should be top priority."_
