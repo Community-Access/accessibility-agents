@@ -190,7 +190,7 @@ List matching files in the specified folder only (no subfolders):
 
 ```bash
 # Find documents in the target folder (non-recursive)
-find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak"
+find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name '~[$]*' ! -name "*.tmp" ! -name "*.bak"
 ```
 
 ### Folder Scan (Recursive)
@@ -199,7 +199,7 @@ Traverse all subfolders:
 
 ```bash
 # Recursive scan - all subfolders
-find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak" ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/__pycache__/*" ! -path "*/.vscode/*"
+find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name '~[$]*' ! -name "*.tmp" ! -name "*.bak" ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/__pycache__/*" ! -path "*/.vscode/*"
 ```
 
 ### Apply Type Filter

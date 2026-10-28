@@ -36,7 +36,7 @@ Get-ChildItem -Path "<folder>\*" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epu
 
 # Recursive scan
 Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
-  Where-Object Name -notlike '~$*' |
+  Where-Object Name -notmatch '^~\$' |
   Where-Object FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]'
 ```
 
@@ -44,11 +44,11 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub 
 
 ```bash
 # Non-recursive scan
-find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name "~\$*"
+find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name '~[$]*'
 
 # Recursive scan
 find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) \
-  ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak" \
+  ! -name '~[$]*' ! -name "*.tmp" ! -name "*.bak" \
   ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/__pycache__/*" ! -path "*/.vscode/*"
 ```
 
@@ -79,7 +79,7 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub 
 
 Always exclude these patterns during scanning:
 
-- `~$*` - Office lock/temp files (created when a document is open)
+- `~$` files - Office lock/temp files (names starting with `~$`) (created when a document is open)
 - `*.tmp` - Temporary files
 - `*.bak` - Backup files
 - Files inside `.git/`, `node_modules/`, `.vscode/`, `__pycache__/` directories
