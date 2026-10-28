@@ -1,22 +1,52 @@
-# Manual Uninstall Guide
+# Uninstall Guide
 
-This guide walks you through removing Accessibility Agents from every platform, step by step. Use this if the automated uninstaller did not fully clean up, or if you prefer to remove things manually.
+How to remove Accessibility Agents. Version 7 and later install in one of two
+ways, and each has a one-step removal. The manual steps further down are for
+installs made by the pre-7.0 shell and PowerShell installers, which were removed.
 
-## Quick automated uninstall
+## Version 7 and later
 
-Before going manual, try the automated uninstaller first:
+If you installed the plugin, remove it through your client:
 
-```bash
-gh skill uninstall Community-Access/accessibility-agents
+```text
+Claude Code   /plugin uninstall accessibility-agents@community-access
+              (or, in your shell: claude plugin uninstall accessibility-agents@community-access)
+Copilot CLI   copilot plugin uninstall accessibility-agents
+VS Code       Extensions view, filter @agentPlugins, then uninstall the plugin
 ```
 
-If that did not fully clean up, follow the manual steps below for each platform you installed.
+If you installed directly from a checkout with `npm run setup`, run this from
+the same checkout:
 
-The legacy shell/PowerShell uninstall scripts were removed. Use the `gh skill` path above.
+```bash
+npm run setup -- --uninstall --dry-run
+npm run setup -- --uninstall
+```
+
+That removes only this package's skill folders from `~/.agents/skills` (and
+from `~/.gemini/config/skills` if Antigravity was set up), leaving your own
+skills and other packages' skills in place. It also removes the hook files the
+installer wrote:
+
+- `~/.claude/a11y-hooks.json` (written by older versions) and `~/.gemini/a11y-hooks.json`
+- the `*.a11y.json` side files it wrote for you to merge, such as `~/.codex/hooks.a11y.json`
+- `~/.codex/hooks.json`, but only if its content is exactly what the installer
+  wrote. If the file also holds your own hooks, it is kept, and the command
+  tells you to remove the `guard.mjs` entries by hand.
+
+Entries you merged into `~/.claude/settings.json` or `~/.gemini/settings.json`
+must be removed by hand.
 
 ---
 
-## How to tell what was installed
+## Pre-7.0 installs
+
+Warning: several commands below delete every file of a given type in a folder
+(for example `rm -rf .claude/agents/*.md` or `rm -rf .github/skills/`). If you
+keep your own agents, skills or prompts in those folders, delete only the
+accessibility files instead.
+
+### How to tell what was installed
 
 Check the manifest file that the installer creates:
 
@@ -43,11 +73,11 @@ If the manifest is missing, that is okay. Follow all the sections below that app
 
 ---
 
-## 1. Claude Code agents
+### 1. Claude Code agents
 
 Claude Code agents live in a `.claude/agents/` folder.
 
-### Project install
+#### Project install
 
 ```bash
 # From your project root:
@@ -64,7 +94,7 @@ Remove-Item .claude\.a11y-agent-manifest -Force -ErrorAction SilentlyContinue
 Remove-Item .claude\.a11y-agent-team-version -Force -ErrorAction SilentlyContinue
 ```
 
-### Global install
+#### Global install
 
 ```bash
 rm -rf ~/.claude/agents/*.md
@@ -84,11 +114,11 @@ Remove-Item "$env:USERPROFILE\.claude\.a11y-agent-team-version" -Force -ErrorAct
 
 ---
 
-## 2. GitHub Copilot agents (VS Code)
+### 2. GitHub Copilot agents (VS Code)
 
 Copilot agents can be in two places depending on whether you did a project or global install.
 
-### Project install
+#### Project install
 
 Agent files, config files, and asset directories live under `.github/` in your project:
 
@@ -127,14 +157,14 @@ Remove-Item .github\instructions -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item .github\prompts -Recurse -Force -ErrorAction SilentlyContinue
 ```
 
-### Global install
+#### Global install
 
 Global Copilot agents are stored in two places:
 
 1. **Central store:** `~/.a11y-agent-team/`
 2. **VS Code profiles:** Inside each detected VS Code `User/prompts/` folder for stable and/or insiders
 
-#### Remove the central store
+##### Remove the central store
 
 ```bash
 rm -rf ~/.a11y-agent-team/
@@ -146,7 +176,7 @@ On Windows:
 Remove-Item "$env:USERPROFILE\.a11y-agent-team" -Recurse -Force
 ```
 
-#### Remove from VS Code profiles
+##### Remove from VS Code profiles
 
 Find your VS Code User folder:
 
@@ -179,7 +209,7 @@ Remove-Item "$Profile\prompts\skills" -Recurse -Force -ErrorAction SilentlyConti
 Remove-Item "$Profile\prompts\instructions" -Recurse -Force -ErrorAction SilentlyContinue
 ```
 
-#### Restore VS Code settings
+##### Restore VS Code settings
 
 The installer may have added `chat.agentFilesLocations` to your VS Code settings. To remove it:
 
@@ -195,7 +225,7 @@ The installer may have added `chat.agentFilesLocations` to your VS Code settings
 }
 ```
 
-#### Remove the `a11y-copilot-init` command
+##### Remove the `a11y-copilot-init` command
 
 If you installed globally on macOS, the installer added `a11y-copilot-init` to your PATH. Remove these lines from your `~/.zshrc` or `~/.bashrc`:
 
@@ -210,11 +240,11 @@ Then reload your shell: `source ~/.zshrc` (or `~/.bashrc`).
 
 ---
 
-## 3. Codex CLI
+### 3. Codex CLI
 
 Codex CLI support is a section inside an `AGENTS.md` file.
 
-### Project install
+#### Project install
 
 ```bash
 # If .codex/AGENTS.md contains ONLY our content, delete it:
@@ -227,7 +257,7 @@ rmdir .codex 2>/dev/null
 # <!-- a11y-agent-team: end -->
 ```
 
-### Global install
+#### Global install
 
 ```bash
 # Same approach but in your home directory:
@@ -245,11 +275,11 @@ Remove-Item "$env:USERPROFILE\.codex\AGENTS.md" -Force -ErrorAction SilentlyCont
 
 ---
 
-## 4. Gemini CLI
+### 4. Gemini CLI
 
 Gemini CLI support is an extension folder.
 
-### Project install
+#### Project install
 
 ```bash
 rm -rf .gemini/extensions/a11y-agents/
@@ -258,7 +288,7 @@ rmdir .gemini/extensions 2>/dev/null
 rmdir .gemini 2>/dev/null
 ```
 
-### Global install
+#### Global install
 
 ```bash
 rm -rf ~/.gemini/extensions/a11y-agents/
@@ -275,11 +305,11 @@ Remove-Item "$env:USERPROFILE\.gemini\extensions\a11y-agents" -Recurse -Force -E
 
 ---
 
-## 5. MCP server
+### 5. MCP server
 
 The installer copies an MCP server directory (`mcp-server/`) and registers it in VS Code settings.
 
-### Project install
+#### Project install
 
 Remove the MCP server directory:
 
@@ -301,7 +331,7 @@ Then remove the MCP entry from `.vscode/mcp.json`. Open the file and delete the 
 }
 ```
 
-### Global install
+#### Global install
 
 The global MCP server lives inside the central store at `~/.a11y-agent-team/mcp-server/`. If you already removed the entire `~/.a11y-agent-team/` directory in section 2, there is nothing extra to do.
 
@@ -323,11 +353,11 @@ Then remove the MCP entry from your VS Code User MCP configuration (`mcp.json`).
 
 ---
 
-## 6. Auto-updates
+### 6. Auto-updates
 
 If you enabled auto-updates during global install, they need to be removed too.
 
-### Windows
+#### Windows
 
 ```powershell
 # Remove the scheduled task
@@ -339,7 +369,7 @@ Remove-Item "$env:USERPROFILE\.claude\.a11y-agent-team-update.log" -Force -Error
 Remove-Item "$env:USERPROFILE\.claude\.a11y-agent-team-repo" -Recurse -Force -ErrorAction SilentlyContinue
 ```
 
-### macOS
+#### macOS
 
 ```bash
 # Remove the LaunchAgent
@@ -354,7 +384,7 @@ rm -rf ~/.claude/.a11y-agent-team-repo
 
 ---
 
-## 7. Final cleanup
+### 7. Final cleanup
 
 After removing everything above:
 

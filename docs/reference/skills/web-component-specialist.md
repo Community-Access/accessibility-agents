@@ -1,4 +1,4 @@
-# web-component-specialist — Web Component Accessibility Specialist
+# web-component-specialist - Web Component Accessibility Specialist
 
 > Audits web components (custom elements, Shadow DOM) for accessibility. Covers ElementInternals API, cross-shadow ARIA delegation, slot-based composition, form-associated custom elements, and shadow DOM focus management.
 
@@ -42,11 +42,11 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@web-component-specialist Audit this custom dropdown component for shadow DOM accessibility
+/web-component-specialist Audit this custom dropdown component for shadow DOM accessibility
 
-@web-component-specialist Check if our Lit-based form controls use ElementInternals correctly
+/web-component-specialist Check if our Lit-based form controls use ElementInternals correctly
 
-@web-component-specialist Review ARIA delegation in our design system's custom elements
+/web-component-specialist Review ARIA delegation in our design system's custom elements
 ```
 
 ## Related

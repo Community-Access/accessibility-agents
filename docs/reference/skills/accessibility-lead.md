@@ -30,12 +30,12 @@ Deep-dive into a single domain on its own. It delegates. If you ask it about ARI
 **In GitHub Copilot Chat:**
 
 ```text
-@accessibility-lead review this component for accessibility
-@accessibility-lead full audit of the settings page
-@accessibility-lead I'm building a dashboard with charts and tables
+/accessibility-lead review this component for accessibility
+/accessibility-lead full audit of the settings page
+/accessibility-lead I'm building a dashboard with charts and tables
 ```
 
-**Automatic invocation:** When working in Copilot, the workspace instructions ensure the lead is always available as a first-line coordinator. In Claude Code, invoke the lead directly with `/accessibility-lead` or `@accessibility-lead`.
+**Automatic invocation:** When working in Copilot, the workspace instructions ensure the lead is always available as a first-line coordinator. In Claude Code, invoke the lead directly with `/accessibility-lead` or `/accessibility-lead`.
 
 ## Step-by-Step: How a Full Audit Works
 
@@ -140,9 +140,9 @@ Each connection, with connect to and when.
 ### GitHub Copilot
 
 ```text
-@accessibility-lead review this component for accessibility
-@accessibility-lead full audit of the settings page
-@accessibility-lead I am building a dashboard with charts and tables, what do I need?
+/accessibility-lead review this component for accessibility
+/accessibility-lead full audit of the settings page
+/accessibility-lead I am building a dashboard with charts and tables, what do I need?
 ```
 
 </details>

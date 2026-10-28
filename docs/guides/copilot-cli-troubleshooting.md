@@ -7,14 +7,8 @@ This guide helps diagnose and fix common issues when using accessibility agents 
 Run these commands in Copilot CLI to diagnose loading issues:
 
 ```bash
-# Check if agents are loaded
-/agent
-
 # Check if skills are loaded
 /skills list
-
-# Check custom instructions status
-/instructions
 
 # Enable debug mode for detailed diagnostics
 /troubleshoot
@@ -24,69 +18,9 @@ Run these commands in Copilot CLI to diagnose loading issues:
 
 ## Agents Not Loading
 
-### Symptoms
-
-- `/agent` command shows empty list or only built-in agents (explore, task, general-purpose, code-review)
-- Custom agents don't appear in agent picker
-- Agent mentioned in prompt is not recognized
-
-### Diagnosis
-
-**Check agent file locations:**
-
-```bash
-# Repository-level agents
-ls -la skills/*.agent.md
-
-# User-level agents (global)
-ls -la ~/.copilot/agents/*.agent.md
-```
-
-**Check file naming:**
-
-- Files MUST end in `.agent.md` (not `.md` alone)
-- Filename can only contain: `.`, `-`, `_`, `a-z`, `A-Z`, `0-9`
-- Example: `accessibility-lead.agent.md` ✓
-- Example: `accessibility lead.agent.md` ✗ (space not allowed)
-
-**Check YAML frontmatter:**
-
-Every agent file must have valid YAML frontmatter with at least a `description`:
-
-```yaml
----
-name: My Agent
-description: What this agent does and when to use it
----
-```
-
-The `description` is **required**. Without it, the agent won't load.
-
-### Solutions
-
-**1. Restart CLI session:**
-
-Exit and restart `copilot` after adding new agents.
-
-**2. Trust the workspace:**
-
-On first launch in a directory, CLI asks if you trust the files. Choose "Yes" to enable custom agents.
-
-**3. Verify YAML syntax:**
-
-Common YAML errors that break agent loading:
-
-```yaml
-# BAD - unquoted special characters
-description: What's this agent for?  # The apostrophe breaks YAML
-
-# GOOD - quote strings with special characters
-description: "What's this agent for?"
-```
-
-**4. Check character encoding:**
-
-Agent files must be UTF-8 encoded. Windows users: ensure your editor saves as UTF-8, not Windows-1252.
+Accessibility Agents 7.x ships no custom agent files (`.agent.md`). Every
+accessibility agent is an Agent Skill, so `/agent` listing only the built-in
+agents is expected. Look for the skills instead, as below.
 
 ---
 
@@ -100,32 +34,43 @@ Agent files must be UTF-8 encoded. Windows users: ensure your editor saves as UT
 
 ### Diagnosis
 
-**Check skill directory structure:**
+**Check where the skills are installed:**
 
-Each skill must be a folder containing `SKILL.md`:
+The Copilot CLI reads project skills from `.github/skills`, `.claude/skills` or
+`.agents/skills` in the repository, and personal skills from
+`~/.copilot/skills` or `~/.agents/skills`. `npm run setup` copies this
+package's skills to `~/.agents/skills`; the plugin install
+(`copilot plugin install accessibility-agents@community-access`, after
+`copilot plugin marketplace add Community-Access/accessibility-agents`) loads
+them from the plugin. A root `skills/` folder in a repository is not read.
+
+Each skill is a folder containing `SKILL.md`:
 
 ```text
-skills/
-├── accessibility-rules/
-│   └── SKILL.md
-├── web-scanning/
-│   └── SKILL.md
-└── cognitive-accessibility/
-    └── SKILL.md
+~/.agents/skills/
+  accessibility-lead/
+    SKILL.md
+  kb-web-scanning/
+    SKILL.md
 ```
 
 **Check SKILL.md format:**
 
 ```yaml
 ---
-name: accessibility-rules
-description: Cross-format document accessibility rule reference...
+name: accessibility-lead
+description: Picks specialists for a web change and merges their findings.
 ---
 
 # Skill content here...
 ```
 
-Both `name` and `description` are **required** in skill files.
+Both `name` and `description` are **required**, and `name` must match the
+folder name.
+
+**Only six appear in the model's list:** that is by design. Six routers are
+model-invocable; the rest set `disable-model-invocation: true`, and a router
+dispatches them.
 
 ### Solutions
 
@@ -152,26 +97,6 @@ This shows where CLI is looking for skills and which ones are loaded.
 
 ## Tool Errors
 
-### "Tool not found" or "Unknown tool" errors
-
-**Cause:** Agent files may reference VS Code-specific tools that CLI doesn't support.
-
-**Expected behavior:** CLI ignores unknown tool names. Core functionality works.
-
-**Tool alias mapping:**
-
-| Agent declares | CLI uses |
-|----------------|----------|
-| `runSubagent` | `agent` |
-| `readFile`, `Read` | `read` |
-| `editFiles`, `Edit`, `Write` | `edit` |
-| `textSearch`, `Grep`, `Glob` | `search` |
-| `runInTerminal`, `Bash`, `shell` | `execute` |
-| `getDiagnostics` | (not available in CLI) |
-| `askQuestions` | (not available in CLI) |
-
-**Solution:** This is informational only. Agents still work for their core tasks.
-
 ### Permission denied errors
 
 **Cause:** CLI needs approval for certain tools (edit, execute).
@@ -188,37 +113,18 @@ This shows where CLI is looking for skills and which ones are loaded.
 ### Symptoms
 
 - Accessibility guidance not present in responses
-- Agent behaves differently than in VS Code
-- Custom rules not being followed
+- The edit gate never refuses a UI edit
 
-### Diagnosis
+### Diagnosis and solutions
 
-```bash
-/instructions
-```
+This package's always-on contract is `AGENTS.md`; it no longer ships
+`.github/copilot-instructions.md` or `*.instructions.md` files.
 
-This shows which instruction files are being loaded.
-
-**Expected files:**
-
-- `.github/copilot-instructions.md`
-- Any `.github/instructions/**/*.instructions.md` files
-
-### Solutions
-
-**1. Check file exists:**
-
-```bash
-cat .github/copilot-instructions.md
-```
-
-**2. Verify file is in git root:**
-
-Instructions files must be in the repository root's `.github/` directory, not a subdirectory.
-
-**3. Check file size:**
-
-Instructions are limited to 8,000 characters. Very large files may be truncated.
+1. Check that `AGENTS.md` is present at the repository root you are working
+   in, or that the plugin is installed.
+2. Check the hooks: the plugin wires them through
+   `com.github.copilot/hooks/hooks.json`; without the plugin, copy
+   `hooks/copilot.hooks.json` to `.github/hooks/` in the repository.
 
 ---
 
@@ -327,8 +233,8 @@ winget install Microsoft.PowerShell
 Ensure `~/.copilot/` resolves correctly. In PowerShell:
 
 ```powershell
-$HOME + "\.copilot\agents"
-# Should show: C:\Users\YourName\.copilot\agents
+$HOME + "\.agents\skills"
+# Should show: C:\Users\YourName\.agents\skills
 ```
 
 ### macOS
@@ -337,9 +243,8 @@ $HOME + "\.copilot\agents"
 Agent files should be readable:
 
 ```bash
-chmod 644 ~/.copilot/agents/*.agent.md
-chmod 755 ~/.copilot/skills/*/
-chmod 644 ~/.copilot/skills/*/SKILL.md
+chmod 755 ~/.agents/skills/*/
+chmod 644 ~/.agents/skills/*/SKILL.md
 ```
 
 ---
@@ -356,5 +261,5 @@ When reporting issues, include:
 
 - CLI version (`copilot --version`)
 - OS and version
-- Output of `/agent` and `/skills list`
+- Output of `/skills list`
 - Relevant error messages

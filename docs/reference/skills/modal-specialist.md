@@ -45,9 +45,9 @@ Content issues inside the modal (form accessibility is forms-specialist, contras
 **In GitHub Copilot Chat:**
 
 ```text
-@modal-specialist review this dialog for focus management
-@modal-specialist build a cookie consent banner that meets WCAG
-@modal-specialist check the drawer component in this file
+/modal-specialist review this dialog for focus management
+/modal-specialist build a cookie consent banner that meets WCAG
+/modal-specialist check the drawer component in this file
 ```
 
 ## Step-by-Step: What a Review Covers
@@ -149,9 +149,9 @@ Each connection, with connect to and when.
 ### GitHub Copilot
 
 ```text
-@modal-specialist review this dialog for focus management
-@modal-specialist build a cookie consent banner that meets WCAG
-@modal-specialist check the drawer component in this file
+/modal-specialist review this dialog for focus management
+/modal-specialist build a cookie consent banner that meets WCAG
+/modal-specialist check the drawer component in this file
 ```
 
 </details>

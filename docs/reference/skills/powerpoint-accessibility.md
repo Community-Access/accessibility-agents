@@ -37,8 +37,8 @@
 
 ```text
 /powerpoint-accessibility scan presentation.pptx for accessibility
-@powerpoint-accessibility review the company deck template
-@powerpoint-accessibility check all slide decks in assets/
+/powerpoint-accessibility review the company deck template
+/powerpoint-accessibility check all slide decks in assets/
 ```
 
 </details>
@@ -56,8 +56,8 @@
 **In GitHub Copilot Chat:**
 
 ```text
-@powerpoint-accessibility scan company-overview.pptx
-@powerpoint-accessibility audit the onboarding slide deck
+/powerpoint-accessibility scan company-overview.pptx
+/powerpoint-accessibility audit the onboarding slide deck
 ```
 
 **Via the prompt picker:** Select `audit-single-document` and enter the `.pptx` file path.
@@ -102,15 +102,17 @@ slide when navigating by slide list.
 
 ### Score Interpretation
 
-Each score, with grade and what it means.
+The score and grade come from the report renderer (`skills/a11y-core/scripts/merge-findings.mjs`), after document checker levels are mapped to the canonical severities. A score is not a conformance claim.
 
-| Score | Grade | What it means |
-|-------|-------|---------------|
-| 90-100 | A | Excellent - safe to share or publish |
-| 75-89 | B | Good - some warnings before external distribution |
-| 50-74 | C | Needs work - multiple errors blocking AT users |
-| 25-49 | D | Poor - significant navigation and content barriers |
-| 0-24 | F | Failing - largely inaccessible with screen readers |
+Each score band, with its grade.
+
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ### What to Fix First
 

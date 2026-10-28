@@ -24,10 +24,10 @@ It does not just list issues. It maps each fix to the WCAG success criterion it 
 ### GitHub Copilot (VS Code)
 
 ```text
-@insiders-a11y-tracker latest accessibility updates
-@insiders-a11y-tracker what shipped to Insiders this week?
-@insiders-a11y-tracker WCAG failures in VS Code this month
-@insiders-a11y-tracker compare last month to this month
+/insiders-a11y-tracker latest accessibility updates
+/insiders-a11y-tracker what shipped to Insiders this week?
+/insiders-a11y-tracker WCAG failures in VS Code this month
+/insiders-a11y-tracker compare last month to this month
 ```
 
 ### Claude Code (Terminal)
@@ -41,8 +41,8 @@ It does not just list issues. It maps each fix to the WCAG success criterion it 
 ### Via GitHub Hub
 
 ```text
-@github-hub accessibility tracker
-@github-hub what's new in VS Code a11y?
+/github-hub accessibility tracker
+/github-hub what's new in VS Code a11y?
 ```
 
 ---
@@ -165,8 +165,8 @@ accessibility_tracking:
 **Via prompt:**
 
 ```text
-@insiders-a11y-tracker track your-org/your-repo for accessibility issues
-@insiders-a11y-tracker add microsoft/vscode-jupyter to the watch list
+/insiders-a11y-tracker track your-org/your-repo for accessibility issues
+/insiders-a11y-tracker add microsoft/vscode-jupyter to the watch list
 ```
 
 </details>
@@ -181,25 +181,25 @@ accessibility_tracking:
 ### Routine Monitoring
 
 ```text
-@insiders-a11y-tracker what accessibility issues shipped to Insiders this week?
-@insiders-a11y-tracker show me everything that reached Stable this month
-@insiders-a11y-tracker give me the delta since my last scan
+/insiders-a11y-tracker what accessibility issues shipped to Insiders this week?
+/insiders-a11y-tracker show me everything that reached Stable this month
+/insiders-a11y-tracker give me the delta since my last scan
 ```
 
 ### Filtered Views
 
 ```text
-@insiders-a11y-tracker focus management issues only
-@insiders-a11y-tracker WCAG 2.1 keyboard issues
-@insiders-a11y-tracker screen reader related fixes
-@insiders-a11y-tracker issues that regressed this month
+/insiders-a11y-tracker focus management issues only
+/insiders-a11y-tracker WCAG 2.1 keyboard issues
+/insiders-a11y-tracker screen reader related fixes
+/insiders-a11y-tracker issues that regressed this month
 ```
 
 ### Multi-Repo
 
 ```text
-@insiders-a11y-tracker scan all my tracked repos
-@insiders-a11y-tracker compare vscode and vscode-jupyter accessibility status
+/insiders-a11y-tracker scan all my tracked repos
+/insiders-a11y-tracker compare vscode and vscode-jupyter accessibility status
 ```
 
 </details>

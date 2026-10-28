@@ -47,9 +47,9 @@
 
 ```text
 /pdf-accessibility scan contract.pdf for PDF/UA compliance
-@pdf-accessibility review the annual report PDF
-@pdf-accessibility check all PDFs in the legal/ directory
-@pdf-accessibility what PDFUA rules does this file violate?
+/pdf-accessibility review the annual report PDF
+/pdf-accessibility check all PDFs in the legal/ directory
+/pdf-accessibility what PDFUA rules does this file violate?
 ```
 
 </details>
@@ -67,8 +67,8 @@
 **In GitHub Copilot Chat:**
 
 ```text
-@pdf-accessibility scan contract.pdf
-@pdf-accessibility check the procurement RFP for Section 508 compliance
+/pdf-accessibility scan contract.pdf
+/pdf-accessibility check the procurement RFP for Section 508 compliance
 ```
 
 **Via the prompt picker:** Select `audit-single-document` and enter the `.pdf` path. For government/procurement PDFs, consider using `generate-vpat` afterwards to produce a formal ACR.
@@ -126,15 +126,17 @@ add alt text before PDF export to avoid needing to retrofit.
 
 ### Score Interpretation
 
-Each score, with grade and what it means.
+The score and grade come from the report renderer (`skills/a11y-core/scripts/merge-findings.mjs`), after document checker levels are mapped to the canonical severities. A score is not a conformance claim.
 
-| Score | Grade | What it means |
-|-------|-------|---------------|
-| 90-100 | A | Excellent - near PDF/UA conformance |
-| 75-89 | B | Good - minor gaps, addressable with Acrobat Pro |
-| 50-74 | C | Needs work - multiple structural barriers |
-| 25-49 | D | Poor - significant AT barriers, remediation required |
-| 0-24 | F | Failing - untagged or scanned-image PDF, essentially inaccessible |
+Each score band, with its grade.
+
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ### The Verdict on Scanned PDFs
 

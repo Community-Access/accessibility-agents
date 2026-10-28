@@ -61,7 +61,7 @@ jobs:
   a11y:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: Community-Access/accessibility-agents/action@v6.0.0
         with:
           scan-type: web

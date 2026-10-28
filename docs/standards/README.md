@@ -6,13 +6,13 @@ rather than asserted, and any deviation, plainly.
 
 | Standard | Governs here | Checked by |
 |---|---|---|
-| [Agent Skills](agent-skills.md) | every file under `skills/` | the specification authors' validator, `npm run verify:spec` |
+| [Agent Skills](agent-skills.md) | every file under `skills/` | `skills-ref validate` (npm port of the reference validator), `npm run verify:spec` |
 | [AGENTS.md](agents-md.md) | the always-on contract | size and content, `npm run verify:skills` |
-| [Agent Plugins 1.0](agent-plugins.md) | `plugin.json` and the client manifests | `claude plugin validate .`, `npm run verify:release` |
+| [Agent Plugins 1.0](agent-plugins.md) | `plugin.json`, `mcp.json` and the client manifests | `claude plugin validate .`, `npm run verify:release` |
 | [Model Context Protocol](mcp.md) | the 39 scanner tools | a real client over stdio, `npm run verify:mcp` |
 | [WCAG 2.2](wcag.md) | every criterion a finding cites | `npm run verify:findings` |
-| [Hooks, by client](hooks-by-client.md) | the enforcement gate | 22 tests, `node --test hooks/guard.test.mjs` |
-| [Dependency supply chain](dependencies.md) | three dependency trees | the npm advisory database, `npm run verify:deps` |
+| [Hooks, by client](hooks-by-client.md) | the enforcement gate | 26 tests, `node --test hooks/guard.test.mjs` |
+| [Dependency supply chain](dependencies.md) | the two shipping dependency trees (root tooling, MCP server); the deprecated VS Code extension tree is reported, not gated | the npm advisory database, `npm run verify:deps` |
 
 The [conformance dossier](conformance.md) collects the gates, the measured
 results, the defects found on the way, and the live-client evidence.

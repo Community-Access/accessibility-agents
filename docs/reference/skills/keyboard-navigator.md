@@ -49,9 +49,9 @@ Visual appearance of focus indicators (that is contrast-master), ARIA role corre
 ### GitHub Copilot
 
 ```text
-@keyboard-navigator check tab order for this component
-@keyboard-navigator build focus management for this route change
-@keyboard-navigator review keyboard interaction patterns in this dropdown
+/keyboard-navigator check tab order for this component
+/keyboard-navigator build focus management for this route change
+/keyboard-navigator review keyboard interaction patterns in this dropdown
 ```
 
 </details>

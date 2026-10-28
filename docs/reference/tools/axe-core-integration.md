@@ -48,14 +48,14 @@ The **web-accessibility-wizard** (Phase 9) asks if you have a dev server running
 
 ```text
 /web-accessibility-wizard run a full audit on this project
-@web-accessibility-wizard audit this project for accessibility
+/web-accessibility-wizard audit this project for accessibility
 ```
 
 The **testing-coach** runs ad-hoc scans:
 
 ```text
 /testing-coach run an axe-core scan on http://localhost:3000/dashboard
-@testing-coach scan http://localhost:3000/checkout for accessibility issues
+/testing-coach scan http://localhost:3000/checkout for accessibility issues
 ```
 
 **Any agent** can interpret results you feed manually:
@@ -76,9 +76,13 @@ npx @axe-core/cli http://localhost:3000 --save results.json
 - name: Run axe-core accessibility tests
   run: |
     npx @axe-core/cli http://localhost:3000 \
-      --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
+      --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa \
       --exit
 ```
+
+`wcag22aa` is what makes axe run `target-size` (2.5.8); without it no WCAG 2.2
+rule runs. axe-core 4.14 has no rule for the other new 2.2 criteria, so they
+still need manual testing.
 
 **Test framework packages:**
 
@@ -134,7 +138,7 @@ Each scenario, with its axe-core CLI and playwright + axe-core.
 
 ### Three-Source Confidence
 
-When an issue is found by all three sources (agent code review + axe-core CLI + Playwright behavioral scan), it receives **Confirmed** confidence with a 1.2x weight multiplier in severity scoring.
+An issue found by two or more sources (agent code review, axe-core CLI, Playwright behavioral scan) is `high` confidence, factor 1.0 in the score. There is no higher tier and no multiplier: the findings schema stops at `high`, and merging keeps the highest confidence any source reported for the same rule at the same location.
 
 ### Installation
 

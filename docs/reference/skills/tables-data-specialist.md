@@ -52,9 +52,9 @@ Content within table cells (form inputs are forms-specialist, links are aria-spe
 ### GitHub Copilot
 
 ```text
-@tables-data-specialist review the data table in this component
-@tables-data-specialist add proper headers and scope to this table
-@tables-data-specialist make this sortable table accessible
+/tables-data-specialist review the data table in this component
+/tables-data-specialist add proper headers and scope to this table
+/tables-data-specialist make this sortable table accessible
 ```
 
 </details>

@@ -2,19 +2,21 @@
 
 This file defines coordinated multi-agent workflows for enterprise accessibility scanning.
 
+> Note for 7.0 and later: every agent named here is now an Agent Skill in `skills/`. The prompt files this page mentions (for example `fix-web-issues`, `compare-web-audits`, `generate-vpat`) were removed with the per-client trees. Ask the router in plain words instead, for example "fix the issues in WEB-ACCESSIBILITY-AUDIT.md" or "compare this audit with the last one".
+
 ## Cross-Cutting Standards
 
 ### Source Citation Policy
 
-All agents in this workspace MUST follow the [Source Citation Policy](CITATION_POLICY.md). Key requirements:
+All agents in this workspace MUST follow the [Source Citation Policy](../docs/standards/citation-policy.md). Key requirements:
 
 - **Every factual claim** includes an inline link to the authoritative source
 - **Every substantive response** ends with a `## Sources` section
-- **No source, no claim** — if no authoritative source exists, the agent states this explicitly
-- **6-tier authority hierarchy** — normative specs outrank informative guidance outrank vendor docs
-- **Source currency** — a weekly GitHub Actions workflow monitors authoritative URLs for changes and opens issues when updates are detected
+- **No source, no claim**: if no authoritative source exists, the agent states this explicitly
+- **6-tier authority hierarchy**: normative specs outrank informative guidance outrank vendor docs
+- **Source currency**: `.github/scripts/check_source_currency.py` is written to fingerprint the registered URLs and open an issue when one changes. No workflow runs it at present, so source currency is checked by hand
 
-The citation behavioral rule is enforced via [shared-instructions.md](shared-instructions.md), which all agents inherit. The machine-readable source registry at [SOURCE_REGISTRY.json](SOURCE_REGISTRY.json) tracks 20 authoritative URLs with content fingerprints.
+The citation behavioral rule is carried by [kb-github-shared-instructions](../skills/kb-github-shared-instructions/SKILL.md). The machine-readable source registry at [source-registry.json](../docs/standards/source-registry.json) tracks 20 authoritative URLs with content fingerprints.
 
 ### Multi-Agent Workflow Reliability Standards
 
@@ -358,15 +360,15 @@ Specialist agents for CI pipelines, standards education, and screen reader simul
 
 - `ci-accessibility` - CI/CD accessibility pipeline setup and management (GitHub Actions, Azure DevOps, GitLab CI, CircleCI, Jenkins). Baseline management, SARIF output, PR annotations, threshold configuration.
 - `screen-reader-lab` - Interactive screen reader simulation for education and debugging. Parses HTML/JSX and produces step-by-step narration. Supports reading order, Tab/H/F key navigation modes.
-- `wcag3-preview` - WCAG 3.0 draft education and transition planning. Explains methodology changes, outcome-based conformance, APCA contrast, functional needs categories.
+- `wcag3-preview` - WCAG 3.0 draft education and transition planning. Explains the draft's requirements and conformance model, its undecided contrast measure (APCA is proposed, not adopted), and functional needs categories.
 - `wcag-aaa` - WCAG AAA conformance auditing. Enhanced contrast (7:1), extended audio descriptions, sign language, reading level, abbreviations, pronunciation, focus appearance.
 
 **Workflow:**
 
-1. Each agent operates independently — no orchestrator needed
+1. Each agent operates independently - no orchestrator needed
 2. `ci-accessibility` integrates with `web-accessibility-wizard` and `document-accessibility-wizard` for pipeline test definitions
 3. `screen-reader-lab` can be invoked after any web audit to understand the screen reader experience of flagged issues
-4. `wcag3-preview` provides educational guidance — does not produce audit findings
+4. `wcag3-preview` provides educational guidance - does not produce audit findings
 5. `wcag-aaa` extends any AA audit with AAA-level criteria
 
 **Handoffs:**

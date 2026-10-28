@@ -25,7 +25,7 @@ Use GitHub Hub when:
 ### GitHub Copilot (VS Code)
 
 1. Open Copilot Chat: `Ctrl+Shift+I` (Windows) or `Cmd+Shift+I` (macOS)
-2. Type `@github-hub` followed by your request, or just `@github-hub` alone
+2. Type `/github-hub` followed by your request, or just `/github-hub` alone
 3. The agent greets you, discovers your repos, and gets to work
 
 ### Claude Code (Terminal)
@@ -69,7 +69,7 @@ GitHub Hub is built to understand plain English at every level of specificity. Y
 
 ### First Invocation
 
-When you first invoke `@github-hub` (with or without a message), this is what happens:
+When you first invoke `/github-hub` (with or without a message), this is what happens:
 
 **Step 1 - Greeting and discovery.**
 GitHub Hub detects your workspace context from `.git/config` and calls the GitHub API to identify your authenticated user and current repo.
@@ -78,7 +78,7 @@ GitHub Hub detects your workspace context from `.git/config` and calls the GitHu
 It presents a quick summary: your GitHub username, your org (if detected), and a list of repos you own or have access to. It shows which repos are active (recent pushes or issues).
 
 **Step 3 - Ask what you want.**
-If you sent a question with your invocation (e.g., `@github-hub what PRs need my review?`), it immediately starts working on the answer. If you just typed `@github-hub hello`, it presents a menu of common starting points with clickable options:
+If you sent a question with your invocation (e.g., `/github-hub what PRs need my review?`), it immediately starts working on the answer. If you just typed `/github-hub hello`, it presents a menu of common starting points with clickable options:
 
 - Morning Briefing
 - Review PRs
@@ -126,34 +126,34 @@ After completing work in one agent, GitHub Hub can bring you back and route you 
 ### Starting Fresh
 
 ```text
-@github-hub
-@github-hub hi
-@github-hub what needs my attention today?
-@github-hub show me my repositories
-@github-hub what's going on with my projects?
+/github-hub
+/github-hub hi
+/github-hub what needs my attention today?
+/github-hub show me my repositories
+/github-hub what's going on with my projects?
 ```
 
 ### Specific Routing
 
 ```text
-@github-hub review the PR I got assigned this morning
-@github-hub triage issues in community-access/accessibility-agents
-@github-hub get me the team velocity for this month
-@github-hub add alice to the frontend team
-@github-hub set up branch protection on main
-@github-hub I want to build an accessibility bug template
-@github-hub check community health on my open source project
-@github-hub scaffold a new repository for my API service
+/github-hub review the PR I got assigned this morning
+/github-hub triage issues in community-access/accessibility-agents
+/github-hub get me the team velocity for this month
+/github-hub add alice to the frontend team
+/github-hub set up branch protection on main
+/github-hub I want to build an accessibility bug template
+/github-hub check community health on my open source project
+/github-hub scaffold a new repository for my API service
 ```
 
 ### Exploratory Queries
 
 ```text
-@github-hub what should I work on first?
-@github-hub what's behind on the team?
-@github-hub anything security-related I should know about?
-@github-hub who needs to review something from me?
-@github-hub summarize what happened this week
+/github-hub what should I work on first?
+/github-hub what's behind on the team?
+/github-hub anything security-related I should know about?
+/github-hub who needs to review something from me?
+/github-hub summarize what happened this week
 ```
 
 </details>
@@ -210,7 +210,7 @@ GitHub Hub connects to every specialist in the GitHub Workflow team:
 <details>
 <summary>Show troubleshooting help</summary>
 
-**"I invoked `@github-hub` but it does not seem to know my repo."**
+**"I invoked `/github-hub` but it does not seem to know my repo."**
 GitHub Hub discovers context by calling the GitHub API. If your repo is not detected, make sure you are authenticated (`gh auth status`) and the workspace folder is a git repository.
 
 **"It routed me to the wrong agent."**

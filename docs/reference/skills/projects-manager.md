@@ -26,11 +26,11 @@ Use projects-manager when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@projects-manager create a new project board
-@projects-manager add all open bugs to the project
-@projects-manager create a Status field with To Do, In Progress, Done
-@projects-manager set up two-week iterations starting next Monday
-@projects-manager show me all items in the current iteration
+/projects-manager create a new project board
+/projects-manager add all open bugs to the project
+/projects-manager create a Status field with To Do, In Progress, Done
+/projects-manager set up two-week iterations starting next Monday
+/projects-manager show me all items in the current iteration
 ```
 
 ### Claude Code (Terminal)
@@ -45,8 +45,8 @@ Use projects-manager when:
 ### Via GitHub Hub
 
 ```text
-@github-hub create a project board for this repo
-@github-hub show my project items
+/github-hub create a project board for this repo
+/github-hub show my project items
 ```
 
 ---

@@ -28,7 +28,7 @@ Base URL: `https://code.claude.com/docs/en/`
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
 | **Sub-agents** | <https://code.claude.com/docs/en/sub-agents> | Custom subagent frontmatter fields (`name`, `description`, `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `skills`, `mcpServers`, `hooks`, `memory`, `background`, `isolation`). Built-in subagents: Explore, Plan, General-purpose. Scope hierarchy and memory scopes. Background vs foreground execution. Worktree isolation via `isolation: "worktree"`. |
-| **Hooks** | <https://code.claude.com/docs/en/hooks> | 18 hook events including `SessionStart`, `SessionEnd`, `PreToolUse`, `PostToolUse`, `SubagentStart`, `SubagentStop`, `TeammateIdle`, `TaskCompleted`. Three handler types: `command`, `prompt`, `agent`. Async hooks. Hook locations: user settings, project settings, plugin, skill/agent frontmatter. |
+| **Hooks** | <https://code.claude.com/docs/en/hooks> | 33 hook events (October 2026) including `SessionStart`, `SessionEnd`, `PreToolUse`, `PostToolUse`, `SubagentStart`, `SubagentStop`, `TeammateIdle`, `TaskCompleted`. Three handler types: `command`, `prompt`, `agent`. Async hooks. Hook locations: user settings, project settings, plugin, skill/agent frontmatter. |
 | **Hooks guide** | <https://code.claude.com/docs/en/hooks-guide> | Practical hook examples and patterns for validation, quality gates, and automation workflows. |
 | **Memory** | <https://code.claude.com/docs/en/memory> | Memory types: managed policy, project (`CLAUDE.md`), project rules (`.claude/rules/*.md` with `paths` frontmatter), user (`~/.claude/CLAUDE.md`), project local (`CLAUDE.local.md`), auto memory (`MEMORY.md` - first 200 lines loaded). Imports with `@path` syntax. |
 | **Skills** | <https://code.claude.com/docs/en/skills> | Agent Skills standard with `SKILL.md` files. Frontmatter: `name`, `description`, `disable-model-invocation`, `user-invocable`, `allowed-tools`, `model`, `context`, `agent`, `hooks`, `argument-hint`. Supporting files pattern. Skill scopes: enterprise > personal > project. Plugin skills use namespace. Dynamic context injection with `!`command`` syntax. |
@@ -52,15 +52,15 @@ Each topic, with URL and what we learned.
 
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
-| **Custom agents** | <https://code.visualstudio.com/docs/copilot/customization/custom-agents> | `.agent.md` file format. YAML frontmatter: `description`, `name`, `tools`, `agents`, `model`, `user-invokable`, `disable-model-invocation`, `target`, `mcp-servers`, `handoffs`. Handoff configuration (`label`, `agent`, `prompt`, `send`, `model`). VS Code also detects `.md` files in `skills/` for cross-platform compatibility. Claude agent format support with comma-separated tools. Organization-level agent sharing. |
+| **Custom agents** | <https://code.visualstudio.com/docs/agent-customization/custom-agents> | `.agent.md` or `.md` files in `.github/agents/` (so any `.md` there is treated as an agent). YAML frontmatter includes `description`, `name`, `tools`, `user-invocable`, `disable-model-invocation`, `handoffs` and `hooks`. Handoff configuration (`label`, `agent`, `prompt`, `send`, `model`). VS Code also detects `.md` files in `.claude/agents/` for cross-platform compatibility. Claude agent format support with comma-separated tools. Organization-level agent sharing. |
 | **Agent overview** | <https://code.visualstudio.com/docs/copilot/agents/overview> | Built-in agents (Agent, Plan, Ask). Agent types: Local, Background, Cloud, Third-party. Session handoff between agent types. |
 | **Chat overview** | <https://code.visualstudio.com/docs/copilot/chat/copilot-chat> | Chat surfaces (Chat view, Inline chat, Quick chat, CLI). Agent picker, model picker. Context mechanisms (`#`-mentions, `@`-mentions, vision). Review and checkpoint system. |
 | **AI extensibility** | <https://code.visualstudio.com/api/extension-guides/ai/ai-extensibility-overview> | Extension options: Language Model Tools, MCP Tools, Chat Participants, Language Model API. Decision matrix for choosing approach. |
-| **Custom instructions** | <https://code.visualstudio.com/docs/copilot/customization/custom-instructions> | Instruction file types and loading behavior. |
-| **Agent skills** | <https://code.visualstudio.com/docs/copilot/customization/agent-skills> | Skill directories with `SKILL.md` entrypoint. Workspace paths: `skills/`, `.claude/skills/`, `.agents/skills/`. Personal paths: `~/.copilot/skills/`, `~/.claude/skills/`, `~/.agents/skills/`. |
-| **Hooks** | <https://code.visualstudio.com/docs/copilot/customization/hooks> | Published 2026-02-09 (Preview, VS Code 1.109.3+). Eight lifecycle events: `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, `Stop`. Hook files: workspace -> `.github/hooks/*.json`; user -> `~/.claude/settings.json`. JSON format: `{ "hooks": { "EventName": [{ "type": "command", "command": "...", "windows": "...", "timeout": 30 }] } }`. Exit code 0 = success, 2 = blocking error. `additionalContext` field injects text into agent conversation. |
-| **MCP servers in VS Code** | <https://code.visualstudio.com/docs/copilot/customization/mcp-servers> | MCP server configuration in VS Code settings. |
-| **Prompt files** | <https://code.visualstudio.com/docs/copilot/customization/prompt-files> | `.prompt.md` files for reusable workflows. |
+| **Custom instructions** | <https://code.visualstudio.com/docs/agent-customization/custom-instructions> | Instruction file types and loading behavior. |
+| **Agent skills** | <https://code.visualstudio.com/docs/agent-customization/agent-skills> | Skill directories with `SKILL.md` entrypoint. Workspace paths: `.github/skills/`, `.claude/skills/`, `.agents/skills/` (a root `skills/` is read only from an installed plugin or through `chat.agentSkillsLocations`). Personal paths: `~/.copilot/skills/`, `~/.claude/skills/`, `~/.agents/skills/`. |
+| **Hooks** | <https://code.visualstudio.com/docs/agents/reference/hooks-reference> | Hooks follow the selected agent harness. The Local harness reference lists eight lifecycle events: `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, `Stop`. Hook files: workspace -> `.github/hooks/*.json`; user -> `~/.claude/settings.json`. JSON format: `{ "hooks": { "EventName": [{ "type": "command", "command": "...", "windows": "...", "timeout": 30 }] } }`. Exit code 0 = success, 2 = blocking error. `additionalContext` field injects text into agent conversation. |
+| **MCP servers in VS Code** | <https://code.visualstudio.com/docs/agents/reference/mcp-configuration> | Workspace configuration in `.vscode/mcp.json` under `servers`; a portable `.mcp.json` at the workspace root uses `mcpServers`. A root `mcp.json` (no dot) is not a workspace configuration. |
+| **Prompt files** | <https://code.visualstudio.com/docs/agent-customization/prompt-files> | `.prompt.md` files for reusable workflows. They run only in Local harness sessions in the Chat view. This package no longer ships prompt files. |
 
 ### GitHub Copilot Documentation
 
@@ -71,7 +71,7 @@ Each topic, with URL and what we learned.
 | **Custom instructions** | <https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions> | Three types: repository-wide (`copilot-instructions.md`), path-specific (`*.instructions.md` with `applyTo` frontmatter), agent instructions (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`). `excludeAgent` frontmatter for targeting specific agents. Priority: personal > repository > organization. |
 | **MCP in Copilot** | <https://docs.github.com/en/copilot/concepts/context/mcp> | MCP protocol overview for Copilot. GitHub MCP server. GitHub MCP Registry. Remote and local MCP server support. Toolset customization. |
 | **Copilot extensions** | <https://docs.github.com/en/copilot/concepts/context/mcp> | Building Copilot extensions with agents, MCP, and skills. |
-| **Agent mode** | <https://docs.github.com/en/copilot/using-github-copilot/coding-agent> | Copilot coding agent for autonomous task execution. |
+| **Cloud agent** | <https://docs.github.com/copilot/concepts/agents/cloud-agent/about-cloud-agent> | Copilot cloud agent (formerly coding agent) for autonomous task execution. |
 
 ---
 
@@ -96,7 +96,7 @@ Each topic, with URL and what we learned.
 
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
-| **WCAG 2.2 Specification** | <https://www.w3.org/TR/WCAG22/> | Web Content Accessibility Guidelines version 2.2. Defines 31 Level A and 24 Level AA success criteria. 4.1.1 Parsing removed (always satisfied in modern user agents). New criteria: 2.4.11 Focus Not Obscured, 2.4.13 Focus Appearance (AAA), 2.5.7 Dragging, 2.5.8 Target Size, 3.2.6 Consistent Help, 3.3.7 Redundant Entry, 3.3.8 Accessible Authentication, 3.3.9 Accessible Authentication Enhanced (AAA). |
+| **WCAG 2.2 Specification** | <https://www.w3.org/TR/WCAG22/> | Web Content Accessibility Guidelines version 2.2. Defines 86 success criteria: 31 Level A, 24 Level AA, 31 Level AAA. 4.1.1 Parsing is obsolete and removed. New criteria: 2.4.11 Focus Not Obscured (Minimum), 2.4.12 Focus Not Obscured (Enhanced) (AAA), 2.4.13 Focus Appearance (AAA), 2.5.7 Dragging Movements, 2.5.8 Target Size (Minimum), 3.2.6 Consistent Help, 3.3.7 Redundant Entry, 3.3.8 Accessible Authentication, 3.3.9 Accessible Authentication Enhanced (AAA). |
 | **WCAG 2.2 Understanding Docs** | <https://www.w3.org/WAI/WCAG22/Understanding/> | Informative companion to WCAG 2.2. Explains each success criterion with intent, benefits, examples, techniques, and test procedures. URL pattern: `{base}{slug}` where slug is the kebab-case criterion name (e.g., `non-text-content` for 1.1.1). Used by CSV reporters to generate `wcag_url` column values. |
 | **WCAG 2.2 Quick Reference** | <https://www.w3.org/WAI/WCAG22/quickref/> | Customizable quick reference to all WCAG success criteria and techniques. Allows filtering by level (A, AA, AAA), technology, and topic. Used for cross-checking criterion levels and applicability. |
 | **WCAG 2.2 Techniques** | <https://www.w3.org/WAI/WCAG22/Techniques/> | Sufficient, advisory, and failure techniques for meeting each WCAG criterion. Techniques are informative (not normative). Used to inform fix steps and remediation guidance in agent rules. |
@@ -107,11 +107,11 @@ Each topic, with URL and what we learned.
 
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
-| **PDF/UA (ISO 14289-1)** | <https://pdfa.org/resource/iso-14289-pdfua/> | Universal Accessibility standard for PDF documents. Tagged PDF requirements. |
-| **Matterhorn Protocol 1.1** | <https://pdfa.org/resource/the-matterhorn-protocol/> | PDF/UA conformance testing rules. 136 failure conditions organized into 31 checkpoints. |
-| **VPAT 2.5 / ACR** | <https://www.itic.org/policy/accessibility/vpat> | Voluntary Product Accessibility Template. Accessibility Conformance Report format for compliance documentation. |
-| **Section 508** | <https://www.section508.gov/> | US federal accessibility requirements. Trusted tester methodology. |
-| **EN 301 549** | <https://www.etsi.org/deliver/etsi_en/301500_301599/301549/> | European accessibility standard for ICT products and services. |
+| **PDF/UA (ISO 14289-1 and 14289-2)** | <https://pdfa.org/resource/iso-14289-pdfua/> | Universal Accessibility standard for PDF documents. PDF/UA-1 is ISO 14289-1:2014; PDF/UA-2 is ISO 14289-2:2024, built on PDF 2.0. Tagged PDF requirements. |
+| **Matterhorn Protocol 1.1** | <https://pdfa.org/resource/the-matterhorn-protocol/> | PDF/UA-1 conformance testing rules. 136 failure conditions organized into 31 checkpoints. Matterhorn 2.0, for PDF/UA-2, is still in development. |
+| **VPAT 2.5Rev / ACR** | <https://www.itic.org/policy/accessibility/vpat> | Voluntary Product Accessibility Template, current edition 2.5Rev (24 April 2025), in 508, EU, WCAG and INT editions. Accessibility Conformance Report format for compliance documentation. |
+| **Section 508** | <https://www.section508.gov/> | US federal accessibility requirements; the Revised 508 Standards incorporate WCAG 2.0 Level A and AA. Trusted tester methodology. |
+| **EN 301 549** | <https://www.etsi.org/deliver/etsi_en/301500_301599/301549/> | European accessibility standard for ICT products and services. V4.1.1 (2026-09) aligns with WCAG 2.2 but is not yet cited in the Official Journal; V3.2.1 (WCAG 2.1) remains the version that gives presumption of conformity. |
 
 ### Microsoft Office Accessibility
 
@@ -119,7 +119,7 @@ These pages define the official Accessibility Checker rules and per-format remed
 
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
-| **Accessibility Checker Rules** | <https://support.microsoft.com/en-us/office/rules-for-the-accessibility-checker-651e08f2-0fc3-4e10-aaca-74b4a67101c1> | Complete list of every rule the built-in Accessibility Checker enforces across Word, Excel, PowerPoint, Outlook, OneNote, and Visio. Classifies each rule as Error, Warning, Tip, or Intelligent Services. Covers: alt text on all objects, table column headers, section/slide/sheet naming, document access restrictions, content control field titles, simple table structure, contrast, captions, reading order, heading styles, and unique slide titles. Also documents checker limitations (color-only info, in-band captions). This is the single most important reference for our document rule definitions. |
+| **Accessibility Checker Rules** | <https://support.microsoft.com/en-us/accessibility/office-accessibility/rules-for-the-accessibility-checker> | Complete list of every rule the built-in Accessibility Checker enforces across Word, Excel, PowerPoint, Outlook, OneNote, and Visio. Classifies each rule as Error, Warning, Tip, or Intelligent Services. Covers: alt text on all objects, table column headers, section/slide/sheet naming, document access restrictions, content control field titles, simple table structure, contrast, captions, reading order, heading styles, and unique slide titles. Also documents checker limitations (color-only info, in-band captions). This is the single most important reference for our document rule definitions. |
 | **Accessibility Guide for Microsoft 365 Apps** | <https://learn.microsoft.com/en-us/microsoft-365-apps/deploy/accessibility-guide> | Admin-oriented guidance for deploying accessible Microsoft 365 environments. Documents connected experiences for accessibility (live captions, dictation, read aloud, learning tools, automatic alt text, QuickStarter). Covers Group Policy to enable "Check for accessibility issues while editing" for Word, Excel, and PowerPoint. Lists accessibility resources organized by disability category. |
 | **Improve Accessibility with the Accessibility Checker** | <https://support.microsoft.com/en-us/office/improve-accessibility-with-the-accessibility-checker-a16f6de0-2f39-4a2b-8bd8-5ad801426c7f> | How-to for running the Accessibility Checker in each Office app. Describes results pane (Errors, Warnings, Tips, Intelligent Services categories). Used as the general fallback help URL for unmapped Office issues. |
 | **Word: Make Documents Accessible** | <https://support.microsoft.com/en-us/office/make-your-word-documents-accessible-d9bf3683-87ac-47ea-b91a-78dcacb3c66d> | Format-specific guidance for Word. Bookmark anchors for each topic: `#bkmk_doctitle`, `#bkmk_headings` (now `#bkmk_useheadings`), `#bkmk_tableheaders`, `#bkmk_hyperlinks`, `#bkmk_contrast` (now `#bkmk_color`), `#bkmk_language`, `#bkmk_layout` (now `#bkmk_tableslayouts`), `#bkmk_toc`, `#bkmk_whitespace`, `#bkmk_watermarks`. These anchors are used in `help-url-reference` SKILL to build per-rule help URLs. |
@@ -145,7 +145,7 @@ Each topic, with URL and what we learned.
 | Topic | URL | What We Learned |
 |-------|-----|-----------------|
 | **Accessibility Insights Info Examples** | <https://accessibilityinsights.io/info-examples/web/> | Free, public help pages for axe-core accessibility rules. URL pattern: `{base}{rule-id}/`. Each rule maps to one or more WCAG success criteria. Used as the `help_url` source for all web CSV findings. Covers rules including `image-alt`, `color-contrast`, `label`, `button-name`, `link-name`, `html-has-lang`, `document-title`, `heading-order`, `aria-roles`, `aria-required-attr`, `bypass`, `region`, `tabindex`, `meta-viewport`, `autocomplete-valid`, and more. |
-| **axe-core GitHub Repository** | <https://github.com/dequelabs/axe-core> | Open-source accessibility testing engine. Rule definitions, checks, and metadata. Version 4.10 is the current reference version in our URL patterns. |
+| **axe-core GitHub Repository** | <https://github.com/dequelabs/axe-core> | Open-source accessibility testing engine. Rule definitions, checks, and metadata. Latest release 4.14.0 (October 2026); its only WCAG 2.2 rule is `target-size`, which runs only when `wcag22aa` is in the tag list. |
 | **W3C Topic Pages** | <https://www.w3.org/WAI/> | Authoritative W3C/WAI resources for accessibility topics not covered by axe-core rules. Used for agent-detected issues: focus management (WCAG Understanding focus-order), live regions (WCAG Understanding status-messages), modal dialogs (APG dialog-modal pattern), data tables (WAI tutorials/tables). |
 | **axe-core CLI** | <https://www.npmjs.com/package/@axe-core/cli> | CLI tool for running axe-core scans from the terminal. Used by the `A11y: Run axe-core Scan` VS Code task and the web-accessibility-wizard Phase 1 runtime scan. |
 
@@ -157,22 +157,22 @@ This table maps each project feature to the documentation sources that informed 
 
 | Project Feature | Primary Source(s) | Notes |
 |----------------|-------------------|-------|
-| **Custom agents (`.agent.md`)** | VS Code Custom agents, Claude Code Sub-agents | Cross-platform format: VS Code detects `.md` files in `skills/` |
+| **Custom agents (`.agent.md`)** | VS Code Custom agents, Claude Code Sub-agents | Historical: before 7.0 the package shipped agent files. Cross-platform format: VS Code detects `.md` files in `.claude/agents/` |
 | **Agent frontmatter (`tools`, `model`, `handoffs`)** | VS Code Custom agents | Frontmatter fields, tool arrays, handoff configuration |
-| **Hidden helper sub-agents (`user-invokable: false`)** | VS Code Custom agents, Claude Code Sub-agents | `user-invokable: false` hides from picker; `disable-model-invocation` prevents auto-invocation |
+| **Hidden helper skills (`user-invocable: false`)** | VS Code agent skills, Claude Code Skills | `user-invocable: false` hides from the `/` menu; `disable-model-invocation` prevents auto-invocation |
 | **Agent Skills (`SKILL.md`)** | Claude Code Skills | Skill directories with `SKILL.md` entrypoint. Frontmatter for invocation control. Supporting files pattern. |
 | **Lifecycle hooks (SessionStart, SessionEnd)** | Claude Code Hooks, VS Code Hooks | Hook events, handler types (`command`, `prompt`, `agent`). Quality gates via exit codes. **VS Code**: `.github/hooks/*.json` files, 8 events (`SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, `Stop`). Note: VS Code uses `Stop` - there is **no `SessionEnd`** event in VS Code. |
 | **Agent Teams (`AGENTS.md`)** | Claude Code Agent teams, GitHub Custom instructions | Enterprise coordination patterns. GitHub supports `AGENTS.md` for agent instructions. |
 | **Persistent memory** | Claude Code Memory | `CLAUDE.md` project memory. Auto memory with `MEMORY.md`. Memory scopes. |
-| **MCP server (document scanner tools)** | MCP specification, MCP TypeScript SDK | 16 tools. Streamable HTTP transport + stdio fallback. `@modelcontextprotocol/sdk` with `StreamableHTTPServerTransport`. |
+| **MCP server (document scanner tools)** | MCP specification, MCP TypeScript SDK | 39 tools. Streamable HTTP and stdio transports. `@modelcontextprotocol/sdk` 1.32.2 with `StreamableHTTPServerTransport`. |
 | **Batch scanning & severity scoring** | WCAG 2.2, PDF/UA, Matterhorn Protocol | 0-100 severity score with A-F grades. Cross-document pattern detection. |
-| **VPAT/ACR compliance export** | VPAT 2.5 / ACR template | Accessibility Conformance Report generation from audit findings. |
+| **VPAT/ACR compliance export** | VPAT 2.5Rev / ACR template | Accessibility Conformance Report generation from audit findings. |
 | **Cross-platform handoff** | Claude Code Sub-agents, VS Code Custom agents | Shared artifacts, report format compatibility between platforms. |
-| **Plugin packaging** | Claude Code Plugins, Claude Code Plugins reference | `.claude-plugin/plugin.json` manifest. Distribution formats: git clone, per-project Copilot, per-project Claude, plugin marketplace. |
+| **Plugin packaging** | Agent Plugins 1.0, Claude Code Plugins reference | Root `plugin.json` and `mcp.json` (Agent Plugins 1.0), `.claude-plugin/plugin.json` and `marketplace.json`, `com.github.copilot/hooks/hooks.json`. See `.github/docs/plugin-packaging.md`. |
 | **Background scanning patterns** | Claude Code Sub-agents (background, isolation) | Background subagent execution. Worktree isolation for safe parallel scanning. |
 | **Delta scanning (changed files only)** | Git diff integration | `git diff --name-only` for detecting changed documents since last commit. |
-| **Path-specific instructions** | GitHub Custom instructions | `applyTo` glob patterns in `.instructions.md` frontmatter. |
-| **Custom prompts (`.prompt.md`)** | VS Code Prompt files | 9 prompt files for one-click audit workflows. |
+| **Path-specific instructions** | GitHub Custom instructions | `applyTo` glob patterns in `.instructions.md` frontmatter. Historical: this package no longer ships instruction files. |
+| **Custom prompts (`.prompt.md`)** | VS Code Prompt files | Historical: 9 prompt files shipped before 7.0; the routers replace them. |
 | **Document rule IDs (DOCX-\*, XLSX-\*, PPTX-\*)** | Accessibility Checker Rules, Word/Excel/PowerPoint accessibility pages | Rule severity (Error/Warning/Tip) derived from Checker classification. Rule descriptions and WCAG mappings maintained in `accessibility-rules` skill. |
 | **Document help URLs** | Word/Excel/PowerPoint accessibility pages, Alt Text guidance | Bookmark-anchored URLs for per-rule fix guidance. Mapped in `help-url-reference` skill. |
 | **PDF rule IDs (PDFUA.\*, PDFBP.\*, PDFQ.\*)** | PDF/UA, Matterhorn Protocol, Creating Accessible PDFs | Rule definitions from ISO 14289-1 and Matterhorn failure conditions. Help URLs from Adobe Acrobat guide. |
@@ -188,7 +188,7 @@ These documentation sources are actively maintained by their respective platform
 
 1. **Check for breaking changes** - Platform features like agent teams (experimental) and hooks may change between releases.
 2. **Verify URLs** - Claude Code docs migrated from `docs.anthropic.com` to `code.claude.com` in 2025. Similar migrations may occur.
-3. **Test cross-platform compatibility** - VS Code now supports Claude agent format (`.md` in `skills/`), but feature parity varies.
+3. **Test cross-platform compatibility** - VS Code reads Claude-format agents (`.md` in `.claude/agents/`) and `.claude/skills/`, but feature parity varies.
 4. **Review changelogs** - Claude Code and VS Code release notes document new agent/skill/hook capabilities.
 
 ---

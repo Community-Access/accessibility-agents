@@ -7,7 +7,7 @@ checks that against the registry rather than assuming it.
 |---|---|
 | Source of truth | the npm advisory database, via `npm audit` |
 | Also reported by | GitHub Dependabot on the default branch |
-| Governs here | three independent dependency trees |
+| Governs here | three independent dependency trees: two gated (root tooling, MCP server), one reported (the deprecated VS Code extension) |
 | Checked by | `npm run verify:deps`, part of `npm run verify` |
 
 ## The three trees, and why their thresholds differ
@@ -28,7 +28,8 @@ says so, rather than printing a green line it has not earned.
 Three of the MCP server's advisories were in packages it does not depend on
 directly: `fast-uri` through ajv, `hono` through the MCP SDK, and `ip-address`
 through express-rate-limit. Upgrading the SDK from 1.27.1 to 1.30.0 moved them
-forward but not far enough.
+forward but not far enough. The server is now on SDK 1.32.2, whose ranges are
+unchanged, so the overrides stay.
 
 They are pinned in `mcp-server/package.json` under `overrides`, each to its
 first patched release, and each is inside the range its parent asks for.

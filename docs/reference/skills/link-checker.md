@@ -44,10 +44,10 @@
 ### GitHub Copilot
 
 ```text
-@link-checker review the navigation links in this component
-@link-checker find all ambiguous link text in the project
-@link-checker fix the "click here" links in this file
-@link-checker audit links across the entire src/ directory
+/link-checker review the navigation links in this component
+/link-checker find all ambiguous link text in the project
+/link-checker fix the "click here" links in this file
+/link-checker audit links across the entire src/ directory
 ```
 
 </details>

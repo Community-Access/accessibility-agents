@@ -1,4 +1,4 @@
-# ci-accessibility — CI/CD Accessibility Pipeline Manager
+# ci-accessibility - CI/CD Accessibility Pipeline Manager
 
 > Sets up, manages, and troubleshoots automated accessibility scanning in CI/CD pipelines across multiple platforms.
 
@@ -24,12 +24,12 @@
 
 ## How It Works
 
-1. **Detection** — Identifies the CI platform from config files in the repository
-2. **Configuration** — Generates or updates pipeline config with axe-core scanning steps
-3. **Baseline setup** — Creates a baseline snapshot of existing issues so only regressions fail the build
-4. **Threshold tuning** — Configures which severity levels block merges versus produce warnings
-5. **Output formatting** — Sets up SARIF, JUnit, or JSON output based on platform capabilities
-6. **Validation** — Runs a dry-run scan to confirm the pipeline works before committing
+1. **Detection** - Identifies the CI platform from config files in the repository
+2. **Configuration** - Generates or updates pipeline config with axe-core scanning steps
+3. **Baseline setup** - Creates a baseline snapshot of existing issues so only regressions fail the build
+4. **Threshold tuning** - Configures which severity levels block merges versus produce warnings
+5. **Output formatting** - Sets up SARIF, JUnit, or JSON output based on platform capabilities
+6. **Validation** - Runs a dry-run scan to confirm the pipeline works before committing
 
 ## Handoffs
 
@@ -46,17 +46,17 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@ci-accessibility Set up GitHub Actions accessibility scanning for this repository with SARIF output
+/ci-accessibility Set up GitHub Actions accessibility scanning for this repository with SARIF output
 
-@ci-accessibility Add a baseline file so we only fail on new accessibility regressions
+/ci-accessibility Add a baseline file so we only fail on new accessibility regressions
 
-@ci-accessibility Why is the axe-core scan timing out in our Azure DevOps pipeline?
+/ci-accessibility Why is the axe-core scan timing out in our Azure DevOps pipeline?
 
-@ci-accessibility Configure PR annotations for accessibility findings in GitLab CI
+/ci-accessibility Configure PR annotations for accessibility findings in GitLab CI
 ```
 
 ## Related
 
-- [accessibility-lead](./accessibility-lead.md) — Coordinates full accessibility audits that CI scanning feeds into
-- [pr-review](./pr-review.md) — Reviews PRs with accessibility focus, consumes CI scan results
-- [testing-coach](./testing-coach.md) — Guides manual testing strategy to complement automated CI scans
+- [accessibility-lead](./accessibility-lead.md) - Coordinates full accessibility audits that CI scanning feeds into
+- [pr-review](./pr-review.md) - Reviews PRs with accessibility focus, consumes CI scan results
+- [testing-coach](./testing-coach.md) - Guides manual testing strategy to complement automated CI scans

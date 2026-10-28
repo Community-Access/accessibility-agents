@@ -70,4 +70,4 @@ Tracks the lifecycle of Copilot-assigned fixes:
 
 ## Full Skill Reference
 
-See the complete skill file: [`skills/kb-github-a11y-scanner/SKILL.md`](../../skills/kb-github-a11y-scanner/SKILL.md)
+See the complete skill file: [`skills/kb-github-a11y-scanner/SKILL.md`](../../../skills/kb-github-a11y-scanner/SKILL.md)

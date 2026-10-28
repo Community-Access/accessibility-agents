@@ -40,9 +40,9 @@ Visual issues (contrast), focus management (that is keyboard-navigator), or form
 **In GitHub Copilot Chat:**
 
 ```text
-@aria-specialist review the ARIA in this dropdown component
-@aria-specialist what role should I use for this custom widget?
-@aria-specialist audit all ARIA usage in this file
+/aria-specialist review the ARIA in this dropdown component
+/aria-specialist what role should I use for this custom widget?
+/aria-specialist audit all ARIA usage in this file
 ```
 
 ## Step-by-Step: Reviewing ARIA on a Component
@@ -146,9 +146,9 @@ Each connection, with connect to and when.
 ### GitHub Copilot
 
 ```text
-@aria-specialist review the ARIA in this dropdown component
-@aria-specialist what role should I use for this custom widget?
-@aria-specialist audit all ARIA usage in this file
+/aria-specialist review the ARIA in this dropdown component
+/aria-specialist what role should I use for this custom widget?
+/aria-specialist audit all ARIA usage in this file
 ```
 
 </details>

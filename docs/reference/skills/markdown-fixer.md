@@ -21,14 +21,14 @@ Each issue, with its fix applied.
 | Em-dash `—` or en-dash `–` | Replaced with ` - ` |
 | Ambiguous link text ("click here", "read more", bare URL) | Rewrites to descriptive text using surrounding context |
 | Table with no preceding description | Inserts descriptive paragraph above the table |
-| Heading level skip (H2 → H4) | Adjusts following heading levels to close the gap |
+| Heading level skip (H2 to H4) | Adjusts following heading levels to close the gap |
 | Duplicate heading text | Appends `(2)`, `(3)` suffix to disambiguate |
 | Decorative emoji (default `remove-decorative` mode) | Emoji removed cleanly |
 | All emoji (when `remove-all` mode selected) | All emoji removed cleanly |
 
 ### Emoji translate mode
 
-When the user selects `translate`, emoji are replaced with their English equivalent in parentheses:
+When the user selects `translate`, emoji are replaced with their English equivalent in parentheses. The block below is a deliberate example of the input the fixer recognises (what not to write), not a style to copy:
 
 ```markdown
 🚀 Launch             ✅ Done              ⚠️ Warning

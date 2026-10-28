@@ -36,20 +36,20 @@ When enabled, VS Code walks up the folder hierarchy from each workspace folder u
 
 ```text
 my-monorepo/                       # repo root (has .git folder)
-├── .github/
-│   ├── copilot-instructions.md    # ✅ Discovered
-│   ├── instructions/
-│   │   └── a11y.instructions.md   # ✅ Discovered
-│   ├── prompts/
-│   │   └── audit-web-page.prompt.md  # ✅ Discovered
-│   └── agents/
-│       └── accessibility-lead.agent.md  # ✅ Discovered
-├── packages/
-│   └── frontend/                  # ← Opened as workspace folder
-│       ├── .github/
-│       │   └── prompts/
-│       │       └── local.prompt.md  # ✅ Also discovered (local)
-│       └── src/
+|-- .github/
+|   |-- copilot-instructions.md    # Discovered
+|   |-- instructions/
+|   |   `-- a11y.instructions.md   # Discovered
+|   |-- prompts/
+|   |   `-- audit-web-page.prompt.md  # Discovered
+|   `-- agents/
+|       `-- accessibility-lead.agent.md  # Discovered
+|-- packages/
+|   `-- frontend/                  # <- Opened as workspace folder
+|       |-- .github/
+|       |   `-- prompts/
+|       |       `-- local.prompt.md  # Also discovered (local)
+|       `-- src/
 ```
 
 If you open `packages/frontend/` in VS Code with the setting enabled, you get:
@@ -67,31 +67,26 @@ For parent discovery to work:
 
 ### Recommended Monorepo Setup
 
-Place shared accessibility agent configurations at the repo root:
+Accessibility Agents 7.x ships Agent Skills, not agent, prompt or instruction
+files. For a monorepo, either install the plugin (Chat: Install Plugin From
+Source, which needs `chat.plugins.enabled`), or put the skills where VS Code
+discovers workspace skills at the repository root:
 
 ```text
 my-monorepo/
-├── .github/
-│   ├── agents/                    # Shared across all packages
-│   │   ├── accessibility-lead.agent.md
-│   │   ├── aria-specialist.agent.md
-│   │   ├── contrast-master.agent.md
-│   │   └── ...
-│   ├── skills/                    # Shared skills
-│   │   ├── framework-accessibility/
-│   │   └── web-severity-scoring/
-│   ├── prompts/                   # Shared prompts
-│   │   ├── audit-web-page.prompt.md
-│   │   └── quick-web-check.prompt.md
-│   └── instructions/              # Shared instructions
-│       └── web-accessibility-baseline.instructions.md
-├── packages/
-│   ├── frontend/                  # Each package inherits all shared configs
-│   ├── admin-dashboard/
-│   └── marketing-site/
+  .agents/
+    skills/              # a copy of, or link to, this package's skills/
+      accessibility-lead/
+      aria-specialist/
+      ...
+  packages/
+    frontend/            # each package inherits the root skills
+    admin-dashboard/
+    marketing-site/
 ```
 
-Team members opening any package folder will automatically inherit all accessibility agents.
+`.github/skills/` and `.claude/skills/` work as well. Team members opening a
+package folder inherit the root skills when parent-repository discovery is on.
 
 ---
 
@@ -105,7 +100,7 @@ Team members opening any package folder will automatically inherit all accessibi
 
 ### Claude Code: Background Task Pattern
 
-Claude Code supports the `Task` tool for spawning parallel sub-agents. For background-style scanning:
+Claude Code spawns parallel subagents with the Agent tool (called Task before version 2.1.63). For background-style scanning:
 
 ```text
 Scan these 4 document types in parallel:
@@ -125,13 +120,11 @@ Wait for all tasks to complete, then merge results.
 
 ### GitHub Copilot: Sub-Agent Pattern
 
-Copilot agents use the `agents` frontmatter to reference sub-agents:
-
-```yaml
-agents: ['word-accessibility', 'excel-accessibility', 'powerpoint-accessibility', 'pdf-accessibility', 'document-inventory', 'cross-document-analyzer']
-```
-
-The orchestrator (document-accessibility-wizard) delegates to sub-agents sequentially or by type group. True background execution is not yet supported - sub-agents run within the main conversation context.
+The `document-accessibility-wizard` router dispatches its specialists
+(`word-accessibility`, `excel-accessibility`, `powerpoint-accessibility`,
+`pdf-accessibility`, `document-inventory`, `cross-document-analyzer`) by name.
+Whether they run in parallel depends on the client; do not count on true
+background execution.
 
 **Practical pattern for large scans:**
 
@@ -154,10 +147,10 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: node .github/scripts/office-a11y-scan.mjs
       - run: node .github/scripts/pdf-a11y-scan.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: audit-report
           path: DOCUMENT-ACCESSIBILITY-AUDIT.md
@@ -236,7 +229,7 @@ node .github/scripts/office-a11y-scan.mjs --output ../AUDIT-main.md
 
 # Compare results
 cd ..
-# Use compare-audits prompt or diff the reports
+# Ask the document wizard to compare the two reports, or diff them
 git worktree remove compare-branch
 ```
 

@@ -26,11 +26,11 @@ Use security-dashboard when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@security-dashboard show all open security alerts
-@security-dashboard list critical Dependabot alerts
-@security-dashboard triage code scanning results
-@security-dashboard check for exposed secrets
-@security-dashboard summarize security posture for this repo
+/security-dashboard show all open security alerts
+/security-dashboard list critical Dependabot alerts
+/security-dashboard triage code scanning results
+/security-dashboard check for exposed secrets
+/security-dashboard summarize security posture for this repo
 ```
 
 ### Claude Code (Terminal)
@@ -45,8 +45,8 @@ Use security-dashboard when:
 ### Via GitHub Hub
 
 ```text
-@github-hub check security alerts
-@github-hub are there any exposed secrets?
+/github-hub check security alerts
+/github-hub are there any exposed secrets?
 ```
 
 ---

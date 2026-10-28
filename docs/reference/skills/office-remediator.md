@@ -57,25 +57,25 @@
 
 | Format | Issue | Where in UI |
 |--------|-------|-------------|
-| Word | Reading order in layouts | View → Navigation Pane |
-| Word | Merged cell structure | Table Tools → Layout |
-| Word | Color contrast | Home → Font Color |
-| Excel | Merged cells | Home → Merge & Center |
+| Word | Reading order in layouts | View > Navigation Pane |
+| Word | Merged cell structure | Table Tools > Layout |
+| Word | Color contrast | Home > Font Color |
+| Excel | Merged cells | Home > Merge & Center |
 | Excel | Color-only data | Add text labels/patterns |
-| Excel | Chart alt text | Chart → Format → Alt Text |
-| PowerPoint | Reading order | Arrange → Selection Pane |
-| PowerPoint | Video captions | Insert → Video → captions |
-| PowerPoint | SmartArt alt text | Format → Alt Text |
+| Excel | Chart alt text | Chart > Format > Alt Text |
+| PowerPoint | Reading order | Arrange > Selection Pane |
+| PowerPoint | Video captions | Insert > Video > captions |
+| PowerPoint | SmartArt alt text | Format > Alt Text |
 
 </details>
 
 ## Process
 
-1. **Read audit report** — looks for existing `DOCUMENT-ACCESSIBILITY-AUDIT.md`
-2. **Classify fixes** — separates into auto-fixable (Python) vs. manual (Office UI)
-3. **Generate script** — creates a Python remediation script for the specific format
-4. **Guide manual fixes** — provides step-by-step Office UI instructions
-5. **Verify** — recommends `File → Info → Check for Issues → Check Accessibility`
+1. **Read audit report** - looks for existing `DOCUMENT-ACCESSIBILITY-AUDIT.md`
+2. **Classify fixes** - separates into auto-fixable (Python) vs. manual (Office UI)
+3. **Generate script** - creates a Python remediation script for the specific format
+4. **Guide manual fixes** - provides step-by-step Office UI instructions
+5. **Verify** - recommends `File > Info > Check for Issues > Check Accessibility`
 
 ## Fix Approaches
 
@@ -83,9 +83,9 @@ Each approach, with when to use.
 
 | Approach | When to Use |
 |----------|-------------|
-| **Python script** | Default — works without Office installed |
-| **PowerShell COM** | Windows with Office installed — more reliable for complex fixes |
-| **OOXML direct** | No Python or Office — edit ZIP/XML directly |
+| **Python script** | Default - works without Office installed |
+| **PowerShell COM** | Windows with Office installed - more reliable for complex fixes |
+| **OOXML direct** | No Python or Office - edit ZIP/XML directly |
 
 ## Handoffs
 
@@ -101,12 +101,12 @@ Each target, with its when.
 ## Sample Usage
 
 ```text
-@office-remediator Fix the accessibility issues in quarterly-report.docx — 
+/office-remediator Fix the accessibility issues in quarterly-report.docx - 
 set the title, add table headers, and fix the heading levels.
 ```
 
 ```text
-@office-remediator My spreadsheet has generic sheet names and missing alt text 
+/office-remediator My spreadsheet has generic sheet names and missing alt text 
 on charts. Generate a fix script for data-summary.xlsx.
 ```
 

@@ -93,7 +93,7 @@ Type `/fork` in the chat to create an independent branch of the conversation tha
 
 ### Per-Checkpoint Forking
 
-Hover over any message in the chat history → click "Fork Conversation" to branch from that specific point.
+Hover over any message in the chat history, then click "Fork Conversation" to branch from that specific point.
 
 **Example:** Audit completed in main session. Fork from the "Findings Summary" message to explore Modal fixes in one fork and Form fixes in another.
 
@@ -117,11 +117,11 @@ Hover over any message in the chat history → click "Fork Conversation" to bran
 
 **Example Workflow:**
 
-1. Run full accessibility audit in main chat → agent identifies 15 accessibility issues
-2. Agent prioritizes fixes: Critical → High → Medium → Low
-3. Use inline chat (Ctrl/Cmd + I) in a component file → agent remembers this is a "High" priority fix from the audit
+1. Run full accessibility audit in main chat; the agent identifies 15 accessibility issues
+2. Agent prioritizes fixes: Critical, then High, then Medium, then Low
+3. Use inline chat (Ctrl/Cmd + I) in a component file; the agent remembers this is a "High" priority fix from the audit
 4. Agent applies fix with full context: "Fixing alt text issue #7 from audit (High severity - WCAG 1.1.1)"
-5. Continue using inline chat for all fixes → each one references the audit report
+5. Continue using inline chat for all fixes; each one references the audit report
 
 **Best Practice:**
 

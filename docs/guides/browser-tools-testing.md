@@ -26,7 +26,7 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 **Required:**
 
 - VS Code 1.110+ (March 2026 or later)
-- Node.js 18+ (for dev server)
+- Node.js LTS, 26, 24 or 22 (for the dev server)
 - A simple web project with known accessibility issues:
   - Example project: `example/` directory in this repo
   - Or: Your own project with a dev server running on <http://localhost:3000>
@@ -51,7 +51,7 @@ This guide provides step-by-step play scripts for manual testing of agentic brow
 **Option B: Enable for this workspace only**
 
 ```json
-// File: s:\code\agents\.vscode\settings.json
+// File: <your project>/.vscode/settings.json
 {
   "workbench.browser.enableChatTools": true
 }
@@ -87,12 +87,12 @@ npm run dev
 
 ### Steps
 
-1. **Open Copilot Chat** in VS Code (Ctrl+Alt+I / ⌘+⌘)
+1. **Open Copilot Chat** in VS Code (Ctrl+Alt+I / Cmd+Cmd)
 
 2. **Invoke the accessibility-lead agent:**
 
    ```text
-   @accessibility-lead can you check if browser tools are available?
+   /accessibility-lead can you check if browser tools are available?
    ```
 
 3. **Expected response:**
@@ -102,16 +102,16 @@ npm run dev
    - If false: "To enable browser verification, set workbench.browser.enableChatTools to true"
 
 4. **If disabled, toggle setting and try again:**
-   - Open settings: Ctrl+, / ⌘+,
+   - Open settings: Ctrl+, / Cmd+,
    - Search: "browser chat tools"
-   - Toggle: "✓ Enabled"
+   - Toggle: "Enabled"
    - Result: Agent should now show browser tools as available
 
 ### Pass Criteria
 
-- ✓ Browser setting is detected correctly
-- ✓ Agent responds with availability status
-- ✓ Toggling setting changes reported availability
+- Browser setting is detected correctly
+- Agent responds with availability status
+- Toggling setting changes reported availability
 
 ---
 
@@ -136,7 +136,7 @@ Use the example project with known issues:
 1. **Start web-accessibility-wizard:**
 
    ```text
-   @web-accessibility-wizard audit the example project
+   /web-accessibility-wizard audit the example project
    ```
 
 2. **Answer Phase 0 questions:**
@@ -162,28 +162,28 @@ Use the example project with known issues:
    ```
 
 6. **Observe wizard behavior:**
-   - Detects dev server at <http://localhost:3000> ✓
+   - Detects dev server at <http://localhost:3000>
    - Opens page in integrated browser
-   - Takes screenshot of #hero image ✓
-   - Reports: "Alt text added and verified" ✓
-   - Takes screenshot of button ✓
-   - Reports: "Contrast improved to 14:1 (WCAG AAA) ✓"
-   - Embeds before/after screenshots in report ✓
+   - Takes screenshot of #hero image
+   - Reports: "Alt text added and verified"
+   - Takes screenshot of button
+   - Reports: "Contrast improved to 14:1 (WCAG AAA)"
+   - Embeds before/after screenshots in report
 
 7. **Check output files:**
-   - `WEB-ACCESSIBILITY-AUDIT.md` exists ✓
-   - `.a11y-screenshots/` directory created ✓
-   - Screenshots present with naming: `{timestamp}-fix{n}-{selector}.png` ✓
+   - `WEB-ACCESSIBILITY-AUDIT.md` exists
+   - `.a11y-screenshots/` directory created
+   - Screenshots present with naming: `{timestamp}-fix{n}-{selector}.png`
 
 ### Pass Criteria
 
-- ✓ Wizard detects issues correctly
-- ✓ Fixes are proposed and applied to code
-- ✓ Browser verification is offered when `workbench.browser.enableChatTools` is enabled
-- ✓ Screenshots are captured and stored
-- ✓ Verification results are accurate ("PASS" or "NEEDS REVIEW")
-- ✓ Report includes visual evidence
-- ✓ Page reloads after fix application (shows updated code)
+- Wizard detects issues correctly
+- Fixes are proposed and applied to code
+- Browser verification is offered when `workbench.browser.enableChatTools` is enabled
+- Screenshots are captured and stored
+- Verification results are accurate ("PASS" or "NEEDS REVIEW")
+- Report includes visual evidence
+- Page reloads after fix application (shows updated code)
 
 ### Fail Handling
 
@@ -213,7 +213,7 @@ Create test file with contrast issue:
 1. **Start web-accessibility-wizard:**
 
    ```text
-   @web-accessibility-wizard scan test-contrast.html at http://localhost:3000/test-contrast.html
+   /web-accessibility-wizard scan test-contrast.html at http://localhost:3000/test-contrast.html
    ```
 
 2. **Wizard identifies:** Low contrast on button (3.2:1)
@@ -227,22 +227,22 @@ Create test file with contrast issue:
 4. **Observe:**
    - Code is updated: `style="color: #000; background: #EEE;"`
    - Browser verification takes screenshot
-   - Accessibility analyzer computes contrast: 14.5:1 ✓
+   - Accessibility analyzer computes contrast: 14.5:1
    - Reports: "Contrast improved from 3.2:1 to 14.5:1 (WCAG AAA)"
    - Screenshot shows button with improved contrast
 
 5. **Verify metadata in screenshot:**
-   - File contains timestamp ✓
-   - URL is captured ✓
-   - Fix number is in filename ✓
+   - File contains timestamp
+   - URL is captured
+   - Fix number is in filename
 
 ### Pass Criteria
 
-- ✓ Contrast fix is applied to code
-- ✓ Browser screenshot verifies new contrast
-- ✓ Contrast ratio is computed correctly
-- ✓ Before/after comparison shown
-- ✓ Report shows "PASS" for verification
+- Contrast fix is applied to code
+- Browser screenshot verifies new contrast
+- Contrast ratio is computed correctly
+- Before/after comparison shown
+- Report shows "PASS" for verification
 
 ---
 
@@ -269,7 +269,7 @@ Create test file with focus issue:
 1. **Start web-accessibility-wizard:**
 
    ```text
-   @web-accessibility-wizard scan test-focus.html for focus management
+   /web-accessibility-wizard scan test-focus.html for focus management
    ```
 
 2. **Wizard identifies:** Missing focus indicator on button
@@ -283,7 +283,7 @@ Create test file with focus issue:
 4. **Browser verification performs:**
    - Adds `:focus-visible` rule with outline
    - Simulates Tab key press in browser
-   - Captures screenshot showing focus ring ✓
+   - Captures screenshot showing focus ring
    - Reports: "Focus ring visible and correct"
    - Screenshot shows blue outline around button when focused
 
@@ -294,10 +294,10 @@ Create test file with focus issue:
 
 ### Pass Criteria
 
-- ✓ Focus fix is applied (CSS rule added)
-- ✓ Browser simulates Tab key interaction
-- ✓ Focus ring is visible in screenshot
-- ✓ Verification reports "PASS"
+- Focus fix is applied (CSS rule added)
+- Browser simulates Tab key interaction
+- Focus ring is visible in screenshot
+- Verification reports "PASS"
 
 ---
 
@@ -319,7 +319,7 @@ Create test file with focus issue:
 3. **Run web-accessibility-wizard:**
 
    ```text
-   @web-accessibility-wizard audit the example project
+   /web-accessibility-wizard audit the example project
    ```
 
 4. **When wizard offers Phase 12 (Browser Verification):**
@@ -343,16 +343,16 @@ Create test file with focus issue:
    ```
 
 6. **Wizard still applies fixes but skips verification:**
-   - Fixes are applied to code ✓
-   - No screenshots captured ✓
-   - Report shows "verification: NOT_AVAILABLE" ✓
+   - Fixes are applied to code
+   - No screenshots captured
+   - Report shows "verification: NOT_AVAILABLE"
 
 ### Pass Criteria
 
-- ✓ Graceful degradation message displays correctly
-- ✓ Fixes are still applied even without browser tools
-- ✓ Wizard doesn't crash or hang
-- ✓ User can enable browser tools and retry
+- Graceful degradation message displays correctly
+- Fixes are still applied even without browser tools
+- Wizard doesn't crash or hang
+- User can enable browser tools and retry
 
 ---
 
@@ -377,7 +377,7 @@ Create test file with focus issue:
 3. **Run web-accessibility-wizard:**
 
    ```text
-   @web-accessibility-wizard audit http://localhost:3000
+   /web-accessibility-wizard audit http://localhost:3000
    ```
 
 4. **At Phase 12 (Browser Verification), start fixes:**
@@ -386,7 +386,7 @@ Create test file with focus issue:
    - Expected response:
 
      ```text
-     ⚠️ The page didn't load within 10 seconds. Possible causes:
+     Warning: The page didn't load within 10 seconds. Possible causes:
      - Server is not running at http://localhost:3000
      - Network connection issue
      - Page has infinite loop
@@ -399,14 +399,14 @@ Create test file with focus issue:
 5. **Start dev server and retry:**
    - Open new terminal
    - `npm run dev`
-   - Retry verification → Success ✓
+   - Retry verification to Success
 
 ### Pass Criteria
 
-- ✓ Timeout handling works correctly
-- ✓ User gets helpful error message with solutions
-- ✓ Fixes are still applied even if server not running
-- ✓ User can retry after starting server
+- Timeout handling works correctly
+- User gets helpful error message with solutions
+- Fixes are still applied even if server not running
+- User can retry after starting server
 
 ---
 
@@ -421,7 +421,7 @@ Create test file with focus issue:
 1. **Run web-accessibility-wizard on test page:**
 
    ```text
-   @web-accessibility-wizard audit http://localhost:3000
+   /web-accessibility-wizard audit http://localhost:3000
    ```
 
 2. **Wizard identifies and proposes fix:**
@@ -435,7 +435,7 @@ Create test file with focus issue:
    - Expected response:
 
      ```text
-     ⚠️ Element #non-existent-img not found on page at http://localhost:3000
+     Warning: Element #non-existent-img not found on page at http://localhost:3000
      
      Fix applied to code, but element is not on the current page.
      Possible causes:
@@ -450,18 +450,18 @@ Create test file with focus issue:
      ```
 
 4. **Observe behavior:**
-   - Fix still applied to HTML ✓
-   - Verification status: "FAILED" or "NEEDS REVIEW" ✓
-   - Screenshot shows full page (for context) ✓
-   - Error is reported clearly ✓
+   - Fix still applied to HTML
+   - Verification status: "FAILED" or "NEEDS REVIEW"
+   - Screenshot shows full page (for context)
+   - Error is reported clearly
 
 ### Pass Criteria
 
-- ✓ Missing elements are detected correctly
-- ✓ User gets helpful error message
-- ✓ Fixes are still applied to code
-- ✓ Wizard doesn't crash
-- ✓ User can navigate to correct page and retry
+- Missing elements are detected correctly
+- User gets helpful error message
+- Fixes are still applied to code
+- Wizard doesn't crash
+- User can navigate to correct page and retry
 
 ---
 
@@ -482,23 +482,23 @@ Create test file with focus issue:
 2. **Run web-accessibility-wizard:**
 
    ```text
-   @web-accessibility-wizard audit test page with animated content
+   /web-accessibility-wizard audit test page with animated content
    ```
 
 3. **Wizard identifies contrast issue on animated button:**
 
 4. **Browser verification captures screenshot:**
-   - Screenshot is captured ✓
+   - Screenshot is captured
    - Visual analyzer attempts to extract colors
    - Fails because element is animated (colors inconsistent)
    - Expected response:
 
      ```text
-     ⚠️ Visual analysis couldn't verify the complete fix.
+     Warning: Visual analysis couldn't verify the complete fix.
      The animated button made color analysis unreliable.
      
      Workaround: Open DevTools and manually inspect:
-     - Right-click button → Inspect
+     - Right-click button > Inspect
      - Look for: computed color property
      - Check against background color
      
@@ -506,18 +506,18 @@ Create test file with focus issue:
      ```
 
 5. **Observe:**
-   - Screenshot is still saved even analysis failed ✓
-   - User gets fallback instructions ✓
-   - Verification status: "NEEDS_REVIEW" ✓
-   - Wizard continues (doesn't crash) ✓
+   - Screenshot is still saved even analysis failed
+   - User gets fallback instructions
+   - Verification status: "NEEDS_REVIEW"
+   - Wizard continues (doesn't crash)
 
 ### Pass Criteria
 
-- ✓ Visual analysis tries but gracefully fails
-- ✓ Screenshot still captured
-- ✓ User gets helpful fallback instructions
-- ✓ Wizard continues without crashing
-- ✓ Report shows partial evidence
+- Visual analysis tries but gracefully fails
+- Screenshot still captured
+- User gets helpful fallback instructions
+- Wizard continues without crashing
+- Report shows partial evidence
 
 ---
 
@@ -539,10 +539,10 @@ npm start  # Runs on http://localhost:3000
 Run web-accessibility-wizard on React app:
 
 ```text
-@web-accessibility-wizard audit http://localhost:3000
+/web-accessibility-wizard audit http://localhost:3000
 ```
 
-Expected: Browser tools work with React ✓
+Expected: Browser tools work with React
 
 ### Test with Vue
 
@@ -556,10 +556,10 @@ npm install && npm run dev  # Runs on http://localhost:5173
 Run web-accessibility-wizard:
 
 ```text
-@web-accessibility-wizard audit http://localhost:5173
+/web-accessibility-wizard audit http://localhost:5173
 ```
 
-Expected: Browser tools work with Vue ✓
+Expected: Browser tools work with Vue
 
 ### Test with Vanilla HTML
 
@@ -572,18 +572,18 @@ npm run dev  # Runs on http://localhost:3000
 Run web-accessibility-wizard:
 
 ```text
-@web-accessibility-wizard audit http://localhost:3000
+/web-accessibility-wizard audit http://localhost:3000
 ```
 
-Expected: Browser tools work with vanilla HTML ✓
+Expected: Browser tools work with vanilla HTML
 
 ### Pass Criteria
 
-- ✓ Browser tools work on React apps
-- ✓ Browser tools work on Vue apps
-- ✓ Browser tools work on vanilla HTML
-- ✓ Dev servers with different ports all work
-- ✓ Framework-specific CSS classes don't break screenshot capture
+- Browser tools work on React apps
+- Browser tools work on Vue apps
+- Browser tools work on vanilla HTML
+- Dev servers with different ports all work
+- Framework-specific CSS classes don't break screenshot capture
 
 ---
 
@@ -598,7 +598,7 @@ Expected: Browser tools work with vanilla HTML ✓
 1. **Run full audit with 5+ fixes:**
 
    ```text
-   @web-accessibility-wizard full audit of example project
+   /web-accessibility-wizard full audit of example project
    ```
 
 2. **Apply all fixes and verify in browser**
@@ -616,31 +616,31 @@ Expected: Browser tools work with vanilla HTML ✓
 
 4. **Open screenshots in image viewer:**
    - File: 2026-03-05-14-30-fix1-hero.png
-   - Verify: Screenshot is clear, readable, not corrupted ✓
-   - Verify: Timestamp is accurate ✓
-   - Verify: Element is visible and clearly shows the fix ✓
-   - Verify: Metadata (URL, timestamp) visible or in EXIF ✓
+   - Verify: Screenshot is clear, readable, not corrupted
+   - Verify: Timestamp is accurate
+   - Verify: Element is visible and clearly shows the fix
+   - Verify: Metadata (URL, timestamp) visible or in EXIF
 
 5. **Check report embedding:**
    - Open `WEB-ACCESSIBILITY-AUDIT.md`
-   - Verify: Screenshots are embedded with alt text ✓
-   - Verify: Screenshot path format is valid: `.a11y-screenshots/2026-03-05-14-30-fix1-hero.png` ✓
-   - Verify: Before/after comparison is clear ✓
+   - Verify: Screenshots are embedded with alt text
+   - Verify: Screenshot path format is valid: `.a11y-screenshots/2026-03-05-14-30-fix1-hero.png`
+   - Verify: Before/after comparison is clear
 
 6. **Test JPEG artifacts:**
    - PNG format expected (not JPEG)
-   - Verify: All screenshots are `.png` ✓
-   - Verify: No compression artifacts ✓
+   - Verify: All screenshots are `.png`
+   - Verify: No compression artifacts
 
 ### Pass Criteria
 
-- ✓ Screenshots are clear and readable
-- ✓ Naming convention is consistent: `{YYYY-MM-DD-HH-mm}-fix{n}-{selector}.png`
-- ✓ Timestamps are accurate and match fix application time
-- ✓ Metadata is captured (URL, browser, viewport)
-- ✓ Embedded in report with working links
-- ✓ Files are PNG format (lossless)
-- ✓ All screenshots display correctly when opened
+- Screenshots are clear and readable
+- Naming convention is consistent: `{YYYY-MM-DD-HH-mm}-fix{n}-{selector}.png`
+- Timestamps are accurate and match fix application time
+- Metadata is captured (URL, browser, viewport)
+- Embedded in report with working links
+- Files are PNG format (lossless)
+- All screenshots display correctly when opened
 
 ---
 
@@ -656,18 +656,18 @@ For each test session, time the following operations:
 
 | Operation | Target | Measured | Pass? |
 |-----------|--------|----------|-------|
-| Open page in browser | < 5 sec | ? | ✓/✗ |
-| Navigate to element | < 1 sec | ? | ✓/✗ |
-| Take screenshot | < 2 sec | ? | ✓/✗ |
-| Analyze screenshot | < 5 sec | ? | ✓/✗ |
-| Report generation | < 3 sec | ? | ✓/✗ |
-| Full fix cycle (5 fixes) | < 30 sec | ? | ✓/✗ |
+| Open page in browser | < 5 sec | ? | Pass/Fail |
+| Navigate to element | < 1 sec | ? | Pass/Fail |
+| Take screenshot | < 2 sec | ? | Pass/Fail |
+| Analyze screenshot | < 5 sec | ? | Pass/Fail |
+| Report generation | < 3 sec | ? | Pass/Fail |
+| Full fix cycle (5 fixes) | < 30 sec | ? | Pass/Fail |
 
 ### Capture Method
 
 ```bash
 # Terminal
-time @accessibility-lead run browser verification for example
+time /accessibility-lead run browser verification for example
 ```
 
 Or measure manually with stopwatch:
@@ -680,11 +680,11 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 
 ### Pass Criteria
 
-- ✓ Page opens within 5 seconds
-- ✓ Screenshot capture < 2 seconds
-- ✓ Full 5-fix cycle completes within 30 seconds total
-- ✓ No hangs or timeouts
-- ✓ Performance is consistent across supported OSes
+- Page opens within 5 seconds
+- Screenshot capture < 2 seconds
+- Full 5-fix cycle completes within 30 seconds total
+- No hangs or timeouts
+- Performance is consistent across supported OSes
 
 ---
 
@@ -696,29 +696,29 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 
 **Environment:** VS Code on Windows 10/11
 
-1. Enable browser tools in settings ✓
-2. Run Test 2 (Fix Verification) ✓
-3. Check screenshot directory permissions ✓
-4. Verify file paths use backslashes correctly ✓
-5. Result: ✓/✗
+1. Enable browser tools in settings
+2. Run Test 2 (Fix Verification)
+3. Check screenshot directory permissions
+4. Verify file paths use backslashes correctly
+5. Result: Pass/Fail
 
 ### macOS Testing
 
 **Environment:** VS Code on macOS 13+
 
-1. Enable browser tools in settings ✓
-2. Run Test 2 (Fix Verification) ✓
-3. Check screenshot directory permissions ✓
-4. Verify file paths use forward slashes ✓
-5. Result: ✓/✗
+1. Enable browser tools in settings
+2. Run Test 2 (Fix Verification)
+3. Check screenshot directory permissions
+4. Verify file paths use forward slashes
+5. Result: Pass/Fail
 
 ### Pass Criteria
 
-- ✓ Browser tools work on both supported OSes
-- ✓ File paths are handled correctly per OS
-- ✓ Permissions don't block screenshot creation
-- ✓ Timestamps are consistent across timezones
-- ✓ Screenshots are identical quality on all OSes
+- Browser tools work on both supported OSes
+- File paths are handled correctly per OS
+- Permissions don't block screenshot creation
+- Timestamps are consistent across timezones
+- Screenshots are identical quality on all OSes
 
 ---
 
@@ -732,18 +732,18 @@ Record in: `BROWSER-TOOLS-PERFORMANCE.md`
 
 | Test # | Description | Result | Notes |
 |--------|-------------|--------|-------|
-| 1 | Browser tools availability | ✓ PASS | Browser tools detected correctly |
-| 2 | Fix verification workflow | ✓ PASS | Full end-to-end workflow completed |
-| 3 | Visual verification (contrast) | ✓ PASS | Contrast fix applied and verified |
-| 4 | Interaction testing (focus) | ✓ PASS | Focus ring captured in screenshot |
-| 5 | Failure: Browser not available | ✓ PASS | Graceful degradation works |
-| 6 | Failure: Dev server not running | ✓ PASS | Helpful error message shown |
-| 7 | Failure: Element not found | ✓ PASS | Fallback instructions provided |
-| 8 | Failure: Analysis fails | ✓ PASS | Manual fallback works |
-| 9 | Cross-framework testing | ✓ PASS | Works on React, Vue, vanilla HTML |
-| 10 | Screenshot & evidence quality | ✓ PASS | Screenshots clear and timestamped |
+| 1 | Browser tools availability | PASS | Browser tools detected correctly |
+| 2 | Fix verification workflow | PASS | Full end-to-end workflow completed |
+| 3 | Visual verification (contrast) | PASS | Contrast fix applied and verified |
+| 4 | Interaction testing (focus) | PASS | Focus ring captured in screenshot |
+| 5 | Failure: Browser not available | PASS | Graceful degradation works |
+| 6 | Failure: Dev server not running | PASS | Helpful error message shown |
+| 7 | Failure: Element not found | PASS | Fallback instructions provided |
+| 8 | Failure: Analysis fails | PASS | Manual fallback works |
+| 9 | Cross-framework testing | PASS | Works on React, Vue, vanilla HTML |
+| 10 | Screenshot & evidence quality | PASS | Screenshots clear and timestamped |
 
-**Overall Result:** ✓ ALL TESTS PASS
+**Overall Result:** ALL TESTS PASS
 
 **Issues Found:**
 
@@ -774,7 +774,7 @@ After release, continuous tests to run:
 
 ### Automated Testing (CI/CD)
 
-- [ ] Run test suite on every commit to `skills/web-*.agent.md`
+- [ ] Run test suite on every commit to `skills/web-*/SKILL.md`
 - [ ] Verify no syntax errors in agent definitions
 - [ ] Test agent invocation from CLI (if applicable)
 - [ ] Check cross-agent compatibility
@@ -807,7 +807,7 @@ After release, continuous tests to run:
 ## 18. References
 
 - [Agentic Browser Tools Design](../reference/browser-tools.md)
-- [Web Accessibility Wizard Agent](../skills/web-accessibility-wizard/SKILL.md)
-- [Web Issue Fixer Agent](../skills/web-issue-fixer/SKILL.md)
+- [Web Accessibility Wizard Agent](../../skills/web-accessibility-wizard/SKILL.md)
+- [Web Issue Fixer Agent](../../skills/web-issue-fixer/SKILL.md)
 - [VS Code 1.110 Release Notes](https://code.visualstudio.com/updates/)
 - [Browser Tool API Documentation](https://code.visualstudio.com/docs/copilot/customization/overview)

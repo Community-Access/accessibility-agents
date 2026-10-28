@@ -1,13 +1,13 @@
 # Playwright Integration
 
-Playwright provides the third assessment layer in the accessibility agent ecosystem — behavioral testing of rendered, interactive web pages.
+Playwright provides the third assessment layer in the accessibility agent ecosystem - behavioral testing of rendered, interactive web pages.
 
 ## Architecture
 
 ```text
-Layer 1: Static Analysis     → 13 specialist agents review source code
-Layer 2: Runtime Rule Scan   → run_axe_scan (axe-core CLI against live URL)
-Layer 3: Behavioral Testing  → Playwright MCP tools (browser interaction)
+Layer 1: Static Analysis     - 13 specialist agents review source code
+Layer 2: Runtime Rule Scan   - run_axe_scan (axe-core CLI against live URL)
+Layer 3: Behavioral Testing  - Playwright MCP tools (browser interaction)
 ```
 
 ## MCP Tools
@@ -18,9 +18,9 @@ Presses Tab repeatedly, recording which element receives focus after each press.
 
 **Parameters:**
 
-- `url` (required) — Page URL to scan
-- `maxTabs` (optional, default 100) — Maximum Tab presses
-- `selector` (optional) — CSS selector to scope the scan
+- `url` (required) - Page URL to scan
+- `maxTabs` (optional, default 100) - Maximum Tab presses
+- `selector` (optional) - CSS selector to scope the scan
 
 **WCAG:** 2.1.1, 2.1.2, 2.4.3
 
@@ -30,9 +30,9 @@ Clicks interactive triggers (buttons, disclosure widgets, menu toggles), waits f
 
 **Parameters:**
 
-- `url` (required) — Page URL
-- `triggers` (optional) — CSS selectors to click; auto-discovers if omitted
-- `axeTags` (optional) — axe-core tags to check
+- `url` (required) - Page URL
+- `triggers` (optional) - CSS selectors to click; auto-discovers if omitted
+- `axeTags` (optional) - axe-core tags to check
 
 **Requires:** `@axe-core/playwright`
 
@@ -42,9 +42,9 @@ Runs axe-core at multiple viewport widths. Measures rendered touch target sizes.
 
 **Parameters:**
 
-- `url` (required) — Page URL
-- `viewports` (optional, default [320, 768, 1024, 1440]) — Viewport widths in pixels
-- `measureTargets` (optional, default true) — Whether to measure touch target sizes
+- `url` (required) - Page URL
+- `viewports` (optional, default [320, 768, 1024, 1440]) - Viewport widths in pixels
+- `measureTargets` (optional, default true) - Whether to measure touch target sizes
 
 **Requires:** `@axe-core/playwright`  
 **WCAG:** 1.4.10, 2.5.5, 2.5.8
@@ -55,8 +55,8 @@ Extracts computed foreground and background colors for text elements after full 
 
 **Parameters:**
 
-- `url` (required) — Page URL
-- `selector` (optional) — CSS selector to scope the scan
+- `url` (required) - Page URL
+- `selector` (optional) - CSS selector to scope the scan
 
 **WCAG:** 1.4.3, 1.4.6
 
@@ -66,8 +66,8 @@ Captures the full accessibility tree as seen by the browser's accessibility API 
 
 **Parameters:**
 
-- `url` (required) — Page URL
-- `selector` (optional) — Root element selector
+- `url` (required) - Page URL
+- `selector` (optional) - Root element selector
 
 **WCAG:** Structural foundation for all SC
 
@@ -88,14 +88,14 @@ Each playwright, with its @axe-core or playwright and available.
 |---|---|---|
 | Installed | Installed | All 5 tools |
 | Installed | Not installed | keyboard, contrast, tree (3 tools) |
-| Not installed | — | None — existing static + axe-core workflow unchanged |
+| Not installed | - | None - existing static + axe-core workflow unchanged |
 
 ## Agent Integration
 
-- **playwright-scanner** — Orchestrates all 5 tools for comprehensive behavioral testing
-- **playwright-verifier** — Runs targeted checks after fixes for PASS/FAIL/REGRESSION verdicts
-- **web-accessibility-wizard** — Dispatches playwright-scanner in Phase 10
-- **web-issue-fixer** — Dispatches playwright-verifier after each fix
+- **playwright-scanner** - Orchestrates all 5 tools for comprehensive behavioral testing
+- **playwright-verifier** - Runs targeted checks after fixes for PASS/FAIL/REGRESSION verdicts
+- **web-accessibility-wizard** - Dispatches playwright-scanner in Phase 10
+- **web-issue-fixer** - Dispatches playwright-verifier after each fix
 
 ## CI Workflow: High-Impact Mode
 

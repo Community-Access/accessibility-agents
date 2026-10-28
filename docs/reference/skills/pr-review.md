@@ -31,9 +31,9 @@ Use pr-review when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@pr-review owner/repo#42
-@pr-review show PRs waiting for my review
-@pr-review review the PR I need to merge today
+/pr-review owner/repo#42
+/pr-review show PRs waiting for my review
+/pr-review review the PR I need to merge today
 ```
 
 ### Claude Code (Terminal)
@@ -47,8 +47,8 @@ Use pr-review when:
 ### Via GitHub Hub
 
 ```text
-@github-hub review PRs
-@github-hub what PRs are waiting on me?
+/github-hub review PRs
+/github-hub what PRs are waiting on me?
 ```
 
 ---
@@ -173,37 +173,37 @@ Delta tracking compares the current scan against the previous review document sa
 ### Review Flows
 
 ```text
-@pr-review review community-access/accessibility-agents#143
-@pr-review show me the diff for PR #143
-@pr-review full review with action items for PR #143
-@pr-review what has changed since my last review of PR #143
+/pr-review review community-access/accessibility-agents#143
+/pr-review show me the diff for PR #143
+/pr-review full review with action items for PR #143
+/pr-review what has changed since my last review of PR #143
 ```
 
 ### Comment and Suggest
 
 ```text
-@pr-review comment on line 42 in auth.ts - add input validation here
-@pr-review comment on lines 15-22 in utils.ts - this logic duplicates what's in helpers.ts
-@pr-review suggest a fix for the null check on line 87
-@pr-review reply to the comment about the missing error handling
+/pr-review comment on line 42 in auth.ts - add input validation here
+/pr-review comment on lines 15-22 in utils.ts - this logic duplicates what's in helpers.ts
+/pr-review suggest a fix for the null check on line 87
+/pr-review reply to the comment about the missing error handling
 ```
 
 ### Review Submission
 
 ```text
-@pr-review approve PR #143
-@pr-review request changes on PR #143 - missing unit tests for the auth module
-@pr-review submit my pending review on PR #143
-@pr-review merge PR #143 with squash
+/pr-review approve PR #143
+/pr-review request changes on PR #143 - missing unit tests for the auth module
+/pr-review submit my pending review on PR #143
+/pr-review merge PR #143 with squash
 ```
 
 ### Queue and Discovery
 
 ```text
-@pr-review show PRs waiting for my review
-@pr-review my open PRs
-@pr-review PRs I need to update based on feedback
-@pr-review PRs older than 5 days that are still open
+/pr-review show PRs waiting for my review
+/pr-review my open PRs
+/pr-review PRs I need to update based on feedback
+/pr-review PRs older than 5 days that are still open
 ```
 
 </details>

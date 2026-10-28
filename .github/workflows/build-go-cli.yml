@@ -8,10 +8,7 @@ on:
       - "scripts/build-go-cli.sh"
       - ".github/workflows/build-go-cli.yml"
       - "README.md"
-      - "docs/getting-started.md"
-      - "docs/deployment-layout.md"
-      - "docs/INSTALLATION-GUIDE-5.0.md"
-      - "docs/CLI-UTILITIES-SPECIFICATION.md"
+      - "docs/getting-started/README.md"
   workflow_dispatch:
 
 jobs:
@@ -25,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version-file: go-cli/go.mod
           cache-dependency-path: go-cli/go.mod
@@ -73,7 +70,7 @@ jobs:
           test -f go-cli/bin/a11y-agents-hooks
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: go-cli-${{ runner.os }}
           path: go-cli/bin/

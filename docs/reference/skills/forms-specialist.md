@@ -48,9 +48,9 @@ Visual styling of errors (contrast-master), ARIA on custom form widgets like com
 **In GitHub Copilot Chat:**
 
 ```text
-@forms-specialist review this form for label and error handling
-@forms-specialist build accessible validation for these inputs
-@forms-specialist check the password reset form
+/forms-specialist review this form for label and error handling
+/forms-specialist build accessible validation for these inputs
+/forms-specialist check the password reset form
 ```
 
 ## Step-by-Step: What a Form Review Covers
@@ -194,9 +194,9 @@ Each connection, with connect to and when.
 ### GitHub Copilot
 
 ```text
-@forms-specialist review this form for label and error handling
-@forms-specialist build accessible validation for these inputs
-@forms-specialist check the password reset form
+/forms-specialist review this form for label and error handling
+/forms-specialist build accessible validation for these inputs
+/forms-specialist check the password reset form
 ```
 
 </details>

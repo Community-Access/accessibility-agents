@@ -2,7 +2,7 @@
 
 ## Scope
 
-A11y Agent Team consists of Markdown agent instructions, shell scripts (bash and PowerShell), and a Claude Desktop MCP extension (Node.js). The agents themselves do not execute code, access networks, or store credentials. The installer scripts copy files and optionally create scheduled tasks for auto-updates.
+Accessibility Agents consists of Agent Skills (Markdown instructions, with some helper scripts under `skills/*/scripts/`), a Node.js hook guard (`hooks/guard.mjs`), a Node.js installer (`scripts/install.mjs`, run with `npm run setup`), and a Node.js MCP server (`mcp-server/`). The skills do not store credentials. The installer copies files into your home directory and writes hook manifests; it does not schedule updates.
 
 ## Supported Versions
 
@@ -13,7 +13,7 @@ The following table lists which versions currently receive security fixes.
 | Latest release | Yes |
 | Older releases | No |
 
-We recommend always using the latest version. If you have auto-updates enabled, you are already on the latest.
+We recommend always using the latest version. This package schedules no updates of its own. A plugin install updates the way your client's plugin settings say (Claude Code, for example, leaves auto-update off for third-party marketplaces unless you turn it on); a direct install updates when you pull the repository and run `npm run setup` again.
 
 ## Reporting a Vulnerability
 
@@ -27,8 +27,7 @@ We will acknowledge receipt within 48 hours and provide a fix or mitigation as q
 
 ## What to Report
 
-- Installer scripts executing unintended commands
-- Auto-update mechanism pulling from unauthorized sources
+- The installer or the hook guard executing unintended commands
 - MCP server (mcp-server) exposing data it should not
 - Any file operation that could overwrite or delete user data unexpectedly
 

@@ -26,11 +26,11 @@ Use release-manager when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@release-manager create a release for v3.0.0
-@release-manager generate release notes since v2.5.0
-@release-manager upload build artifacts to the latest release
-@release-manager promote the v3.0.0-rc.1 pre-release to stable
-@release-manager list all releases for this repo
+/release-manager create a release for v3.0.0
+/release-manager generate release notes since v2.5.0
+/release-manager upload build artifacts to the latest release
+/release-manager promote the v3.0.0-rc.1 pre-release to stable
+/release-manager list all releases for this repo
 ```
 
 ### Claude Code (Terminal)
@@ -45,8 +45,8 @@ Use release-manager when:
 ### Via GitHub Hub
 
 ```text
-@github-hub create a new release
-@github-hub upload a binary to the latest release
+/github-hub create a new release
+/github-hub upload a binary to the latest release
 ```
 
 ---

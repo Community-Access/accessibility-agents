@@ -1,6 +1,11 @@
 # Metadata and Markup Conventions (2026)
 
-This guide defines recommended metadata and markdown structure conventions for agents, skills, and instruction files in this repository.
+This guide defines recommended metadata and markdown structure conventions for skills and documentation in this repository.
+
+Two rules come first, because the Agent Skills specification and this repository's validator enforce them:
+
+- `metadata` is a map of string keys to string values. Lists must be written as one comma-separated string, not as YAML arrays.
+- Every skill needs the `metadata` keys `tier`, `domain`, `output` and `effort`; `scripts/validate-skills.mjs` fails a skill without them. The other keys below are optional conventions that no tool reads yet.
 
 ## Why This Exists
 
@@ -11,7 +16,7 @@ These conventions improve:
 - Contract validation across orchestrators and specialists
 - Long-term consistency across Copilot, Claude Code, and Gemini surfaces
 
-## Agent Frontmatter Metadata
+## Router Frontmatter Metadata
 
 Use `metadata` for machine-readable properties that should remain stable across wording changes.
 
@@ -21,13 +26,15 @@ Example:
 ---
 name: accessibility-lead
 description: Accessibility team lead and orchestrator
-tools: ['read', 'edit', 'search', 'agent']
 metadata:
-  owner: web-a11y
+  tier: router
   domain: web
+  output: findings
+  effort: medium
+  owner: web-a11y
   maturity: stable
   release-phase: ga
-  capability-tags: ["wcag-2.2", "aria", "keyboard", "forms"]
+  capability-tags: "wcag-2.2, aria, keyboard, forms"
   dispatch-contract: required
 ---
 ```
@@ -40,7 +47,7 @@ Recommended fields:
 | `domain` | string | `web`, `document`, `github`, `developer`, `cross-cutting` |
 | `maturity` | string | `stable`, `beta`, `experimental` |
 | `release-phase` | string | `ga`, `preview`, `internal` |
-| `capability-tags` | array | Discovery and filtering tags |
+| `capability-tags` | string (comma-separated) | Discovery and filtering tags |
 | `dispatch-contract` | string | `required` for orchestrators that must follow specialist dispatch |
 
 ## Skill Frontmatter Metadata
@@ -49,13 +56,16 @@ Example:
 
 ```yaml
 ---
-name: web-severity-scoring
+name: kb-web-severity-scoring
 description: Compute web accessibility scores and grades
 metadata:
+  tier: reference
+  domain: web
+  output: guidance
+  effort: low
   spec-version: "2026-05"
-  model-compatibility: ["copilot", "claude", "gemini"]
-  scoring-model: "v2"
-  compliance-profiles: ["wcag-2.2-aa", "en-301-549"]
+  model-compatibility: "copilot, claude, gemini"
+  compliance-profiles: "wcag-2.2-aa, en-301-549"
 ---
 ```
 
@@ -64,9 +74,8 @@ Recommended fields:
 | Field | Type | Purpose |
 |------|------|---------|
 | `spec-version` | string | Internal schema/contract version |
-| `model-compatibility` | array | Supported model hosts |
-| `scoring-model` | string | Versioned scoring method when applicable |
-| `compliance-profiles` | array | Regulatory or standards mapping |
+| `model-compatibility` | string (comma-separated) | Supported model hosts |
+| `compliance-profiles` | string (comma-separated) | Regulatory or standards mapping |
 
 ## Instruction File Markup Conventions
 
@@ -87,26 +96,28 @@ Markdown structure rules:
 
 ## Release and Audit Metadata
 
-When writing release notes or audit outputs, include explicit metadata blocks to support reproducibility.
-
-Example:
+When writing release notes, include an explicit metadata block to support reproducibility, for example:
 
 ```yaml
 metadata:
-  release: "5.2.0"
-  scoring-model: "web-severity-scoring-v2"
-  profile: "balanced"
-  calibration-version: "2026-q2"
-  generated-at: "2026-05-06T00:00:00Z"
+  release: "7.0.3"
+  generated-at: "2026-10-28T00:00:00Z"
 ```
+
+Audit reports need no hand-written block: `render-report.mjs` writes a Metadata
+section (date, scope, skills run, tooling versions, scan configuration, checks
+counted) and embeds the merged findings. There is one scoring model, the one in
+`skills/a11y-core/scripts/merge-findings.mjs`; it has no profiles or
+calibration versions to record.
 
 ## Validation Integration
 
 Conventions are designed to be compatible with existing validation tooling:
 
-- `scripts/validate-agents.js` supports the `metadata` frontmatter key
-- `scripts/validate-orchestrator-dispatch.js` validates specialist dispatch contracts
-- `.github/workflows/validate-orchestrator-contracts.yml` enforces contract checks in CI
+- `npm run verify:spec` checks that `metadata` is a string map, as the Agent Skills specification requires
+- `npm run verify:skills` (`scripts/validate-skills.mjs`) checks `tier`, `domain`, `output` and `effort`, and the pointer-dispatch contract of every router
+- `node scripts/build-dispatch-matrices.mjs --check` checks that every router's dispatch matrix matches the skills that exist
+- All three run in CI through `.github/workflows/verify.yml`
 
 ## Adoption Strategy
 

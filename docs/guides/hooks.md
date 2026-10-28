@@ -1,12 +1,9 @@
 # Hooks Guide (Compatibility Redirect)
 
-The canonical hooks documentation is now maintained in:
+This file is kept for backward compatibility with existing links. The hooks
+documentation now lives in:
 
-- `docs/hooks-guide.md`
+- [Hooks reference](../reference/hooks.md): the guard script, its behaviours, the manifests and how to test them
+- [Hooks, by client](../standards/hooks-by-client.md): which event each client fires for each behaviour, and the gaps
 
-This file is kept for backward compatibility with existing links.
-
-For troubleshooting and diagnostics:
-
-- `docs/guides/hooks-troubleshooting.md`
-- `docs/guides/agent-debug-panel.md`
+For troubleshooting, see the edit-gate section of [Troubleshooting](troubleshooting.md).

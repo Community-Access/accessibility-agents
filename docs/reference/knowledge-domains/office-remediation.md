@@ -54,9 +54,9 @@ Each operation, with its API reference.
 
 The skill includes PowerShell COM patterns for automating Office fixes without Python:
 
-- **Word** — `New-Object -ComObject Word.Application` for document property updates, style application, and table header marking
-- **Excel** — `New-Object -ComObject Excel.Application` for workbook metadata, sheet naming, and cell formatting
-- **PowerPoint** — `New-Object -ComObject PowerPoint.Application` for presentation metadata, slide title insertion, and alt text
+- **Word** - `New-Object -ComObject Word.Application` for document property updates, style application, and table header marking
+- **Excel** - `New-Object -ComObject Excel.Application` for workbook metadata, sheet naming, and cell formatting
+- **PowerPoint** - `New-Object -ComObject PowerPoint.Application` for presentation metadata, slide title insertion, and alt text
 
 ## Key OOXML Paths
 

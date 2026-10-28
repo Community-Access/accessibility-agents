@@ -33,8 +33,8 @@ scanning workflows, custom skills, context management, authoritative sources.
 - [Knowledge domains](reference/knowledge-domains/), the reference-tier skills
   and which reviewers cite them
 - [MCP tools](reference/mcp-tools.md), all 39 with their annotations
-- [Hooks](reference/hooks.md), the enforcement gate and its four client manifests
-- [Configuration](reference/configuration.md), scan config files, budgets, settings
+- [Hooks](reference/hooks.md), the enforcement gate and its client manifests
+- [Configuration](reference/configuration.md), scan config files, workspace preferences, budgets, settings
 - [Tools](reference/tools/), Playwright, veraPDF, the PDF form converter
 
 **[Standards](standards/)** - one page per standard this package conforms to,

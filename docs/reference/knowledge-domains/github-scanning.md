@@ -66,7 +66,7 @@ Each scope, with its qualifier.
 
 ## Preferences File Integration
 
-Read `skills/preferences.md` before searching. Key settings:
+Read `.github/accessibility-agents/preferences.md` before searching. Key settings:
 
 | Preference Key | Effect |
 |----------------|--------|

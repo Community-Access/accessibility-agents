@@ -21,9 +21,9 @@ Each format, with its rules and key checks.
 /powerpoint-accessibility review slides/deck.pptx
 
 # Copilot
-@word-accessibility scan the annual report
-@excel-accessibility check the spreadsheet template
-@powerpoint-accessibility review the training presentation
+/word-accessibility scan the annual report
+/excel-accessibility check the spreadsheet template
+/powerpoint-accessibility review the training presentation
 ```
 
 ## Output Formats

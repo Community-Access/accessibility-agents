@@ -34,9 +34,9 @@ Use daily-briefing when:
 2. Type your request:
 
    ```text
-   @daily-briefing morning briefing
-   @daily-briefing
-   @daily-briefing what happened since yesterday?
+   /daily-briefing morning briefing
+   /daily-briefing
+   /daily-briefing what happened since yesterday?
    ```
 
 ### Claude Code (Terminal)
@@ -50,8 +50,8 @@ Use daily-briefing when:
 ### Via GitHub Hub
 
 ```text
-@github-hub morning standup
-@github-hub what's going on today?
+/github-hub morning standup
+/github-hub what's going on today?
 ```
 
 GitHub Hub will route you automatically.
@@ -89,33 +89,33 @@ The agent detects your workspace context and reads your `preferences.md` to unde
 Nine streams are collected (those enabled by your preferences):
 
 ```text
- Collecting your daily briefing… (all repos, last 24h)
+ Collecting your daily briefing... (all repos, last 24h)
 
- Checking issues and @mentions… (1/9)
+ Checking issues and @mentions... (1/9)
  Issues: 4 need your response, 7 to monitor
 
- Checking pull requests… (2/9)
+ Checking pull requests... (2/9)
  PRs: 2 need your review, 1 needs your update
 
- Checking CI/CD status… (3/9)
+ Checking CI/CD status... (3/9)
  CI: 1 failing workflow needs attention
 
- Checking security alerts… (4/9)
+ Checking security alerts... (4/9)
  Security: 2 Dependabot alerts, 1 high severity
 
- Checking discussions… (5/9)
+ Checking discussions... (5/9)
  Discussions: 3 new, 1 awaiting your reply
 
- Checking releases… (6/9)
+ Checking releases... (6/9)
  Releases: 1 shipped yesterday, 1 coming next week
 
- Checking reactions and community pulse… (7/9)
+ Checking reactions and community pulse... (7/9)
  Community: feature request gaining traction (14 reactions)
 
- Checking accessibility updates… (8/9)
+ Checking accessibility updates... (8/9)
  A11y: 6 issues closed in VS Code Insiders this week
 
- Building reflection and recommendations… (9/9)
+ Building reflection and recommendations... (9/9)
  Done.
 ```
 
@@ -171,7 +171,7 @@ Every briefing document follows this structure:
 
 ## Preferences Configuration
 
-Create `skills/preferences.md` in your workspace to control briefing behavior. See `preferences.example.md` for the full reference. Key options:
+Create `.github/accessibility-agents/preferences.md` in your workspace to control briefing behavior. See [preferences.example.md](../preferences.example.md) for the full reference. Key options:
 
 <details>
 <summary>Expand preferences.md example</summary>
@@ -211,27 +211,27 @@ sections:
 ### Daily Use
 
 ```text
-@daily-briefing morning briefing
-@daily-briefing good morning
-@daily-briefing what's up?
-@daily-briefing show me what happened overnight
+/daily-briefing morning briefing
+/daily-briefing good morning
+/daily-briefing what's up?
+/daily-briefing show me what happened overnight
 ```
 
 ### Scoped Briefings
 
 ```text
-@daily-briefing briefing for community-access/accessibility-agents only
-@daily-briefing just show me PRs waiting for my review
-@daily-briefing only show items that need action
-@daily-briefing weekly summary for the team meeting
+/daily-briefing briefing for community-access/accessibility-agents only
+/daily-briefing just show me PRs waiting for my review
+/daily-briefing only show items that need action
+/daily-briefing weekly summary for the team meeting
 ```
 
 ### Follow-Up Actions
 
 ```text
-@daily-briefing deep dive into issue #142
-@daily-briefing show me the full PR review for PR #87
-@daily-briefing pull up accessibility updates in more detail
+/daily-briefing deep dive into issue #142
+/daily-briefing show me the full PR review for PR #87
+/daily-briefing pull up accessibility updates in more detail
 ```
 
 </details>

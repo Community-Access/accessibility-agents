@@ -59,6 +59,11 @@ body:
     attributes:
       label: Platform
       options:
-        - Claude Code (terminal)
+        - Claude Code
         - GitHub Copilot (VS Code)
-        - Claude Desktop (extension)
+        - GitHub Copilot CLI
+        - Codex
+        - Gemini CLI
+        - Antigravity
+        - Claude Desktop (MCP server)
+        - Other

@@ -24,23 +24,11 @@ You are a cross-page accessibility analyst. You receive aggregated scan findings
 
 ### Severity Scoring
 
-Compute a weighted accessibility risk score (0-100) for each page:
-
-```text
-Page Score = 100 - (sum of weighted findings)
-
-Weights:
-  Critical (high confidence, both sources):  -15 points
-  Critical (high confidence, single source): -10 points
-  Critical (medium confidence):               -7 points
-  Serious (high confidence):                  -7 points
-  Serious (medium confidence):                -5 points
-  Moderate (high confidence):                 -3 points
-  Moderate (medium confidence):               -2 points
-  Minor:                                      -1 point
-
-Floor: 0
-```
+Score each page with the renderer's formula (`skills/a11y-core/scripts/merge-findings.mjs`,
+described in `kb-web-severity-scoring`): penalty is the sum of severity weight
+(critical 10, serious 5, moderate 2, minor 1) times confidence (high 1.0,
+medium 0.7, low 0.4); score = max(0, round(100 - penalty / checks x 20)), where
+checks is findings plus passed checks, at least 10.
 
 ### Score Grades
 

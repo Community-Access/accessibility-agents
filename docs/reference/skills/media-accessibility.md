@@ -1,4 +1,4 @@
-# media-accessibility — Media Accessibility Specialist
+# media-accessibility - Media Accessibility Specialist
 
 > Audits video, audio, and streaming media for accessibility. Covers captions (WebVTT, SRT, TTML), audio descriptions, transcripts, accessible media player controls, live captioning, and WCAG 1.2.x time-based media criteria.
 
@@ -42,11 +42,11 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@media-accessibility Audit video captions and player controls on our course page
+/media-accessibility Audit video captions and player controls on our course page
 
-@media-accessibility Check if our podcast page has transcripts for all episodes
+/media-accessibility Check if our podcast page has transcripts for all episodes
 
-@media-accessibility Review audio description availability for our product demo videos
+/media-accessibility Review audio description availability for our product demo videos
 ```
 
 ## Related

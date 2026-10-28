@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `run_verapdf_scan` MCP tool integrates [veraPDF](https://verapdf.org/) — the reference implementation for PDF/UA (ISO 14289) validation — into the accessibility agent ecosystem. veraPDF is used by the PDF Association, Library of Congress, and EU accessibility bodies.
+The `run_verapdf_scan` MCP tool integrates [veraPDF](https://verapdf.org/) - the reference implementation for PDF/UA (ISO 14289) validation - into the accessibility agent ecosystem. veraPDF is used by the PDF Association, Library of Congress, and EU accessibility bodies.
 
 ## How It Works
 
@@ -20,7 +20,7 @@ Each tier, with its tool, speed, coverage and dependency.
 | **Tier 1** (always) | `scan_pdf_document` | <100ms | ~30 rules, heuristic | None (built-in regex parser) |
 | **Tier 2** (if available) | `run_verapdf_scan` | 2-10s | All 136 Matterhorn Protocol failure conditions | veraPDF CLI + Java 11+ |
 
-When both tiers run, findings are correlated by rule ID. Issues confirmed by both tiers receive a **Confirmed** confidence rating (1.2x weight in severity scoring).
+When both tiers run, findings are correlated by rule ID. An issue found by both tiers is `high` confidence (factor 1.0); there is no higher tier or multiplier.
 
 ## What veraPDF Catches That the Regex Parser Cannot
 
@@ -94,7 +94,7 @@ Each flavour, with standard and use case.
 
 ## Graceful Degradation
 
-If veraPDF is not installed, the tool returns installation instructions. The existing `scan_pdf_document` tool continues to work independently — veraPDF is purely additive.
+If veraPDF is not installed, the tool returns installation instructions. The existing `scan_pdf_document` tool continues to work independently - veraPDF is purely additive.
 
 ## MCP Tool API
 
@@ -102,9 +102,9 @@ If veraPDF is not installed, the tool returns installation instructions. The exi
 
 **Input:**
 
-- `filePath` (string, required) — Path to the PDF file
-- `flavour` (string, optional, default `"ua1"`) — Validation flavour
-- `maxFindings` (number, optional, default 200) — Maximum findings to return
+- `filePath` (string, required) - Path to the PDF file
+- `flavour` (string, optional, default `"ua1"`) - Validation flavour
+- `maxFindings` (number, optional, default 200) - Maximum findings to return
 
 **Output:** Structured text with per-finding details including rule ID, severity, message, clause reference, and element context.
 
@@ -116,4 +116,4 @@ Each component, with its role.
 |-----------|------|
 | `scan_pdf_document` | Built-in Tier 1 regex-based PDF scanner |
 | `document-accessibility-wizard` | Orchestrator that can invoke both PDF scanning tiers |
-| Web severity scoring skill | Confidence levels including Confirmed tier for dual-source validation |
+| Web severity scoring skill (`kb-web-severity-scoring`) | Confidence levels (high, medium, low) and the score formula the renderer uses |

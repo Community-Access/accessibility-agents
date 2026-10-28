@@ -1,4 +1,4 @@
-# i18n-accessibility — Internationalization Accessibility Specialist
+# i18n-accessibility - Internationalization Accessibility Specialist
 
 > Audits internationalization and RTL accessibility: dir attributes, BCP 47 lang tags, bidirectional text handling, mixed-direction forms, icon mirroring, and inline language switches. Ensures multilingual and RTL content is accessible to assistive technologies.
 
@@ -41,11 +41,11 @@ Each direction, with its agent and when.
 ## Sample Usage
 
 ```text
-@i18n-accessibility Audit lang attributes and dir handling across this multilingual site
+/i18n-accessibility Audit lang attributes and dir handling across this multilingual site
 
-@i18n-accessibility Check RTL support for the Arabic version of our checkout form
+/i18n-accessibility Check RTL support for the Arabic version of our checkout form
 
-@i18n-accessibility Review bidi content handling in the user profile page
+/i18n-accessibility Review bidi content handling in the user profile page
 ```
 
 ## Related

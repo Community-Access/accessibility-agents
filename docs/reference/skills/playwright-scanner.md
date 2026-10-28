@@ -6,7 +6,7 @@
 
 ## Purpose
 
-Behavioral accessibility testing using Playwright. Runs live browser-based tests that detect accessibility defects which cannot be found by static code review or axe-core CLI scans — keyboard traps, focus management failures, dynamic state violations, responsive reflow issues, and computed contrast failures after CSS cascade.
+Behavioral accessibility testing using Playwright. Runs live browser-based tests that detect accessibility defects which cannot be found by static code review or axe-core CLI scans - keyboard traps, focus management failures, dynamic state violations, responsive reflow issues, and computed contrast failures after CSS cascade.
 
 ## MCP Tools Used
 
@@ -22,12 +22,12 @@ Each tool, with what it tests.
 
 ## Scan Modes
 
-- **full** — Run all 5 scan types (default)
-- **keyboard-only** — Tab traversal and trap detection
-- **states-only** — Dynamic state scanning
-- **viewport-only** — Responsive viewport scanning
-- **contrast-only** — Computed contrast verification
-- **tree-only** — Accessibility tree snapshot
+- **full** - Run all 5 scan types (default)
+- **keyboard-only** - Tab traversal and trap detection
+- **states-only** - Dynamic state scanning
+- **viewport-only** - Responsive viewport scanning
+- **contrast-only** - Computed contrast verification
+- **tree-only** - Accessibility tree snapshot
 
 ## Output Contract
 
@@ -41,11 +41,11 @@ Returns structured text with sections for each scan type, including finding coun
 
 ## Skills
 
-- `playwright-testing` — Scan patterns, test templates, CI integration
-- `web-severity-scoring` — Finding severity classification
+- `playwright-testing` - Scan patterns, test templates, CI integration
+- `web-severity-scoring` - Finding severity classification
 
 ## Related Agents
 
-- `web-accessibility-wizard` — Orchestrator that dispatches this agent
-- `playwright-verifier` — Fix verification counterpart
-- `cross-page-analyzer` — Consumes accessibility tree diffs across pages
+- `web-accessibility-wizard` - Orchestrator that dispatches this agent
+- `playwright-verifier` - Fix verification counterpart
+- `cross-page-analyzer` - Consumes accessibility tree diffs across pages

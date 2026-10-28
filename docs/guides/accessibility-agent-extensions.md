@@ -354,13 +354,10 @@ Check this wxPython app with the developer tools extension, including desktop ac
 
 Before releasing extension changes:
 
-- run `node scripts/validate-skills/.js`
-- run `node scripts/validate-agents.js --strict --validate-wcag --validate-urls --skip-url-checks`
-- run `node scripts/check-skill-description-quality.js`
-- run `bash -n scripts/install.mjs`
-- run PowerShell syntax checks when `pwsh` is available
+- run `npm run verify` (every gate, including the skills, specification and markdown checks)
+- run `node scripts/build-dispatch-matrices.mjs` and `node scripts/build-docs.mjs` if you added or removed a skill
+- run `npm run setup -- --dry-run` and check it would install what you expect
 - run Go tests when `go` is available
-- verify the universal installer still installs built-in extension manifests
-- verify new documentation contains no emoji
+- verify new documentation contains no emoji (`npm run verify:markdown` reports them)
 
 Extensions should make Accessibility Agents more adaptable without making installation or routing harder for users.

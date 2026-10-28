@@ -84,7 +84,8 @@ const CLIENTS = [
     detect: () => path.join(HOME, '.codex'),
     // ~/.codex/hooks.json is Codex's own file and may hold the user's hooks.
     hooks: { from: 'hooks/codex.hooks.json', to: path.join(HOME, '.codex', 'hooks.json'), shared: true },
-    note: 'Codex reads ~/.agents/skills and ~/.codex/hooks.json directly. Nothing further to do.',
+    note: 'Codex reads ~/.agents/skills and ~/.codex/hooks.json directly. If a merge\n' +
+      '    file was written above, merge it; otherwise nothing further to do.',
   },
   {
     id: 'copilot',
@@ -204,7 +205,7 @@ if (uninstall) {
     }
   }
   console.log('');
-  console.log(actions.length ? 'Removed. Your own edits under other paths were not touched.' : 'Nothing was installed.');
+  console.log(!actions.length ? 'Nothing was installed.' : dryRun ? 'Dry run: nothing was removed.' : 'Removed. Your own edits under other paths were not touched.');
   process.exit(0);
 }
 

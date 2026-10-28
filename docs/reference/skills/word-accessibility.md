@@ -37,8 +37,8 @@
 
 ```text
 /word-accessibility scan report.docx for accessibility issues
-@word-accessibility review the quarterly report template
-@word-accessibility check all Word documents in the docs/ directory
+/word-accessibility review the quarterly report template
+/word-accessibility check all Word documents in the docs/ directory
 ```
 
 </details>
@@ -56,8 +56,8 @@
 **In GitHub Copilot Chat:**
 
 ```text
-@word-accessibility scan report.docx for accessibility issues
-@word-accessibility check the employee handbook
+/word-accessibility scan report.docx for accessibility issues
+/word-accessibility check the employee handbook
 ```
 
 **Via the prompt picker:** Select `audit-single-document` from the prompt picker and enter the `.docx` file path. This pre-configures the full strict scan profile and generates a `DOCUMENT-ACCESSIBILITY-AUDIT.md` report.
@@ -102,15 +102,17 @@ check "Mark as decorative" to suppress screen reader announcement instead.
 
 ### Score Interpretation
 
-Each score, with grade and what it means.
+The score and grade come from the report renderer (`skills/a11y-core/scripts/merge-findings.mjs`), after document checker levels are mapped to the canonical severities. A score is not a conformance claim.
 
-| Score | Grade | What it means |
-|-------|-------|---------------|
-| 90-100 | A | Excellent - minor issues only, safe to distribute |
-| 75-89 | B | Good - some warnings, fix before wide distribution |
-| 50-74 | C | Needs work - multiple errors affecting AT users |
-| 25-49 | D | Poor - significant barriers, remediate before sharing |
-| 0-24 | F | Failing - likely unusable with screen readers |
+Each score band, with its grade.
+
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ### What to Fix First
 

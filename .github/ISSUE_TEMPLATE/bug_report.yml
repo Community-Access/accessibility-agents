@@ -13,9 +13,14 @@ body:
       label: Platform
       description: Which tool are you using?
       options:
-        - Claude Code (terminal)
+        - Claude Code
         - GitHub Copilot (VS Code)
-        - Claude Desktop (extension)
+        - GitHub Copilot CLI
+        - Codex
+        - Gemini CLI
+        - Antigravity
+        - Claude Desktop (MCP server)
+        - Other
     validations:
       required: true
 
@@ -25,8 +30,8 @@ body:
       label: Install type
       description: How did you install?
       options:
-        - Global (installer)
-        - Project (installer)
+        - Plugin (Claude Code, Copilot CLI or VS Code)
+        - npm run setup (direct install from a checkout)
         - Manual
         - Claude Desktop (.mcpb)
 
@@ -70,4 +75,4 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: Anything else that might help — screenshots, error messages, relevant code snippets.
+      description: Anything else that might help - screenshots, error messages, relevant code snippets.

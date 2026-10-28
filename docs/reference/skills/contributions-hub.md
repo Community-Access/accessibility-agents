@@ -32,10 +32,10 @@ The contributions-hub handles everything community-facing:
 ### GitHub Copilot (VS Code)
 
 ```text
-@contributions-hub show active discussions
-@contributions-hub community health report
-@contributions-hub who are my top contributors this month?
-@contributions-hub welcome first-time contributors
+/contributions-hub show active discussions
+/contributions-hub community health report
+/contributions-hub who are my top contributors this month?
+/contributions-hub welcome first-time contributors
 ```
 
 ### Claude Code (Terminal)
@@ -49,9 +49,9 @@ The contributions-hub handles everything community-facing:
 ### Via GitHub Hub
 
 ```text
-@github-hub community
-@github-hub discussions
-@github-hub community health
+/github-hub community
+/github-hub discussions
+/github-hub community health
 ```
 
 ---
@@ -87,7 +87,7 @@ The contributions-hub handles everything community-facing:
 2. **Collection with progress:**
 
    ```text
-    Scanning discussions across your repos…
+    Scanning discussions across your repos...
     Found 14 open discussions - 3 unanswered Q&As, 2 high-activity threads, 4 stale
    ```
 
@@ -142,7 +142,7 @@ For discussions with 20+ replies, the agent generates:
 The agent scans for the presence and recency of health files, label hygiene, and contributor accessibility signals:
 
 ```text
- Scanning community health for community-access/accessibility-agents…
+ Scanning community health for community-access/accessibility-agents...
  Health score: 7/10
 ```
 
@@ -199,37 +199,37 @@ The community health check scores your repo out of 10 across the following categ
 ### Discussion Management
 
 ```text
-@contributions-hub show all open discussions
-@contributions-hub unanswered Q&As - what needs a response?
-@contributions-hub summarize the dark mode discussion thread
-@contributions-hub convert discussion #23 to an issue
-@contributions-hub create a discussion announcing our v2.0 release
+/contributions-hub show all open discussions
+/contributions-hub unanswered Q&As - what needs a response?
+/contributions-hub summarize the dark mode discussion thread
+/contributions-hub convert discussion #23 to an issue
+/contributions-hub create a discussion announcing our v2.0 release
 ```
 
 ### Community Health
 
 ```text
-@contributions-hub community health report for this repo
-@contributions-hub what health files am I missing?
-@contributions-hub do I have enough good first issues?
-@contributions-hub check my label hygiene across all repos
+/contributions-hub community health report for this repo
+/contributions-hub what health files am I missing?
+/contributions-hub do I have enough good first issues?
+/contributions-hub check my label hygiene across all repos
 ```
 
 ### Contributor Insights and Welcome
 
 ```text
-@contributions-hub who are my top contributors this month?
-@contributions-hub who made their first contribution this week?
-@contributions-hub draft a welcome for @newcontributor's PR
-@contributions-hub who has been inactive for more than 60 days?
+/contributions-hub who are my top contributors this month?
+/contributions-hub who made their first contribution this week?
+/contributions-hub draft a welcome for @newcontributor's PR
+/contributions-hub who has been inactive for more than 60 days?
 ```
 
 ### Stale Cleanup
 
 ```text
-@contributions-hub find stale discussions
-@contributions-hub show discussions with no activity in 30+ days
-@contributions-hub close all answered Q&As older than 2 weeks
+/contributions-hub find stale discussions
+/contributions-hub show discussions with no activity in 30+ days
+/contributions-hub close all answered Q&As older than 2 weeks
 ```
 
 </details>

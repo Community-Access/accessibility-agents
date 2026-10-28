@@ -27,10 +27,10 @@ Use template-builder when:
 ### GitHub Copilot (VS Code)
 
 ```text
-@template-builder create accessibility bug template
-@template-builder build a feature request template
-@template-builder make a security report template
-@template-builder what templates do I have?
+/template-builder create accessibility bug template
+/template-builder build a feature request template
+/template-builder make a security report template
+/template-builder what templates do I have?
 ```
 
 ### Claude Code (Terminal)
@@ -44,15 +44,15 @@ Use template-builder when:
 ### Via GitHub Hub
 
 ```text
-@github-hub build template
-@github-hub create issue template
+/github-hub build template
+/github-hub create issue template
 ```
 
 ---
 
 ## What to Expect - Step by Step
 
-The wizard runs in three phases. Here is a complete walkthrough starting from `@template-builder create accessibility bug template`:
+The wizard runs in three phases. Here is a complete walkthrough starting from `/template-builder create accessibility bug template`:
 
 ### Phase 1 - Template Metadata
 
@@ -176,27 +176,27 @@ Saved to `.github/ISSUE_TEMPLATE/config.yml`. Controls what GitHub shows in the 
 ### Starting the Wizard
 
 ```text
-@template-builder create a bug report template
-@template-builder create accessibility bug template
-@template-builder create a feature request template
-@template-builder create a security vulnerability report template
+/template-builder create a bug report template
+/template-builder create accessibility bug template
+/template-builder create a feature request template
+/template-builder create a security vulnerability report template
 ```
 
 ### Managing Existing Templates
 
 ```text
-@template-builder list my existing issue templates
-@template-builder update the bug report template - add a "Severity" dropdown
-@template-builder add a checklist field to my feature request template
-@template-builder create the template chooser config for my repo
+/template-builder list my existing issue templates
+/template-builder update the bug report template - add a "Severity" dropdown
+/template-builder add a checklist field to my feature request template
+/template-builder create the template chooser config for my repo
 ```
 
 ### PR and Discussion Templates
 
 ```text
-@template-builder create a PR template with an accessibility checklist
-@template-builder build a PR template requiring issue linkage and testing notes
-@template-builder what templates should my open source project have?
+/template-builder create a PR template with an accessibility checklist
+/template-builder build a PR template requiring issue linkage and testing notes
+/template-builder what templates should my open source project have?
 ```
 
 </details>
