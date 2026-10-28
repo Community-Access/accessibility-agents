@@ -112,6 +112,10 @@ The workflow focuses on severe risk indicators:
 - horizontal overflow at narrow viewports
 - undersized touch targets
 
+On a pull request it scans `example/index.html`, which is broken on purpose,
+as a self-test: the job fails if the checker stops catching that page's known
+issues. Run it by hand (workflow_dispatch) with a URL to gate a real page.
+
 For full usage details, see [Playwright High-Impact Checks](../../guides/playwright-high-impact-checks.md).
 
 ## Security
