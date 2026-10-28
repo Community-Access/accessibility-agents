@@ -7,7 +7,7 @@
   "privacyPolicy": "https://github.com/Community-Access/accessibility-agents/blob/main/PRIVACY.md",
   "documentation": "https://github.com/Community-Access/accessibility-agents/tree/main/mcp-server#readme",
   "license": "MIT",
-  "icon": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/docs/icon.png",
+  "icon": "https://raw.githubusercontent.com/Community-Access/accessibility-agents/main/.claude-plugin/icon.png",
   "categories": ["accessibility", "testing", "developer-tools"],
   "submission": {
     "preferredPath": "mcpb",
@@ -25,7 +25,7 @@
   "transport": {
     "stdio": {
       "command": "npx",
-      "args": ["-y", "@a11y-agent-team/mcp-server", "--stdio"],
+      "args": ["-y", "@community-access/accessibility-agents-mcp"],
       "notes": "Primary transport for MCPB and Claude Desktop installs."
     },
     "http": {

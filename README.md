@@ -11,8 +11,8 @@ structured findings rather than from memory.
 
 ## Install
 
-As a plugin, which loads the skills, the hooks and the MCP server
-registration (on Codex, the skills and the MCP server only: Codex no longer
+As a plugin (on Gemini CLI, an extension), which loads the skills, the hooks
+and the MCP server registration (on Codex, the skills and the MCP server only: Codex no longer
 loads plugin hooks, so use `npm run setup` there for the edit gate):
 
 ```text
@@ -25,6 +25,8 @@ Codex         codex plugin marketplace add Community-Access/accessibility-agents
               (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires the chat.plugins.enabled setting)
+Gemini CLI    gemini extensions install https://github.com/Community-Access/accessibility-agents
+              (uses the extension archive attached to each release, from 7.1.0)
 ```
 
 The MCP server ships as a single bundle, `mcp-server/dist/stdio.mjs`, so a
@@ -33,7 +35,13 @@ need installing: Playwright and `@axe-core/playwright` for the browser scans,
 `pdf-lib` for PDF form conversion, and the veraPDF CLI. The tools that need
 them say how when they are missing.
 
-Directly from a checkout, for Gemini CLI, Antigravity, or any client without
+The MCP server on its own is published to npm as
+`@community-access/accessibility-agents-mcp` and listed in the MCP Registry as
+`io.github.Community-Access/accessibility-agents`, from 7.1.0 once the release
+is published: `npx -y @community-access/accessibility-agents-mcp`. See
+[the MCP server README](mcp-server/README.md).
+
+Directly from a checkout, for Antigravity, or any client without
 the plugin:
 
 ```bash

@@ -91,12 +91,12 @@ func main() {
 			if !system.FileExists(filepath.Join(mcpDir, "package.json")) {
 				summary = append(summary, app.Prefix("warn", "MCP package.json not found; skipping MCP repair"))
 			} else if !*autoRepair {
-				summary = append(summary, app.Prefix("warn", "MCP repair requires --auto-repair to run npm install --omit=dev"))
+				summary = append(summary, app.Prefix("warn", "MCP repair requires --auto-repair to run npm install"))
 			} else if !system.CheckCommand("npm", false, "--version").Available {
 				summary = append(summary, app.Prefix("fail", "npm is required for MCP repair"))
 				failed = true
-			} else if err := system.RunCommand(mcpDir, "npm", "install", "--omit=dev"); err != nil {
-				summary = append(summary, app.Prefix("fail", "npm install --omit=dev failed: "+err.Error()))
+			} else if err := system.RunCommand(mcpDir, "npm", "install"); err != nil {
+				summary = append(summary, app.Prefix("fail", "npm install failed: "+err.Error()))
 				failed = true
 			} else {
 				summary = append(summary, app.Prefix("ok", "MCP dependencies installed or refreshed"))

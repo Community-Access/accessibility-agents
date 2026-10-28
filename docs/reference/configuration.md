@@ -76,9 +76,15 @@ copy `hooks/copilot.hooks.json` to `.github/hooks/` in a repository you want
 gated: the CLI reads `.github/hooks/*.json` in the repository, and the Copilot
 cloud agent reads them from the default branch.
 
-**Gemini CLI.** Reads `~/.agents/skills`. Add `AGENTS.md` to
+**Gemini CLI.** Two routes. The extension
+(`gemini extensions install https://github.com/Community-Access/accessibility-agents`,
+which uses the archive attached to each release from 7.1.0) loads `AGENTS.md`,
+the skills, the hooks and the MCP server, with nothing to merge. Or use
+`npm run setup`: Gemini then reads `~/.agents/skills`; add `AGENTS.md` to
 `context.fileName` in settings so the contract loads, and merge
-`~/.gemini/a11y-hooks.json` into `~/.gemini/settings.json` under `hooks`.
+`~/.gemini/a11y-hooks.json` into `~/.gemini/settings.json` under `hooks`. On
+both routes the gate opens on `AfterTool` for `activate_skill` when the skill
+activated is `accessibility-lead` or `web-accessibility-wizard`.
 
 **Antigravity.** Reads global skills from `~/.gemini/config/skills`, where
 `npm run setup` copies them, and workspace skills from `.agents/skills`. It

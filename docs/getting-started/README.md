@@ -25,6 +25,8 @@ Codex         codex plugin marketplace add Community-Access/accessibility-agents
               (skills and MCP server only; no edit gate, see below)
 VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires the chat.plugins.enabled setting)
+Gemini CLI    gemini extensions install https://github.com/Community-Access/accessibility-agents
+              (uses the extension archive attached to each release, from 7.1.0)
 ```
 
 The MCP server ships as a single bundle (`mcp-server/dist/stdio.mjs`), so the
@@ -44,6 +46,21 @@ edit gate. For the gate, use `npm run setup` instead, which writes
 `~/.codex/hooks.json` (Codex then lists all six hooks), and register the server
 with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
 Use one route, not both.
+
+The Gemini CLI extension is a separate archive, `accessibility-agents.tar.gz`,
+built by `node scripts/build-gemini-extension.mjs` and attached to each
+published release by `.github/workflows/release-assets.yml`. It holds
+`gemini-extension.json` at its root (with `AGENTS.md` as the context file),
+the skills, the guard with Gemini's hook manifest as `hooks/hooks.json`, and
+the bundled MCP server. It is separate because a Gemini extension reads
+`hooks/hooks.json`, which in this repository is the Claude Code plugin's hook
+manifest, and one file cannot serve both clients without each warning about
+the other's events. Tested with Gemini CLI 0.66.0: `gemini extensions
+validate` passes, and an install loads `AGENTS.md`, the MCP server and the
+skills. The edit gate inside the extension was not exercised in a live, signed-in
+Gemini session. Listing in the Gemini extensions gallery needs the
+`gemini-cli-extension` repository topic; Gemini's documentation does not say
+outright whether the gallery lists a manifest found only in a release archive.
 
 ### Directly from a checkout, for any client
 
