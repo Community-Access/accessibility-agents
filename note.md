@@ -360,3 +360,25 @@ Other:
 
 Pushed to [the branch on GitHub](https://github.com/Community-Access/accessibility-agents/tree/chore/standards-audit-and-codespaces)
 (see git log; every commit is listed above). No pull request yet; one opens when the audit is done.
+
+## Remaining work (running checklist, updated with every push)
+
+Last updated: 27 October 2026, 6:10 PM Mountain (Arizona).
+
+- [x] Security advisories, MCP server bugs, plugin packaging, edit gate, installer
+- [x] Skill batch F: GitHub, developer, desktop (24 skills)
+- [x] Skill batch A: standards and law (13 skills)
+- [x] Skill batch C: web part 1 (15 skills)
+- [x] Skill batch D: web part 2 (15 skills)
+- [x] Skill batch E: documents and Markdown (18 skills)
+- [ ] Skill batch B: knowledge base (23 skills): editing, then independent review
+- [ ] Documentation audit (README, docs/, workflows): editing, then independent review
+- [ ] Decision 2: bundle the MCP server so plugin installs can start it
+- [ ] Decision 3: live edit-gate test in Claude Code
+- [ ] Decision 4: Codespaces dev container, VS Code skills and MCP settings
+- [ ] Decision 6: findings contract scoped to accessibility audits in a11y-core
+- [ ] Decision 7: Antigravity hook manifest, if its format can be verified
+- [ ] Final full verification: every gate, markdownlint, plugin validate, live client checks
+- [ ] Pull request to main (not merged)
+
+STATUS: IN PROGRESS
