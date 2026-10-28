@@ -55,7 +55,8 @@ tests, stories and dependencies are exempt. See [Hooks](../reference/hooks.md).
   loaded. `npm run setup -- --uninstall` deletes the old file.
 - Codex: the gate opens when Codex reads `accessibility-lead/SKILL.md` (or
   `web-accessibility-wizard/SKILL.md`) with a shell command, when the prompt
-  names `$accessibility-lead`, or when a lead subagent stops. This needs the
+  names `$accessibility-lead` or `$web-accessibility-wizard`, or when a lead
+  subagent stops. This needs the
   `~/.codex/hooks.json` that `npm run setup` writes; the Codex plugin route
   loads no hooks. If setup wrote `hooks.a11y.json` beside your own file,
   merge its `hooks` block in, including the `PostToolUse` entry.

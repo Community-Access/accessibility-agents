@@ -215,30 +215,89 @@ function skillFileRead(payload, input) {
     return m ? m[1] : '';
   }
   if (CLIENT === 'codex' && (tool === 'Bash' || tool === 'exec_command' || tool === 'shell')) {
-    const command = Array.isArray(input.command) ? input.command.join(' ') : String(input.command || input.cmd || '');
-    // Only a lead's SKILL.md counts, and only when the command reads it.
-    if (/(^|[\s;&|])(rm|mv|cp|tee|touch)\s|>\s*\S*SKILL\.md/.test(command)) return '';
-    for (const m of command.matchAll(/[\\/]([A-Za-z0-9_-]+)[\\/]SKILL\.md\b/g)) {
-      if (LEAD_SKILLS.has(m[1])) return m[1];
-    }
+    return leadReadIn(shellText(input.command || input.cmd || ''));
   }
   return '';
 }
 
-/** Codex: a prompt that names the lead with $ loads it explicitly. */
+/**
+ * The script a shell call runs. Codex may send the command as an argument
+ * list, such as ["bash", "-lc", "cat ..."]: the script is what follows the
+ * shell's command flag.
+ */
+function shellText(command) {
+  if (!Array.isArray(command)) return String(command);
+  const flag = command.findIndex((a) => /^(-l?c|-Command|\/c)$/i.test(String(a)));
+  return (flag >= 0 ? command.slice(flag + 1) : command).join(' ');
+}
+
+/** Commands that print a file without changing it. */
+const READ_COMMANDS = new Set(['cat', 'head', 'tail', 'nl', 'less', 'more', 'bat', 'sed', 'awk', 'type', 'get-content', 'gc']);
+
+/**
+ * The lead skill whose SKILL.md this shell command reads, or ''. Each part of
+ * a compound command is judged on its own, and counts only when its command
+ * is a plain read: mentioning the file (ls, test, git diff, grep) or writing
+ * it (sed -i, Set-Content, a redirect) does not open the gate.
+ */
+function leadReadIn(command) {
+  let cwd = '';
+  for (const segment of command.split(/&&|\|\||[;|\n]/)) {
+    // cd into a lead's folder, then read SKILL.md by its bare name.
+    const cd = /^\s*(?:cd|pushd|Set-Location|sl)\s+["']?(.*?)["']?\s*$/i.exec(segment);
+    if (cd) {
+      const folder = /([A-Za-z0-9_-]+)[\\/]?$/.exec(cd[1]);
+      cwd = folder ? folder[1] : '';
+      continue;
+    }
+    if (/>\s*\S*SKILL\.md/.test(segment)) continue;
+    const words = segment.trim().split(/\s+/);
+    while (words.length && /^(sudo|command|builtin|env|\w+=\S*)$/.test(words[0])) words.shift();
+    const verb = (words[0] || '').replace(/^.*[\\/]/, '').toLowerCase();
+    if (!READ_COMMANDS.has(verb)) continue;
+    if (verb === 'sed' && words.some((w) => /^-[a-zA-Z]*i/.test(w) || w === '--in-place')) continue;
+    for (const m of segment.matchAll(/(?:^|[\s'"\\/=])([A-Za-z0-9_-]+)[\\/]SKILL\.md(?=$|["'\s)])/g)) {
+      if (LEAD_SKILLS.has(m[1])) return m[1];
+    }
+    if (LEAD_SKILLS.has(cwd) && /(?:^|[\s'"])(?:\.[\\/])?SKILL\.md(?=$|["'\s)])/.test(segment)) return cwd;
+  }
+  return '';
+}
+
+/**
+ * Codex: a prompt that names the lead with $ loads it explicitly. This fires
+ * when the prompt is sent, before the skill runs, like the Skill-tool route on
+ * Claude Code; finalize stays the backstop.
+ */
 function promptNamesLead(payload) {
   if (CLIENT !== 'codex') return '';
   const prompt = String(payload.prompt || '');
-  for (const m of prompt.matchAll(/(?:^|\s)\$([A-Za-z0-9_-]+)\b/g)) {
+  for (const m of prompt.matchAll(/(?:^|[^\w$])\$([A-Za-z0-9_-]+)\b/g)) {
     if (LEAD_SKILLS.has(m[1])) return m[1];
   }
   return '';
 }
 
+/**
+ * Codex sends apply_patch with the patch text in tool_input.command, so the
+ * edited paths are the patch's file headers.
+ */
+function patchTargets(command) {
+  const out = [];
+  for (const m of String(command).matchAll(/^\*\*\* (?:Add|Update|Delete) File: (.+?)\s*$|^\*\*\* Move to: (.+?)\s*$/gm)) {
+    out.push(m[1] || m[2]);
+  }
+  return out;
+}
+
 /** Clients name the edited path differently. Look everywhere it might be. */
-function targetPath(payload) {
+/** Every path a call edits: one for most tools, several for a Codex patch. */
+function targetPaths(payload) {
   const input = toolInput(payload);
-  return (
+  if (typeof input.command === 'string' && /^\*\*\* Begin Patch/m.test(input.command)) {
+    return patchTargets(input.command);
+  }
+  const one = (
     input.TargetFile ||
     input.file_path ||
     input.filePath ||
@@ -249,6 +308,7 @@ function targetPath(payload) {
     payload.path ||
     ''
   );
+  return one ? [one] : [];
 }
 
 function subagentName(payload) {
@@ -352,8 +412,8 @@ function detect(payload, ids) {
 }
 
 function gate(payload, ids) {
-  const file = targetPath(payload);
-  if (!isUiFile(file) || hasMarker(ids, 'reviewed')) {
+  const file = targetPaths(payload).find(isUiFile) || '';
+  if (!file || hasMarker(ids, 'reviewed')) {
     // Antigravity requires a decision on every PreToolUse reply.
     if (CLIENT === 'antigravity') process.stdout.write(JSON.stringify({ decision: 'allow' }));
     return 0;

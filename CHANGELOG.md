@@ -30,13 +30,18 @@ skills and for this project.
   and fires no stop event. The gate now also opens on `PostToolUse` for the
   Skill tool and reads `agent_type`. Retested live, both ways.
 - **The Codex edit gate never ran**: Codex rejected `~/.codex/hooks.json` over
-  a `$comment` key. Now `description`; Codex lists all six hooks.
+  a `$comment` key. Now `description`; Codex loaded all six hooks it then defined.
 - **The Codex edit gate stayed shut when the lead ran inline**: it opened only
   on `SubagentStop`, and Codex fires that only for subagents. It now also opens
   on `PostToolUse` for `Bash` when the command reads the lead's `SKILL.md`,
-  which is how Codex loads a skill, and when the prompt names
-  `$accessibility-lead`. Reported by [@Orinks](https://github.com/Orinks) in
+  which is how Codex loads a skill (a plain read only: listing, grepping,
+  diffing or writing the file does not count), and when the prompt names
+  `$accessibility-lead` or `$web-accessibility-wizard`. Reported by [@Orinks](https://github.com/Orinks) in
   [#168](https://github.com/Community-Access/accessibility-agents/issues/168).
+- **The Codex edit gate allowed every edit**: Codex sends `apply_patch` with
+  the patch text in `tool_input.command` and no path field, so the guard saw
+  no file and let the edit through. It now reads the edited paths from the
+  patch's file headers, and refuses the patch if any of them is user-facing.
 - **The Gemini CLI edit gate never opened**: it marked on `AfterAgent`, whose
   payload names no skill. Gemini loads a skill with `activate_skill`, so the
   gate now opens on `AfterTool` for that tool, reading `tool_input.name`.

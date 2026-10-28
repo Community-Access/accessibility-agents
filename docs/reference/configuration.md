@@ -65,7 +65,7 @@ prompt cache lifetime:
 Skill content is stable between turns, so a longer cache lifetime turns most
 of it into cache hits.
 
-**Codex.** Two routes; use one, not both. The plugin (`codex plugin marketplace add Community-Access/accessibility-agents`, then `codex plugin add accessibility-agents@community-access`) gives the skills and the MCP server but no edit gate: Codex 0.165.0 lists `plugin_hooks` as removed and loads no hooks from a plugin. `npm run setup` gives the skills in `~/.agents/skills` and the gate in `~/.codex/hooks.json` (Codex lists all seven hooks); register the server with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`. Earlier versions of that hooks file carried a `$comment` key, which Codex rejected silently; it is now `description`.
+**Codex.** Two routes; use one, not both. The plugin (`codex plugin marketplace add Community-Access/accessibility-agents`, then `codex plugin add accessibility-agents@community-access`) gives the skills and the MCP server but no edit gate: Codex 0.165.0 lists `plugin_hooks` as removed and loads no hooks from a plugin. `npm run setup` gives the skills in `~/.agents/skills` and the gate in `~/.codex/hooks.json` (it defines seven hooks; Codex loaded all six before the `PostToolUse` entry was added); register the server with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`. Earlier versions of that hooks file carried a `$comment` key, which Codex rejected silently; it is now `description`.
 Codex caps its skill catalog at 2 percent of the model's context window, or
 8,000 characters when the window is unknown, and the cap is configurable with
 `skills.max_context_tokens`. This package's catalog is about 870 characters.

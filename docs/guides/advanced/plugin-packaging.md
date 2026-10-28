@@ -51,7 +51,7 @@ six routers. The Codex plugin does not load hooks: Codex 0.165.0 lists its
 `plugin_hooks` feature as removed, and after `codex plugin add` Codex reports
 no hooks. So on Codex the plugin gives the skills and the MCP server but no
 edit gate. For the gate, use `npm run setup` instead, which writes
-`~/.codex/hooks.json` (Codex then lists all seven hooks), and register the server
+`~/.codex/hooks.json` (it defines seven hooks; Codex loaded all six before the `PostToolUse` entry was added), and register the server
 with `codex mcp add accessibility-agents -- node "<checkout>/mcp-server/dist/stdio.mjs"`.
 Use one route, not both.
 

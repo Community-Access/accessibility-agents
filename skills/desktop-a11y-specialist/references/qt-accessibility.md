@@ -6,33 +6,44 @@ QML are out of scope here.
 
 ## Where a widget's accessible name comes from
 
-Qt's accessibility layer computes the name in this order. It is the same in Qt
-5.15 and Qt 6 (`QAccessibleWidget::text` and the per-widget overrides in
-`qtbase/src/widgets/accessible/`).
+Qt's accessibility layer computes the name from the first of these that is
+set. The order is the same in Qt 5.15 and Qt 6 (`QAccessibleWidget::text` and
+the per-widget overrides in `qtbase/src/widgets/accessible/`).
 
-1. `accessibleName`, when it is set.
-2. The widget's own visible text, for widgets that have one: a button's
-   `text`, a check box or radio button label, a group box title.
-3. A window's title, for top-level windows.
-4. Otherwise, a buddy label: the text of a `QLabel` whose `buddy` is this
-   widget and that has the same parent widget, with the `&` mnemonic stripped.
-   If the parent is a `QGroupBox`, its title is used instead.
+For buttons, check boxes and radio buttons (`QAbstractButton`):
+
+1. `accessibleName`.
+2. The button's own `text`, with the `&` mnemonic stripped.
+3. Then the same fallbacks as any other widget, below.
+
+For any other widget, including line edits, combo boxes and spin boxes:
+
+1. `accessibleName`.
+2. A window's title, for top-level windows.
+3. A buddy label: the text of a `QLabel` whose `buddy` is this widget and that
+   has the same parent widget, with the `&` mnemonic stripped.
+4. If no such label exists and the parent is a `QGroupBox`, the group box's
+   title.
+
+A `QGroupBox` itself is named last by its own title, after `accessibleName`
+and the fallbacks above.
 
 Two properties never become the name:
 
-- `toolTip` becomes the accessible **Description**, not the Name.
+- `toolTip` becomes the accessible **Description**, when
+  `accessibleDescription` is not set.
 - A `QLineEdit`'s `placeholderText` also becomes the Description, and only
   when there is no other description.
 
 NVDA reads the Description, so an icon-only button that has only a tooltip,
 or a line edit that has only a placeholder, can sound named in an NVDA spot
-check. Its Name is still empty. Tools and features that read the Name, such as
-Accessibility Insights, Narrator and speech input, find nothing to use. Do not
-treat an NVDA pass as proof that a widget has a name.
+check. Its Name is still empty, and anything that relies on the Name, such as
+Accessibility Insights checks and speech input commands, has nothing to use.
+Do not treat an NVDA pass as proof that a widget has a name.
 
 ## What to check
 
-- **Every interactive widget has a name** from one of the four sources above.
+- **Every interactive widget has a name** from one of the sources above.
   Report a widget with none as WCAG 4.1.2 Name, Role, Value.
 - **Icon-only `QPushButton` and `QToolButton`** fail most often. A `toolTip` is
   good to have, but the fix is `accessibleName` (or visible text). Severity is
@@ -50,8 +61,9 @@ treat an NVDA pass as proof that a widget has a name.
   clear a finding; the same `objectName` in another dialog is a different
   widget.
 - **`focusPolicy` set to `Qt::NoFocus`** on an interactive widget is a WCAG
-  2.1.1 Keyboard finding, unless the widget is a read-only display that the
-  user never needs to reach. Record the exceptions you accept so a re-audit
+  2.1.1 Keyboard finding only when its function cannot be reached from the
+  keyboard another way. A read-only display, or a toolbar button that repeats
+  a menu item or has a keyboard shortcut, passes. Record the exceptions you accept so a re-audit
   does not raise them again.
 - **Tab order**: every `<tabstop>` in a `.ui` file names a widget that exists
   in that file, and the order follows the visual layout (WCAG 2.4.3 Focus
@@ -78,7 +90,7 @@ A `.ui` fragment where each widget gets its name from a source Qt uses:
 The same in C++:
 
 ```cpp
-searchLabel->setBuddy(searchField);          // names searchField, adds Alt+S
+searchLabel->setBuddy(searchField);          // names searchField; Alt+S on Windows and Linux
 copyButton->setAccessibleName(tr("Copy password"));
 copyButton->setToolTip(tr("Copy password")); // description, for sighted users too
 ```

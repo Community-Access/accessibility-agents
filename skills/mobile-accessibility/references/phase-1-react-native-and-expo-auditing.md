@@ -216,7 +216,7 @@ element and give it one label:
 - SwiftUI: `.accessibilityElement(children: .combine)`
 - UIKit: `isAccessibilityElement = true` on the container, with the pieces
   joined in its `accessibilityLabel`
-- Jetpack Compose: `Modifier.semantics(mergeDescendants = true)`
+- Jetpack Compose: `Modifier.semantics(mergeDescendants = true) {}`
 
 Group static text only. In React Native and UIKit, a control inside a grouped
 row can no longer be reached on its own. For web content in a `WKWebView` or

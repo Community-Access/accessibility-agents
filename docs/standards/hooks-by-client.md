@@ -38,8 +38,17 @@ lead running inline used to leave the gate shut
 Codex has the model read a skill's SKILL.md with a shell command, so the gate
 opens on `PostToolUse` for `Bash` when the command reads the lead's SKILL.md
 (not when it writes, moves or deletes it), and on `UserPromptSubmit` when the
-prompt names the lead as `$accessibility-lead`, Codex's explicit skill
-mention.
+prompt names `$accessibility-lead` or `$web-accessibility-wizard`, Codex's
+explicit skill mention. That signal fires when the prompt is sent, before the
+skill runs, so finalize stays the backstop. Only a plain read counts (`cat`,
+`head`, `tail`, `nl`, `sed -n`, `Get-Content`, `type` and similar): listing,
+testing, diffing, grepping or writing the file does not, and each part of a
+compound command is judged on its own.
+
+Codex sends `apply_patch` with the patch text in `tool_input.command` and no
+path field, so the guard reads the edited paths from the patch's
+`*** Add File:`, `*** Update File:`, `*** Delete File:` and `*** Move to:`
+headers. Before this, it found no path and the gate allowed every Codex edit.
 On every route (Skill tool, `SubagentStop`, Copilot `postToolUse`, Gemini
 `AfterTool` on `activate_skill`) the guard opens the gate for exactly two skills,
 `accessibility-lead` and `web-accessibility-wizard`, with or without a plugin
@@ -66,8 +75,10 @@ not documented. The manifest is tested against the payloads Antigravity document
 **Claude Code and Codex** get the full gate: an edit is refused before review,
 a turn cannot end with an unreviewed edit, and a wizard survives compaction.
 On Codex that holds only for the `npm run setup` route, which writes
-`~/.codex/hooks.json` (Codex then lists all seven hooks: userPromptSubmit,
-preToolUse, postToolUse, subagentStop, preCompact, sessionStart, stop). The Codex plugin
+`~/.codex/hooks.json`, which defines seven hooks: userPromptSubmit,
+preToolUse, postToolUse, subagentStop, preCompact, sessionStart, stop. Codex
+loaded all six before the postToolUse entry was added; the seventh is tested
+against Codex's documented payloads, not yet in a live session. The Codex plugin
 route gives no gate, because Codex 0.165.0 lists `plugin_hooks` as removed.
 
 **Gemini CLI** gets the edit gate and compaction survival, but no finalize

@@ -7,14 +7,15 @@ sections.
 
 Two inline spans read as one phrase, and the accessibility tree agrees. Make
 their parent a `display: flex` or `display: grid` container and the same markup
-can reach assistive technology differently, in two ways. Both follow from the
-CSS layout rules, not from a browser bug:
+can reach assistive technology differently, in two ways. The dropped space
+follows from the CSS rules; the extra stops are how WebKit exposes the
+blockified items:
 
-- **The phrase splits.** Every child of a flex or grid container becomes a flex
-  or grid item and is blockified, so it is laid out as its own block. iOS
-  VoiceOver in Safari and WebKit views tends to stop on each one, so a message
-  header of author and timestamp costs a swipe per piece before the message
-  body.
+- **The phrase splits.** Every in-flow child of a flex or grid container
+  becomes a flex or grid item and is blockified, so it is laid out as its own
+  block. WebKit exposes each one separately, and iOS VoiceOver in Safari and
+  WebKit views stops on each, so a message header of author and timestamp
+  costs a swipe per piece before the message body.
 - **The words glue together.** A run of only white space between flex or grid
   children is not rendered, so there is no space in the text the browser
   exposes. Adjacent children can then be spoken as one word: "Ada6:37 PM",
@@ -28,19 +29,22 @@ Xcode Accessibility Inspector, which lists the elements VoiceOver stops on.
 Report the glued word as
 [WCAG 1.3.1 Info and Relationships](https://www.w3.org/TR/WCAG22/#info-and-relationships):
 the word boundary is information the presentation shows and the text does not
-carry. Report a phrase split into many stops as
+carry. A phrase split into several stops does not change the reading order, so
+report it as a `minor` usability finding with `wcag` set to `n/a`. Use
 [WCAG 1.3.2 Meaningful Sequence](https://www.w3.org/TR/WCAG22/#meaningful-sequence)
-only when the split changes the meaning or the reading order; otherwise it is a
-`minor` usability finding with `wcag` set to `n/a`.
+only when `order`, `flex-direction: row-reverse` or grid placement makes the
+visual order differ from the DOM order in a way that changes the meaning.
 
 ### Fixes
 
 - Wrap the pieces of one phrase in a single inline element, and make that
   element the one flex or grid child. Author and timestamp become one `span`
   with two children, not two flex items.
-- Where the elements must stay separate items, put a real separator character
-  between them inside one of the items, or in a visually hidden span. A comma
-  reads naturally. Do not put the separator in an `aria-hidden` element.
+- Where the elements must stay separate items, put a separator that is not a
+  space, such as a comma, inside one of the items or in a visually hidden span.
+  A plain space at the end of an item (`<span>Ada </span>`) is removed with the
+  rest of the trailing white space, so it does not help. Do not put the
+  separator in an `aria-hidden` element.
 - Do not rely on `gap`, `margin` or `padding` for the boundary. They are visual
   spacing and add no text.
 
