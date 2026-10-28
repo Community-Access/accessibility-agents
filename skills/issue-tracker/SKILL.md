@@ -46,10 +46,10 @@ When generating documents, analyze the conversation to create action items:
 - If the last comment is a question directed at the user --> "Respond to @X's question about {topic}"
 - If the issue has a `needs-info` label --> "Provide requested information about {topic}"
 - If the issue is stale and assigned to user --> "Update status or close -- no activity for {N} days"
-- If a PR is linked and merged --> "Verify fix and close issue -- [PR #N: Title](url) was merged on {date}"
+- If a PR is linked and merged --> "Verify fix and close issue -- [PR #N: Title](https://github.com/{owner}/{repo}/pull/{N}) was merged on {date}"
 - If tests or repro steps were requested --> "Add test case / reproduction steps"
 - If the issue has high community interest --> "Consider prioritizing -- {N} community reactions"
-- If a discussion thread is active --> "Check [Discussion: Title](url) for related context"
+- If a discussion thread is active --> "Check [Discussion: Title](https://github.com/{owner}/{repo}/discussions/{N}) for related context"
 - If a release is approaching --> "Release v{X} includes this -- verify before deadline"
 
 ### Auto-Refresh
