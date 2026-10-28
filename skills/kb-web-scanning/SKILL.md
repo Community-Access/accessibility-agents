@@ -30,21 +30,24 @@ Each method, with tool and when to use.
 
 ```bash
 # Single page scan (WCAG 2.2 AA)
-npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa
+npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa
 
 # Save results to JSON
-npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa --save ACCESSIBILITY-SCAN.json
+npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save ACCESSIBILITY-SCAN.json
 
 # Multiple pages
-npx @axe-core/cli <URL1> <URL2> <URL3> --tags wcag2a,wcag2aa,wcag21a,wcag21aa --save ACCESSIBILITY-SCAN.json
+npx @axe-core/cli <URL1> <URL2> <URL3> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --save ACCESSIBILITY-SCAN.json
 
-# With Chrome flags (headless)
-npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa --chrome-flags="--headless --no-sandbox"
+# Extra Chrome arguments (the default browser is already headless Chrome)
+npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --chrome-options="no-sandbox"
+
+# Fail the command (exit 1) when violations are found, for CI
+npx @axe-core/cli <URL> --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --exit
 ```
 
 ### axe-core Tag Reference
 
-Each tag, with its standard.
+Each tag, with its standard. The WCAG 2.2 AA set is all five WCAG tags together; each tag selects only the rules first added at that version and level.
 
 | Tag | Standard |
 |-----|----------|
@@ -52,8 +55,11 @@ Each tag, with its standard.
 | wcag2aa | WCAG 2.0 Level AA |
 | wcag21a | WCAG 2.1 Level A |
 | wcag21aa | WCAG 2.1 Level AA |
-| wcag22aa | WCAG 2.2 Level AA |
+| wcag22aa | WCAG 2.2 Level AA - in axe-core 4.14 only `target-size` (2.5.8), which runs only when this tag is listed |
+| wcag2a-obsolete | 4.1.1 Parsing rules (`duplicate-id`, `duplicate-id-active`), deprecated; do not include |
 | best-practice | Best practices (not WCAG required) |
+
+Most WCAG 2.2 criteria (2.4.11, 2.5.7, 3.2.6, 3.3.7, 3.3.8) have no axe rule; check them manually.
 
 ## Screenshot Capture
 
@@ -169,7 +175,7 @@ tailwind.config.*
   "profile": "standard",
   "wcagLevel": "AA",
   "wcagVersion": "2.2",
-  "axeTags": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+  "axeTags": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"],
   "maxPages": 50,
   "screenshots": false,
   "framework": "auto",
@@ -187,5 +193,5 @@ Each profile, with its phases and thoroughness.
 | Profile | Phases | Thoroughness |
 |---------|--------|-------------|
 | Quick | 1, 3, 4, 9 | Errors and critical only |
-| Standard | All (1-9) | Errors and warnings |
+| Standard | All audit phases (1-10) | Errors and warnings |
 | Deep | All + extras | All severities + animation, cognitive, touch |

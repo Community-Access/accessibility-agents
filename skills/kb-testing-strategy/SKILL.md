@@ -15,21 +15,21 @@ metadata:
 
 ## Testing Strategy Skill
 
-Decision frameworks for accessibility testing — when to use automated tools vs. manual testing, which screen reader + browser combinations to test, and how to write accessibility acceptance criteria.
+Decision frameworks for accessibility testing - when to use automated tools vs. manual testing, which screen reader + browser combinations to test, and how to write accessibility acceptance criteria.
 
 ---
 
 ## Automated vs. Manual Testing Coverage
 
-Each row, with what automated tools catch (~30-40%) and what requires manual testing (~60-70%).
+Each row, with what automated tools catch and what requires manual testing. Published coverage estimates vary with the study and with whether issues or success criteria are counted, so treat a clean automated scan as a floor, not a pass. Most WCAG 2.2 additions (2.4.11, 2.5.7, 3.2.6, 3.3.7, 3.3.8) have no axe rule.
 
-| What Automated Tools Catch (~30-40%) | What Requires Manual Testing (~60-70%) |
+| What Automated Tools Catch | What Requires Manual Testing |
 |--------------------------------------|---------------------------------------|
 | Missing alt text on images | Alt text quality and accuracy |
 | Missing form labels | Label clarity and helpfulness |
 | Color contrast ratios (computed) | Color contrast in context (gradients, images) |
 | Missing lang attribute | Correct language identification |
-| Duplicate IDs | Logical reading order |
+| Duplicate IDs referenced by ARIA or labels (`duplicate-id-aria`) | Logical reading order |
 | Missing ARIA roles on custom widgets | Correct ARIA role for the interaction pattern |
 | Heading hierarchy violations | Heading text meaningfulness |
 | Empty links and buttons | Link/button text descriptiveness |
@@ -64,17 +64,17 @@ Each screen reader, with its browser and OS.
 
 ```text
 Is it a new component or page?
-├── Yes → Full test coverage (automated + manual)
-│   ├── Run axe-core / Lighthouse scan
-│   ├── Keyboard-only navigation test
-│   ├── Screen reader announcement test (NVDA + VoiceOver minimum)
-│   └── Visual check at 200% zoom
-└── No → What changed?
-    ├── Colors/styling → Contrast check + visual review
-    ├── Interactive behavior → Keyboard + screen reader test
-    ├── Content/text → Screen reader announcement check
-    ├── Layout/order → Reading order + focus order test
-    └── Dependencies updated → Regression scan (axe-core)
+- Yes: full test coverage (automated + manual)
+  - Run axe-core / Lighthouse scan
+  - Keyboard-only navigation test
+  - Screen reader announcement test (NVDA + VoiceOver minimum)
+  - Visual check at 200% zoom
+- No: what changed?
+  - Colors/styling: contrast check + visual review
+  - Interactive behavior: keyboard + screen reader test
+  - Content/text: screen reader announcement check
+  - Layout/order: reading order + focus order test
+  - Dependencies updated: regression scan (axe-core)
 ```
 
 ## Regression Testing Patterns
@@ -88,7 +88,7 @@ Is it a new component or page?
 
 ### Preventing Regressions
 
-- Add accessibility assertions to existing component tests (see `testing-accessibility.instructions.md`)
+- Add accessibility assertions to existing component tests (see `skills/kb-path-instructions/references/testing-accessibility.md`)
 - Include keyboard navigation in E2E test suites
 - Track accessibility score trends over time (not just pass/fail)
 
@@ -107,7 +107,7 @@ Then [accessible outcome]:
 - [ ] Focus is visible when the component receives focus
 - [ ] State changes are announced to screen readers (aria-expanded, aria-selected, aria-checked, etc.)
 - [ ] Error messages are associated with their inputs (aria-describedby or aria-errormessage)
-- [ ] Content is readable at 200% zoom without horizontal scrolling
+- [ ] Text resizes to 200% without loss of content (1.4.4), and content reflows without horizontal scrolling at 320 CSS px wide, about 400% zoom (1.4.10)
 - [ ] Color is not the only means of conveying information
 ```
 

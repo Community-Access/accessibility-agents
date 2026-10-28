@@ -15,7 +15,7 @@ metadata:
 
 ## Markdown Accessibility Skill
 
-Reusable knowledge module for the `markdown-a11y-assistant`, `markdown-scanner`, and `markdown-fixer` agents and the `markdown-accessibility` always-on instructions. Provides pattern libraries, severity scoring, fix templates, emoji translation maps, diagram description templates, and GitHub anchor generation rules for comprehensive markdown accessibility auditing across 9 domains.
+Reusable knowledge module for the `markdown-a11y-assistant`, `markdown-scanner`, and `markdown-fixer` skills. Provides pattern libraries, severity scoring, fix templates, emoji translation maps, diagram description templates, and GitHub anchor generation rules for comprehensive markdown accessibility auditing across 9 domains.
 
 ## Domains Covered
 
@@ -35,52 +35,51 @@ Each issue, with its severity, WCAG and auto-fix.
 
 | Issue | Severity | WCAG | Auto-fix? |
 |-------|----------|------|-----------|
-| Image missing alt text | Critical | 1.1.1 (A) | No - needs visual judgment |
-| Mermaid diagram with no text alternative | Critical | 1.1.1 (A) | Partial - simple diagrams auto-described; complex need human |
-| ASCII diagram with no text description | Critical | 1.1.1 (A) | Partial - flag and wrap; description needs human or auto-gen |
-| Broken anchor link | Serious | 2.4.4 (A) | No - confirm which end changes |
-| Ambiguous link text ("here", "click here") | Serious | 2.4.4 (A) | Yes - rewrite using surrounding context |
-| Skipped heading level | Serious | 1.3.1 (A) | Yes - interpolate missing level |
-| Multiple H1s | Serious | 1.3.1 (A) | Yes - demote all but first |
-| Emoji in heading | Moderate | Cognitive | Yes - remove or translate per preference |
-| Consecutive emoji (2+) | Moderate | 1.3.3 (A) | Yes - remove sequence or translate |
-| Emoji used as bullet | Moderate | 1.3.1 (A) | Yes - replace with `-` |
-| Em-dash in prose | Moderate | Cognitive | Yes - replace with ` - ` |
-| Table without preceding description | Moderate | 1.3.1 (A) | Yes - add one-sentence summary |
-| Bold text used as heading | Minor | 2.4.6 (AA) | Yes - convert to appropriate heading |
-| Bare URL in prose | Minor | 2.4.4 (A) | Yes - wrap with descriptive text |
-| Emoji used for meaning, single inline | Minor | 1.3.3 (A) | Conditional - remove-all: yes; remove-decorative: flag; translate: translate |
+| Image missing alt text | critical | 1.1.1 (A) | No - needs visual judgment |
+| Mermaid diagram with no text alternative | critical | 1.1.1 (A) | Partial - simple diagrams auto-described; complex need human |
+| ASCII diagram with no text description | critical | 1.1.1 (A) | Partial - flag and wrap; description needs human or auto-gen |
+| Broken anchor link | serious | 2.4.4 (A) | No - confirm which end changes |
+| Ambiguous link text ("here", "click here") | serious | 2.4.4 (A) | Yes - rewrite using surrounding context |
+| Skipped heading level | serious | 1.3.1 (A) | Yes - interpolate missing level |
+| Multiple H1s | serious | 1.3.1 (A) | Yes - demote all but first |
+| Emoji in heading | moderate | Cognitive | Yes - remove or translate per preference |
+| Consecutive emoji (2+) | moderate | 1.3.3 (A) | Yes - remove sequence or translate |
+| Emoji used as bullet | moderate | 1.3.1 (A) | Yes - replace with `-` |
+| Em-dash in prose | moderate | Cognitive | Yes - replace with ` - ` |
+| Table without preceding description | moderate | 1.3.1 (A) | Yes - add one-sentence summary |
+| Bold text used as heading | minor | 2.4.6 (AA) | Yes - convert to appropriate heading |
+| Bare URL in prose | minor | 2.4.4 (A) | Yes - wrap with descriptive text |
+| Emoji used for meaning, single inline | minor | 1.3.3 (A) | Conditional - remove-all: yes; remove-decorative: flag; translate: translate |
 
 ### Scoring Formula
 
+Scores and grades come from `skills/a11y-core/scripts/merge-findings.mjs`; do not compute them by hand. In summary:
+
 ```text
-File Score = 100 - (sum of weighted findings)
-
-Critical: -15 pts each
-Serious:  - 7 pts each
-Moderate: - 3 pts each
-Minor:    - 1 pt each
-
-Floor: 0
+penalty = sum over findings of weight x confidence factor
+  weight: critical 10, serious 5, moderate 2, minor 1
+  confidence factor: high 1, medium 0.7, low 0.4
+checks  = max(findings + passed checks, 10)
+score   = max(0, round(100 - (penalty / checks) x 20))
 ```
 
 ### Score Grades
 
-Each score, with its grade and meaning.
+Each score, with its grade.
 
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 90-100 | A | Excellent - accessible documentation |
-| 75-89 | B | Good - minor issues |
-| 50-74 | C | Needs Work - several barriers |
-| 25-49 | D | Poor - significant barriers |
-| 0-24 | F | Failing - critical AT barriers |
+| Score | Grade |
+|-------|-------|
+| 90-100 | A |
+| 80-89 | B |
+| 70-79 | C |
+| 60-69 | D |
+| 0-59 | F |
 
 ## Emoji Handling Modes
 
-The agent supports four modes. The **active mode is determined by the nearest `markdown-accessibility.instructions.md` file** in scope. If no instructions file sets a mode, the default is `remove-decorative`.
+The agent supports four modes. The **active mode is determined by the nearest `markdown-accessibility.instructions.md` file** in the project being audited. If no instructions file sets a mode, the default is `remove-decorative`.
 
-> **This repository:** The `.github/instructions/markdown-accessibility.instructions.md` file in this repo sets mode to **`remove-all`**. All emoji are removed, not translated. This overrides the skill default.
+> **This repository:** The house style in `AGENTS.md` (no emoji, anywhere) means mode **`remove-all`** for this repo's own docs. All emoji are removed, not translated. This overrides the skill default.
 
 | Mode | Description | Default? |
 |------|-------------|----------|
@@ -92,12 +91,12 @@ The agent supports four modes. The **active mode is determined by the nearest `m
 **Mode resolution order:**
 
 1. Agent system prompt or per-task explicit mode override
-2. Nearest `*.instructions.md` file in scope (e.g., `.github/instructions/markdown-accessibility.instructions.md`)
+2. Nearest `*.instructions.md` file in scope in the audited project (e.g., its `.github/instructions/markdown-accessibility.instructions.md`)
 3. Skill default (`remove-decorative`)
 
 ### Emoji Translation Map
 
-When using `translate` mode, replace each emoji with the parenthesized English equivalent:
+When using `translate` mode, replace each emoji with the parenthesized English equivalent. This table and the emoji examples below contain emoji deliberately: they are input to match or examples of what not to write, not house style.
 
 | Emoji | Translation | Emoji | Translation |
 |-------|------------|-------|------------|
@@ -178,7 +177,7 @@ Flag for human review: `sequenceDiagram`, `classDiagram`, `erDiagram`, `stateDia
 
 ### Mermaid Replacement Template
 
-```markdown
+````markdown
 [Generated or user-provided text description - this is the primary accessible content]
 
 <details>
@@ -189,7 +188,7 @@ Flag for human review: `sequenceDiagram`, `classDiagram`, `erDiagram`, `stateDia
 ```
 
 </details>
-```
+````
 
 ### ASCII Diagram Detection
 
@@ -197,20 +196,18 @@ ASCII art patterns: non-code-block lines (or unnamed code blocks) containing com
 
 ### ASCII Diagram Replacement Template
 
-```markdown
+````markdown
 [Generated or user-provided text description - this is the primary accessible content]
 
 <details>
 <summary>ASCII diagram</summary>
 
-```
-
+```text
 [original ASCII art - unchanged]
-
-```html
+```
 
 </details>
-```
+````
 
 ## Pattern Library: Ambiguous Link Detection
 
@@ -250,9 +247,9 @@ Multiple `[X](url1)` and `[X](url2)` with same X but different URLs on the same 
 GitHub converts headings to anchor IDs using these rules:
 
 1. Lowercase entire string
-2. Remove all characters except: letters (a-z), digits (0-9), spaces, hyphens
-3. Replace spaces with hyphens
-4. Remove leading and trailing hyphens
+2. Remove all characters except letters, digits, spaces, hyphens and underscores (letters and digits in any script are kept)
+3. Replace each space with a hyphen; leading or trailing hyphens are not trimmed
+4. Repeated headings get `-1`, `-2` and so on appended, in document order
 
 ### Examples
 
@@ -266,7 +263,7 @@ Each heading, with its anchor.
 | `## C# and .NET Support` | `#c-and-net-support` |
 | `## Step 1: Installation` | `#step-1-installation` |
 | `## FAQ (Frequently Asked Questions)` | `#faq-frequently-asked-questions` |
-| `## 🚀 Quick Start` | `#-quick-start` (emoji becomes empty, may vary) |
+| `## 🚀 Quick Start` (bad example: emoji in heading) | `#-quick-start` (the emoji is removed and the space becomes a hyphen) |
 
 For headings containing emoji: GitHub strips the emoji character and generates an anchor from the remaining text. Anchors referencing emoji-containing headings are fragile and should be flagged.
 
@@ -294,7 +291,7 @@ Emoji-as-bullet pattern: List item where first non-whitespace character is an em
 
 ## Pattern Library: Em-Dash and En-Dash
 
-Detection patterns:
+Detection patterns (the first two lines show the characters deliberately, as what to find):
 
 ```text
 —           Unicode em-dash (U+2014)
@@ -313,7 +310,7 @@ Safe to skip (do not modify):
 
 Replacement: ` - ` (space + hyphen + space)
 
-En-dash in numeric ranges: `2–4 hours` -> `2 - 4 hours`
+En-dash in numeric ranges (bad example): `2–4 hours` -> `2 - 4 hours`
 
 ## Pattern Library: Mermaid Diagrams
 
@@ -333,7 +330,7 @@ Diagram types and description guidance:
 
 Wrapping template:
 
-```markdown
+````markdown
 [Generated or user-provided text description]
 
 <details>
@@ -344,7 +341,7 @@ Wrapping template:
 ```
 
 </details>
-```
+````
 
 ## Fix Templates
 
@@ -361,7 +358,7 @@ For more information, see the [installation guide](https://example.com/guide).
 ### Emoji bullet fix
 
 ```markdown
-# Before
+# Before (bad example: emoji bullets)
 - 🚀 Deploy to production
 - ✅ Run tests
 
@@ -373,8 +370,8 @@ For more information, see the [installation guide](https://example.com/guide).
 ### Emoji heading fix
 
 ```markdown
-# Before
-## Configuration
+# Before (bad example: emoji in heading)
+## 🔧 Configuration
 
 # After
 ## Configuration
@@ -383,7 +380,7 @@ For more information, see the [installation guide](https://example.com/guide).
 ### Em-dash fix
 
 ```markdown
-# Before
+# Before (bad example: em dashes)
 The agent—when invoked—will scan all files.
 
 # After

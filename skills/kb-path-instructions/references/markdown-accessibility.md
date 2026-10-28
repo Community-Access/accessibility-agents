@@ -8,7 +8,7 @@ Part of the `kb-path-instructions` skill.
 
 No other instruction files are required. This file is self-contained for markdown accessibility.
 
-**Skill file:** For the full pattern library, emoji translation maps, Mermaid templates, and severity scoring formula, load the `markdown-accessibility` skill.
+**Skill file:** For the full pattern library, emoji translation maps, Mermaid templates, and severity scoring formula, load the `kb-markdown-accessibility` skill.
 
 ## Repository Hard Rule: No Emoji
 
@@ -62,7 +62,7 @@ If any answer is No, rewrite the link text.
 | `![](decorative-divider.png)` (empty alt = decorative) | `![decorative divider](decorative-divider.png)` |
 | `![Screenshot of the Settings Privacy page](screenshot.png)` | `![screenshot](screenshot.png)` |
 
-> **Impact:** Screen reader users navigate by heading level. Skipped levels create gaps in the outline — users assume content is missing. Bold text used as a heading cannot be navigated at all.
+> **Impact:** Screen reader users navigate by heading level. Skipped levels create gaps in the outline - users assume content is missing. Bold text used as a heading cannot be navigated at all.
 
 ## 3. Heading Hierarchy (WCAG 1.3.1 / 2.4.6)
 
@@ -102,11 +102,11 @@ Required behavior (mode: `remove-all`):
 - Preserve meaning in plain text where needed.
 - Never keep emoji in final markdown output.
 
-`remove-all` mode is active for this repository. The `markdown-accessibility` skill supports additional modes (`remove-decorative`, `translate`, `leave-unchanged`) — see the skill file for details — but they are disabled here by this instruction file.
+`remove-all` mode is active for this repository. The `kb-markdown-accessibility` skill supports additional modes (`remove-decorative`, `translate`, `leave-unchanged`) - see the skill file for details - but they are disabled here by this instruction file.
 
 ## 6. Mermaid and ASCII Diagrams (WCAG 1.1.1 / 1.3.1)
 
-> **Impact:** Mermaid diagrams and ASCII art are entirely invisible to screen reader users — they hear nothing or a jumble of punctuation characters. The `<details>` pattern preserves the visual diagram for sighted users while exposing the text description to AT.
+> **Impact:** Mermaid diagrams and ASCII art are entirely invisible to screen reader users - they hear nothing or a jumble of punctuation characters. The `<details>` pattern preserves the visual diagram for sighted users while exposing the text description to AT.
 
 Both Mermaid diagrams and ASCII art render without accessible text alternatives for screen reader users.
 
@@ -115,7 +115,7 @@ Both Mermaid diagrams and ASCII art render without accessible text alternatives 
 - Flag every ` ```mermaid ` block that does not have a text description immediately before it.
 - For replacement: add a text description, then wrap the original Mermaid source in `<details>` so sighted users retain the visual:
 
-```markdown
+````markdown
 The following diagram shows a linear flow: Start leads to Process, then to End.
 
 <details>
@@ -127,7 +127,7 @@ graph TD
 ```
 
 </details>
-```
+````
 
 - Simple diagrams (`graph`, `flowchart`, `pie`, `gantt`): auto-generate a description from node labels and connections.
 - Complex diagrams (`sequenceDiagram`, `classDiagram`, `erDiagram`): generate a draft description and ask the author to verify accuracy before applying.
@@ -140,13 +140,13 @@ graph TD
 
 ## 7. Em-Dash and En-Dash Normalization (Cognitive / Readability)
 
-> **Impact:** Em-dashes are read by screen readers inconsistently — NVDA reads them as "dash", JAWS skips them silently, VoiceOver reads "em dash". The result is that sentence flow breaks unpredictably.
+> **Impact:** Em-dashes are read by screen readers inconsistently - NVDA reads them as "dash", JAWS skips them silently, VoiceOver reads "em dash". The result is that sentence flow breaks unpredictably.
 
-- Em-dashes (`—`, `--` used as em-dash, or `---` in prose) are read inconsistently by screen readers.
+- Em-dashes (`—` shown deliberately, `--` used as em-dash, or `---` in prose) are read inconsistently by screen readers.
 - Recommended fix: replace with ` - ` (space-hyphen-space) in prose.
 - Never modify: content inside code blocks or inline code, YAML front matter, HTML comments, or standalone `---` horizontal rules.
 
-Before: `The process takes 2--4 hours—depending on configuration.`
+Before (bad example, dashes shown deliberately): `The process takes 2--4 hours—depending on configuration.`
 After: `The process takes 2 - 4 hours - depending on configuration.`
 
 ## 8. Anchor Link Validation (WCAG 2.4.4)
@@ -155,7 +155,7 @@ After: `The process takes 2 - 4 hours - depending on configuration.`
 
 - Broken anchor links (`[text](#nonexistent-section)`) silently fail - users are dropped at top of page with no error.
 - Validate all `[text](#anchor)` links against headings in the same file.
-- GitHub anchor generation rules: lowercase everything, replace spaces with hyphens, remove all non-alphanumeric characters except hyphens.
+- GitHub anchor generation rules: lowercase everything, remove punctuation except hyphens and underscores, replace each space with a hyphen (no trimming), and append `-1`, `-2` to repeated headings.
   - `## My Heading` -> `#my-heading`
   - `## API: v2.0` -> `#api-v20`
   - `## What's New?` -> `#whats-new`

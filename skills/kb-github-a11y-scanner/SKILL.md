@@ -16,16 +16,16 @@ metadata:
 
 ## What Is the GitHub Accessibility Scanner?
 
-The [GitHub Accessibility Scanner](https://github.com/github/accessibility-scanner) (`github/accessibility-scanner@v2`) is an official GitHub Action that:
+The [GitHub Accessibility Scanner](https://github.com/github/accessibility-scanner) (`github/accessibility-scanner@v3`) is an official GitHub Action that:
 
-- Scans live URLs for accessibility barriers using axe-core in a headless browser
+- Scans live URLs for accessibility barriers in a headless Playwright browser (axe-core by default; `accesslint` and plugins are optional)
 - Creates trackable GitHub Issues for each finding, with affected element, WCAG criterion, and remediation guidance
 - Optionally assigns issues to GitHub Copilot for AI-powered fix suggestions and PR creation
 - Caches results across runs for delta detection (new, fixed, persistent findings)
 - Supports authenticated scanning (login flows, SSO, passkeys via Playwright auth context)
 - Optionally captures screenshots and attaches them to filed issues
 
-**Current version:** v2 (public preview)
+**Current version:** v3 (public preview)
 
 ## Detecting Scanner Presence
 
@@ -43,7 +43,7 @@ grep -rl "github/accessibility-scanner" .github/workflows/
 **Pattern to match in YAML:**
 
 ```yaml
-- uses: github/accessibility-scanner@v2
+- uses: github/accessibility-scanner@v3
 ```
 
 ### Workflow Inputs
@@ -52,16 +52,20 @@ When a scanner workflow is found, extract its configuration:
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `urls` | Yes | Newline-delimited list of URLs to scan |
+| `urls` | Yes, unless `url_configs` is set | Newline-delimited list of URLs to scan |
+| `url_configs` | No | JSON array of per-URL configs (`url`, optional `excludeSelectors` and `waitForSelectors`); takes precedence over `urls` |
 | `repository` | Yes | Repository (owner/name) where issues and PRs are created |
-| `token` | Yes | Fine-grained PAT with write access (contents, issues, PRs, metadata) |
-| `cache_key` | Yes | Filename for caching results across runs (e.g., `cached_results-mysite.json`) |
+| `token` | Yes | Fine-grained PAT: `actions`, `contents`, `issues` and `pull-requests` write, `metadata` read. `GITHUB_TOKEN` does not work |
+| `cache_key` | Yes | Key for caching results across runs; characters `A-Za-z0-9._/-` |
 | `login_url` | No | Login page URL for authenticated scanning |
 | `username` | No | Username for authentication |
 | `password` | No | Password for authentication (via repository secret) |
-| `auth_context` | No | Stringified JSON for complex authentication (Playwright session state) |
+| `auth_context` | No | JSON with username, password, cookies and/or localStorage; overrides `login_url`, `username`, `password` |
 | `skip_copilot_assignment` | No | Set `true` to skip assigning issues to Copilot |
 | `include_screenshots` | No | Set `true` to capture screenshots (stored on `gh-cache` branch) |
+| `group_by` | No | `finding` (default), `rule` or `rule+url`; decides how many issues are filed |
+| `scans` | No | Scanners to run: `axe` (default), `accesslint`, or plugin names |
+| `dry_run` | No | Log what would be filed without touching issues or the cache |
 
 ## Parsing Scanner-Created Issues
 
@@ -81,7 +85,7 @@ Scanner issues typically contain:
 
 | Section | Content | Agent Use |
 |---------|---------|-----------|
-| Violation title | The axe-core rule that was violated | Map to `help-url-reference` for remediation docs |
+| Violation title | The axe-core rule that was violated | Map to `kb-help-url-reference` for remediation docs |
 | WCAG criterion | The specific WCAG success criterion | Used for severity scoring and compliance mapping |
 | Affected element | CSS selector or HTML snippet of the failing element | Used by `scanner-bridge` to map to source code |
 | Impact level | Critical, Serious, Moderate, or Minor | Direct mapping to agent severity model |
@@ -91,30 +95,30 @@ Scanner issues typically contain:
 
 ### Severity Mapping
 
-The scanner uses axe-core impact levels that map directly to the agent severity model:
+The scanner uses axe-core impact levels that map directly to the agent severity model. Weights are the ones in `skills/a11y-core/scripts/merge-findings.mjs`, multiplied by confidence (high 1, medium 0.7, low 0.4):
 
 | Scanner Impact | Agent Severity | Score Weight |
 |---------------|---------------|-------------|
-| Critical | Critical | -15 (both sources) / -10 (single source) |
-| Serious | Serious | -7 (high confidence) |
-| Moderate | Moderate | -3 (high confidence) |
-| Minor | Minor | -1 |
+| Critical | critical | 10 |
+| Serious | serious | 5 |
+| Moderate | moderate | 2 |
+| Minor | minor | 1 |
 
 ### axe-core Rule Correlation
 
-The scanner uses axe-core under the hood. Scanner issue titles and violation IDs correspond to axe-core rules already cataloged in `help-url-reference`. Common scanner-reported rules:
+The scanner uses axe-core under the hood. Scanner issue titles and violation IDs correspond to axe-core rules already cataloged in `kb-help-url-reference`. Common scanner-reported rules:
 
 | axe-core Rule ID | WCAG Criterion | Common Description |
 |-------------------|----------------|-------------------|
 | `image-alt` | 1.1.1 | Images must have alternate text |
-| `label` | 1.3.1 | Form elements must have labels |
+| `label` | 4.1.2 | Form elements must have labels |
 | `color-contrast` | 1.4.3 | Elements must have sufficient color contrast |
 | `link-name` | 2.4.4 | Links must have discernible text |
 | `html-has-lang` | 3.1.1 | `<html>` element must have a lang attribute |
 | `button-name` | 4.1.2 | Buttons must have discernible text |
 | `document-title` | 2.4.2 | Documents must have `<title>` element |
 | `bypass` | 2.4.1 | Page must have means to bypass repeated blocks |
-| `heading-order` | 1.3.1 | Heading levels should increase by one |
+| `heading-order` | none (best-practice; relates to 1.3.1) | Heading levels should increase by one |
 | `aria-allowed-attr` | 4.1.2 | ARIA attributes must be allowed for element role |
 
 ## Caching and Delta Detection
@@ -188,28 +192,18 @@ repo:{REPO} is:pr is:merged author:copilot-swe-agent label:accessibility
 
 ## Structured Output Format
 
-When `scanner-bridge` normalizes scanner issue data, it produces findings in this format:
+When `scanner-bridge` normalizes scanner issue data, each finding follows `skills/a11y-core/schemas/findings.schema.json`. The scanner issue, Copilot state and screenshot go in `evidence`:
 
 ```json
 {
-  "source": "github-a11y-scanner",
-  "ruleId": "color-contrast",
-  "wcagCriterion": "1.4.3",
-  "wcagLevel": "AA",
+  "rule": "color-contrast",
+  "wcag": "1.4.3 AA",
   "severity": "serious",
   "confidence": "high",
-  "url": "https://example.com/login",
-  "element": "button.submit-btn",
-  "description": "Element has insufficient color contrast ratio of 3.2:1 (expected 4.5:1)",
-  "remediation": "Change the text color or background to achieve at least 4.5:1 contrast ratio",
-  "githubIssue": {
-    "number": 42,
-    "url": "https://github.com/owner/repo/issues/42",
-    "state": "open",
-    "copilotAssigned": true,
-    "fixPR": null
-  },
-  "screenshot": "https://github.com/owner/repo/blob/gh-cache/screenshots/login-contrast.png"
+  "location": "https://example.com/login button.submit-btn",
+  "summary": "Element has insufficient color contrast ratio of 3.2:1 (expected 4.5:1)",
+  "fix": "Change the text color or background to achieve at least 4.5:1 contrast ratio",
+  "evidence": "github-a11y-scanner issue https://github.com/owner/repo/issues/42 (open, assigned to Copilot, no fix PR); screenshot on gh-cache branch: screenshots/login-contrast.png"
 }
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: kb-document-scanning
-description: Reference data, not a reviewer. Discover and inventory documents for accessibility audits. Scans folders for .docx, .xlsx, .pptx, and PDFs. Detects git changes and extracts title, author, and language metadata.
+description: Reference data, not a reviewer. Discover and inventory documents for accessibility audits. Scans folders for .docx, .xlsx, .pptx, PDF and ePub files. Detects git changes and extracts title, author, and language metadata.
 license: MIT
 disable-model-invocation: true
 user-invocable: false
@@ -24,17 +24,18 @@ Each extension, with its type and sub-agent.
 | .xlsx | Excel workbook | excel-accessibility |
 | .pptx | PowerPoint presentation | powerpoint-accessibility |
 | .pdf | PDF document | pdf-accessibility |
+| .epub | ePub publication | epub-accessibility |
 
 ## File Discovery Commands
 
 ### PowerShell (Windows)
 
 ```powershell
-# Non-recursive scan
-Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf
+# Non-recursive scan (-Include needs the trailing \* when -Recurse is not used)
+Get-ChildItem -Path "<folder>\*" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub
 
 # Recursive scan
-Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurse |
+Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
   Where-Object { $_.Name -notlike '~$*' -and $_.Name -notlike '*.tmp' -and $_.Name -notlike '*.bak' } |
   Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules|__pycache__|\.vscode)[\\/]' }
 ```
@@ -43,10 +44,10 @@ Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurs
 
 ```bash
 # Non-recursive scan
-find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" \) ! -name "~\$*"
+find "<folder>" -maxdepth 1 -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) ! -name "~\$*"
 
 # Recursive scan
-find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" \) \
+find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o -name "*.pdf" -o -name "*.epub" \) \
   ! -name "~\$*" ! -name "*.tmp" ! -name "*.bak" \
   ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/__pycache__/*" ! -path "*/.vscode/*"
 ```
@@ -57,20 +58,20 @@ find "<folder>" -type f \( -name "*.docx" -o -name "*.xlsx" -o -name "*.pptx" -o
 
 ```bash
 # Files changed since last commit
-git diff --name-only HEAD~1 HEAD -- '*.docx' '*.xlsx' '*.pptx' '*.pdf'
+git diff --name-only HEAD~1 HEAD -- '*.docx' '*.xlsx' '*.pptx' '*.pdf' '*.epub'
 
 # Files changed since a specific tag
-git diff --name-only <tag> HEAD -- '*.docx' '*.xlsx' '*.pptx' '*.pdf'
+git diff --name-only <tag> HEAD -- '*.docx' '*.xlsx' '*.pptx' '*.pdf' '*.epub'
 
 # Files changed in the last N days
-git log --since="N days ago" --name-only --diff-filter=ACMR --pretty="" -- '*.docx' '*.xlsx' '*.pptx' '*.pdf' | sort -u
+git log --since="N days ago" --name-only --diff-filter=ACMR --pretty="" -- '*.docx' '*.xlsx' '*.pptx' '*.pdf' '*.epub' | sort -u
 ```
 
 ### Timestamp-based (PowerShell)
 
 ```powershell
 # Files modified since a specific date
-Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf -Recurse |
+Get-ChildItem -Path "<folder>" -File -Include *.docx,*.xlsx,*.pptx,*.pdf,*.epub -Recurse |
   Where-Object { $_.LastWriteTime -gt [datetime]"2025-01-01" }
 ```
 
@@ -91,6 +92,7 @@ Each file, with its purpose.
 |------|---------|
 | `.a11y-office-config.json` | Rule enable/disable for Word, Excel, PowerPoint |
 | `.a11y-pdf-config.json` | Rule enable/disable for PDF scanning |
+| `.a11y-epub-config.json` | Rule enable/disable for ePub scanning |
 
 ### Scan Profiles
 

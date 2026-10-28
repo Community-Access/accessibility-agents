@@ -6,8 +6,8 @@ Part of the `kb-path-instructions` skill.
 
 ## Dependencies
 
-- `web-accessibility-baseline.instructions.md` — WCAG AA baseline rules this file extends
-- `semantic-html.instructions.md` — native HTML alternatives to prefer before reaching for ARIA roles
+- `web-accessibility-baseline.md` (same folder) - WCAG AA baseline rules this file extends
+- `semantic-html.md` (same folder) - native HTML alternatives to prefer before reaching for ARIA roles
 
 When generating custom interactive widgets, apply these role-specific ARIA patterns. Each pattern defines the required markup structure, required attributes, and mandatory keyboard behavior. These patterns follow the WAI-ARIA Authoring Practices Guide (APG).
 
@@ -22,12 +22,12 @@ Every role below requires the listed keys to be fully implemented before using t
 | Role | Required Keys | Navigation Pattern |
 |------|--------------|--------------------|
 | `tab` / `tablist` | Arrow Left/Right, Home, End; Tab exits into panel | Roving tabindex |
-| `dialog` | Tab/Shift+Tab (trapped inside), Escape | No — use `tabindex="-1"` on container, manage focus explicitly |
+| `dialog` | Tab/Shift+Tab (trapped inside), Escape | No - use `tabindex="-1"` on container, manage focus explicitly |
 | `combobox` | Down/Up Arrow, Enter (select), Escape (close), Tab (accept + move) | `aria-activedescendant` |
 | `menu` / `menuitem` | Down/Up Arrow, Home, End, Escape, Tab (closes menu) | Roving tabindex |
 | `tree` / `treeitem` | Down/Up Arrow, Right (expand), Left (collapse), Home, End | Roving tabindex |
 | `listbox` / `option` | Down/Up Arrow, Home, End, Enter/Space (select) | Roving tabindex |
-| `grid` / `gridcell` | All four Arrow keys, Home/End, Page Up/Down | Roving tabindex |
+| `grid` / `gridcell` | All four Arrow keys, Home/End (Page Up/Down optional) | Roving tabindex or `aria-activedescendant` |
 
 > **Roving tabindex:** Only one item in a composite widget has `tabindex="0"` at any time; all others have `tabindex="-1"`. When focus moves via arrow keys, set the new item to `tabindex="0"` and the previous to `tabindex="-1"`. Tab enters and exits the whole widget as one focus stop; arrow keys navigate internally. See [APG Roving tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex).
 
@@ -61,19 +61,19 @@ Every role below requires the listed keys to be fully implemented before using t
 ## Dialog (Modal)
 
 ```html
-<dialog id="confirm-dialog" aria-modal="true" aria-labelledby="dialog-title">
+<dialog id="confirm-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-desc">
   <h2 id="dialog-title">Confirm deletion</h2>
   <p id="dialog-desc">This action permanently removes the item and cannot be undone.</p>
-  <div aria-describedby="dialog-desc">
+  <div>
     <button type="button" autofocus>Cancel</button>
     <button type="button">Delete</button>
   </div>
 </dialog>
 ```
 
-Use `dialog.showModal()` when using the native element — the browser handles focus trapping, Escape key, and backdrop automatically.
+Use `dialog.showModal()` when using the native element - the browser makes the rest of the page inert, handles Escape and the backdrop, and exposes the dialog as modal, so `aria-modal` is not needed. `aria-describedby` belongs on the dialog itself, not on a wrapper `div`.
 
-> **Note:** The native `<dialog>` element already has an implicit `dialog` role. Do **not** add `role="dialog"` to a `<dialog>` element — it is redundant and may confuse some assistive technology. Only add `role="dialog"` when using a non-native element (e.g., `<div role="dialog">`).
+> **Note:** The native `<dialog>` element already has an implicit `dialog` role. Do **not** add `role="dialog"` to a `<dialog>` element - it is redundant and may confuse some assistive technology. Only add `role="dialog"` when using a non-native element (e.g., `<div role="dialog">`).
 
 For the ARIA pattern (non-native `<div>`-based dialog):
 
@@ -108,7 +108,6 @@ For the ARIA pattern (non-native `<div>`-based dialog):
   aria-autocomplete="list"
   aria-expanded="false"
   aria-controls="city-listbox"
-  aria-activedescendant=""
   autocomplete="off"
 />
 <ul id="city-listbox" role="listbox" aria-label="City suggestions">
@@ -117,7 +116,7 @@ For the ARIA pattern (non-native `<div>`-based dialog):
 </ul>
 ```
 
-**Required attributes:** `aria-expanded` (true when list is open), `aria-controls` -> listbox `id`, `aria-activedescendant` -> focused option `id` (or empty string when no option is focused).
+**Required attributes:** `aria-expanded` (true when list is open), `aria-controls` -> listbox `id`, `aria-activedescendant` -> focused option `id` (remove the attribute when no option is focused).
 
 **Keyboard:**
 
@@ -192,20 +191,21 @@ Use `role="menu"` only for application-style action menus (Edit / Delete / Renam
 
 ```html
 <section aria-roledescription="carousel" aria-label="Featured products">
-  <div aria-live="polite" aria-atomic="true">
+  <!-- aria-live="off" while slides rotate automatically; "polite" once rotation stops -->
+  <div aria-live="off" aria-atomic="true">
     <!-- Updated when slide changes: "Slide 2 of 4" -->
   </div>
   <div role="group" aria-roledescription="slide" aria-label="Slide 1 of 3">
     <h3>Product name</h3>
     <p>...</p>
   </div>
-  <button type="button" aria-label="Previous slide"><</button>
-  <button type="button" aria-label="Next slide">></button>
+  <button type="button" aria-label="Previous slide">&lt;</button>
+  <button type="button" aria-label="Next slide">&gt;</button>
   <button type="button" aria-pressed="false" aria-label="Pause auto-rotate"></button>
 </section>
 ```
 
-**Required:** `aria-roledescription="carousel"` on container, `role="group" aria-roledescription="slide"` on each slide, `aria-label="Slide N of M"` on each slide, live region announcing current slide, pause control for auto-advancing carousels.
+**Required:** `aria-roledescription="carousel"` on container, `role="group" aria-roledescription="slide"` on each slide, `aria-label="Slide N of M"` on each slide, live region announcing current slide (`aria-live="off"` during automatic rotation so it does not interrupt, `polite` otherwise), pause control for auto-advancing carousels.
 
 **Auto-advancing carousels must:**
 
@@ -264,7 +264,7 @@ Or as a styled checkbox (semantically equivalent):
 </label>
 ```
 
-**Required attributes:** `aria-checked` (true/false), updates on click.
+**Required attributes:** on the `button` version, `aria-checked` (true/false), updated on click. The `input type="checkbox" role="switch"` version takes its state from `checked`; do not add `aria-checked`.
 
 **Keyboard:** `Space` toggles the switch state.
 

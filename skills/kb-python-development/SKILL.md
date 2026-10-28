@@ -18,15 +18,16 @@ Reference data for the Developer Hub, Python Specialist, and wxPython Specialist
 
 ## Python Version Quick Reference
 
-Each version, with its key features and EOL.
+Each version, with its key features and end of support (python.org, October 2026). 3.10 reached end of life on 1 October 2026.
 
 | Version | Key Features | EOL |
 |---|---|---|
-| 3.10 | `match/case`, `X \| Y` unions, `ParamSpec` | Oct 2026 |
+| 3.10 | `match/case`, `X \| Y` unions, `ParamSpec` | Oct 2026 (end of life) |
 | 3.11 | Exception groups, `Self` type, `tomllib`, faster CPython | Oct 2027 |
 | 3.12 | Type parameter syntax `def f[T]()`, `@override`, f-string nesting | Oct 2028 |
 | 3.13 | Experimental free-threaded mode, improved error messages | Oct 2029 |
-| 3.14 | `async pdb.set_trace_async()`, template strings (PEP 750) | Oct 2030 |
+| 3.14 | Template strings (PEP 750), deferred evaluation of annotations (PEP 649), `compression.zstd` (PEP 784) | Oct 2030 |
+| 3.15 | Explicit lazy imports (PEP 810), `frozendict` (PEP 814), UTF-8 default encoding (PEP 686) | Oct 2031 |
 
 ## pyproject.toml Skeleton
 
@@ -38,7 +39,7 @@ build-backend = "hatchling.build"
 [project]
 name = "my-app"
 version = "1.0.0"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
@@ -52,14 +53,14 @@ testpaths = ["tests"]
 addopts = "-ra --strict-markers"
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "TCH"]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "TC"]  # flake8-type-checking is "TC" since ruff 0.8 (was "TCH")
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 ```
 

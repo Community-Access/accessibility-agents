@@ -43,7 +43,7 @@ Agents search across **all repos the user has access to** by default.
 
 ### How Discovery Works
 
-1. **Load preferences** from `.github/agents/preferences.md` - check `repos.discovery` for the configured mode.
+1. **Load preferences** from `.github/accessibility-agents/preferences.md` (the user creates it from `docs/reference/preferences.example.md`) - check `repos.discovery` for the configured mode. If that file does not exist, read `.github/agents/preferences.md` (the older location) and suggest moving it: VS Code loads every `.md` file in `.github/agents/` as a custom agent.
 2. **If no preferences** or `repos.discovery` not set -> default to `all`.
 3. **Apply include/exclude lists** - always include `repos.include`, always skip `repos.exclude`.
 4. **Apply per-repo overrides** - when `repos.overrides` defines a `track` block, respect its settings and filters.
@@ -92,23 +92,23 @@ Always announce progress during multi-step operations so the user knows data col
 ### Standard Template
 
 ```text
- {What you're about to do} ({scope, e.g., "3 repos, last 7 days"})
+{What you're about to do} ({scope, e.g., "3 repos, last 7 days"})
 
- {Step description}... ({N}/{total})
- {Result summary, e.g., "Issues: 4 need response, 7 to monitor"}
+{Step description}... ({N}/{total})
+{Result summary, e.g., "Issues: 4 need response, 7 to monitor"}
 
- {Next step}... ({N+1}/{total})
- {Result summary}
+{Next step}... ({N+1}/{total})
+{Result summary}
 
 ...
 
- {Operation complete} - {X key stats}
+{Operation complete} - {X key stats}
 ```
 
 ### Rules
 
 - Describe operations in plain English - **never expose tool names or API calls**.
-- Always show a count or result summary after each .
+- Always show a count or result summary after each step.
 - Skip announcing trivial single-step lookups.
 - Number steps when there are 3 or more: `(1/7)`, `(2/7)`, etc.
 - Omit steps that were skipped due to user preferences.
@@ -128,11 +128,11 @@ Run independent data streams simultaneously. Don't serialize operations that hav
 **Announcement for parallel batches:**
 
 ```text
- Running {N} searches in parallel...
- Batch 1 complete - {X} items found
+Running {N} searches in parallel...
+Batch 1 complete - {X} items found
 
- Running {N} additional searches...
- All searches complete - {Y} total items collected
+Running {N} additional searches...
+All searches complete - {Y} total items collected
 ```
 
 ## Clarification with Structured Questions
@@ -174,10 +174,10 @@ All HTML documents MUST follow these accessibility standards.
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header role="banner">...</header>
+  <header>...</header>
   <nav aria-label="Document sections">...</nav>
-  <main id="main-content" role="main">...</main>
-  <footer role="contentinfo">...</footer>
+  <main id="main-content">...</main>
+  <footer>...</footer>
 </body>
 </html>
 ```
@@ -185,14 +185,14 @@ All HTML documents MUST follow these accessibility standards.
 ### Mandatory Accessibility Features
 
 1. **Skip link** - First focusable element, jumps to `<main>`.
-2. **Landmark roles** - `<header role="banner">`, `<nav>`, `<main role="main">`, `<footer role="contentinfo">`, `<section>` with `aria-labelledby` for each major section.
+2. **Landmarks** - `<header>`, `<nav>`, `<main>`, `<footer>` (the elements carry the banner, navigation, main and contentinfo roles, so no `role` attribute), `<section>` with `aria-labelledby` for each major section.
 3. **Heading hierarchy** - Strict `h1` -> `h2` -> `h3` cascade. Never skip levels. One `h1` per document.
 4. **Descriptive link text** - Never "click here" or bare URLs. Always `<a href="...">PR #123: Fix login bug</a>`.
 5. **Table accessibility** - Every `<table>` gets `<caption>`, `<thead>` with `<th scope="col">`, and `<th scope="row">` for row headers.
-6. **Status indicators** - Don't rely on emoji/color alone. Use `<span class="status" aria-label="Needs action">` with visible text alongside any icons.
-7. **Action items** - `<input type="checkbox" id="action-N" aria-label="{description}"><label for="action-N">` for interactive checklists.
+6. **Status indicators** - Don't rely on emoji/color alone. Use a visible text label, e.g. `<span class="status-action">Needs action</span>`. Do not put `aria-label` on a plain `span`; ARIA 1.2 prohibits naming the generic role.
+7. **Action items** - `<input type="checkbox" id="action-N"><label for="action-N">{description}</label>` for interactive checklists. The visible label names the checkbox; an extra `aria-label` would override it.
 8. **Live regions** - Dashboard summary sections use `aria-live="polite"` for dynamic updates.
-9. **Contrast** - All text meets WCAG 2.1 AA (4.5:1 normal text, 3:1 large text).
+9. **Contrast** - All text meets WCAG 2.2 AA (4.5:1 normal text, 3:1 large text).
 10. **Focus indicators** - Visible focus outlines on all interactive elements.
 
 ### Shared HTML Styles
@@ -224,7 +224,7 @@ body {
 }
 .skip-link {
   position: absolute; left: -9999px; top: 0; padding: 0.5rem 1rem;
-  background: var(--accent); color: #fff; z-index: 1000; font-weight: 600;
+  background: var(--accent); color: var(--bg); z-index: 1000; font-weight: 600;
 }
 .skip-link:focus { left: 0; }
 h1 { font-size: 1.75rem; margin-bottom: 0.5rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
@@ -283,7 +283,7 @@ For every issue and PR listed, collect reactions and summarize sentiment:
 - **Controversial** (mixed +1 and -1) - flag as needs discussion
 - **Quiet** (0-1 reactions) - no special flag
 
-In HTML: `<span class="reaction" aria-label="5 thumbs up reactions">+1 5</span>`
+In HTML: `<span class="reaction"><span aria-hidden="true">+1 5</span><span class="sr-only">5 thumbs up reactions</span></span>`
 In markdown: `[+1: 5, heart: 2]`
 
 ### Release Awareness

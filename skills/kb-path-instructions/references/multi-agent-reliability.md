@@ -8,7 +8,7 @@ Part of the `kb-path-instructions` skill.
 
 None required. This is a foundational reliability standard that all other agent files should reference.
 
-**Shared terminology:** All severity levels, confidence terms, and role labels used in this file are defined in `agent-terminology.instructions.md`. When in doubt, consult that file before using a term.
+**Shared terminology:** All severity levels, confidence terms, and role labels used in this file are defined in `agent-terminology.md` (same folder). When in doubt, consult that file before using a term.
 
 These rules apply to all agent coordination, sub-agent delegation, and cross-agent handoffs in this workspace. They ensure reliable, deterministic multi-agent behavior by treating agents as distributed system components, not chat interfaces.
 
@@ -16,7 +16,7 @@ Based on: [Multi-agent workflows often fail. Here's how to engineer ones that do
 
 ---
 
-> **Impact:** Unstructured prose passed between agents causes misinterpretation — one agent's "severe issue" is another's "moderate finding." Structured fields make severity, location, and confidence unambiguous across the pipeline.
+> **Impact:** Unstructured prose passed between agents causes misinterpretation - one agent's "severe issue" is another's "moderate finding." Structured fields make severity, location, and confidence unambiguous across the pipeline.
 
 ## 1. Structured Outputs at Every Boundary
 
@@ -173,11 +173,11 @@ For multi-step workflows, report progress at each phase boundary. This serves tw
 
 **Ordering matters:** Agents that depend on another agent's output MUST run sequentially. Agents with no data dependencies SHOULD run in parallel.
 
-**Idempotency:** Running the same agent twice with the same inputs should produce structurally identical output — same findings, same scores, same structure. Accept that:
+**Idempotency:** Running the same agent twice with the same inputs should produce structurally identical output - same findings, same scores, same structure. Accept that:
 
 - Finding *order* may vary (not a violation)
 - Timestamps and generated IDs will differ (expected)
-- Agents that call external APIs (GitHub, live pages) may see different data if the underlying resource changed (not an agent failure — note the data timestamp in output)
+- Agents that call external APIs (GitHub, live pages) may see different data if the underlying resource changed (not an agent failure - note the data timestamp in output)
 
 Agents must not accumulate hidden state across invocations. Each invocation starts fresh from the provided inputs.
 
@@ -193,8 +193,8 @@ Agents must not accumulate hidden state across invocations. Each invocation star
 
 When a user reports that an agent's change broke working functionality, the agent (or orchestrator) MUST follow this sequence:
 
-1. **Offer to revert in the same message as asking about intent.** Present both simultaneously: "I can revert this change immediately — do you want me to? While I wait, can you describe what the code was supposed to do?" This avoids forcing the user to choose between getting help and preserving state.
-2. **Wait for confirmation before reverting.** Do not silently revert — always confirm destructive actions.
+1. **Offer to revert in the same message as asking about intent.** Present both simultaneously: "I can revert this change immediately - do you want me to? While I wait, can you describe what the code was supposed to do?" This avoids forcing the user to choose between getting help and preserving state.
+2. **Wait for confirmation before reverting.** Do not silently revert - always confirm destructive actions.
 3. **Re-implement only after understanding intent.** Choose the right technical approach for the user's actual UX goals.
 4. **Verify multi-file impact.** Before changing any structural attribute (ARIA roles, IDs, classes), search all workspace files for references and present the full scope of required changes.
 

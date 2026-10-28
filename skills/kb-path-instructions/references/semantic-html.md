@@ -6,14 +6,14 @@ Part of the `kb-path-instructions` skill.
 
 ## Dependencies
 
-- `web-accessibility-baseline.instructions.md` — baseline WCAG rules; this file provides the structural HTML patterns that the baseline requires
-- `aria-patterns.instructions.md` — the ARIA widget patterns to use when native HTML is not sufficient
+- `web-accessibility-baseline.md` (same folder) - baseline WCAG rules; this file provides the structural HTML patterns that the baseline requires
+- `aria-patterns.md` (same folder) - the ARIA widget patterns to use when native HTML is not sufficient
 
 Use semantic HTML before reaching for ARIA or generic elements. The correct structural choice is always the first line of defense - it provides meaning to browsers, search engines, and assistive technologies without any ARIA overhead. Apply these patterns when generating or editing any web UI code.
 
 ---
 
-> **Impact:** Screen reader users navigate pages by jumping between landmarks (using the R key in NVDA/JAWS). A missing `<main>` means they cannot skip to the primary content. Multiple unnamed `<nav>` elements all announce as "navigation" with no way to distinguish them.
+> **Impact:** Screen reader users navigate pages by jumping between landmarks (D in NVDA, R in JAWS). A missing `<main>` means they cannot skip to the primary content. Multiple unnamed `<nav>` elements all announce as "navigation" with no way to distinguish them.
 
 ## Page Landmark Structure
 
@@ -26,15 +26,15 @@ Every page template must include these landmark elements. Screen reader users na
 | `<main>` | main | Exactly one per page; wraps the primary page content |
 | `<footer>` | contentinfo | Wrap copyright, legal links, and secondary site links |
 | `<aside>` | complementary | Supplementary content - sidebars, related articles, callout boxes |
-| `<section>` | region (only when named) | Thematic grouping with a heading; becomes a `region` landmark only when `aria-labelledby` or `aria-label` is present. Most sections should NOT be landmarks — only major navigable destinations need region status. |
+| `<section>` | region (only when named) | Thematic grouping with a heading; becomes a `region` landmark only when `aria-labelledby` or `aria-label` is present. Most sections should NOT be landmarks - only major navigable destinations need region status. |
 | `<article>` | article | Self-contained content that makes sense in isolation: blog post, product card, news item |
 
 **Multiple `<nav>` elements:** Distinguish them with `aria-label`:
 
 ```html
-<nav aria-label="Main">…</nav>
-<nav aria-label="Breadcrumb">…</nav>
-<nav aria-label="Footer">…</nav>
+<nav aria-label="Main">...</nav>
+<nav aria-label="Breadcrumb">...</nav>
+<nav aria-label="Footer">...</nav>
 ```
 
 **Skip navigation link** - First focusable element in every page template:
@@ -43,8 +43,8 @@ Every page template must include these landmark elements. Screen reader users na
 <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4">
   Skip to main content
 </a>
-…
-<main id="main-content" tabindex="-1">…</main>
+...
+<main id="main-content" tabindex="-1">...</main>
 ```
 
 ---
@@ -58,8 +58,8 @@ This is the most common semantic error in generated UI code. The rule is absolut
 | Situation | Element |
 |-----------|---------|
 | Opens a dialog, submits a form, triggers an action, changes state | `<button type="button">` |
-| Navigates to a URL (same page or different page) | `<a href="…">` |
-| Downloads a file | `<a href="…" download>` |
+| Navigates to a URL (same page or different page) | `<a href="...">` |
+| Downloads a file | `<a href="..." download>` |
 | Jumps to a section on the same page | `<a href="#section-id">` |
 
 - `<a>` without `href` is not a link - it receives no keyboard focus and has no role. Use `<button>` instead.
@@ -119,7 +119,7 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 
 ---
 
-> **Impact:** See `web-accessibility-baseline.instructions.md` § Forms and Inputs for the full labeling rules. This section provides the structural HTML patterns.
+> **Impact:** See `web-accessibility-baseline.md` (same folder) section Forms and Inputs for the full labeling rules. This section provides the structural HTML patterns.
 
 ## Forms
 
@@ -177,7 +177,7 @@ Use `<table>` for tabular data - any data that has a meaningful relationship bet
 
 No JavaScript required. Browser handles open/close, keyboard, and AT announcements.
 
-**When to use ARIA instead:** When visual design requirements cannot be met with `<details>` (e.g., animated transitions, custom styling that `<summary>` marker doesn't allow), use the ARIA accordion pattern (see `aria-patterns.instructions.md`). Visual design is a legitimate reason to reach for ARIA here — but only after confirming `<details>` genuinely cannot meet the requirement.
+**When to use ARIA instead:** When visual design requirements cannot be met with `<details>` (e.g., animated transitions, custom styling that `<summary>` marker doesn't allow), use the ARIA accordion pattern (see `aria-patterns.md` (same folder)). Visual design is a legitimate reason to reach for ARIA here - but only after confirming `<details>` genuinely cannot meet the requirement.
 
 ---
 
@@ -196,7 +196,7 @@ No JavaScript required. Browser handles open/close, keyboard, and AT announcemen
 </dialog>
 ```
 
-Open with `dialog.showModal()`. The browser handles focus trapping, `Escape` key, and backdrop automatically. When `showModal()` is not available or polyfill constraints apply, use the ARIA dialog pattern (see `aria-patterns.instructions.md`).
+Open with `dialog.showModal()`. The browser handles focus trapping, `Escape` key, and backdrop automatically. When `showModal()` is not available or polyfill constraints apply, use the ARIA dialog pattern (see `aria-patterns.md` (same folder)).
 
 ---
 
