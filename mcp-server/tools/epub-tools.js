@@ -109,7 +109,10 @@ async function loadEpubConfig(filePath) {
     const configPath = join(dir, ".a11y-epub-config.json");
     try {
       const raw = await fsReadFile(configPath, "utf-8");
-      return { ...defaultConfig, ...JSON.parse(raw) };
+      // .github/schemas/epub-config.schema.json nests the settings under
+      // "epub"; the older flat shape is still read beneath it.
+      const { epub, ...flat } = JSON.parse(raw) || {};
+      return { ...defaultConfig, ...flat, ...(epub && typeof epub === "object" ? epub : {}) };
     } catch { /* not found */ }
     const parent = dirname(dir);
     if (parent === dir) break;

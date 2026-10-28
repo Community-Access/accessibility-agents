@@ -762,3 +762,45 @@ describe("MCP Resources", () => {
     assert.ok(config.severity.includes("critical"));
   });
 });
+
+describe("Office and ePub scan configuration", () => {
+  it("reads the per-format block that the office config schema defines", async () => {
+    const { officeConfigFor } = await import("./server-core.js");
+    const defaults = { enabled: true, disabledRules: [], severityFilter: ["error", "warning", "tip"] };
+    const parsed = {
+      version: "1.0",
+      docx: { enabled: true, disabledRules: ["DOCX-E004"], severityFilter: ["error"] },
+      pptx: { enabled: false, disabledRules: [], severityFilter: ["error", "warning"] },
+    };
+    const docx = officeConfigFor("C:/work/report.DOCX", defaults, parsed);
+    assert.deepEqual(docx.severityFilter, ["error"]);
+    assert.deepEqual(docx.disabledRules, ["DOCX-E004"]);
+    assert.equal(officeConfigFor("deck.pptx", defaults, parsed).enabled, false);
+    // A format with no block falls back to the defaults.
+    assert.deepEqual(officeConfigFor("book.xlsx", defaults, parsed).severityFilter, ["error", "warning", "tip"]);
+  });
+
+  it("still honours the older flat shape", async () => {
+    const { officeConfigFor } = await import("./server-core.js");
+    const cfg = officeConfigFor("a.docx", { severityFilter: ["error", "warning", "tip"] }, { severityFilter: ["error"] });
+    assert.deepEqual(cfg.severityFilter, ["error"]);
+  });
+
+  it("maps only to rule IDs that exist in the skills' rule sets", async () => {
+    const { OFFICE_RULE_ALIASES } = await import("./server-core.js");
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+    const sets = {
+      ".docx": "skills/word-accessibility/references/complete-rule-set.md",
+      ".pptx": "skills/powerpoint-accessibility/references/complete-rule-set.md",
+      ".xlsx": "skills/excel-accessibility/references/complete-rule-set.md",
+    };
+    for (const [ext, file] of Object.entries(sets)) {
+      const text = fs.readFileSync(path.join(root, file), "utf8");
+      for (const id of Object.values(OFFICE_RULE_ALIASES[ext])) {
+        assert.ok(text.includes(`| ${id} |`), `${id} is not in ${file}`);
+      }
+    }
+  });
+});

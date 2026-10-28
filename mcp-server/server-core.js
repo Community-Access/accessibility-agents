@@ -1,5 +1,5 @@
 /**
- * A11y Agent Team — Server-based MCP Server
+ * A11y Agent Team - Server-based MCP Server
  *
  * The accessibility scanning tools, prompts and resources, shared by both
  * entry points: stdio.js for local clients and plugins, and server.js for the
@@ -27,14 +27,14 @@
  *   Statement: generate_accessibility_statement
  *
  * Prompts:
- *   audit-page          — Structured WCAG audit instruction for a web page
- *   check-component     — Component-specific accessibility review prompt
- *   explain-wcag        — Explain a WCAG criterion with examples
+ *   audit-page          - Structured WCAG audit instruction for a web page
+ *   check-component     - Component-specific accessibility review prompt
+ *   explain-wcag        - Explain a WCAG criterion with examples
  *
  * Resources:
- *   a11y://guidelines/{component} — Component accessibility guidelines
- *   a11y://tools                  — List of available tools
- *   a11y://config/{profile}       — Scan configuration templates
+ *   a11y://guidelines/{component} - Component accessibility guidelines
+ *   a11y://tools                  - List of available tools
+ *   a11y://config/{profile}       - Scan configuration templates
  *
  * Security:
  *   - File path validation prevents traversal (CWE-22)
@@ -219,7 +219,7 @@ function extractHeadings(html) {
     if (level === 1) h1Count++;
     if (lastLevel > 0 && level > lastLevel + 1) {
       issues.push(
-        `Skipped heading level: ${`h${lastLevel}`} → ${tag} ("${text}"). Heading levels must not skip (e.g. h2 → h4).`
+        `Skipped heading level: ${`h${lastLevel}`} to ${tag} ("${text}"). Heading levels must not skip (e.g. h2 to h4).`
       );
     }
     lastLevel = level;
@@ -501,9 +501,11 @@ function scanOfficeDocument(buf, ext, config) {
   const disabled = new Set(config.disabledRules || []);
   const severityFilter = new Set(config.severityFilter || ["error", "warning", "tip"]);
   const findings = [];
+  const aliases = OFFICE_RULE_ALIASES[ext] || {};
 
   function add(ruleId, severity, message, location, extra = {}) {
-    if (disabled.has(ruleId)) return;
+    // disabledRules may name this scanner's ID or the skills' rule ID.
+    if (disabled.has(ruleId) || (aliases[ruleId] && disabled.has(aliases[ruleId]))) return;
     if (!severityFilter.has(severity)) return;
     findings.push({ ruleId, severity, message, location, ...extra });
   }
@@ -530,7 +532,7 @@ function scanOfficeDocument(buf, ext, config) {
       const descr = (attrs.match(/descr\s*=\s*"([^"]*)"/i) || [])[1] || "";
       const name = (attrs.match(/name\s*=\s*"([^"]*)"/i) || [])[1] || "";
       if (!descr) {
-        add("doc-alt-text", "error", `Image "${name || "unnamed"}" has no alt text. Add alt text via right-click > Edit Alt Text.`, `Image: ${name || "unnamed"}`, { requiresHumanReview: true });
+        add("doc-alt-text", "error", `Image "${name || "unnamed"}" has no alt text. Add alt text via right-click > View Alt Text.`, `Image: ${name || "unnamed"}`, { requiresHumanReview: true });
       }
     }
     // Check heading structure
@@ -547,7 +549,7 @@ function scanOfficeDocument(buf, ext, config) {
       let prev = 0;
       for (const level of headingLevels) {
         if (prev > 0 && level > prev + 1) {
-          add("doc-heading-skip", "warning", `Heading level skipped: Heading ${prev} → Heading ${level}. Do not skip heading levels.`, "Document body");
+          add("doc-heading-skip", "warning", `Heading level skipped: Heading ${prev} to Heading ${level}. Do not skip heading levels.`, "Document body");
         }
         prev = level;
       }
@@ -583,7 +585,7 @@ function scanOfficeDocument(buf, ext, config) {
     // Check slide order/reading order
     const presentation = getZipXml(buf, entries, "ppt/presentation.xml");
     if (!presentation) {
-      add("pptx-reading-order", "tip", "Cannot verify reading order. Manually check via Selection Pane.", "Presentation");
+      add("pptx-reading-order", "tip", "Cannot verify reading order. Check it in the Reading Order pane (Review > Check Accessibility > Reading Order Pane).", "Presentation");
     }
   } else if (ext === ".xlsx") {
     const workbook = getZipXml(buf, entries, "xl/workbook.xml");
@@ -608,6 +610,47 @@ function scanOfficeDocument(buf, ext, config) {
 // Office config loader
 // ---------------------------------------------------------------------------
 
+/**
+ * The skills' rule IDs (skills/word-accessibility, excel-accessibility and
+ * powerpoint-accessibility, references/complete-rule-set.md) for each rule this
+ * scanner implements, so a disabledRules entry written from those tables works
+ * here too. Only rules with the same meaning are listed.
+ */
+export const OFFICE_RULE_ALIASES = {
+  ".docx": {
+    "doc-title": "DOCX-E004",
+    "doc-language": "DOCX-T001",
+    "doc-alt-text": "DOCX-E001",
+    "doc-headings": "DOCX-E007",
+    "doc-heading-skip": "DOCX-E003",
+    "doc-table-headers": "DOCX-E002",
+  },
+  ".pptx": {
+    "doc-title": "PPTX-W001",
+    "pptx-alt-text": "PPTX-E001",
+    "pptx-slide-title": "PPTX-E002",
+    "pptx-reading-order": "PPTX-E006",
+  },
+  ".xlsx": {
+    "doc-title": "XLSX-E006",
+    "xlsx-sheet-name": "XLSX-E003",
+  },
+};
+
+/**
+ * .github/schemas/office-config.schema.json puts each format's settings in its
+ * own block: docx, xlsx, pptx. The scanner used to read only top-level keys,
+ * so a config that validated against that schema had no effect. Read the
+ * block for this file's format; top-level keys are still honoured, beneath
+ * it, for configs written in the older flat shape.
+ */
+export function officeConfigFor(filePath, defaults, parsed) {
+  const ext = extname(filePath).slice(1).toLowerCase();
+  const { docx, xlsx, pptx, ...flat } = parsed || {};
+  const block = { docx, xlsx, pptx }[ext];
+  return { ...defaults, ...flat, ...(block && typeof block === "object" ? block : {}) };
+}
+
 async function loadOfficeConfig(filePath) {
   const defaultConfig = {
     enabled: true,
@@ -620,7 +663,7 @@ async function loadOfficeConfig(filePath) {
     const configPath = join(dir, ".a11y-office-config.json");
     try {
       const raw = await fsReadFile(configPath, "utf-8");
-      return { ...defaultConfig, ...JSON.parse(raw) };
+      return officeConfigFor(filePath, defaultConfig, JSON.parse(raw));
     } catch { /* not found, continue */ }
     const parent = dirname(dir);
     if (parent === dir) break;
@@ -1403,7 +1446,7 @@ export function createServer() {
         }
 
         lines.push("", "Alternatively, open the file in the Office application:");
-        lines.push("  File → Info → Properties → Title/Author/Language");
+        lines.push("  File > Info > Properties > Title/Author/Language");
 
         return okResult(lines.join("\n"), {
           ok: true,
@@ -1471,7 +1514,7 @@ export function createServer() {
           const sorted = [...new Set(headings)].sort();
           for (let i = 1; i < sorted.length; i++) {
             if (sorted[i] - sorted[i - 1] > 1) {
-              lines.push(`ERROR: Heading level skipped — H${sorted[i - 1]} to H${sorted[i]}`);
+              lines.push(`ERROR: Heading level skipped - H${sorted[i - 1]} to H${sorted[i]}`);
             }
           }
 
@@ -1481,7 +1524,7 @@ export function createServer() {
         }
 
         lines.push("", "Remediation:", "  1. Use built-in Heading styles from the Styles gallery");
-        lines.push("  2. Start with Heading 1, then Heading 2, etc. — never skip levels");
+        lines.push("  2. Start with Heading 1, then Heading 2, etc. - never skip levels");
         lines.push("  3. Do not use bold/font-size to simulate headings");
 
         const problems = lines.filter((l) => l.startsWith("ERROR") || l.startsWith("WARNING")).length;
@@ -2089,12 +2132,12 @@ export function createServer() {
                 `Perform a comprehensive WCAG 2.2 Level ${target} accessibility audit of: ${url}`,
                 "",
                 "Use the following tools in order:",
-                "1. run_axe_scan — Automated rule-based scan",
-                "2. check_heading_structure — Verify heading hierarchy",
-                "3. check_link_text — Detect ambiguous link text",
-                "4. check_form_labels — Verify form input labeling",
-                "5. run_playwright_keyboard_scan — Test keyboard navigation",
-                "6. run_playwright_contrast_scan — Visual contrast verification",
+                "1. run_axe_scan - Automated rule-based scan",
+                "2. check_heading_structure - Verify heading hierarchy",
+                "3. check_link_text - Detect ambiguous link text",
+                "4. check_form_labels - Verify form input labeling",
+                "5. run_playwright_keyboard_scan - Test keyboard navigation",
+                "6. run_playwright_contrast_scan - Visual contrast verification",
                 "",
                 "For each issue found, include:",
                 "- WCAG success criterion (e.g. 1.4.3)",
@@ -2246,7 +2289,7 @@ export function createServer() {
             uri: uri.href,
             mimeType: "text/markdown",
             text: [
-              "# A11y Agent Team — Available Tools",
+              "# A11y Agent Team - Available Tools",
               "",
               ...entries,
             ].join("\n"),
