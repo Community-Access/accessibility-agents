@@ -199,7 +199,10 @@ These are the barriers we know about. Please report any we have missed.
 ## Open Source Accessibility Framework
 
 We follow the [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/)
-in four phases. Progress as of 7.1.0 (October 2026):
+in four phases, and track our progress in public in
+[our framework tracking issue](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/52),
+where each completed action is checked off against the framework's
+definition of done. Progress as of 7.1.0 (October 2026), 11 of 24 actions:
 
 - **Foundational:** this document; the `accessibility` label.
 - **Workflow:** priorities and contributor expectations above, referenced

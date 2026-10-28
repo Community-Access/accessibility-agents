@@ -154,6 +154,11 @@ the agents can apply the same framework to your repository: ask your client to
 adopt the Open Source Accessibility Framework, or one of its four phases
 (foundational, workflow, testing, community).
 
+[![Open Source Accessibility Framework progress for Accessibility Agents](https://img.shields.io/badge/Accessibility%20Framework-Accessibility%20Agents-F143AB?logo=github&logoColor=000000)](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/52)
+
+Our progress, action by action, is tracked in public in
+[our framework tracking issue](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/52).
+
 ## Contributing
 
 Edit `skills/<name>/SKILL.md`, keep the body under 6 KiB, put the long tail in
