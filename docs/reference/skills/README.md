@@ -25,7 +25,7 @@ The six entry points. Describe the task and one of these picks it up.
 | [`accessibility-lead`](accessibility-lead.md) | Web UI accessibility lead. Use before writing or changing HTML, JSX, TSX, Vue, Svelte, CSS or templates. Picks specialists and merges their findings. |
 | [`developer-hub`](developer-hub.md) | Start here for Python, wxPython, desktop app, NVDA add-on and accessibility tooling work. Routes to the right specialist. |
 | [`document-accessibility-wizard`](document-accessibility-wizard.md) | Guided accessibility audit of Word, Excel, PowerPoint, PDF and ePub files, one at a time or by the folder, with a scored report. |
-| [`github-hub`](github-hub.md) | Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis. |
+| [`github-hub`](github-hub.md) | Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis, and for adopting the Open Source Accessibility Framework in a repository. |
 | [`markdown-a11y-assistant`](markdown-a11y-assistant.md) | Guided WCAG audit of markdown docs: link text, alt text, heading order, tables, emoji, diagrams and anchors. |
 | [`web-accessibility-wizard`](web-accessibility-wizard.md) | Guided WCAG 2.2 audit of a web app or site, phase by phase, with severity scores, a written report and optional fixes. |
 

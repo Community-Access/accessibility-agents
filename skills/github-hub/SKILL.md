@@ -1,6 +1,6 @@
 ---
 name: github-hub
-description: "Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis."
+description: "Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis, and for adopting the Open Source Accessibility Framework in a repository."
 license: MIT
 metadata:
   tier: router
@@ -45,13 +45,20 @@ prompt shape. Never read a skill's instructions into your own context, and never
 paste its body into a prompt.
 
 ```text
-Activate the skill "<skill-name>". If skill activation is unavailable,
-read skills/<skill-name>/SKILL.md and follow it.
+Run the skill "<skill-name>": read <skills-root>/<skill-name>/SKILL.md and
+follow it. It is a specialist, hidden from the skill catalog to save context;
+running it this way is intended. Paths written skills/... in it are under
+<skills-root>.
 Task: <one paragraph, what the user wants to accomplish>
 Scope: <repository, or owner/repo list>
 Rules: report, do not push or merge without explicit approval.
 Return the answer, and the path of any file you wrote.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists.
 
 Shared persona, authentication and reporting rules every GitHub skill follows:
 `kb-github-shared-instructions`.

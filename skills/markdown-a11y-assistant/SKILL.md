@@ -45,13 +45,20 @@ dispatch them together. Use exactly this prompt shape. Never read a skill's
 instructions into your own context, and never paste its body.
 
 ```text
-Activate the skill "markdown-scanner". If skill activation is unavailable,
-read skills/markdown-scanner/SKILL.md and follow it.
+Run the skill "markdown-scanner": read <skills-root>/markdown-scanner/SKILL.md
+and follow it. It is a specialist, hidden from the skill catalog to save
+context; running it this way is intended. Paths written skills/... in it are
+under <skills-root>.
 Task: scan this file across all nine markdown accessibility domains.
 Scope: <file path>
 Rules: report, do not edit. Emoji mode: <remove|translate>.
 Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists.
 
 Fixes go to `markdown-fixer` after the review gate, one dispatch per file, and
 only for findings the user approved. CSV export goes to

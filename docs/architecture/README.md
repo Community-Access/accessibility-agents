@@ -51,18 +51,21 @@ A router never reads a specialist's body. It sends the client's generic
 subagent a prompt under 300 tokens that names the skill:
 
 ```text
-Activate the skill "aria-specialist". If skill activation is unavailable,
-read skills/aria-specialist/SKILL.md and follow it.
+Run the skill "aria-specialist": read <skills-root>/aria-specialist/SKILL.md
+and follow it. It is a specialist, hidden from the skill catalog to save
+context; running it this way is intended. Paths written skills/... in it are
+under <skills-root>.
 Task: <one paragraph>
 Scope: <files>
 Rules: semantic HTML before ARIA; report, do not edit.
-Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json.
+Return ONLY JSON matching <skills-root>/a11y-core/schemas/findings.schema.json.
 ```
 
 The specialist loads its own instructions inside its own context. What comes
 back is JSON. Before this, a router paid for the specialist's body twice, once
 to read it and once to send it: 26,929 tokens for the largest. It now pays
-about 100.
+about 120. `<skills-root>` is the folder holding the router's own folder, sent
+as an absolute path, because the subagent starts in the user's project.
 
 ## Progressive disclosure
 

@@ -45,13 +45,20 @@ dispatch them together rather than in sequence. Pick from
 skill's instructions into your own context, and never paste its body.
 
 ```text
-Activate the skill "<skill-name>". If skill activation is unavailable,
-read skills/<skill-name>/SKILL.md and follow it.
+Run the skill "<skill-name>": read <skills-root>/<skill-name>/SKILL.md and
+follow it. It is a specialist, hidden from the skill catalog to save context;
+running it this way is intended. Paths written skills/... in it are under
+<skills-root>.
 Task: <one paragraph, what to check and why>
 Scope: <file list or glob>
 Rules: semantic HTML before ARIA; report, do not edit.
-Return ONLY JSON matching skills/a11y-core/schemas/findings.schema.json.
+Return ONLY JSON matching <skills-root>/a11y-core/schemas/findings.schema.json.
 ```
+
+<skills-root> is the absolute path of the folder that holds this skill's own
+folder: the parent of the directory this SKILL.md was loaded from. Send it
+resolved, never as the relative path skills/...: the subagent starts in the
+user's project, where no skills/ folder exists.
 
 ## Output
 

@@ -375,7 +375,7 @@ function checkDispatchContract(all) {
 
     if (tier !== 'router') continue;
 
-    if (!/Activate the skill/i.test(s.raw)) {
+    if (!/Activate the skill|Run the skill "/i.test(s.raw)) {
       fail(s.where, 'has no pointer dispatch prompt; a router must dispatch by name, not by pasted body');
     }
     if (!/references\/dispatch-matrix\.md/.test(s.raw)) {
