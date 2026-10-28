@@ -145,6 +145,21 @@ Each standard, with what it governs.
 | [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | every criterion a finding cites |
 | [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/) | how this project runs accessibility as an open source project, and what the agents help your project adopt |
 
+## Privacy and data
+
+Scanning runs on your machine. The package has no telemetry or analytics, needs
+no account or key, and does not send your files or results to the project.
+Outbound traffic happens only when you ask for it:
+
+- the web scanners load the URLs you give them, in a local browser;
+- the five GLOW tools (`glow_health_check`, `glow_audit_document`,
+  `glow_fix_document`, `glow_convert_document`, `glow_generate_report`) send a
+  request, and for the document tools the file you name, to the GLOW service at
+  `https://letitglow.app/mcp`. GLOW is a separate service with its own terms;
+  use these tools only on files you may share with it.
+
+Details, including what is stored locally, are in [PRIVACY.md](PRIVACY.md).
+
 ## Accessibility of this project
 
 How we work on our own accessibility, how to report a barrier (on GitHub or by
