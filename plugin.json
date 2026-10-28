@@ -18,7 +18,5 @@
     "remediation",
     "pdf-ua",
     "section-508"
-  ],
-  "skills": "./skills/",
-  "mcp": "./mcp.json"
+  ]
 }

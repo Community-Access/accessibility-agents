@@ -75,6 +75,34 @@ describe('gate', () => {
     assert.ok(words <= 45, `refusal is ${words} words; it must name the next action and stop`);
   });
 
+  test('opens when Claude Code reports the lead subagent stopping, by agent_type', () => {
+    // Claude Code's SubagentStop payload names the subagent in agent_type.
+    run('mark', { ...SESSION, hook_event_name: 'SubagentStop', agent_type: 'accessibility-agents:accessibility-lead' });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 0);
+  });
+
+  test('opens when the lead skill is invoked through Claude Code\'s Skill tool', () => {
+    // An inline skill has no stop event. Without this, the gate stayed shut
+    // for the whole session: seen live, five edits refused after three leads.
+    run('mark', {
+      ...SESSION,
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Skill',
+      tool_input: { skill: 'accessibility-agents:accessibility-lead' },
+    });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 0);
+  });
+
+  test('a general-purpose subagent stopping does not open the gate', () => {
+    run('mark', { ...SESSION, hook_event_name: 'SubagentStop', agent_type: 'general-purpose' });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 2);
+  });
+
+  test('another skill through the Skill tool does not open the gate', () => {
+    run('mark', { ...SESSION, hook_event_name: 'PostToolUse', tool_name: 'Skill', tool_input: { skill: 'accessibility-agents:contrast-master' } });
+    assert.equal(run('gate', edit('src/components/Modal.tsx')).code, 2);
+  });
+
   test('allows the edit once the lead has completed', () => {
     run('mark', { ...SESSION, subagent_type: 'accessibility-lead' });
     const result = run('gate', edit('src/components/Modal.tsx'));

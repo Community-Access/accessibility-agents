@@ -26,7 +26,16 @@
  *
  * The gate used to open when the lead was dispatched. A cancelled or failed
  * lead therefore unlocked every UI edit for the rest of the session. It now
- * opens only when the lead reports completion.
+ * opens when the lead reports completion: a subagent stop event that names
+ * it (`agent_type` on Claude Code and Codex).
+ *
+ * One exception. On Claude Code the lead is usually invoked as a skill, which
+ * runs inline in the same turn and has no completion event at all, so waiting
+ * for SubagentStop locked UI edits for the whole session: verified live, the
+ * gate refused five edits after the lead had run three times. There, the
+ * manifests also mark on PostToolUse for the Skill tool, which fires once the
+ * lead's instructions are loaded into the turn. That is launch rather than
+ * completion, so the finalize behaviour stays the backstop.
  *
  * Exit codes follow the common hook convention: 0 proceed, 2 block.
  * Structured decisions are emitted as JSON on stdout where the client reads it.
@@ -184,6 +193,8 @@ function targetPath(payload) {
 function subagentName(payload) {
   const input = payload.tool_input || payload.toolInput || payload.arguments || {};
   return (
+    payload.agent_type ||
+    payload.agentType ||
     payload.subagent_type ||
     payload.subagentType ||
     payload.agent ||
