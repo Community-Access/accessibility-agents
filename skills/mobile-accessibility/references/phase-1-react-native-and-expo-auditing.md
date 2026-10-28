@@ -30,22 +30,23 @@ Review every interactive element for these required props:
 'list' | 'listitem'
 ```
 
-#### ARIA Props (React Native 0.73+)
+#### ARIA Props
 
-React Native now supports `aria-*` props as aliases:
+React Native supports these `aria-*` props as aliases (checked against the
+react-native 0.88 source). It also accepts `role` as an alias of
+`accessibilityRole`. There is no `aria-describedby` or `aria-role` prop;
+`accessibilityHint` has no ARIA alias.
 
 | ARIA prop | RN prop equivalent |
 |-----------|-------------------|
 | `aria-label` | `accessibilityLabel` |
 | `aria-labelledby` | `accessibilityLabelledBy` |
-| `aria-describedby` | `accessibilityHint` |
-| `aria-role` | `accessibilityRole` |
 | `aria-checked` | `accessibilityState.checked` |
 | `aria-disabled` | `accessibilityState.disabled` |
 | `aria-expanded` | `accessibilityState.expanded` |
 | `aria-selected` | `accessibilityState.selected` |
 | `aria-busy` | `accessibilityState.busy` |
-| `aria-hidden` | `importantForAccessibility="no-hide-descendants"` (Android) |
+| `aria-hidden` | `accessibilityElementsHidden` (iOS) and `importantForAccessibility="no-hide-descendants"` (Android) |
 | `aria-live` | `accessibilityLiveRegion` |
 | `aria-modal` | `accessibilityViewIsModal` |
 
@@ -217,9 +218,9 @@ Each modifier, with purpose and when required.
 | `semantics { role = Role.Button }` | Element type | Custom interactive elements |
 | `semantics { stateDescription = "..." }` | State text | Toggles, checkboxes |
 | `clearAndSetSemantics { ... }` | Replace child semantics | Grouped cards, list items |
-| `semantics { mergeDescendants = true }` | Merge hierarchy | Group text + icon into one node |
-| `semantics { invisibleToUser() }` | Hide decorative | Separators, decorative icons |
-| `semantics { focused = true }` | Force focus | After navigation |
+| `semantics(mergeDescendants = true) { }` | Merge hierarchy | Group text + icon into one node |
+| `semantics { hideFromAccessibility() }` (replaces the deprecated `invisibleToUser()`) | Hide decorative | Separators, decorative icons |
+| `FocusRequester` with `requestFocus()` | Move focus (the `focused` semantics property only reports state) | After navigation |
 | `semantics { liveRegion = LiveRegion.Polite }` | Dynamic content announcements | Status messages, errors |
 
 **Role values:** `Role.Button`, `Role.Checkbox`, `Role.DropdownList`, `Role.Image`, `Role.RadioButton`, `Role.Switch`, `Role.Tab`

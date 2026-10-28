@@ -26,29 +26,40 @@ You own everything that overlays the page:
 
 ## Required Structure
 
-Always use the native `<dialog>` element. Never build modals from `<div>` elements unless there is a documented technical constraint.
+Always use the native `<dialog>` element, opened with `showModal()` for a modal. Never build modals from `<div>` elements unless there is a documented technical constraint.
+
+`showModal()` makes the rest of the page inert, moves focus into the dialog and closes it on Escape. `<dialog>` has the implicit role `dialog` and, opened with `showModal()`, is exposed as `aria-modal="true"`: do not add either attribute.
 
 ```html
-<button id="trigger" aria-haspopup="dialog">Open Settings</button>
+<button id="trigger">Open Settings</button>
 
-<dialog id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <button id="close-btn" aria-label="Close">
+<dialog id="settings-modal" aria-labelledby="modal-title">
+  <button id="close-btn">
     <svg aria-hidden="true">...</svg>
     Close
   </button>
-  
+
   <h2 id="modal-title">Settings</h2>
-  
+
   <!-- Modal content -->
 </dialog>
+
+<script>
+  const modal = document.getElementById('settings-modal');
+  document.getElementById('trigger').onclick = () => modal.showModal();
+  document.getElementById('close-btn').onclick = () => modal.close();
+</script>
 ```
+
+A custom (non-`<dialog>`) modal must do all of this itself: see
+`references/non-negotiable-rules.md`.
 
 ## Alert Dialogs
 
 For confirmations that require a decision:
 
 ```html
-<dialog role="alertdialog" aria-modal="true" aria-labelledby="alert-title" aria-describedby="alert-desc">
+<dialog role="alertdialog" aria-labelledby="alert-title" aria-describedby="alert-desc">
   <h2 id="alert-title">Delete Project?</h2>
   <p id="alert-desc">This action cannot be undone. All data will be permanently removed.</p>
   <button id="cancel-btn">Cancel</button>
@@ -56,7 +67,7 @@ For confirmations that require a decision:
 </dialog>
 ```
 
-- Use `role="alertdialog"` instead of `role="dialog"`
+- Use `role="alertdialog"` (a permitted role on `<dialog>`) and open it with `showModal()`
 - Focus lands on the least destructive action (Cancel, not Delete)
 - `aria-describedby` links to the explanation text
 - Screen reader will announce both the title and description on open
@@ -66,7 +77,7 @@ For confirmations that require a decision:
 Side panels follow the same rules as modals:
 
 - Use `<dialog>` with `showModal()`
-- Focus lands on Close button
+- Focus lands according to the focus landing rules in `references/non-negotiable-rules.md`
 - Focus trapped inside
 - Escape closes
 - Focus returns to trigger
@@ -75,10 +86,10 @@ The only difference is visual positioning (CSS). The accessibility requirements 
 
 ## Non-Modal Dialogs
 
-Non-modal dialogs allow interaction with content behind them. They close when the user clicks outside or presses Escape.
+Non-modal dialogs allow interaction with content behind them.
 
 ```html
-<dialog id="tooltip-dialog" role="dialog" aria-labelledby="tooltip-title">
+<dialog id="tooltip-dialog" aria-labelledby="tooltip-title">
   <h3 id="tooltip-title">Field Help</h3>
   <p>Enter your company registration number.</p>
 </dialog>
@@ -88,8 +99,7 @@ Requirements:
 
 - Do NOT use `aria-modal="true"` -- content behind must remain accessible
 - Open with `dialog.show()` (not `showModal()`)
-- Close when the dialog loses focus (click outside or Tab away)
-- Escape closes the dialog
+- Escape closes the dialog. A non-modal `<dialog>` does not do this natively, so add a keydown handler, or use `closedby="any"` where supported
 - No focus trapping -- Tab can move out of the dialog
 - Focus returns to trigger on close
 
@@ -121,8 +131,8 @@ When reviewing any modal:
 5. Does focus return to the trigger on close?
 6. Is there a heading at H2 or lower?
 7. Does `aria-labelledby` point to a valid heading ID?
-8. Does the trigger have `aria-haspopup="dialog"`?
-9. Is `aria-modal="true"` present on modal dialogs?
+8. Is the trigger a real `<button>`? (`aria-haspopup` is optional, not in the APG pattern)
+9. Is the modal state exposed: implicitly by `showModal()` on a native `<dialog>`, or by `aria-modal="true"` plus `inert` on the background for a custom dialog?
 10. Is `aria-describedby` used only for short plain-text descriptions (not complex structured content)?
 11. Is there a visible close button?
 12. For alert dialogs: does focus land on the least destructive action?
@@ -132,7 +142,7 @@ When reviewing any modal:
 ## Common Mistakes You Must Catch
 
 - Modal built from `<div>` with `role="dialog"` but no focus trapping
-- Focus landing on the heading instead of Close button
+- Focus landing on the wrong element for the scenario
 - Missing focus return on close (focus drops to top of page)
 - Nested modals (modal opens another modal) without proper focus stack
 - Backdrop click closes modal but does not return focus

@@ -83,7 +83,7 @@ When dynamic content may be empty, provide a meaningful fallback:
 If the image is truly decorative and needs no alt text:
 
 ```html
-<img src="divider.svg" alt="" role="presentation">
+<img src="divider.svg" alt="">
 ```
 
 ## Framework-Specific Patterns
@@ -119,10 +119,10 @@ If the image is truly decorative and needs no alt text:
 ### Angular
 
 ```html
-<!-- FLAGGED: Interpolation not used -->
-<img [src]="item.src" alt="{{item.alt}}">
+<!-- FLAGGED: No binding, literal string "item.alt" -->
+<img [src]="item.src" alt="item.alt">
 
-<!-- FIXED: Property binding -->
+<!-- FIXED: Property binding (interpolation, alt="{{item.alt}}", also binds) -->
 <img [src]="item.src" [alt]="item.alt">
 ```
 
@@ -135,8 +135,6 @@ If the image is truly decorative and needs no alt text:
 <!-- Pattern to watch for: escaped output in attributes -->
 <img src="/photo.jpg" alt="{{ photo.description }}">
 ```
-
-## How to Report Issues
 
 ## Reference files
 

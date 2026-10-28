@@ -40,7 +40,7 @@ Each returns findings JSON; none of them edits files.
 | `text-quality-reviewer` | Catch weak alt text, aria-labels and button names, and template leftovers. |
 | `wcag-aaa` | WCAG 2.2 Level AAA criteria that go beyond the AA target. |
 | `wcag-guide` | Explain WCAG 2.2 criteria, conformance levels and what changed. |
-| `wcag3-preview` | WCAG 3.0 preview: outcomes, APCA contrast and functional needs. |
+| `wcag3-preview` | WCAG 3.0 draft preview: core requirements, tiers, contrast and scope. |
 | `web-component-specialist` | Custom elements and shadow DOM: ElementInternals, cross-shadow ARIA, focus. |
 
 ## Helpers

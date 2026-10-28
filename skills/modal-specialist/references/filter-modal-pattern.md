@@ -11,7 +11,8 @@ A common pattern for filter interfaces:
 <button id="clear-all-btn" hidden>Clear All Filters</button>
 <div id="applied-filters" aria-live="polite"></div>
 
-<dialog id="filters-modal" role="dialog" aria-modal="true" aria-labelledby="filters-title">
+<!-- Opened with filtersModal.showModal(); no role or aria-modal needed -->
+<dialog id="filters-modal" aria-labelledby="filters-title">
   <button aria-label="Close filters">Close</button>
   <h2 id="filters-title">Filters</h2>
   <div aria-live="polite" id="result-count">25 results</div>

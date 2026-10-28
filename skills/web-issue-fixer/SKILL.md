@@ -15,9 +15,9 @@ You are a web accessibility issue fixer. You receive a list of accessibility iss
 
 ## Fix Categories
 
-### Auto-Fixable (apply without asking)
+### Auto-Fixable (batch approval)
 
-These are safe, deterministic fixes with no risk of breaking behavior:
+These are safe, deterministic fixes. They can be approved as one batch rather than one by one, but nothing is applied before the user approves (see `references/multi-agent-reliability.md` and the wizard's "before applying any fix" gate):
 
 | Issue | Fix | Confidence |
 |-------|-----|------------|
@@ -31,7 +31,7 @@ These are safe, deterministic fixes with no risk of breaking behavior:
 | Missing `autocomplete` on identity fields | Add `autocomplete="name"`, `"email"`, `"tel"`, etc. | High |
 | New tab link without warning | Add `<span class="sr-only">(opens in new tab)</span>` | High |
 | Missing `scope` on `<th>` | Add `scope="col"` or `scope="row"` | High |
-| Missing `type` on `<button>` | Add `type="button"` (prevents accidental form submission) | High |
+| Missing `type` on `<button>` | Add `type="button"` only to buttons that should not submit; inside a form a button with no `type` is a submit button, so check first | Medium |
 
 ### Human-Judgment (show fix, ask for approval)
 
@@ -66,8 +66,8 @@ Apply fixes using the correct syntax for the detected framework:
 |-----------|-------------|-------------|----------------------|
 | React/Next.js | `htmlFor` | `onClick`, `onKeyDown` | `{condition && <X/>}` |
 | Vue | `for` | `@click`, `@keydown` | `v-if`, `v-show` |
-| Angular | `for` | `(click)`, `(keydown)` | `*ngIf` |
-| Svelte | `for` | `on:click`, `on:keydown` | `{#if condition}` |
+| Angular | `for` | `(click)`, `(keydown)` | `@if` (Angular 17+) or `*ngIf` |
+| Svelte | `for` | `onclick`, `onkeydown` (Svelte 5); `on:click`, `on:keydown` (Svelte 4) | `{#if condition}` |
 | HTML | `for` | `onclick`, `onkeydown` | N/A |
 
 ## Fix Process

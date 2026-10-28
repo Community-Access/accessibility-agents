@@ -13,7 +13,7 @@ Before asking the user anything, silently check the workspace for CI-based acces
 1. **GitHub Accessibility Scanner:** Search for `.github/workflows/*.yml` files containing `github/accessibility-scanner@v`. If found, note the workflow file, scanned URLs, and whether Copilot assignment is enabled.
 2. **Lighthouse CI:** Search for `.github/workflows/*.yml` files containing `treosh/lighthouse-ci-action` or `lhci`, and check for `lighthouserc.js`, `lighthouserc.json`, or `.lighthouserc.yml` config files. If found, note the workflow file and configured URLs.
 
-If either scanner is detected, dispatch the appropriate bridge agent (`scanner-bridge` for GitHub Scanner, `lighthouse-bridge` for Lighthouse) via the Task tool to fetch existing findings. Store these findings for correlation in Phase 9.
+If either scanner is detected, dispatch the appropriate bridge skill (`scanner-bridge` for GitHub Scanner, `lighthouse-bridge` for Lighthouse) with the dispatch prompt in SKILL.md to fetch existing findings. Store these findings for correlation in Phase 9.
 
 3. **Playwright Availability:** Check if the Playwright MCP tools are available by attempting to call `run_playwright_keyboard_scan` with a test URL. If the tool exists, behavioral testing (Phase 10) can run against the dev server URL. Note the availability status.
 4. **Dev Server Probing:** If no URL is provided later in Step 2, attempt to probe common dev server ports (3000, 5173, 8080, 4200, 8000) by checking if they respond. Store any detected URL for potential use in Phase 9 and Phase 10.
@@ -91,7 +91,7 @@ Based on their answers, customize the audit order and depth. Store the app URL (
 
 Ask using AskUserQuestion:
 
-1. **"Where should I write the audit report?"** - Options: `ACCESSIBILITY-AUDIT.md` (default), Custom path
+1. **"Where should I write the audit report?"** - Options: `WEB-ACCESSIBILITY-AUDIT.md` (default), Custom path
 2. **"How should I organize findings?"** - Options:
    - **By page** - group all issues under each page (best for small sites)
    - **By issue type** - group all instances of each rule across pages (best for seeing patterns)
@@ -119,7 +119,7 @@ Options:
 - **Last N days** - files changed in the last N days
 
 If the user selects **Against a baseline report**, ask: **"What is the path to the previous audit report?"**
-Let the user provide the path to a previous `ACCESSIBILITY-AUDIT.md` file.
+Let the user provide the path to a previous `WEB-ACCESSIBILITY-AUDIT.md` file.
 
 **Source-to-Page Mapping:** When using git diff, map changed source files to their corresponding routes/pages:
 
@@ -137,7 +137,7 @@ After Phase 0, activate framework-specific scanning patterns based on the detect
 
 ### React / Next.js
 
-- Check for `aria-*` props passed correctly (React uses camelCase: `aria-label` not `ariaLabel`)
+- Check for `aria-*` props passed correctly (React keeps them hyphenated and lowercase, unlike most camelCase props: `aria-label`, not `ariaLabel`)
 - Verify `useEffect` cleanup for focus management on component unmount
 - Check `React.Fragment` usage doesn't break landmark structure
 - Verify `next/image` has `alt` prop (not just decorative)
@@ -174,7 +174,7 @@ After Phase 0, activate framework-specific scanning patterns based on the detect
 
 ### Vanilla HTML/CSS/JS
 
-- Check for missing polyfills on `<dialog>` element
+- Check modal `<dialog>` elements are opened with `showModal()`, not `show()` or the `open` attribute (`<dialog>` has been supported across browsers since March 2022, so no polyfill is needed)
 - Verify `<details>/<summary>` usage and browser support
 - Check raw `addEventListener` has keyboard equivalents for click handlers
 - Verify CSS-only interactive patterns have JS fallbacks for AT

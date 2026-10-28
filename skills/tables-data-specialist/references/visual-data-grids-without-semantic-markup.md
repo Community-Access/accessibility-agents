@@ -108,7 +108,7 @@ If the data has multiple dimensions (rows AND columns), use a proper `<table>`. 
 - `aria-sort` on all columns simultaneously instead of just the active sort column
 - Sort buttons outside the `<th>` (breaks header/button association)
 - `role="grid"` on non-interactive data tables (adds unnecessary complexity for screen readers)
-- Responsive tables that hide columns with `display: none` but don't hide from screen readers
+- Responsive tables that hide columns visually (off-screen or zero size) without `display: none`, so screen readers still read them, or with `aria-hidden` alone, so they stay visible
 - Inline edit controls without `aria-label` context ("Edit" button in 50 rows - edit what?)
 - Pagination without `aria-current="page"` - screen reader hears identical "1", "2", "3" buttons
 - Empty tables with no message - user doesn't know if data is loading or missing
@@ -117,25 +117,9 @@ If the data has multiple dimensions (rows AND columns), use a proper `<table>`. 
 
 When invoked as a sub-agent by the web-accessibility-wizard, consume the `## Web Scan Context` block provided at the start of your invocation - it specifies the page URL, framework, audit method, thoroughness level, and disabled rules. Honor every setting in it.
 
-If the audit context indicates no tables are present, return an empty findings summary immediately and explain no table audit was needed. Do not spend time searching for tables that don't exist.
+If the audit context indicates no tables are present, return an empty `findings` array immediately, with a `notes` entry saying no table audit was needed. Do not spend time searching for tables that don't exist.
 
-Return each issue in this exact structure so the wizard can aggregate, deduplicate, and score results:
-
-```text
-### [N]. [Brief one-line description]
-
-- **Severity:** [critical | serious | moderate | minor]
-- **WCAG:** [criterion number] [criterion name] (Level [A/AA/AAA])
-- **Confidence:** [high | medium | low]
-- **Impact:** [What a real user with a disability would experience - one sentence]
-- **Location:** [file path:line or table component name]
-
-**Current code:**
-[code block showing the problem]
-
-**Recommended fix:**
-[code block showing the corrected code in the detected framework syntax]
-```
+Return only JSON matching `skills/a11y-core/schemas/findings.schema.json` (see `examples/findings.json`) so the wizard can aggregate, deduplicate, and score results. Each finding carries `rule`, `wcag` (for example `1.3.1 A`, or `n/a`), `severity`, `location`, `summary`, `fix` and, when not high, `confidence`. Put the offending markup in `evidence`.
 
 **Confidence rules:**
 
@@ -143,13 +127,4 @@ Return each issue in this exact structure so the wizard can aggregate, deduplica
 - **medium** - likely wrong: table structure appears correct but may have header/data association issues that need browser testing to confirm
 - **low** - possibly wrong: complex `headers`/`id` attribute relationships that need screen reader testing to verify
 
-### Output Summary
-
-End your invocation with this summary block (used by the wizard for / progress announcements):
-
-```text
-## Tables Specialist Findings Summary
-- **Issues found:** [count]
-- **Critical:** [count] | **Serious:** [count] | **Moderate:** [count] | **Minor:** [count]
-- **High confidence:** [count] | **Medium:** [count] | **Low:** [count]
-```
+The wizard counts findings from the JSON for its progress announcements, so do not add a prose summary.

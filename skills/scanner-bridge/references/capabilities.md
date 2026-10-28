@@ -15,21 +15,13 @@ Search the repository for workflow files that reference `github/accessibility-sc
    - `cache_key` -- the cache key for delta detection
    - `skip_copilot_assignment` -- whether Copilot is enabled
    - `include_screenshots` -- whether screenshots are captured
-3. Return a structured detection result:
+3. Record the detection result as a `notes` entry in the findings payload, for example:
 
-```json
-{
-  "scannerDetected": true,
-  "workflowFile": ".github/workflows/a11y-scan.yml",
-  "urls": ["https://example.com", "https://example.com/login"],
-  "targetRepo": "owner/repo",
-  "cacheKey": "cached_results-example.json",
-  "copilotEnabled": true,
-  "screenshotsEnabled": false
-}
+```text
+Scanner workflow: .github/workflows/a11y-scan.yml, URLs: https://example.com, https://example.com/login, target repo owner/repo, cache key cached_results-example.json, Copilot assignment on, screenshots off
 ```
 
-If no scanner workflow is found, return `{"scannerDetected": false}`.
+If no scanner workflow is found, return an empty `findings` array with the note "GitHub Accessibility Scanner not configured".
 
 ### 2. Fetch Scanner Issues
 
@@ -59,29 +51,23 @@ Query the target repository for issues created by the scanner:
 
 ### 3. Normalize Findings
 
-Convert scanner issue data into the standard agent finding format:
+Convert scanner issue data into a finding that matches `skills/a11y-core/schemas/findings.schema.json`:
 
 ```json
 {
-  "source": "github-a11y-scanner",
-  "ruleId": "{axe-core-rule-id}",
-  "wcagCriterion": "{criterion}",
-  "wcagLevel": "{A|AA|AAA}",
+  "rule": "{axe-core-rule-id}",
+  "wcag": "{criterion} {A|AA}, or n/a for best-practice rules",
   "severity": "{critical|serious|moderate|minor}",
-  "confidence": "high",
-  "url": "{scanned-url}",
-  "element": "{css-selector-or-html-snippet}",
-  "description": "{violation-description}",
-  "remediation": "{fix-guidance}",
-  "githubIssue": {
-    "number": 0,
-    "url": "{issue-url}",
-    "state": "{open|closed}",
-    "copilotAssigned": false,
-    "fixPR": null
-  }
+  "location": "{scanned-url} {css-selector}",
+  "summary": "{violation-description}",
+  "fix": "{fix-guidance}",
+  "evidence": "Issue #{number} ({issue-url}), {open|closed}, Copilot assigned: {yes|no}, fix PR: {number or none}"
 }
 ```
+
+Take `wcag` from the rule's tags in axe-core, not from the issue title. Do not
+use 4.1.1 Parsing: it is obsolete and removed in WCAG 2.2, and the axe-core
+rules tagged with it (`duplicate-id`, `duplicate-id-active`) are deprecated.
 
 Parse the issue body to extract axe-core rule IDs, WCAG criteria, affected elements, and impact levels. Map impact levels to the agent severity model:
 

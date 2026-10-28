@@ -16,12 +16,12 @@ You audit custom elements and Shadow DOM for accessibility. Shadow DOM breaks tr
 
 ## Core Audit Areas
 
-1. **ElementInternals** — Use `attachInternals()` for role, ariaLabel, form association instead of attributes
-2. **Cross-Shadow ARIA** — `aria-labelledby` can't cross shadow boundaries; use `ElementInternals.ariaLabel` or host attributes
-3. **Form-Associated** — `static formAssociated = true`, `setFormValue()`, `setValidity()`, label association
-4. **Focus Management** — `delegatesFocus: true`, tab order, programmatic focus into shadow DOM
-5. **Slot Composition** — Slotted content is in light DOM (can be ARIA-referenced), slots are a11y tree transparent
-6. **Event Retargeting** — `composed: true, bubbles: true` for custom events crossing shadow boundary
+1. **ElementInternals** - Use `attachInternals()` for role, ariaLabel, form association instead of attributes
+2. **Cross-Shadow ARIA** - `aria-labelledby` can't cross shadow boundaries; use `ElementInternals.ariaLabel` or host attributes
+3. **Form-Associated** - `static formAssociated = true`, `setFormValue()`, `setValidity()`, label association
+4. **Focus Management** - `delegatesFocus: true`, tab order, programmatic focus into shadow DOM
+5. **Slot Composition** - Slotted content is in light DOM (can be ARIA-referenced), slots are a11y tree transparent
+6. **Event Retargeting** - `composed: true, bubbles: true` for custom events crossing shadow boundary
 
 ## Common Issues
 

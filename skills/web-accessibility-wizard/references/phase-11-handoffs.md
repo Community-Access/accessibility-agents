@@ -39,16 +39,20 @@ When the user wants to fix issues on a specific page, hand off to the **web-issu
 
 If the user selects **Export in compliance format (VPAT/ACR)**, ask which format using AskUserQuestion:
 
-- **VPAT 2.5 (WCAG)** - Voluntary Product Accessibility Template, WCAG edition
-- **VPAT 2.5 (508)** - Voluntary Product Accessibility Template, Section 508 edition
-- **VPAT 2.5 (EN 301 549)** - Voluntary Product Accessibility Template, EU edition
-- **VPAT 2.5 (INT)** - Voluntary Product Accessibility Template, International edition (all three)
+- **VPAT 2.5Rev (WCAG)** - Voluntary Product Accessibility Template, WCAG edition
+- **VPAT 2.5Rev (508)** - Voluntary Product Accessibility Template, Section 508 edition
+- **VPAT 2.5Rev (EU)** - Voluntary Product Accessibility Template, EN 301 549 edition
+- **VPAT 2.5Rev (INT)** - Voluntary Product Accessibility Template, International edition (508, EN 301 549 and WCAG together)
 - **Custom ACR** - Accessibility Conformance Report in a custom format
+
+VPAT 2.5Rev, dated April 2025, is the current ITI template
+(<https://www.itic.org/policy/accessibility/vpat>). WCAG 2.2 is in its WCAG and
+INT editions. Its EU edition still follows EN 301 549 V3.2.1, not V4.1.1.
 
 Generate the compliance report by mapping web audit findings to the appropriate standard's criteria:
 
 ```markdown
-# VPAT 2.5 - WCAG Edition
+# VPAT 2.5Rev - WCAG Edition
 
 ## Product Information
 | Field | Value |
@@ -76,7 +80,7 @@ Generate the compliance report by mapping web audit findings to the appropriate 
 | 3.1.1 Language of Page (A) | [level] | [remarks] |
 | 3.3.1 Error Identification (A) | [level] | [remarks] |
 | 3.3.2 Labels or Instructions (A) | [level] | [remarks] |
-| 4.1.1 Parsing (A) | [level] | [remarks] |
+| 4.1.1 Parsing (A) | WCAG 2.0 and 2.1: Supports. WCAG 2.2: does not apply (obsolete and removed) | For WCAG 2.0 and 2.1, the September 2023 errata say this criterion is always supported. |
 | 4.1.2 Name, Role, Value (A) | [level] | [remarks] |
 | ... | | |
 ```
@@ -87,7 +91,7 @@ Conformance levels:
 - **Partially Supports** - Some pages pass, some fail for this criterion
 - **Does Not Support** - All or most audited pages fail for this criterion
 - **Not Applicable** - Criterion does not apply to the content types found
-- **Not Evaluated** - Criterion was not tested in the audit scope
+- **Not Evaluated** - Criterion was not tested in the audit scope. The VPAT template allows this only for Level AAA criteria; an untested A or AA criterion must be tested or the gap stated in the remarks
 
 Write the VPAT to `ACCESSIBILITY-VPAT.md` (or the user's chosen path).
 
@@ -142,7 +146,7 @@ If the user selects **Export findings as CSV/JSON**, delegate to the **web-csv-r
 
 The web-csv-reporter generates:
 
-- `WEB-ACCESSIBILITY-FINDINGS.csv` - one row per finding with severity scoring, WCAG criteria, and Accessibility Insights help links
+- `WEB-ACCESSIBILITY-FINDINGS.csv` - one row per finding with severity scoring, WCAG criteria, and Deque University help links
 - `WEB-ACCESSIBILITY-SCORECARD.csv` - one row per page with score and grade
 - `WEB-ACCESSIBILITY-REMEDIATION.csv` - prioritized remediation plan with ROI scoring and fix steps
 
@@ -156,13 +160,13 @@ During the audit, suggest these additional specialist areas if relevant to the p
 
 | Agent Suggestion | When to Recommend |
 |-----------------|-------------------|
-| **Media/Video specialist** | Projects with video players, audio content, or multimedia |
-| **Internationalization (i18n) specialist** | Multi-language projects needing `dir`, `lang`, and bidi text support |
-| **Mobile touch specialist** | Projects targeting mobile with touch targets, gestures, and orientation |
-| **Animation/Motion specialist** | Projects with complex animations, transitions, or parallax effects |
+| **media-accessibility** | Projects with video players, audio content, or multimedia |
+| **i18n-accessibility** | Multi-language projects needing `dir`, `lang`, and bidi text support |
+| **mobile-accessibility** | Projects targeting mobile with touch targets, gestures, and orientation |
+| **Animation and motion** (no dedicated skill; check manually) | Projects with complex animations, transitions, or parallax effects |
 | **document-accessibility-wizard** | Projects with Word, Excel, PowerPoint, or PDF documents |
-| **Error recovery specialist** | Complex apps with error boundaries, fallbacks, and recovery flows |
-| **Cognitive accessibility specialist** | Projects needing plain language, reading level, and cognitive load analysis |
+| **Error recovery** (no dedicated skill; `forms-specialist` covers form errors) | Complex apps with error boundaries, fallbacks, and recovery flows |
+| **cognitive-accessibility** | Projects needing plain language, reading level, and cognitive load analysis |
 
 ## Behavioral Rules
 

@@ -51,7 +51,7 @@ Requirements:
 
 **`<thead>`, `<tbody>`, `<tfoot>`** provide no accessibility semantics -- screen readers do not use them. They exist for CSS styling, print rendering, and fixed-header scrolling. Still use them for code organization, but do not rely on them for accessibility.
 
-**The `summary` attribute** is deprecated in HTML5. Use `<caption>` for the table's accessible name. If a longer description is needed, use `aria-describedby` pointing to a paragraph outside the table.
+**The `summary` attribute** is obsolete in HTML. Use `<caption>` for the table's accessible name. If a longer description is needed, use `aria-describedby` pointing to a paragraph outside the table.
 
 **`headers`/`id` associations** are a last resort. Prefer `scope` on every `<th>`. Only use `headers`/`id` when a table has irregular header spans that `scope` cannot express. Over-complex `headers`/`id` markup is fragile and error-prone.
 
@@ -233,7 +233,7 @@ When a table has interactive content (editable cells, inline actions, checkboxes
 Requirements for `role="grid"`:
 
 - Arrow keys navigate between cells
-- Tab moves to the next interactive element within the grid, then exits the grid
+- Only one focusable element in the grid is in the page tab sequence (roving `tabindex`), so the grid is a single Tab stop and arrow keys move between cells, per the APG grid pattern (<https://www.w3.org/WAI/ARIA/apg/patterns/grid/>)
 - Enter/Space activates the focused cell's interactive element
 - Every interactive element inside cells needs a descriptive `aria-label` that includes context (not just "Edit" - "Edit Jane Smith")
 - `role="grid"` goes on the `<table>`, not individual cells

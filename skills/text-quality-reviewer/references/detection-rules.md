@@ -27,7 +27,7 @@ Detects unresolved template variable syntax in accessible names.
 <!-- FIXED: Actual text content -->
 <img src="hero.jpg" alt="Mountain landscape at sunset">
 <button aria-label="Delete item">X</button>
-<span aria-label="Welcome, Maria">Hi!</span>
+<span>Welcome, Maria</span>
 ```
 
 ### TQR-002: Code Syntax in Non-Visual Text (Critical)
@@ -52,7 +52,7 @@ Detects programming language syntax used as accessible names.
 <!-- FIXED: Descriptive human-readable text -->
 <img src="product.jpg" alt="Red running shoes, side view">
 <img src="banner.jpg" alt="Summer sale: 30 percent off all items">
-<button aria-label="Submit your order">Go</button>
+<button>Submit your order</button>
 ```
 
 ### TQR-003: Placeholder Text as Labels (Serious)
@@ -102,7 +102,7 @@ Detects when the attribute name or its role is used as the value.
 
 <!-- FIXED: Meaningful names -->
 <img src="chart.jpg" alt="Monthly active users, January through June 2025">
-<button aria-label="Save document">Click</button>
+<button aria-label="Save document">Save</button>
 <button>Save document</button>
 <a href="/settings">Account settings</a>
 ```
@@ -213,8 +213,9 @@ Detects patterns that suggest dynamic content failed to populate, leaving raw da
 <p aria-label="[object Object]">Player stats</p>
 <button>undefined</button>
 
-<!-- FIXED: Actual content or proper loading state -->
-<span aria-label="Top of the 3rd inning">Score</span>
-<p aria-label="Season batting average: .312">Player stats</p>
+<!-- FIXED: Actual content as visible text (aria-label is not allowed on
+     span or p: the generic and paragraph roles prohibit naming) -->
+<span>Score: top of the 3rd inning</span>
+<p>Player stats: season batting average .312</p>
 <button>View player profile</button>
 ```

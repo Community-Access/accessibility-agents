@@ -16,7 +16,7 @@ Part of the `testing-coach` skill. Read this only when the task reaches these se
 
 | Action | Keys |
 |--------|------|
-| Start/Stop speech | Ctrl |
+| Stop speech | Ctrl |
 | Read next item | Down |
 | Read previous item | Up |
 | Activate link/button | Enter |
@@ -25,7 +25,7 @@ Part of the `testing-coach` skill. Read this only when the task reaches these se
 | List all headings | NVDA+F7 then Alt+H |
 | List all links | NVDA+F7 then Alt+K |
 | List all landmarks | NVDA+F7 then Alt+D |
-| Read current line | NVDA+L |
+| Read current line | NVDA+Up Arrow (laptop layout: NVDA+L) |
 | Navigate by heading | H / Shift+H |
 | Navigate by landmark | D / Shift+D |
 | Navigate by form field | F / Shift+F |
@@ -33,7 +33,7 @@ Part of the `testing-coach` skill. Read this only when the task reaches these se
 | Navigate by table | T / Shift+T |
 | Navigate table cells | Ctrl+Alt+Arrow keys |
 
-**NVDA key:** Insert (desktop) or Caps Lock (laptop layout)
+**NVDA key:** Insert by default; Caps Lock can also be set as the NVDA key in Keyboard settings
 
 **What to test with NVDA:**
 
