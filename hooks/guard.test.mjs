@@ -500,3 +500,86 @@ describe('codex', () => {
     assert.equal(runCx('gate', patch).code, 0);
   });
 });
+
+// The Copilot CLI's camelCase events send toolName and toolArgs, and toolArgs
+// may arrive as a JSON string (docs.github.com, Copilot CLI hooks reference).
+// The guard used to read neither, so every Copilot edit passed the gate (#254).
+describe('copilot', () => {
+  function runCp(behaviour, payload) {
+    const result = spawnSync(process.execPath, [GUARD, '--behaviour', behaviour, '--client', 'copilot'], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: { ...process.env, A11Y_GUARD_DIR: scratch },
+    });
+    let json = null;
+    try {
+      json = result.stdout.trim() ? JSON.parse(result.stdout) : null;
+    } catch {
+      json = null;
+    }
+    return { code: result.status, json };
+  }
+  const base = (n) => ({ sessionId: `cp-${n}`, timestamp: 1793233574000, cwd: '/repo' });
+  const tool = (n, toolName, toolArgs) => ({ ...base(n), toolName, toolArgs });
+
+  test('edit, create, str_replace_editor and apply_patch on a UI file are refused', () => {
+    const cases = [
+      ['edit', { path: 'src/App.tsx', old_str: 'a', new_str: 'b' }],
+      ['create', { path: 'src/Nav.vue', file_text: '<nav></nav>' }],
+      ['str_replace_editor', { command: 'str_replace', path: 'web/index.html', old_str: 'a', new_str: 'b' }],
+      ['apply_patch', '*** Begin Patch\n*** Update File: src/Card.jsx\n@@\n-a\n+b\n*** End Patch'],
+    ];
+    for (const [i, [name, args]] of cases.entries()) {
+      const r = runCp('gate', tool(`edit-${i}`, name, args));
+      assert.equal(r.code, 2, name);
+      assert.equal(r.json.permissionDecision, 'deny', name);
+      assert.ok(r.json.permissionDecisionReason.includes('accessibility-lead'), name);
+    }
+  });
+
+  test('toolArgs sent as a JSON string is parsed', () => {
+    const r = runCp('gate', tool('str', 'edit', JSON.stringify({ path: 'src/App.tsx', old_str: 'a', new_str: 'b' })));
+    assert.equal(r.code, 2);
+  });
+
+  test('a shell write to a UI file is refused; a non-UI edit is allowed', () => {
+    assert.equal(runCp('gate', tool('sh', 'bash', { command: "sed -i 's/a/b/' src/App.tsx" })).code, 2);
+    assert.equal(runCp('gate', tool('ps', 'powershell', { command: 'Set-Content -Path web/index.html -Value x' })).code, 2);
+    assert.equal(runCp('gate', tool('py', 'edit', { path: 'scripts/build.py', old_str: 'a', new_str: 'b' })).code, 0);
+  });
+
+  test('every route by which Copilot can load the lead opens the gate', () => {
+    const ui = (n) => tool(n, 'edit', { path: 'src/App.tsx', old_str: 'a', new_str: 'b' });
+    const routes = [
+      ['skill tool', 'mark', tool('r1', 'skill', { skill: 'accessibility-lead' })],
+      ['skill tool, plugin name', 'mark', tool('r2', 'skill', { name: 'accessibility-agents:accessibility-lead' })],
+      ['view of SKILL.md', 'mark', tool('r3', 'view', { path: '/home/u/.copilot/skills/accessibility-lead/SKILL.md' })],
+      ['shell read of SKILL.md', 'mark', tool('r4', 'bash', { command: 'cat ~/.agents/skills/accessibility-lead/SKILL.md' })],
+      ['subagentStop', 'mark', { ...base('r5'), agentName: 'accessibility-lead', stopReason: 'end_turn' }],
+      ['/name in the prompt', 'detect', { ...base('r6'), prompt: 'Use the /accessibility-lead skill to review the header' }],
+    ];
+    for (const [label, behaviour, payload] of routes) {
+      const n = payload.sessionId.slice(3);
+      assert.equal(runCp('gate', ui(n)).code, 2, `${label}: closed before`);
+      runCp(behaviour, payload);
+      assert.equal(runCp('gate', ui(n)).code, 0, `${label}: open after`);
+    }
+  });
+
+  test('other skills, other files and passing mentions do not open the gate', () => {
+    const ui = (n) => tool(n, 'edit', { path: 'src/App.tsx', old_str: 'a', new_str: 'b' });
+    const near = [
+      ['mark', tool('n1', 'skill', { skill: 'aria-specialist' })],
+      ['mark', tool('n2', 'view', { path: '/home/u/.copilot/skills/accessibility-lead/README.md' })],
+      ['mark', tool('n3', 'bash', { command: 'ls ~/.agents/skills/accessibility-lead/SKILL.md' })],
+      ['mark', { ...base('n4'), agentName: 'explore' }],
+      ['detect', { ...base('n5'), prompt: 'what does accessibility-lead do?' }],
+      ['detect', { ...base('n6'), prompt: 'open skills/accessibility-lead/SKILL.md' }],
+    ];
+    for (const [behaviour, payload] of near) {
+      const n = payload.sessionId.slice(3);
+      runCp(behaviour, payload);
+      assert.equal(runCp('gate', ui(n)).code, 2, JSON.stringify(payload));
+    }
+  });
+});

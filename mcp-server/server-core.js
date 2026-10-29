@@ -203,7 +203,7 @@ function parseTimestamp(ts) {
 // ---------------------------------------------------------------------------
 
 function extractHeadings(html) {
-  const headingRe = /<(h[1-6])\b[^>]*>([\s\S]*?)<\/\1>/gi;
+  const headingRe = /<(h[1-6])\b([^>]*)>([\s\S]*?)<\/\1>/gi;
   const issues = [];
   const headings = [];
   let match;
@@ -213,8 +213,23 @@ function extractHeadings(html) {
   while ((match = headingRe.exec(html)) !== null) {
     const tag = match[1].toLowerCase();
     const level = parseInt(tag[1], 10);
-    const text = match[2].replace(/<[^>]+>/g, "").trim();
+    const attrs = match[2];
+    const inner = match[3];
+    const text = inner.replace(/<[^>]+>/g, "").trim();
     headings.push({ tag, level, text });
+
+    // A heading with no accessible name is a stop with nothing to say when a
+    // screen reader user moves by heading. Text, aria-label, aria-labelledby
+    // or an image with non-empty alt each give it a name.
+    const ariaLabel = ((attrs.match(/aria-label\s*=\s*["']([^"']*)["']/i) || [])[1] || "").trim();
+    const labelledBy = /aria-labelledby\s*=\s*["'][^"']*\S[^"']*["']/i.test(attrs);
+    const imgAlt = [...inner.matchAll(/<img\b[^>]*\balt\s*=\s*["']([^"']*)["']/gi)]
+      .some((m) => m[1].trim() !== "");
+    if (!text && !ariaLabel && !labelledBy && !imgAlt) {
+      issues.push(
+        `Empty heading: <${tag}> has no text. Give it text that describes the section, or remove it.`
+      );
+    }
 
     if (level === 1) h1Count++;
     if (lastLevel > 0 && level > lastLevel + 1) {
@@ -1035,7 +1050,7 @@ export function createServer() {
     "check_heading_structure",
     {
       title: "Check Heading Structure",
-      description: "Analyze HTML content for heading hierarchy issues: skipped levels, multiple H1s, missing H1.",
+      description: "Analyze HTML content for heading hierarchy issues: skipped levels, multiple H1s, missing H1, empty headings.",
       inputSchema: z.object({
         html: z.string().describe("HTML content to analyze"),
       }),
@@ -1043,8 +1058,8 @@ export function createServer() {
     async ({ html }) => {
       const { headings, issues } = extractHeadings(html);
       const toFindings = (list) => list.map((issue) => ({
-        rule: "heading-structure",
-        wcag: "1.3.1 A",
+        rule: issue.startsWith("Empty heading") ? "empty-heading" : "heading-structure",
+        wcag: issue.startsWith("Empty heading") ? "2.4.6 AA" : "1.3.1 A",
         severity: "serious",
         location: "provided HTML",
         summary: issue,
@@ -1056,7 +1071,7 @@ export function createServer() {
         });
       }
       const lines = ["Heading Structure:", ""];
-      for (const h of headings) lines.push(`  ${h.tag.toUpperCase()}: ${h.text}`);
+      for (const h of headings) lines.push(`  ${h.tag.toUpperCase()}: ${h.text || "(empty)"}`);
       lines.push("");
       if (issues.length === 0) lines.push("No heading issues found.");
       else { lines.push(`Issues (${issues.length}):`); for (const i of issues) lines.push(`  - ${i}`); }

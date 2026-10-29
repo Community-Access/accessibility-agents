@@ -21,7 +21,7 @@ Each tool, with the hints it declares and its one-sentence purpose.
 | `check_contrast` | yes | no | no | Calculate WCAG contrast ratio between two colors. Returns the ratio and whether it passes AA for normal text (4.5:1), large text (3:1), and UI components (3:1). |
 | `check_apca_contrast` | yes | no | no | Calculate APCA lightness contrast between two colours, an experimental perceptual method that no WCAG standard, and not the current WCAG 3.0 draft, includes. |
 | `get_accessibility_guidelines` | yes | no | no | Get detailed WCAG AA accessibility guidelines for a specific component type. Returns requirements, code examples, and common mistakes. |
-| `check_heading_structure` | yes | no | no | Analyze HTML content for heading hierarchy issues: skipped levels, multiple H1s, missing H1. |
+| `check_heading_structure` | yes | no | no | Analyze HTML content for heading hierarchy issues: skipped levels, multiple H1s, missing H1, empty headings. |
 | `check_link_text` | yes | no | no | Analyze HTML for ambiguous or missing link text. Checks for 'click here', 'read more', empty links. |
 | `check_form_labels` | yes | no | no | Analyze HTML form inputs for missing accessible labels. Checks <label for>, aria-label, aria-labelledby, and title. |
 | `scan_office_document` | yes | no | no | Scan a .docx, .xlsx, or .pptx file for accessibility issues. Checks title, language, alt text, headings, table headers, and more. |

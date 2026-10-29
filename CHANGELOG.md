@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Two more checks in the testing coach's screen reader workflow**: a
+  placeholder that repeats its label, and flex or grid children that
+  VoiceOver splits into separate stops or runs together
+  ([#259](https://github.com/Community-Access/accessibility-agents/issues/259)).
 - **Two enforced rules for accessibility reports and credits.**
   `.github/workflows/accessibility-reports.yml` acknowledges each report,
   reminds the accessibility owner after 5 business days without a maintainer
@@ -21,6 +25,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   respond" and "Recognition" in ACCESSIBILITY.md.
 
 ### Fixed
+
+- **The edit gate let every GitHub Copilot CLI edit through.** Copilot's
+  hook payload names the tool `toolName` and its arguments `toolArgs`, often
+  as a JSON string; the guard read neither, so it never learned which file was
+  being edited ([#254](https://github.com/Community-Access/accessibility-agents/issues/254)).
+  It now reads both, refuses `edit`, `create`, `str_replace_editor`,
+  `apply_patch` and shell writes to UI files, and opens on every route Copilot
+  can load the lead by: a skill call, a read of its `SKILL.md`, `subagentStop`,
+  or `/accessibility-lead` in the prompt. Tested against the payloads GitHub
+  documents; a live Copilot session is on the live checks list.
+- **`check_heading_structure` listed an empty heading without reporting it.**
+  A heading with no text, `aria-label`, `aria-labelledby` or image `alt` is now
+  an `empty-heading` finding under WCAG 2.4.6, and the listing prints
+  `(empty)` for it ([#263](https://github.com/Community-Access/accessibility-agents/issues/263)).
+- **Audit reports said "1 findings" and "1 checks ran".** Counts of one now
+  take the singular, and the blocking list begins "Then the remaining" only
+  when the component list it follows was printed
+  ([#257](https://github.com/Community-Access/accessibility-agents/issues/257)).
+- **The MCP server's messages used non-ASCII characters**, an ellipsis, a
+  less-than-or-equal sign, em dashes and a warning sign, which a screen reader
+  reads oddly or not at all. They are plain ASCII now
+  ([#268](https://github.com/Community-Access/accessibility-agents/pull/268)).
+- **The installer ignored options it did not know.** `--help` ran a real
+  install, a typo such as `--dryrun` installed anyway, and `--clients` with no
+  value crashed. It now prints usage for `--help`, and refuses an unknown
+  option or client id with one line and exit code 2, before writing anything
+  ([#267](https://github.com/Community-Access/accessibility-agents/pull/267)).
 
 - **The GitHub Action's README pinned `action@v6.0.0`**, the release whose
   `claude-code-plugin/` symlinks GitHub's ZIP download of an action cannot

@@ -13,13 +13,13 @@ The gate is the script, its manifests, and its tests.
 |---|---|
 | `hooks/guard.mjs` | The script. Every behaviour lives here, once. |
 | `hooks/hooks.json` | Plugin hooks read by Claude Code, rooted at `${CLAUDE_PLUGIN_ROOT}` (Codex no longer loads plugin hooks) |
-| `com.github.copilot/hooks/hooks.json` | Plugin hooks read by the Copilot CLI and VS Code under Agent Plugins 1.0 |
+| `com.github.copilot/hooks/hooks.json` | Plugin hooks read by the Copilot CLI and VS Code under Agent Plugins 1.0; camelCase events, so the guard reads `toolName` and `toolArgs`; tested against the payloads GitHub documents, not yet in a live Copilot session |
 | `hooks/claude.hooks.json` | Claude Code event names, the same entries `.claude/settings.json` uses to gate this repository's own source; `npm run setup` no longer installs it |
 | `hooks/codex.hooks.json` | Codex event names, written to `~/.codex/hooks.json` by `npm run setup`; the only route to the gate on Codex |
 | `hooks/copilot.hooks.json` | Copilot format, version 1, for copying to `.github/hooks/` in a repository |
 | `hooks/gemini.hooks.json` | Gemini CLI event names; marks on `AfterTool` for `activate_skill`. Shipped as `hooks/hooks.json` inside the Gemini extension archive |
 | `hooks/antigravity.hooks.json` | Antigravity named hooks (`a11y-detect`, `a11y-gate`, `a11y-mark`), written to `~/.gemini/config/hooks.json` by `npm run setup`; tested against the payloads Antigravity documents, not yet in a live Antigravity session |
-| `hooks/guard.test.mjs` | 51 tests; run with `node --test hooks/guard.test.mjs` |
+| `hooks/guard.test.mjs` | 56 tests; run with `node --test hooks/guard.test.mjs` |
 
 ## Behaviours
 
@@ -54,7 +54,8 @@ Exempt, because they are not a person's interface: anything under
 
 A shell command can change a file as surely as an edit tool can, and Claude
 Code's auto mode tells the model to prefer the shell for edits. So the gate
-also runs on `Bash` (Claude Code, Codex) and `run_shell_command` (Gemini CLI),
+also runs on `Bash` (Claude Code, Codex), `run_shell_command` (Gemini CLI) and
+`bash` or `powershell` (Copilot CLI),
 and reads the command for the files it writes:
 
 - a redirect: `> file`, `>> file`, a heredoc such as `cat > file <<EOF`
@@ -101,6 +102,13 @@ Antigravity and Codex have no skill tool, so it opens when the lead's
 `$accessibility-lead` or `$web-accessibility-wizard` also opens it. Listing,
 grepping, diffing or writing the file does not. An unrelated
 subagent or another skill completing does not open it. That is tested too.
+
+The Copilot CLI documents that a skill's `SKILL.md` is injected into the
+agent's context but not which tool does it, so the gate opens on every route
+Copilot can take: a `skill` tool call naming the lead, a `view` or shell read
+of its `SKILL.md`, a `subagentStop` naming it, or a prompt that asks for
+`/accessibility-lead` or `/web-accessibility-wizard`. Which of these a live
+session uses is on the live checks list.
 
 ## Failure behaviour
 

@@ -25,6 +25,14 @@
         "powershell": "node hooks/guard.mjs --behaviour mark --client copilot",
         "timeoutSec": 10
       }
+    ],
+    "subagentStop": [
+      {
+        "type": "command",
+        "bash": "node hooks/guard.mjs --behaviour mark --client copilot",
+        "powershell": "node hooks/guard.mjs --behaviour mark --client copilot",
+        "timeoutSec": 10
+      }
     ]
   }
 }
