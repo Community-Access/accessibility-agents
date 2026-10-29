@@ -37272,7 +37272,7 @@ ${snapshot}`, [safeUrl], [], {
             focusOrder.push(info);
           }
           const lines = [`Keyboard Navigation: ${safeUrl}`, `Interactive elements found: ${focusOrder.length}`, ""];
-          if (trapped) lines.push("\u26A0 KEYBOARD TRAP DETECTED - focus cycles through fewer than 3 elements", "");
+          if (trapped) lines.push("WARNING: KEYBOARD TRAP DETECTED - focus cycles through fewer than 3 elements", "");
           const structured = [];
           if (trapped) {
             structured.push({
@@ -37384,7 +37384,7 @@ No contrast failures detected in sampled elements.`,
           }
           const lines = [`Contrast scan: ${safeUrl}`, `Failures: ${elements.length}`, ""];
           for (const e of elements) {
-            lines.push(`[FAIL] <${e.tag}> "${e.text}" \u2014 ${e.ratio}:1 (need ${e.required}:1${e.isLarge ? ", large text" : ""})`);
+            lines.push(`[FAIL] <${e.tag}> "${e.text}" - ${e.ratio}:1 (need ${e.required}:1${e.isLarge ? ", large text" : ""})`);
             lines.push(`  Color: ${e.fgColor} on ${e.bgColor}`);
             lines.push(`  Selector: ${e.selector}`);
             lines.push("");
@@ -37440,7 +37440,7 @@ No contrast failures detected in sampled elements.`,
           }
           const lines = [`Viewport Reflow: ${safeUrl}`, ""];
           for (const r of results) {
-            const status = r.hasHScroll ? "FAIL \u2014 horizontal scroll detected" : "PASS";
+            const status = r.hasHScroll ? "FAIL - horizontal scroll detected" : "PASS";
             lines.push(`${r.width}px: ${status} (content: ${r.bodyWidth}px)`);
           }
           const structured = results.filter((r) => r.hasHScroll).map((r) => ({
@@ -39717,7 +39717,7 @@ function extractFormLabels(html) {
     if (!hasLabel) {
       let hint = placeholder ? ` Has placeholder "${placeholder}" but placeholders are not accessible labels.` : "";
       issues.push(
-        `Input "${identifier}" (${tag}, type=${type}) has no accessible label.${hint} Add a <label for="${id || "\u2026"}"> or aria-label.`
+        `Input "${identifier}" (${tag}, type=${type}) has no accessible label.${hint} Add a <label for="${id || "the input id"}"> or aria-label.`
       );
     }
   }
@@ -41098,7 +41098,7 @@ Total cached: ${totalEntries} files, ${totalFindings} findings`,
           },
           wcag: {
             criterion: "3.1.5 Reading Level (AAA)",
-            recommendation: "Lower secondary education level (\u2264 grade 9)",
+            recommendation: "Lower secondary education level (grade 9 or below)",
             passes: wcagAAA
           }
         };
@@ -41145,7 +41145,7 @@ Total cached: ${totalEntries} files, ${totalFindings} findings`,
             const start = parseTimestamp(match[1]);
             const end = parseTimestamp(match[2]);
             if (end <= start) {
-              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time (${match[2]}) \u2264 start time (${match[1]})`, cue: cueCount });
+              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time (${match[2]}) is not after start time (${match[1]})`, cue: cueCount });
             }
             if (start < prevEnd) {
               issues.push({ severity: "moderate", message: `Cue ${cueCount}: overlaps with previous cue`, cue: cueCount });
@@ -41173,7 +41173,7 @@ Total cached: ${totalEntries} files, ${totalFindings} findings`,
             const start = parseTimestamp(match[1].replace(",", "."));
             const end = parseTimestamp(match[2].replace(",", "."));
             if (end <= start) {
-              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time \u2264 start time`, cue: cueCount });
+              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time is not after start time`, cue: cueCount });
             }
             if (start < prevEnd) {
               issues.push({ severity: "moderate", message: `Cue ${cueCount}: overlaps with previous cue`, cue: cueCount });
