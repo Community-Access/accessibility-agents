@@ -23,6 +23,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   release-notes block. The logic is `.github/scripts/a11y-community.mjs`,
   tested by the new `community` gate in `npm run verify`. See "How we
   respond" and "Recognition" in ACCESSIBILITY.md.
+- **A skills-only package for OpenAI's plugin directory, shared by ChatGPT
+  and Codex.** `npm run package:openai` builds
+  `dist/accessibility-agents-openai-<version>.zip`: the skills unchanged, a
+  generated `plugin.json` with the listing fields, the icon as logo and
+  composer icon, and the licence, privacy policy and README. It leaves out the
+  hooks, the MCP server and its configuration, and the development tooling.
+  Before writing, it checks every limit OpenAI publishes and names the file
+  that breaks one. The new `package:openai` gate in `npm run verify` runs its
+  tests, with a fixture that breaks each limit. The repository's own
+  `plugin.json` is unchanged. Not yet submitted or published.
+- **A conformance check for skills nothing can start.** A skill with both
+  `user-invocable: false` and `disable-model-invocation: true` must be named,
+  directly or through a chain, by a skill that can be started.
+  `scripts/check-skill-conformance.mjs` enforces it, with tests in the new
+  `conformance-tests` gate. Ten `kb-` reference skills are unnamed today; they
+  are listed in the script, and the list may only shrink.
+- **Standards pages describe ChatGPT.** `docs/standards/agent-plugins.md` has
+  a section on the OpenAI plugin directory; `hooks-by-client.md` and `mcp.md`
+  say ChatGPT has no hooks and no MCP server; `conformance.md` lists ChatGPT as
+  not yet tested; `agent-skills.md` explains why the reference skills set both
+  invocation fields.
+- **PRIVACY.md covers the ChatGPT and Codex plugin**: it collects, stores and
+  sends nothing.
 
 ### Fixed
 
@@ -111,6 +134,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The web wizard no longer implies it checked a project it cannot see.**
+  Phase 0 checks the workspace for CI scanners only when the assistant can
+  read the project's files; otherwise it skips the check without saying it ran
+  and asks for the checker's results.
 - **The Claude plugin directory lists a plugin-only tree.** Submitted from the
   repository root, the plugin carried the development tooling: the root
   `package.json` and lockfile, which make Claude Code run `npm ci` on install,

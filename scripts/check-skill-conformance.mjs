@@ -14,6 +14,9 @@
  *   3. A `name` that does not match its containing folder, which breaks
  *      activation by name on every client.
  *
+ * And one failure mode that loses a whole skill: a skill hidden from both the
+ * model and the user that no startable skill names (see "reachability").
+ *
  * This checker exists because the repository once had six trees of duplicated
  * agents and the main validator scanned four of them. The two it missed had
  * accumulated 70 byte-order marks and 64 Title Case names, unnoticed, on a
@@ -151,8 +154,115 @@ for (const tree of TREES) {
   counts[tree.label] = stats;
 }
 
+// ------------------------------------------------------------ reachability
+//
+// 4. A skill hidden from both the model and the user (`user-invocable: false`
+//    with `disable-model-invocation: true`) that no other skill names. VS Code
+//    lists that pair as a disabled skill, and on Claude Code nothing can start
+//    it through the Skill tool: the only way in is a router or specialist that
+//    names it and opens its SKILL.md by path. If nothing names it, it is dead
+//    weight that every install still carries, and nothing says so.
+//
+// Reach is followed through chains: a router names a helper, the helper names
+// a reference, and the reference is reached. A chain has to start at a skill
+// without both flags, because only those can be started at all.
+
+/**
+ * Reference skills that nothing named when this check was added on 29 October
+ * 2026. Each needs a specialist that cites it, or a decision to retire it. The
+ * list may only shrink: a new unreached skill fails, and so does a name here
+ * that has since become reached, so the list cannot go stale.
+ */
+const KNOWN_UNREACHED = new Set([
+  "kb-cognitive-accessibility",
+  "kb-data-visualization-accessibility",
+  "kb-design-system",
+  "kb-document-scanning",
+  "kb-email-accessibility",
+  "kb-media-accessibility",
+  "kb-mobile-accessibility",
+  "kb-office-remediation",
+  "kb-playwright-testing",
+  "kb-web-scanning",
+]);
+
+/** Every text file in a skill folder, joined, for name and path references. */
+function skillText(dir) {
+  const parts = [];
+  const walk = (abs) => {
+    for (const e of fs.readdirSync(abs, { withFileTypes: true })) {
+      const full = path.join(abs, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (/\.(md|ya?ml|json)$/i.test(e.name)) parts.push(fs.readFileSync(full, "utf8"));
+    }
+  };
+  walk(dir);
+  return parts.join("\n");
+}
+
+function hiddenFromBoth(skillFile) {
+  const text = fs.readFileSync(skillFile, "utf8").replace(/^﻿/, "");
+  const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!m) return false;
+  return /^disable-model-invocation:\s*true\s*$/m.test(m[1]) && /^user-invocable:\s*false\s*$/m.test(m[1]);
+}
+
+const reach = { hidden: 0, reached: 0, known: [] };
+{
+  const root = path.join(process.cwd(), "skills");
+  const skills = fs.existsSync(root)
+    ? fs
+        .readdirSync(root, { withFileTypes: true })
+        .filter((d) => d.isDirectory() && fs.existsSync(path.join(root, d.name, "SKILL.md")))
+        .map((d) => d.name)
+        .sort()
+    : [];
+  const hidden = new Set(skills.filter((s) => hiddenFromBoth(path.join(root, s, "SKILL.md"))));
+  const text = new Map(skills.map((s) => [s, skillText(path.join(root, s))]));
+  const names = (from, target) =>
+    new RegExp(`(^|[^a-z0-9-])${target.replace(/-/g, "\\-")}([^a-z0-9-]|$)`, "m").test(text.get(from));
+
+  const reached = new Set(skills.filter((s) => !hidden.has(s)));
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const target of hidden) {
+      if (reached.has(target)) continue;
+      if ([...reached].some((from) => from !== target && names(from, target))) {
+        reached.add(target);
+        grew = true;
+      }
+    }
+  }
+
+  reach.hidden = hidden.size;
+  for (const s of hidden) {
+    const file = posix(path.join("skills", s, "SKILL.md"));
+    if (reached.has(s)) {
+      reach.reached += 1;
+      if (KNOWN_UNREACHED.has(s)) {
+        findings.push({
+          tree: "skills package",
+          file,
+          rule: "known-unreached-now-reached",
+          detail: `${s} is now named by another skill; remove it from KNOWN_UNREACHED in scripts/check-skill-conformance.mjs`,
+        });
+      }
+    } else if (KNOWN_UNREACHED.has(s)) {
+      reach.known.push(s);
+    } else {
+      findings.push({
+        tree: "skills package",
+        file,
+        rule: "unreachable-reference",
+        detail: `${s} sets user-invocable: false and disable-model-invocation: true, and no skill that can be started names it`,
+      });
+    }
+  }
+}
+
 if (asJson) {
-  console.log(JSON.stringify({ counts, findings }, null, 2));
+  console.log(JSON.stringify({ counts, reach, findings }, null, 2));
 } else {
   const pad = (s, n) => String(s).padEnd(n);
   const num = (s, n) => String(s).padStart(n);
@@ -163,6 +273,13 @@ if (asJson) {
     console.log(
       `${pad(label, 28)}${num(s.total, 7)}${num(s.bom, 6)}${num(s.missing, 7)}${num(s.slug, 10)}${num(s.mismatch, 10)}`
     );
+  }
+
+  console.log(
+    `\nHidden from model and user: ${reach.hidden}; named by a skill that can be started, directly or through a chain: ${reach.reached}.`
+  );
+  if (reach.known.length) {
+    console.log(`Known unreached, listed in KNOWN_UNREACHED (${reach.known.length}): ${reach.known.join(", ")}.`);
   }
 
   if (findings.length) {

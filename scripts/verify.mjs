@@ -46,7 +46,14 @@ const GATES = [
     name: 'Frontmatter conformance',
     standard: 'slug names, no byte-order marks, name matches directory',
     command: [NODE, ['scripts/check-skill-conformance.mjs']],
-    proves: 'No skill fails to load because of a byte-order mark or a name that does not match its folder.',
+    proves: 'No skill fails to load because of a byte-order mark or a name that does not match its folder, and no skill hidden from both model and user goes unnamed by every skill that can be started.',
+  },
+  {
+    id: 'conformance-tests',
+    name: 'Conformance checker tests',
+    standard: 'scripts/check-skill-conformance.test.mjs',
+    command: [NODE, ['--test', 'scripts/check-skill-conformance.test.mjs']],
+    proves: 'A reference skill that nothing names is caught, whether it is orphaned outright or named only by another orphan, and the known-unreached list cannot go stale.',
   },
   {
     id: 'budgets',
@@ -146,6 +153,13 @@ const GATES = [
     standard: 'reference pages derived from source',
     command: [NODE, ['scripts/build-docs.mjs', '--check']],
     proves: 'The skills catalog and MCP tools reference describe what is actually shipped.',
+  },
+  {
+    id: 'package:openai',
+    name: 'OpenAI plugin package',
+    standard: 'OpenAI plugin directory limits (ChatGPT and Codex)',
+    command: [NODE, ['--test', 'scripts/package-openai-plugin.test.mjs']],
+    proves: 'The skills-only package for the ChatGPT and Codex directory builds from this tree, meets every published limit, and carries no hooks, MCP configuration or scanner claims; each limit has a fixture that breaks it.',
   },
   {
     id: 'bundle',

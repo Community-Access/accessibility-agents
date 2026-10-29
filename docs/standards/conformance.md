@@ -38,6 +38,7 @@ tool that checks conformance rather than asserting it.
 - Copilot custom agents, skills and hooks: <https://docs.github.com/en/copilot/concepts/agents/about-agent-skills>
 - VS Code agent skills: <https://code.visualstudio.com/docs/agent-customization/agent-skills>
 - Gemini CLI skills and hooks: <https://geminicli.com/docs/cli/skills/>
+- ChatGPT, skills in plugins from the directory ChatGPT and Codex share: <https://learn.chatgpt.com/docs/build-skills>, and the OpenAI plugin guidelines: <https://developers.openai.com/plugins/plugin-guidelines> (skills only here; see [Agent Plugins](agent-plugins.md#openai-plugin-directory-chatgpt-and-codex))
 
 ---
 
@@ -137,6 +138,7 @@ CI checks against `budgets.json`.
 | Codex | 15,074 | 1,130 | 93% |
 | Copilot | 17,347 | 1,130 | 93% |
 | Gemini and Antigravity | 12,848 | 1,130 | 91% |
+| ChatGPT | - | not yet tested | - |
 
 Codex used to cost more because it listed every skill without an
 `agents/openai.yaml` policy file. Every non-router now carries one with
@@ -273,11 +275,17 @@ environment was already over Claude Code's 8,000-character skill budget before
 the package loaded. A package that added 63 descriptions there would have pushed
 every skill into truncated descriptions. Six costs 1,010 characters.
 
+ChatGPT is not yet tested. The skills-only plugin for OpenAI's directory is
+built and checked against OpenAI's published limits (`npm run package:openai`),
+but it has not been uploaded or run in a ChatGPT session. The first test will
+record the date, what was tested, and whether an entry point can reach a
+specialist whose `allow_implicit_invocation` is false.
+
 Reproduce: `npm run verify:live`
 
 ---
 
-## 8. Nothing known is left open
+## 8. What is left open
 
 The two items this document previously listed as open are closed.
 
@@ -295,6 +303,13 @@ repaired, where \`\`\`text was used to close a block and instead opened a new on
 so everything after it read as code.
 
 **Live client checks** are now a gate, the last of the sixteen, described in section 7.
+
+One finding is open, and it is recorded where the check that found it lives.
+On 29 October 2026 `scripts/check-skill-conformance.mjs` learned to fail on a
+skill that is hidden from both the model and the user and that no startable
+skill names. Ten `kb-` reference skills were in that state. They are listed in
+the script's `KNOWN_UNREACHED`, a list that may only shrink, and each needs a
+specialist that cites it or a decision to retire it.
 
 What remains is deliberate rather than unfinished: the deprecated
 `vscode-extension/` has been removed (VS Code users install the plugin), and
