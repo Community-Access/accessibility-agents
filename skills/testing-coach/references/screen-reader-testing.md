@@ -163,7 +163,7 @@ Follow this sequence for every page or component:
 
 The two notes in that sequence explain what you are listening for:
 
-- Note A: a `placeholder` on a labelled field is exposed as a hint, so one that repeats the label is heard twice. See [Labels: the foundation](../../forms-specialist/references/labels-the-foundation.md).
-- Note B: the children of a flex or grid container can become separate swipe stops on iOS VoiceOver, or be spoken as one word because the white space between them is not rendered. See [Flex and grid text runs](../../aria-specialist/references/flex-and-grid-text-runs.md).
+- Note A: a `placeholder` on a labelled field is exposed as a hint, so one that repeats the label is heard twice. See `skills/forms-specialist/references/labels-the-foundation.md`, which the `forms-specialist` skill loads.
+- Note B: the children of a flex or grid container can become separate swipe stops on iOS VoiceOver, or be spoken as one word because the white space between them is not rendered. See `skills/aria-specialist/references/flex-and-grid-text-runs.md`, which the `aria-specialist` skill loads.
 
 ---
