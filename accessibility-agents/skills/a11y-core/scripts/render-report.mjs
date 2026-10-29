@@ -48,6 +48,11 @@ function esc(text) {
   return String(text ?? '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 }
 
+/** "1 finding", "2 findings": a report is read aloud, so the noun follows the count. */
+function count(n, singular, plural = singular + 's') {
+  return `${n} ${n === 1 ? singular : plural}`;
+}
+
 function heading(level, text) {
   return '#'.repeat(level) + ' ' + text;
 }
@@ -90,7 +95,9 @@ function findingsSection(merged) {
   }
 
   const out = [
-    `${merged.findings.length} findings, ordered by severity then by rule.`,
+    merged.findings.length === 1
+      ? '1 finding.'
+      : `${count(merged.findings.length, 'finding')}, ordered by severity then by rule.`,
     '',
   ];
 
@@ -112,7 +119,9 @@ function findingsSection(merged) {
     const lowConfidence = group.filter((f) => f.confidence === 'low');
     if (lowConfidence.length) {
       out.push(
-        `${lowConfidence.length} of these are low confidence and need a human to confirm: ` +
+        (group.length === 1
+          ? 'This one is low confidence and needs a human to confirm: '
+          : `${lowConfidence.length} of these ${lowConfidence.length === 1 ? 'is' : 'are'} low confidence and need${lowConfidence.length === 1 ? 's' : ''} a human to confirm: `) +
           lowConfidence.map((f) => '`' + f.rule + '` at ' + f.location).join(', ') +
           '.',
         '',
@@ -141,17 +150,30 @@ function prioritiesSection(merged) {
 
   const blocking = merged.findings.filter((f) => f.severity === 'critical' || f.severity === 'serious');
   if (blocking.length) {
-    out.push(`Then the ${blocking.length} remaining blocking findings, in this order:`, '');
+    // "Then ... remaining" follows on from the component list; without that
+    // list there is nothing for it to follow, so the sentence starts plainly.
+    const noun = count(blocking.length, 'blocking finding');
+    const lead = merged.components.length
+      ? `Then the ${blocking.length === 1 ? 'remaining blocking finding' : `${blocking.length} remaining blocking findings`}`
+      : blocking.length === 1 ? 'The 1 blocking finding' : `The ${noun}`;
+    out.push(blocking.length === 1 ? `${lead}:` : `${lead}, in this order:`, '');
     blocking.slice(0, 20).forEach((f, i) => {
       out.push(`${i + 1}. \`${f.rule}\` at ${f.location}. ${f.fix}`);
     });
-    if (blocking.length > 20) out.push(`${blocking.length - 20} more are in the findings table above.`);
+    if (blocking.length > 20) {
+      const more = blocking.length - 20;
+      out.push(`${more} more ${more === 1 ? 'is' : 'are'} in the findings table above.`);
+    }
     out.push('');
   }
 
   const rest = merged.findings.length - blocking.length;
   if (rest > 0) {
-    out.push(`The remaining ${rest} moderate and minor findings can follow in normal work.`);
+    out.push(
+      rest === 1
+        ? 'The remaining moderate or minor finding can follow in normal work.'
+        : `The remaining ${rest} moderate and minor findings can follow in normal work.`,
+    );
   }
   return out.join('\n').trim();
 }
@@ -236,7 +258,7 @@ export function renderReport({ merged, template, scope, previous, toolVersions, 
 
   if (merged.passed.length) {
     out.push(heading(2, 'What passed'), '');
-    out.push(`${merged.passed.length} checks ran and found nothing.`, '');
+    out.push(`${count(merged.passed.length, 'check')} ran and found nothing.`, '');
     for (const p of merged.passed) out.push(`- ${p}`);
     out.push('');
   }
@@ -251,7 +273,9 @@ export function renderReport({ merged, template, scope, previous, toolVersions, 
   out.push(heading(2, 'Next steps'), '');
   out.push(
     blocking
-      ? `1. Fix the ${blocking} blocking findings above, starting with any repeated component.\n` +
+      ? (blocking === 1
+          ? '1. Fix the blocking finding above.\n'
+          : `1. Fix the ${blocking} blocking findings above, starting with any repeated component.\n`) +
           '2. Re-run this audit and check the delta section for regressions.\n' +
           '3. Wire the scan into continuous integration so the next regression is caught before review.'
       : '1. Keep the current checks in continuous integration so this does not regress.\n' +
@@ -381,6 +405,43 @@ function selfTest() {
   if (!second.includes('## Delta tracking')) failures.push('second run produced no delta section');
   if (!second.includes('| Fixed | 2 |')) failures.push('delta did not count the two fixed findings');
 
+  // One finding, one passed check, one blocking finding, no component list:
+  // every count is singular and the blocking list does not begin with "Then".
+  const one = mergeFindings([
+    {
+      skill: 'forms-specialist',
+      scope: ['src/Login.tsx'],
+      findings: [
+        {
+          rule: 'FORM-001',
+          wcag: '1.3.1 A',
+          severity: 'serious',
+          location: 'src/Login.tsx:9',
+          summary: 'Password field has no label.',
+          fix: 'Add a label element associated with the field.',
+        },
+      ],
+      passed: ['Error messages are announced'],
+    },
+  ]);
+  const single = renderReport({
+    merged: one,
+    template: 'web',
+    scope: one.scope,
+    previous: null,
+    toolVersions: 'self-test',
+    configs: [],
+  });
+  for (const wrong of ['1 findings', '1 checks', '1 blocking findings', 'Then the']) {
+    if (single.includes(wrong)) failures.push(`one-finding report says "${wrong}"`);
+  }
+  for (const right of ['1 finding.', '1 check ran and found nothing.', 'The 1 blocking finding:', 'Fix the blocking finding above.']) {
+    if (!single.includes(right)) failures.push(`one-finding report is missing "${right}"`);
+  }
+  if (!report.includes('Then the 2 remaining blocking findings, in this order:')) {
+    failures.push('report with a component list lost its "Then the remaining" lead-in');
+  }
+
   if (failures.length) {
     console.error('render-report self-test FAILED');
     for (const f of failures) console.error('  - ' + f);
@@ -390,6 +451,7 @@ function selfTest() {
   console.log(`  merged ${sample.length} payloads into ${merged.findings.length} findings`);
   console.log(`  score ${merged.score}, grade ${merged.grade}`);
   console.log(`  all ${REQUIRED_SECTIONS.length} required sections present, findings block embedded, delta verified`);
+  console.log('  one-finding report uses the singular throughout');
   return 0;
 }
 

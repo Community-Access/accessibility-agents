@@ -136,12 +136,19 @@ Follow this sequence for every page or component:
    - Verify: Required state announced
    - Verify: Error messages announced on invalid submit
    - Verify: Autocomplete announced if present
+   - Verify: On a labelled field with a placeholder, the label is heard
+     once; the placeholder, if announced, comes only as a hint (note A)
    
 5. INTERACTIVE COMPONENTS
    - Test every button, link, tab, accordion, dropdown
    - Verify: Role announced ("button", "link", "tab")
    - Verify: State announced ("expanded", "selected", "checked")
    - Verify: State updates announced when changed
+   - In Safari with VoiceOver (macOS or iOS), swipe or press VO+Right
+     Arrow through a row built from flex or grid children, such as a
+     message header with a name and a time
+   - Verify: One stop, or separate stops with a space between words;
+     never two words run together (note B)
    
 6. DYNAMIC CONTENT
    - Trigger content updates (search, filter, AJAX load, toast)
@@ -153,5 +160,10 @@ Follow this sequence for every page or component:
    - Complete the primary task (sign up, checkout, search)
    - Note every point of confusion or failure
 ```
+
+The two notes in that sequence explain what you are listening for:
+
+- Note A: a `placeholder` on a labelled field is exposed as a hint, so one that repeats the label is heard twice. See `skills/forms-specialist/references/labels-the-foundation.md`, which the `forms-specialist` skill loads.
+- Note B: the children of a flex or grid container can become separate swipe stops on iOS VoiceOver, or be spoken as one word because the white space between them is not rendered. See `skills/aria-specialist/references/flex-and-grid-text-runs.md`, which the `aria-specialist` skill loads.
 
 ---

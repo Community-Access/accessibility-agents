@@ -48,6 +48,12 @@
  * SKILL.md, and on UserPromptSubmit when the prompt names the lead with $,
  * which is how a Codex user invokes a skill explicitly.
  *
+ * The Copilot CLI sends toolName and toolArgs on its camelCase events, which
+ * the guard did not read, so every Copilot edit passed (#254). Copilot does
+ * not document how it loads a skill, only that SKILL.md is injected, so its
+ * manifests mark on every route it can take: a skill tool call, a view or
+ * shell read of the lead's SKILL.md, subagentStop, and /name in the prompt.
+ *
  * ## Shell writes
  *
  * The gate also reads shell commands (Bash on Claude Code and Codex,
@@ -208,15 +214,31 @@ async function readPayload() {
  * PascalCase names (TargetFile, AbsolutePath).
  */
 function toolInput(payload) {
-  const input = payload.tool_input || payload.toolInput || payload.arguments || (payload.toolCall && payload.toolCall.args) || {};
+  // The Copilot CLI's camelCase events send toolName and toolArgs (#254).
+  // Reading only tool_input there meant the gate never saw the edited path
+  // and let every Copilot edit through.
+  const input =
+    payload.tool_input ||
+    payload.toolInput ||
+    payload.toolArgs ||
+    payload.arguments ||
+    (payload.toolCall && payload.toolCall.args) ||
+    {};
   if (typeof input !== 'string') return input;
   // Some clients send the arguments as a JSON string. Unparsed, the edited
   // path would be missed and the gate would wave the edit through.
   try {
-    return JSON.parse(input) || {};
+    const parsed = JSON.parse(input);
+    return parsed && typeof parsed === 'object' ? parsed : {};
   } catch {
-    return {};
+    // A patch tool may send the bare patch text rather than JSON.
+    return /^\*\*\* Begin Patch/m.test(input) ? { command: input } : {};
   }
+}
+
+/** The tool a call uses, whatever the client calls the field. */
+function toolNameOf(payload) {
+  return (payload.toolCall && payload.toolCall.name) || payload.tool_name || payload.toolName || '';
 }
 
 /**
@@ -225,13 +247,18 @@ function toolInput(payload) {
  * read one, so mark() can recognise the lead.
  */
 function skillFileRead(payload, input) {
-  const tool = (payload.toolCall && payload.toolCall.name) || payload.tool_name || '';
-  if (tool === 'view_file') {
-    const file = String(input.AbsolutePath || input.path || '');
+  const tool = toolNameOf(payload);
+  // Antigravity reads with view_file; the Copilot CLI with view (Read in
+  // its Claude-format events).
+  if (tool === 'view_file' || (CLIENT === 'copilot' && (tool === 'view' || tool === 'Read'))) {
+    const file = String(input.AbsolutePath || input.path || input.file_path || '');
     const m = /[\\/]([A-Za-z0-9_-]+)[\\/]SKILL\.md$/.exec(file);
     return m ? m[1] : '';
   }
-  if (CLIENT === 'codex' && (tool === 'Bash' || tool === 'exec_command' || tool === 'shell')) {
+  if (
+    (CLIENT === 'codex' && (tool === 'Bash' || tool === 'exec_command' || tool === 'shell')) ||
+    (CLIENT === 'copilot' && SHELL_TOOLS.has(tool))
+  ) {
     return leadReadIn(shellText(input.command || input.cmd || ''));
   }
   return '';
@@ -287,9 +314,12 @@ function leadReadIn(command) {
  * Claude Code; finalize stays the backstop.
  */
 function promptNamesLead(payload) {
-  if (CLIENT !== 'codex') return '';
+  // Codex names a skill with $name; the Copilot CLI with /name in the prompt.
+  const sigil = { codex: '\\$', copilot: '/' }[CLIENT];
+  if (!sigil) return '';
   const prompt = String(payload.prompt || '');
-  for (const m of prompt.matchAll(/(?:^|[^\w$])\$([A-Za-z0-9_-]+)\b/g)) {
+  const re = new RegExp(`(?:^|[^\\w$/.:-])${sigil}([A-Za-z0-9_:-]+)\\b`, 'g');
+  for (const m of prompt.matchAll(re)) {
     if (LEAD_SKILLS.has(m[1])) return m[1];
   }
   return '';
@@ -403,7 +433,7 @@ function targetPaths(payload) {
   if (typeof input.command === 'string' && /^\*\*\* Begin Patch/m.test(input.command)) {
     return patchTargets(input.command);
   }
-  const tool = payload.tool_name || payload.toolName || '';
+  const tool = toolNameOf(payload);
   const command = input.command ?? input.cmd;
   if (SHELL_TOOLS.has(tool) && command) return shellWriteTargets(command);
   const one = (
@@ -426,6 +456,10 @@ function subagentName(payload) {
   if (skill) return skill;
   // Gemini CLI loads a skill with activate_skill({ name }).
   if (payload.tool_name === 'activate_skill' && typeof input.name === 'string') return input.name;
+  // A skill tool, where a client has one, names the skill it loads.
+  if (/^skill$/i.test(toolNameOf(payload)) && typeof (input.skill || input.name) === 'string') {
+    return input.skill || input.name;
+  }
   return (
     payload.agent_type ||
     payload.agentType ||
@@ -433,6 +467,7 @@ function subagentName(payload) {
     payload.subagentType ||
     payload.agent ||
     payload.agent_name ||
+    payload.agentName ||
     payload.name ||
     input.subagent_type ||
     input.skill ||
@@ -489,6 +524,8 @@ function emitDeny(reason) {
         permissionDecision: 'deny',
         permissionDecisionReason: reason,
       },
+      // The Copilot CLI's camelCase preToolUse reads these at the top level.
+      ...(CLIENT === 'copilot' ? { permissionDecision: 'deny', permissionDecisionReason: reason } : {}),
       decision: 'block',
       reason,
     }),
