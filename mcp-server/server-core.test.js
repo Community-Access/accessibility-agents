@@ -199,6 +199,21 @@ describe("check_heading_structure tool", () => {
     const text = result.content[0].text;
     assert.ok(text.includes("No headings"));
   });
+
+
+  it("reports an empty heading as a finding", async () => {
+    const html = "<h1>Title</h1><h4></h4>";
+    const result = await callTool("check_heading_structure", { html });
+    const text = result.content[0].text;
+    assert.ok(text.includes("Empty heading: <h4> has no text"));
+  });
+
+  it("does not report a heading that only contains an image with alt text", async () => {
+    const html = '<h1>Title</h1><h2><img src="logo.png" alt="Company logo"></h2>';
+    const result = await callTool("check_heading_structure", { html });
+    const text = result.content[0].text;
+    assert.ok(!text.includes("Empty heading"));
+  });
 });
 
 // =========================================================================

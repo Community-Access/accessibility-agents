@@ -213,8 +213,21 @@ function extractHeadings(html) {
   while ((match = headingRe.exec(html)) !== null) {
     const tag = match[1].toLowerCase();
     const level = parseInt(tag[1], 10);
-    const text = match[2].replace(/<[^>]+>/g, "").trim();
+    const innerHtml = match[2];
+    const text = innerHtml.replace(/<[^>]+>/g, "").trim();
+    // A heading whose only content is an image with non-empty alt text still
+    // has an accessible name, so it is not an empty heading.
+    const imgAlt = [...innerHtml.matchAll(/<img\b[^>]*\balt\s*=\s*["']([^"']*)["'][^>]*>/gi)]
+      .map((m) => m[1].trim())
+      .join(" ")
+      .trim();
     headings.push({ tag, level, text });
+
+    if (text.length === 0 && imgAlt.length === 0) {
+      issues.push(
+        `Empty heading: <${tag}> has no text. Give it text that describes the section, or remove it.`
+      );
+    }
 
     if (level === 1) h1Count++;
     if (lastLevel > 0 && level > lastLevel + 1) {
