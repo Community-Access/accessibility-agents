@@ -13,6 +13,7 @@ import assert from "node:assert/strict";
 import { join, resolve, sep } from "node:path";
 import { homedir } from "node:os";
 import { writeFile, mkdir, rm } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Import the public export for path validation
@@ -191,6 +192,38 @@ describe("check_heading_structure tool", () => {
     const result = await callTool("check_heading_structure", { html });
     const text = result.content[0].text;
     assert.ok(text.includes("No <h1>"));
+  });
+
+  it("reports an empty heading as a 2.4.6 finding", async () => {
+    const html = "<h1>Title</h1><h2>Products</h2><h3></h3><h3>  <span></span> </h3>";
+    const result = await callTool("check_heading_structure", { html });
+    const text = result.content[0].text;
+    assert.ok(text.includes("H3: (empty)"));
+    const empty = result.structuredContent.findings.filter((f) => f.rule === "empty-heading");
+    assert.equal(empty.length, 2);
+    assert.equal(empty[0].wcag, "2.4.6 AA");
+    assert.ok(empty[0].summary.startsWith("Empty heading: <h3> has no text."));
+  });
+
+  it("does not report a heading named by image alt or aria-label", async () => {
+    const html = '<h1>Title</h1><h2><img src="logo.png" alt="Store news"></h2>' +
+      '<h2 aria-label="Offers"></h2><h2 aria-labelledby="x"></h2>';
+    const result = await callTool("check_heading_structure", { html });
+    const text = result.content[0].text;
+    assert.ok(!text.includes("Empty heading"));
+    assert.ok(text.includes("No heading issues"));
+  });
+
+  it("reports a heading whose only image has empty alt", async () => {
+    const html = '<h1>Title</h1><h2><img src="x.png" alt=""></h2>';
+    const result = await callTool("check_heading_structure", { html });
+    assert.ok(result.content[0].text.includes("Empty heading: <h2>"));
+  });
+
+  it("finds the planted empty heading in example/index.html", async () => {
+    const html = readFileSync(new URL("../example/index.html", import.meta.url), "utf8");
+    const result = await callTool("check_heading_structure", { html });
+    assert.ok(result.content[0].text.includes("Empty heading: <h4>"));
   });
 
   it("handles no headings", async () => {
