@@ -167,25 +167,6 @@ for (const tree of TREES) {
 // a reference, and the reference is reached. A chain has to start at a skill
 // without both flags, because only those can be started at all.
 
-/**
- * Reference skills that nothing named when this check was added on 29 October
- * 2026. Each needs a specialist that cites it, or a decision to retire it. The
- * list may only shrink: a new unreached skill fails, and so does a name here
- * that has since become reached, so the list cannot go stale.
- */
-const KNOWN_UNREACHED = new Set([
-  "kb-cognitive-accessibility",
-  "kb-data-visualization-accessibility",
-  "kb-design-system",
-  "kb-document-scanning",
-  "kb-email-accessibility",
-  "kb-media-accessibility",
-  "kb-mobile-accessibility",
-  "kb-office-remediation",
-  "kb-playwright-testing",
-  "kb-web-scanning",
-]);
-
 /** Every text file in a skill folder, joined, for name and path references. */
 function skillText(dir) {
   const parts = [];
@@ -207,7 +188,7 @@ function hiddenFromBoth(skillFile) {
   return /^disable-model-invocation:\s*true\s*$/m.test(m[1]) && /^user-invocable:\s*false\s*$/m.test(m[1]);
 }
 
-const reach = { hidden: 0, reached: 0, known: [] };
+const reach = { hidden: 0, reached: 0 };
 {
   const root = path.join(process.cwd(), "skills");
   const skills = fs.existsSync(root)
@@ -240,16 +221,6 @@ const reach = { hidden: 0, reached: 0, known: [] };
     const file = posix(path.join("skills", s, "SKILL.md"));
     if (reached.has(s)) {
       reach.reached += 1;
-      if (KNOWN_UNREACHED.has(s)) {
-        findings.push({
-          tree: "skills package",
-          file,
-          rule: "known-unreached-now-reached",
-          detail: `${s} is now named by another skill; remove it from KNOWN_UNREACHED in scripts/check-skill-conformance.mjs`,
-        });
-      }
-    } else if (KNOWN_UNREACHED.has(s)) {
-      reach.known.push(s);
     } else {
       findings.push({
         tree: "skills package",
@@ -278,9 +249,6 @@ if (asJson) {
   console.log(
     `\nHidden from model and user: ${reach.hidden}; named by a skill that can be started, directly or through a chain: ${reach.reached}.`
   );
-  if (reach.known.length) {
-    console.log(`Known unreached, listed in KNOWN_UNREACHED (${reach.known.length}): ${reach.known.join(", ")}.`);
-  }
 
   if (findings.length) {
     console.log(`\n${findings.length} violation${findings.length === 1 ? "" : "s"}:\n`);

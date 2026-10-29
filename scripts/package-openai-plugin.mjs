@@ -135,7 +135,7 @@ export function buildManifest(base, counts) {
           'Which WCAG 2.2 criteria does this web page fail, from these axe results?',
           'Write an accessibility statement from these audit findings.',
         ],
-        brandColor: '#2E7D32',
+        brandColor: '#4D8FE0',
         logo: './assets/logo.png',
         composerIcon: './assets/icon.png',
       },
@@ -305,7 +305,7 @@ export function checkManifest(manifest, where = 'plugin.json (generated)') {
   }
 
   if (typeof ui.brandColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(ui.brandColor)) {
-    fail(`interface.brandColor ${JSON.stringify(ui.brandColor)} is not a six-digit hex colour such as #2E7D32`);
+    fail(`interface.brandColor ${JSON.stringify(ui.brandColor)} is not a six-digit hex colour such as #4D8FE0`);
   } else {
     for (const against of ['#FFFFFF', '#212121']) {
       const ratio = contrast(ui.brandColor, against);

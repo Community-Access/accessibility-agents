@@ -285,9 +285,9 @@ Reproduce: `npm run verify:live`
 
 ---
 
-## 8. What is left open
+## 8. Nothing known is left open
 
-The two items this document previously listed as open are closed.
+The three items this document has listed as open are closed.
 
 **Markdown accessibility** reported zero issues across 509 files at 7.0.0 (on 2026-10-28, zero errors across 528). Getting there
 found three separate causes, only one of which was the documents:
@@ -304,12 +304,12 @@ so everything after it read as code.
 
 **Live client checks** are now a gate, the last of the sixteen, described in section 7.
 
-One finding is open, and it is recorded where the check that found it lives.
-On 29 October 2026 `scripts/check-skill-conformance.mjs` learned to fail on a
-skill that is hidden from both the model and the user and that no startable
-skill names. Ten `kb-` reference skills were in that state. They are listed in
-the script's `KNOWN_UNREACHED`, a list that may only shrink, and each needs a
-specialist that cites it or a decision to retire it.
+**Unreached reference skills.** On 29 October 2026
+`scripts/check-skill-conformance.mjs` learned to fail on a skill that is
+hidden from both the model and the user and that no startable skill names.
+Its first run found ten `kb-` reference skills in that state. Each is now
+cited by the specialist whose work it supports, and all 46 hidden skills are
+reached.
 
 What remains is deliberate rather than unfinished: the deprecated
 `vscode-extension/` has been removed (VS Code users install the plugin), and

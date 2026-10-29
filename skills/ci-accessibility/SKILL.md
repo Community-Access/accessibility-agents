@@ -63,7 +63,7 @@ Generate the appropriate CI config with:
 
 The baseline pattern is critical for brownfield adoption:
 
-1. **Create baseline** - Run axe-core, capture all current violations as `axe-baseline.json`
+1. **Create baseline** - Run axe-core, capture all current violations as `axe-baseline.json`. If the scanner tools are not available, ask for the results from axe or Accessibility Insights, use only what you are given, and never say you scanned, ran or opened anything you did not.
 2. **CI comparison** - On each PR, run axe-core and compare against baseline
 3. **Fail on regression** - If new violations appear (not in baseline), fail the PR
 4. **Allow gradual fix** - Violations in the baseline don't block. Teams fix them over time.

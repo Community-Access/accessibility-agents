@@ -106,28 +106,11 @@ test('a skill with only one of the two flags is not checked', (t) => {
   assert.equal(status, 0);
 });
 
-test('a skill on the known-unreached list may stay unreached', (t) => {
-  const { status, report } = run(t, {
-    router: skill('router'),
-    'kb-media-accessibility': skill('kb-media-accessibility', { hidden: true }),
-  });
-  assert.equal(status, 0);
-  assert.deepEqual(report.reach.known, ['kb-media-accessibility']);
-});
-
-test('a known-unreached skill that becomes reached fails until the list shrinks', (t) => {
-  const { status, report } = run(t, {
-    router: skill('router', { body: 'Cite `kb-media-accessibility`.' }),
-    'kb-media-accessibility': skill('kb-media-accessibility', { hidden: true }),
-  });
-  assert.equal(status, 1);
-  assert.deepEqual(rules(report), ['known-unreached-now-reached skills/kb-media-accessibility/SKILL.md']);
-});
-
-test('the real tree has no new unreached skill', () => {
+test('every hidden skill in the real tree is reached', () => {
   const root = path.resolve(path.dirname(SCRIPT), '..');
   const out = spawnSync(process.execPath, [SCRIPT, '--json'], { cwd: root, encoding: 'utf8' });
   const report = JSON.parse(out.stdout);
   assert.equal(out.status, 0, rules(report).join('\n'));
-  assert.equal(report.reach.hidden, report.reach.reached + report.reach.known.length);
+  assert.ok(report.reach.hidden > 0);
+  assert.equal(report.reach.hidden, report.reach.reached);
 });

@@ -361,8 +361,8 @@ test('a brand colour under 2:1 against #212121 fails', () => {
 });
 
 test('the decided brand colour clears both contrast floors', () => {
-  assert.ok(contrast('#2E7D32', '#FFFFFF') > 5);
-  assert.ok(contrast('#2E7D32', '#212121') > 3);
+  assert.ok(contrast('#4D8FE0', '#FFFFFF') > 3.3);
+  assert.ok(contrast('#4D8FE0', '#212121') > 4.8);
 });
 
 test('a URL that is not HTTPS fails', () => {

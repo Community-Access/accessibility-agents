@@ -37,8 +37,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `user-invocable: false` and `disable-model-invocation: true` must be named,
   directly or through a chain, by a skill that can be started.
   `scripts/check-skill-conformance.mjs` enforces it, with tests in the new
-  `conformance-tests` gate. Ten `kb-` reference skills are unnamed today; they
-  are listed in the script, and the list may only shrink.
+  `conformance-tests` gate. Its first run found ten `kb-` reference skills
+  that nothing named; each is now cited by its specialist
+  (`cognitive-accessibility`, `data-visualization-accessibility`,
+  `design-system-auditor`, `document-inventory`, `email-accessibility`,
+  `media-accessibility`, `mobile-accessibility`, `office-remediator`,
+  `playwright-scanner` and `playwright-verifier`, `web-accessibility-wizard`).
+- **Skills say what to do without their tools.** Where a skill calls a
+  scanner, a script or the GitHub CLI, it now says what to do when that is not
+  there, as in ChatGPT or the workshop kit: ask for the person's checker
+  results (or pasted output), use only what it is given, and never say it
+  scanned, ran or opened anything it did not. `a11y-core` states the rule once,
+  with the checkers to ask for.
 - **Standards pages describe ChatGPT.** `docs/standards/agent-plugins.md` has
   a section on the OpenAI plugin directory; `hooks-by-client.md` and `mcp.md`
   say ChatGPT has no hooks and no MCP server; `conformance.md` lists ChatGPT as

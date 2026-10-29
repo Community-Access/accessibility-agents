@@ -26,6 +26,10 @@ Each method, with tool and when to use.
 
 ## Runtime Scanning Commands
 
+If the scanner tools are not available, ask for the results from axe or
+Accessibility Insights, use only what you are given, and never say you scanned,
+ran or opened anything you did not.
+
 ### axe-core CLI
 
 ```bash

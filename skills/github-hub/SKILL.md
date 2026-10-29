@@ -104,7 +104,10 @@ For an accessibility audit (a repository scan, or an issue or pull request
 checked for accessibility), collect findings as JSON from each specialist you
 dispatch, write them to `.a11y-history/<timestamp>/`, then render the report
 with `node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type that report
-by hand. Other GitHub work returns what the dispatched skill describes.
+by hand. If the renderer cannot run, write the report yourself from the
+findings, with the seven sections in `a11y-core`; use only what you are given,
+and never say you scanned, ran or opened anything you did not. Other GitHub
+work returns what the dispatched skill describes.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

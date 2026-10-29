@@ -106,10 +106,10 @@ describes, and `agents/openai.yaml` says the same to Codex ("dispatched by a
 router, never picked implicitly"). The cost of the design is that a hidden
 skill nothing names can never run, and nothing would say so. So
 `scripts/check-skill-conformance.mjs` fails when a skill with both fields is
-not named, directly or through a chain, by a skill that can be started. Ten
-`kb-` skills were unnamed when the check was added on 29 October 2026; they are
-listed in the script, the list may only shrink, and each needs a specialist
-that cites it or a decision to retire it.
+not named, directly or through a chain, by a skill that can be started. When
+the check was added on 29 October 2026 it found ten `kb-` skills that nothing
+named; each is now cited by the specialist whose work it supports, and all 46
+are reached.
 
 ## Codex
 

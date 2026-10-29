@@ -48,7 +48,7 @@ Each issue, with why manual and tool required.
 
 ### Phase 1 - Read Audit Report
 
-Look for existing audit results or run pdf-accessibility first.
+Look for existing audit results or run pdf-accessibility first. If the scanner tools are not available, ask for the results from Acrobat's Accessibility Checker or PAC, use only what you are given, and never say you scanned, ran or opened anything you did not.
 
 ### Phase 2 - Classify Fixes
 
@@ -56,7 +56,7 @@ Sort findings into auto-fixable vs. manual. Present classification to user.
 
 ### Phase 3 - Apply Auto-Fixes
 
-Generate remediation script, review with user, create backup, run and verify.
+Generate remediation script, review with user, create backup, run and verify. If you cannot run the script, give it to the person to run, use only what you are given, and never say you scanned, ran or opened anything you did not.
 
 ### Phase 4 - Guide Manual Fixes
 

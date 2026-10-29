@@ -188,7 +188,7 @@ under 5 MiB; a display name and short description of at most 30 characters, a
 long description of at most 4,000, a developer name of at most 80, at most
 three starter prompts of at most 128 characters with no `@`; a category from
 OpenAI's list; a six-digit hex brand colour with at least 2:1 contrast against
-`#FFFFFF` and against `#212121` (`#2E7D32` has 5.1:1 and 3.1:1); HTTPS for every
+`#FFFFFF` and against `#212121` (`#4D8FE0`, the icon's blue, has 3.3:1 and 4.9:1); HTTPS for every
 URL; and an archive under 100 MB and 5,000 entries whose paths are relative,
 use `/` and contain no `..`. `scripts/package-openai-plugin.test.mjs` has a
 fixture that breaks each limit, and runs as the `package:openai` gate.

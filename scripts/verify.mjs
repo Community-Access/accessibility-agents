@@ -53,7 +53,7 @@ const GATES = [
     name: 'Conformance checker tests',
     standard: 'scripts/check-skill-conformance.test.mjs',
     command: [NODE, ['--test', 'scripts/check-skill-conformance.test.mjs']],
-    proves: 'A reference skill that nothing names is caught, whether it is orphaned outright or named only by another orphan, and the known-unreached list cannot go stale.',
+    proves: 'A reference skill that nothing names is caught, whether it is orphaned outright or named only by another orphan.',
   },
   {
     id: 'budgets',

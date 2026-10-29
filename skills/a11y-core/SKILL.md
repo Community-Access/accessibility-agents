@@ -71,7 +71,8 @@ Skills declare `metadata.output`, and it decides what they return.
   no preamble, no restated instructions.
 - **report** - collect findings JSON from each dispatched skill, write them to
   `.a11y-history/<timestamp>/`, then render with
-  `node <skills-root>/a11y-core/scripts/render-report.mjs`. Never type a report by hand.
+  `node <skills-root>/a11y-core/scripts/render-report.mjs`. Never type a report by hand
+  unless the renderer cannot run (see "When a tool is not available").
 - **artifact** - produce the file or script asked for; report the paths written
   and what each changes.
 - **guidance** - answer the question, cite the criterion or API by name, stop.
@@ -113,6 +114,16 @@ result and must say so in its opening line.
 
 The renderer emits all seven from findings JSON and embeds the merged JSON in a
 fenced block at the end of the report, which is what makes the next delta cheap.
+
+## When a tool is not available
+
+In a chat with no scanner tools, no scripts and no project files, a skill
+still works from what the person gives it. Ask for their checker's results by
+name: Word's, Excel's or PowerPoint's Accessibility Checker, Acrobat's
+Accessibility Checker or PAC, Ace by DAISY, axe or Accessibility Insights. Use
+only what you are given, and never say you scanned, ran or opened anything you
+did not. When the renderer cannot run, write the report yourself with the seven
+sections above.
 
 ## Files here
 
