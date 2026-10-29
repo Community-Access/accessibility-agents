@@ -52,6 +52,19 @@ function heading(level, text) {
   return '#'.repeat(level) + ' ' + text;
 }
 
+/** "is" for one, "are" for any other count. */
+function agree(count, singular, pluralForm) {
+  return count === 1 ? singular : pluralForm;
+}
+
+/**
+ * A count written next to its noun. Reports get read aloud from top to bottom,
+ * so a sentence that says "1 findings" makes a listener stop and re-read it.
+ */
+function counted(count, noun) {
+  return `${count} ${agree(count, noun, noun + 's')}`;
+}
+
 /** Pull the embedded findings block out of a previous report, if there is one. */
 export function readPreviousMerge(outPath) {
   if (!fs.existsSync(outPath)) return null;
@@ -90,7 +103,7 @@ function findingsSection(merged) {
   }
 
   const out = [
-    `${merged.findings.length} findings, ordered by severity then by rule.`,
+    `${counted(merged.findings.length, 'finding')}, ordered by severity then by rule.`,
     '',
   ];
 
@@ -112,7 +125,8 @@ function findingsSection(merged) {
     const lowConfidence = group.filter((f) => f.confidence === 'low');
     if (lowConfidence.length) {
       out.push(
-        `${lowConfidence.length} of these are low confidence and need a human to confirm: ` +
+        `${lowConfidence.length} of these ${agree(lowConfidence.length, 'is', 'are')} low confidence and ` +
+          `${agree(lowConfidence.length, 'needs', 'need')} a human to confirm: ` +
           lowConfidence.map((f) => '`' + f.rule + '` at ' + f.location).join(', ') +
           '.',
         '',
@@ -141,17 +155,31 @@ function prioritiesSection(merged) {
 
   const blocking = merged.findings.filter((f) => f.severity === 'critical' || f.severity === 'serious');
   if (blocking.length) {
-    out.push(`Then the ${blocking.length} remaining blocking findings, in this order:`, '');
+    // "Then" only works as a follow-on to something. With no component table
+    // above it, the list has to open on its own.
+    out.push(
+      merged.components.length
+        ? `Then the ${counted(blocking.length, 'remaining blocking finding')}, in this order:`
+        : `The ${counted(blocking.length, 'blocking finding')}, in this order:`,
+      '',
+    );
     blocking.slice(0, 20).forEach((f, i) => {
       out.push(`${i + 1}. \`${f.rule}\` at ${f.location}. ${f.fix}`);
     });
-    if (blocking.length > 20) out.push(`${blocking.length - 20} more are in the findings table above.`);
+    if (blocking.length > 20) {
+      const more = blocking.length - 20;
+      out.push(`${more} more ${agree(more, 'is', 'are')} in the findings table above.`);
+    }
     out.push('');
   }
 
   const rest = merged.findings.length - blocking.length;
   if (rest > 0) {
-    out.push(`The remaining ${rest} moderate and minor findings can follow in normal work.`);
+    out.push(
+      rest === 1
+        ? 'The remaining moderate or minor finding can follow in normal work.'
+        : `The remaining ${rest} moderate and minor findings can follow in normal work.`,
+    );
   }
   return out.join('\n').trim();
 }
@@ -236,7 +264,7 @@ export function renderReport({ merged, template, scope, previous, toolVersions, 
 
   if (merged.passed.length) {
     out.push(heading(2, 'What passed'), '');
-    out.push(`${merged.passed.length} checks ran and found nothing.`, '');
+    out.push(`${counted(merged.passed.length, 'check')} ran and found nothing.`, '');
     for (const p of merged.passed) out.push(`- ${p}`);
     out.push('');
   }
@@ -251,7 +279,7 @@ export function renderReport({ merged, template, scope, previous, toolVersions, 
   out.push(heading(2, 'Next steps'), '');
   out.push(
     blocking
-      ? `1. Fix the ${blocking} blocking findings above, starting with any repeated component.\n` +
+      ? `1. Fix the ${counted(blocking, 'blocking finding')} above, starting with any repeated component.\n` +
           '2. Re-run this audit and check the delta section for regressions.\n' +
           '3. Wire the scan into continuous integration so the next regression is caught before review.'
       : '1. Keep the current checks in continuous integration so this does not regress.\n' +
@@ -367,6 +395,56 @@ function selfTest() {
   if (!/```json a11y-findings/.test(report)) failures.push('report does not embed the findings block');
   if (!report.includes('Fail.')) failures.push('report did not state a verdict for a run with critical findings');
 
+  // Every count in a sentence has to agree with its noun, and the blocking list
+  // may only open with "Then" when the component table above it printed.
+  const pluralForms = [
+    ['3 findings, ordered by severity then by rule.', 'the findings count'],
+    ['Then the 2 remaining blocking findings, in this order:', 'the blocking list opener after a component table'],
+    ['2 checks ran and found nothing.', 'the passed count'],
+    ['Fix the 2 blocking findings above', 'the next steps count'],
+  ];
+  for (const [needle, what] of pluralForms) {
+    if (!report.includes(needle)) failures.push(`multi-finding report lost the plural for ${what}`);
+  }
+
+  const single = renderReport({
+    merged: mergeFindings([
+      {
+        skill: 'aria-specialist',
+        scope: ['src/Dialog.tsx'],
+        findings: [
+          {
+            rule: 'ARIA-002',
+            wcag: '4.1.2 A',
+            severity: 'critical',
+            location: 'src/Dialog.tsx:9',
+            summary: 'Dialog has no accessible name.',
+            fix: 'Add aria-labelledby pointing at the dialog title element.',
+          },
+        ],
+        passed: ['No aria-hidden on a focusable element'],
+      },
+    ]),
+    template: 'web',
+    scope: ['src/Dialog.tsx'],
+    previous: null,
+    toolVersions: 'self-test',
+    configs: [],
+  });
+
+  const singularForms = [
+    ['1 finding, ordered by severity then by rule.', 'the findings count'],
+    ['The 1 blocking finding, in this order:', 'the blocking list opener when no component table printed'],
+    ['1 check ran and found nothing.', 'the passed count'],
+    ['Fix the 1 blocking finding above', 'the next steps count'],
+  ];
+  for (const [needle, what] of singularForms) {
+    if (!single.includes(needle)) failures.push(`one-finding report did not use the singular for ${what}`);
+  }
+  if (single.includes('Then the')) {
+    failures.push('one-finding report opened the blocking list with "Then" and no component table above it');
+  }
+
   // A second run with one finding fixed must produce a delta section.
   const previous = JSON.parse(report.match(/```json a11y-findings\n([\s\S]*?)\n```/)[1]);
   const fewer = mergeFindings([{ ...sample[0], findings: [sample[0].findings[1]] }]);
@@ -389,7 +467,10 @@ function selfTest() {
   console.log('render-report self-test OK');
   console.log(`  merged ${sample.length} payloads into ${merged.findings.length} findings`);
   console.log(`  score ${merged.score}, grade ${merged.grade}`);
-  console.log(`  all ${REQUIRED_SECTIONS.length} required sections present, findings block embedded, delta verified`);
+  console.log(
+    `  all ${REQUIRED_SECTIONS.length} required sections present, findings block embedded, delta verified`,
+  );
+  console.log('  singular and plural counts verified against a one-finding report');
   return 0;
 }
 
@@ -455,9 +536,9 @@ function main() {
 
   fs.writeFileSync(path.resolve(process.cwd(), out), report, 'utf8');
   console.log(`Wrote ${out}`);
-  console.log(`  ${merged.findings.length} findings, score ${merged.score}, grade ${merged.grade}`);
+  console.log(`  ${counted(merged.findings.length, 'finding')}, score ${merged.score}, grade ${merged.grade}`);
   if (previous) console.log('  delta computed against the previous report');
-  if (problems.length) console.log(`  ${problems.length} payloads were rejected as invalid`);
+  if (problems.length) console.log(`  ${counted(problems.length, 'payload')} rejected as invalid`);
   return problems.length ? 1 : 0;
 }
 
