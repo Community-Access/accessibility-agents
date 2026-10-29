@@ -376,6 +376,10 @@ These are the barriers we know about. Please report any we have missed.
   and we will document a workaround here.
 - **Antigravity's edit gate** is tested against Antigravity's documented hook
   format, not yet in a live session.
+- **The Copilot CLI's edit gate** is tested against GitHub's documented hook
+  payloads, not yet in a live session. Up to 7.1.0 it did not see which file
+  a Copilot edit changed, so it allowed every edit
+  ([#254](https://github.com/Community-Access/accessibility-agents/issues/254)).
 
 ## Open Source Accessibility Framework
 

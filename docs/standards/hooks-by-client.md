@@ -17,12 +17,18 @@ client has one.
 |---|---|---|---|---|---|
 | detect: inject the contract once | `UserPromptSubmit` | `UserPromptSubmit` | `userPromptSubmitted` | `BeforeAgent` | `PreInvocation` |
 | gate: refuse a UI edit before review | `PreToolUse` on Edit, Write, NotebookEdit, MultiEdit, Bash | `PreToolUse` on apply_patch, Edit, Write, Bash | `preToolUse` | `BeforeTool` on write_file, replace, edit, run_shell_command | `PreToolUse` on write_to_file, replace_file_content, multi_replace_file_content |
-| mark: lead completed, open the gate | `PostToolUse` on Skill, and `SubagentStop` | `PostToolUse` on Bash, when the command reads the lead's SKILL.md; `UserPromptSubmit`, when the prompt names it with `$`; and `SubagentStop` | `postToolUse` | `AfterTool` on activate_skill | `PostToolUse` on view_file, when the file read is the lead's SKILL.md |
+| mark: lead completed, open the gate | `PostToolUse` on Skill, and `SubagentStop` | `PostToolUse` on Bash, when the command reads the lead's SKILL.md; `UserPromptSubmit`, when the prompt names it with `$`; and `SubagentStop` | `postToolUse` on a skill call, or a `view` or shell read of the lead's SKILL.md; `userPromptSubmitted`, when the prompt names it with `/`; and `subagentStop` | `AfterTool` on activate_skill | `PostToolUse` on view_file, when the file read is the lead's SKILL.md |
 | persist: save and restore across compaction | `PreCompact`, `SessionStart` | `PreCompact`, `SessionStart` | - | `PreCompress`, `SessionStart` | - |
 | finalize: refuse to end an unreviewed turn | `Stop` | `Stop` | - | - | - |
 
-Copilot does have `agentStop`, `subagentStop`, `preCompact` and `sessionStart`
-events; the package does not wire them yet. On Gemini CLI the package wires no
+Copilot also has `agentStop`, `preCompact` and `sessionStart` events; the
+package does not wire them yet.
+
+Copilot's camelCase events send the tool as `toolName` and its arguments as
+`toolArgs`, sometimes as a JSON string. Before #254 the guard read neither, so
+it found no path and allowed every Copilot edit. Copilot documents that a
+skill's SKILL.md is injected but not which tool injects it, so the gate opens
+on every route it could take, listed in the table above. On Gemini CLI the package wires no
 finalize step.
 
 Gemini CLI loads a skill with the `activate_skill` tool (`{ name }`), so the
@@ -84,7 +90,8 @@ route gives no gate, because Codex 0.165.0 lists `plugin_hooks` as removed.
 **Gemini CLI** gets the edit gate and compaction survival, but no finalize
 step.
 
-**Copilot** gets the edit gate only. A UI edit is still refused before review,
+**Copilot** gets the edit gate only, tested against the payloads GitHub
+documents, not yet in a live Copilot session. A UI edit is refused before review,
 but a turn that somehow edited UI without one is not caught at its end, and
 review state is not persisted across compaction. Copilot has the events to do
 both; wiring them is open work. The edit gate is the floor every gated client
