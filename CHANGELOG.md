@@ -26,6 +26,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A fix that quoted markup could render as a control in the report.** A
+  finding such as "Use a `<button type="submit">` inside a form" reached the
+  Markdown report as raw HTML, so a viewer drew a real button or dropped the
+  words. `render-report.mjs` now escapes markup outside code spans, and its
+  self-test checks it.
+- **`run_axe_scan` and the other Playwright tools returned a box-drawn
+  banner** when Playwright's browser was not installed, which a screen reader
+  reads symbol by symbol. They now say in one sentence to run
+  `npx playwright install chromium`, and keep other errors to plain ASCII.
+- **Wide tables made an HTML report scroll sideways at 320 CSS pixels.** The
+  HTML standard in `kb-github-shared-instructions` and
+  `kb-github-workflow-standards` now wraps each table in a focusable
+  `table-scroll` region that scrolls on its own, and gives checkboxes and that
+  region the same visible focus outline as links.
 - **The edit gate let every GitHub Copilot CLI edit through.** Copilot's
   hook payload names the tool `toolName` and its arguments `toolArgs`, often
   as a JSON string; the guard read neither, so it never learned which file was
