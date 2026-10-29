@@ -299,7 +299,7 @@ function extractFormLabels(html) {
         : "";
       issues.push(
         `Input "${identifier}" (${tag}, type=${type}) has no accessible label.${hint} ` +
-        `Add a <label for="${id || "…"}"> or aria-label.`
+        `Add a <label for="${id || "the input id"}"> or aria-label.`
       );
     }
   }
@@ -1869,7 +1869,7 @@ export function createServer() {
           },
           wcag: {
             criterion: "3.1.5 Reading Level (AAA)",
-            recommendation: "Lower secondary education level (≤ grade 9)",
+            recommendation: "Lower secondary education level (grade 9 or below)",
             passes: wcagAAA,
           },
         };
@@ -1922,7 +1922,7 @@ export function createServer() {
             const start = parseTimestamp(match[1]);
             const end = parseTimestamp(match[2]);
             if (end <= start) {
-              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time (${match[2]}) ≤ start time (${match[1]})`, cue: cueCount });
+              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time (${match[2]}) is not after start time (${match[1]})`, cue: cueCount });
             }
             if (start < prevEnd) {
               issues.push({ severity: "moderate", message: `Cue ${cueCount}: overlaps with previous cue`, cue: cueCount });
@@ -1950,7 +1950,7 @@ export function createServer() {
             const start = parseTimestamp(match[1].replace(",", "."));
             const end = parseTimestamp(match[2].replace(",", "."));
             if (end <= start) {
-              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time ≤ start time`, cue: cueCount });
+              issues.push({ severity: "serious", message: `Cue ${cueCount}: end time is not after start time`, cue: cueCount });
             }
             if (start < prevEnd) {
               issues.push({ severity: "moderate", message: `Cue ${cueCount}: overlaps with previous cue`, cue: cueCount });

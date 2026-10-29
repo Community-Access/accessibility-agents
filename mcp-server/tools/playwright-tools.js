@@ -263,7 +263,7 @@ export function registerPlaywrightTools(server) {
           }
 
           const lines = [`Keyboard Navigation: ${safeUrl}`, `Interactive elements found: ${focusOrder.length}`, ""];
-          if (trapped) lines.push("⚠ KEYBOARD TRAP DETECTED - focus cycles through fewer than 3 elements", "");
+          if (trapped) lines.push("WARNING: KEYBOARD TRAP DETECTED - focus cycles through fewer than 3 elements", "");
           const structured = [];
           if (trapped) {
             structured.push({
@@ -378,7 +378,7 @@ export function registerPlaywrightTools(server) {
 
           const lines = [`Contrast scan: ${safeUrl}`, `Failures: ${elements.length}`, ""];
           for (const e of elements) {
-            lines.push(`[FAIL] <${e.tag}> "${e.text}" — ${e.ratio}:1 (need ${e.required}:1${e.isLarge ? ", large text" : ""})`);
+            lines.push(`[FAIL] <${e.tag}> "${e.text}" - ${e.ratio}:1 (need ${e.required}:1${e.isLarge ? ", large text" : ""})`);
             lines.push(`  Color: ${e.fgColor} on ${e.bgColor}`);
             lines.push(`  Selector: ${e.selector}`);
             lines.push("");
@@ -438,7 +438,7 @@ export function registerPlaywrightTools(server) {
 
           const lines = [`Viewport Reflow: ${safeUrl}`, ""];
           for (const r of results) {
-            const status = r.hasHScroll ? "FAIL — horizontal scroll detected" : "PASS";
+            const status = r.hasHScroll ? "FAIL - horizontal scroll detected" : "PASS";
             lines.push(`${r.width}px: ${status} (content: ${r.bodyWidth}px)`);
           }
           const structured = results
