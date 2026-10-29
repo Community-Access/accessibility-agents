@@ -24,6 +24,14 @@
         "powershell": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour mark --client copilot",
         "timeoutSec": 10
       }
+    ],
+    "subagentStop": [
+      {
+        "type": "command",
+        "bash": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour mark --client copilot",
+        "powershell": "node \"${PLUGIN_ROOT}/hooks/guard.mjs\" --behaviour mark --client copilot",
+        "timeoutSec": 10
+      }
     ]
   }
 }
