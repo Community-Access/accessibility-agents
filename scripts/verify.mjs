@@ -112,6 +112,13 @@ const GATES = [
     proves: 'The wiki sync cannot overwrite one page with another or keep a page whose source was deleted, because every page name is unique and comes from a file that exists.',
   },
   {
+    id: 'wiki-headings',
+    name: 'Wiki headings',
+    standard: 'one H1 per wiki page (issue #274)',
+    command: [NODE, ['--test', 'scripts/wiki-headings.test.mjs']],
+    proves: 'The wiki copy of each page is demoted one heading level, so the page name GitHub shows is its only H1, and headings in code examples are left alone.',
+  },
+  {
     id: 'sources',
     name: 'Source currency checker',
     standard: '.github/scripts/check_source_currency.py',
