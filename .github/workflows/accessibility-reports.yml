@@ -1,0 +1,63 @@
+name: Accessibility reports
+
+# Rule 1 of this project's accessibility practice (ACCESSIBILITY.md, "How we
+# respond"; Open Source Accessibility Framework, Community action 2). An
+# accessibility report is an issue with the accessibility label, opened by
+# someone who is not a maintainer or a bot, on or after the install date in
+# .github/a11y-community.json.
+#
+# - Opened or first labelled: one acknowledgement, label "a11y: awaiting response".
+# - A maintainer comments: that label and "a11y: response overdue" come off.
+# - Daily: still awaiting after 5 business days gets "a11y: response overdue"
+#   and one reminder to the accessibility owner.
+# - Closed: needs a merged pull request or commit, or a maintainer comment with
+#   an "Outcome:" line after the reporter's last comment; otherwise it is
+#   reopened. Closed as completed invites the reporter to confirm the fix.
+#
+# The logic, and its tests, are in .github/scripts/a11y-community.mjs. Events
+# from bots are skipped, so the workflow's own reopen and comments never
+# trigger it again.
+
+on:
+  issues:
+    types: [opened, labeled, closed]
+  issue_comment:
+    types: [created]
+  schedule:
+    # Daily at 13:41 UTC: 06:41 in Arizona, off the top of the hour.
+    - cron: "41 13 * * *"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: accessibility-reports-${{ github.event.issue.number || 'overdue-sweep' }}
+  cancel-in-progress: false
+
+jobs:
+  respond:
+    # The label name repeats accessibilityLabel in .github/a11y-community.json,
+    # so a comment on an unrelated issue does not start a job.
+    if: >-
+      github.repository_owner == 'Community-Access' && (
+        github.event_name == 'schedule' ||
+        (github.event.sender.type != 'Bot' &&
+         github.event.issue.pull_request == null &&
+         contains(github.event.issue.labels.*.name, 'accessibility')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the rule
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Apply the rule
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { runFromAction } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/a11y-community.mjs`);
+            await runFromAction({ github, context, core }, 'reports');

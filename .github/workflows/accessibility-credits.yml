@@ -1,0 +1,65 @@
+name: Accessibility credits
+
+# Rule 2 of this project's accessibility practice (ACCESSIBILITY.md,
+# recognition; Open Source Accessibility Framework, Community action 4).
+#
+# - A merged pull request with the accessibility label, or one that closes an
+#   accessibility issue, from someone who is not a maintainer or a bot; and an
+#   accessibility report closed as completed with a documented outcome: one
+#   question asking the contributor whether and how to be credited, label
+#   "credit: asked". Never asked twice on the same item.
+# - The contributor, and only the contributor, replies "credit: @handle",
+#   "credit: name <Name>", "credit: anonymous" or "credit: no": the label
+#   becomes "credit: yes", "credit: anonymous" or "credit: no", with a short
+#   confirmation. A chosen name is stored only in that confirmation.
+# - At release time, node .github/scripts/a11y-credits.mjs --since <tag-or-date>
+#   prints the credits block for the release notes.
+#
+# pull_request_target is used so the question can be posted on pull requests
+# from forks. It checks out only the base branch's .github folder and never
+# runs code from the pull request.
+
+on:
+  pull_request_target:
+    types: [closed]
+  issues:
+    types: [closed]
+  issue_comment:
+    types: [created]
+
+# pull-requests: write is needed only because GitHub requires it to comment on,
+# and label, a pull request; issues: write alone is enough for issues.
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: accessibility-credits-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  credit:
+    # The label name repeats accessibilityLabel in .github/a11y-community.json.
+    if: >-
+      github.repository_owner == 'Community-Access' && (
+        (github.event_name == 'pull_request_target' && github.event.pull_request.merged) ||
+        (github.event_name == 'issues' && github.event.sender.type != 'Bot' &&
+         contains(github.event.issue.labels.*.name, 'accessibility')) ||
+        (github.event_name == 'issue_comment' && github.event.sender.type != 'Bot' &&
+         contains(join(github.event.issue.labels.*.name, ','), 'credit: ')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the rule
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Apply the rule
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { runFromAction } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/a11y-community.mjs`);
+            await runFromAction({ github, context, core }, 'credits');

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Two enforced rules for accessibility reports and credits.**
+  `.github/workflows/accessibility-reports.yml` acknowledges each report,
+  reminds the accessibility owner after 5 business days without a maintainer
+  reply, reopens a report closed without an outcome, and invites the reporter
+  to confirm a fix. `.github/workflows/accessibility-credits.yml` asks each
+  outside contributor once how they want to be credited and records their
+  answer; `node .github/scripts/a11y-credits.mjs --since <tag>` prints the
+  release-notes block. The logic is `.github/scripts/a11y-community.mjs`,
+  tested by the new `community` gate in `npm run verify`. See "How we
+  respond" and "Recognition" in ACCESSIBILITY.md.
+
 ### Fixed
 
 - **The GitHub Action's README pinned `action@v6.0.0`**, the release whose
