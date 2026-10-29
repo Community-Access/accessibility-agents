@@ -154,4 +154,21 @@ Follow this sequence for every page or component:
    - Note every point of confusion or failure
 ```
 
+Two more checks belong to the tab-through and form-fields passes above. Both are
+about extra verbosity, so listen for a name said twice or for two words spoken
+as one.
+
+- Placeholder that repeats the label: tab to a labelled field that also has a
+  placeholder. You should hear the label once, and if the placeholder is
+  announced at all it should follow as a hint, not as a second name. Hearing
+  "Email, text box, Email" means the placeholder is exposed as a name. See
+  [Labels - The Foundation](https://github.com/Community-Access/accessibility-agents/blob/main/skills/forms-specialist/references/labels-the-foundation.md).
+- Flex or grid row that splits or glues its words: in Safari with VoiceOver on
+  macOS or iOS, swipe right (or press VO+Right Arrow) through a row built from
+  flex or grid children, such as a message header with a name and a time. You
+  should hear one stop, or separate stops with a space between the words. A
+  phrase split into a stop per child, or two words run together such as
+  "Ada6:37 PM", means the white space between the items was not rendered. See
+  [Flex and Grid Text Runs](https://github.com/Community-Access/accessibility-agents/blob/main/skills/aria-specialist/references/flex-and-grid-text-runs.md).
+
 ---
