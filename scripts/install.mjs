@@ -41,11 +41,10 @@ const ROOT = path.resolve(HERE, '..');
 const HOME = os.homedir();
 
 const argv = process.argv.slice(2);
+const help = argv.includes('--help') || argv.includes('-h');
 const dryRun = argv.includes('--dry-run');
 const uninstall = argv.includes('--uninstall');
 const force = argv.includes('--force');
-const clientsArg = argv.indexOf('--clients');
-const wanted = clientsArg === -1 ? null : new Set(argv[clientsArg + 1].split(','));
 
 /**
  * The shared personal skills location. Codex, the Copilot CLI, VS Code and
@@ -187,6 +186,55 @@ function removeNamedHooks(file) {
     fs.writeFileSync(file, JSON.stringify(json, null, 2) + '\n', 'utf8');
   }
   return true;
+}
+
+// ---------------------------------------------------------------- arguments
+// Arguments are checked before anything is installed. A typo used to be
+// silently ignored, and --help used to run a real install; both now stop with
+// a one-line message and a non-zero exit, so a mistaken flag cannot touch the
+// home directory. --clients used to crash on a missing value and to answer a
+// bad id with "no supported client found"; it now names the problem instead.
+
+const KNOWN_FLAGS = new Set(['--dry-run', '--force', '--uninstall', '--help', '-h']);
+const CLIENT_IDS = CLIENTS.map((c) => c.id);
+
+function printUsage() {
+  console.log('Usage: node scripts/install.mjs [--dry-run] [--clients <ids>] [--force] [--uninstall]');
+  console.log('');
+  console.log('  --dry-run        print what would happen, change nothing');
+  console.log(`  --clients <ids>  comma-separated subset of: ${CLIENT_IDS.join(', ')}`);
+  console.log('  --force          overwrite skills and hook files you have edited');
+  console.log('  --uninstall      remove this package\'s skills and hook files');
+  console.log('  --help, -h       print this help and exit');
+}
+
+if (help) {
+  printUsage();
+  process.exit(0);
+}
+
+let wanted = null;
+for (let i = 0; i < argv.length; i += 1) {
+  const arg = argv[i];
+  if (arg === '--clients') {
+    const value = argv[i + 1];
+    if (!value || value.startsWith('-')) {
+      console.error(`--clients needs a value; valid ids: ${CLIENT_IDS.join(', ')}`);
+      process.exit(2);
+    }
+    i += 1;
+    const ids = value.split(',');
+    const bad = ids.filter((id) => !CLIENT_IDS.includes(id));
+    if (bad.length) {
+      console.error(`Unknown client id "${bad[0]}"; valid ids: ${CLIENT_IDS.join(', ')}`);
+      process.exit(2);
+    }
+    wanted = new Set(ids);
+    continue;
+  }
+  if (KNOWN_FLAGS.has(arg)) continue;
+  console.error(`Unknown option "${arg}"; run with --help to see the options.`);
+  process.exit(2);
 }
 
 // --------------------------------------------------------------------- main
