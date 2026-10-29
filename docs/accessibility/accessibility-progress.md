@@ -14,9 +14,13 @@ project is.
 
 ### Completed
 
-- **We took the Open Source Accessibility Framework to 19 of its 24
+- **We took the Open Source Accessibility Framework to 20 of its 24
   actions,** up from 11, as recorded action by action in
-  [the framework record](accessibility-framework.md).
+  [the framework record](accessibility-framework.md). The twentieth is
+  responding constructively to reports: from 29 October 2026 the
+  accessibility-reports workflow acknowledges every report, reminds the owner
+  after 5 business days without a reply, reopens a report closed without a
+  documented outcome, and invites the reporter to confirm a fix.
 - **Interface requirements** for everything people meet: terminal output, MCP
   tool output, reports, generated HTML and documentation pages, under
   "Contributor expectations" in ACCESSIBILITY.md, and in the pull request
@@ -65,8 +69,10 @@ Nine issues are open with the `accessibility` label:
 - [#262](https://github.com/Community-Access/accessibility-agents/issues/262):
   barriers in the clients themselves, tracked upstream.
 
-Report [#207](https://github.com/Community-Access/accessibility-agents/issues/207)
-is still open without a reply on the issue, though its fixes have landed.
+Report [#207](https://github.com/Community-Access/accessibility-agents/issues/207),
+which had waited a month without a reply on the issue, was answered and closed
+with an outcome on 28 October 2026; its remaining work continues in #259 and
+#261. Past reports are not reopened.
 
 ### Known limitations
 

@@ -36,8 +36,8 @@ Status as of 28 October 2026, by phase.
 | Foundational | 2 | 0 |
 | Workflow | 10 | 0 |
 | Testing | 3 | 3 |
-| Community | 4 | 2 |
-| Total | 19 | 5 |
+| Community | 5 | 1 |
+| Total | 20 | 4 |
 
 ## Foundational phase
 
@@ -87,7 +87,7 @@ The six actions that involve the people who use and build the project.
 | No. | Action and ID | Status | Evidence |
 |---:|---|---|---|
 | 1 | Invite community help on accessibility work (`invite-community-help-on-accessibility-work`) | Done; recurring | "Accessibility work you can pick up" in [CONTRIBUTING.md](../../CONTRIBUTING.md#accessibility-work-you-can-pick-up), with the label searches and non-code ways to help; #255 to #263 have scope, context and acceptance criteria; questions go to the issue, Discussions or email, answered by the accessibility owner; the monthly "Accessibility feedback and progress" issue (`.github/workflows/accessibility-review.yml`) is the standing feedback practice |
-| 2 | Respond constructively to accessibility reports (`respond-constructively-to-accessibility-reports`) | Not done | Item 1 is met: "How we respond" in ACCESSIBILITY.md now includes how to respond. Items 2 and 3 are practice, and the record does not yet meet them. See [the response record](#response-record) below |
+| 2 | Respond constructively to accessibility reports (`respond-constructively-to-accessibility-reports`) | Done; recurring | Item 1: "How we respond" in ACCESSIBILITY.md says how to respond. Items 2 and 3: since 29 October 2026 `.github/workflows/accessibility-reports.yml` acknowledges every report, reminds the owner after 5 business days without a reply, reopens a report closed without a documented outcome (a merged fix or an `Outcome:` line), and invites the reporter to confirm a fix. Past reports are not reopened; the one still open without a reply, #207, was answered and closed with an outcome on 28 October 2026. See [the response record](#response-record) below |
 | 3 | Provide accessible and respectful ways to contribute and collaborate (`provide-accessible-and-respectful-ways-to-contribute-and-collaborate`) | Done; recurring | "Taking part" in ACCESSIBILITY.md and "Ways to take part" in CONTRIBUTING.md: asynchronous text channels, how any meeting would be run, and non-code contributions; [the collaboration tools review](#collaboration-tools-review) below; [the Code of Conduct](../../CODE_OF_CONDUCT.md), which names dismissing accessibility concerns, mocking assistive technology users and publishing private information, and now names the address to report to; a private accommodation route by email |
 | 4 | Recognize accessibility contributions publicly (`recognize-accessibility-contributions-publicly`) | Not done | The practice is in ACCESSIBILITY.md and [below](#recognition-practice). Contributors are thanked by handle in `CHANGELOG.md` and on their pull requests, but no contributor's consent to that credit, or their chosen form of it, is on record, so the definition of done is not met |
 | 5 | Publish accessibility progress updates (`publish-accessibility-progress-updates`) | Done; recurring | The first update is [the progress page](accessibility-progress.md), linked from ACCESSIBILITY.md and the README. It lists completed work, remaining work, known barriers and links. The practice, monthly prompted by the review issue and linked from each release's notes, is in ACCESSIBILITY.md and [below](#progress-update-practice) |
@@ -110,15 +110,20 @@ reports below were chosen by reading the issues, not by the label.
   September, was answered and closed on 28 October with the fix and how to
   upgrade. Both answers meet the "acknowledgement, status and next step"
   standard; neither met the five business day target.
-- #207, four screen reader verbosity gaps reported on 29 September, has no
+- #207, four screen reader verbosity gaps reported on 29 September, had no
   reply on the issue, although the reporter's four pull requests were answered
-  and their content landed in 7.1.0. It is still open.
+  and their content landed in 7.1.0. On 28 October 2026 it was answered with
+  where each finding stands, closed with an `Outcome:` line, and the reporter
+  was invited to confirm the fixes.
 - No fix has yet been validated with the affected user before closing.
 
-Item 2 is met when open reports are acknowledged within the published target,
-starting with #207; item 3 when resolution outcomes are written on each report
-and fixes are offered back to reporters to confirm. The monthly review issue
-checks both.
+The owner, Jeff Bishop, decided that past reports are not reopened: the
+gaps above are history, and the rule now prevents them. From 29 October 2026,
+`.github/workflows/accessibility-reports.yml` acknowledges every new report,
+reminds the owner after 5 business days without a reply, reopens a report
+closed without a documented outcome (a merged fix or an `Outcome:` line), and
+invites the reporter to confirm a fix. The monthly review issue still asks
+whether every open report has been acknowledged.
 
 ### Collaboration tools review
 

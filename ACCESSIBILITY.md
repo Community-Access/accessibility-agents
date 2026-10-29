@@ -385,7 +385,7 @@ in four phases, and track our progress in public in
 where each completed action is checked off against the framework's
 definition of done. The full record, action by action with evidence, is in
 [docs/accessibility/accessibility-framework.md](docs/accessibility/accessibility-framework.md).
-Progress as of October 2026, 19 of 24 actions:
+Progress as of October 2026, 20 of 24 actions:
 
 - **Foundational:** this document; the `accessibility` label.
 - **Workflow:** all ten actions: priorities and contributor expectations,
@@ -402,10 +402,12 @@ Progress as of October 2026, 19 of 24 actions:
   #260).
 - **Community:** an open invitation to help with labelled issues and a
   monthly feedback issue; accessible, asynchronous ways to take part, a
-  private accommodation route and a Code of Conduct; monthly progress updates;
-  shared resources. Responding to reports is documented, but our record does
-  not yet meet it (#207 has no reply, and earlier reports waited weeks);
-  public recognition waits on contributors' consent.
+  private accommodation route and a Code of Conduct; responding to reports,
+  documented in [How we respond](#how-we-respond) and enforced since 29
+  October 2026 by the accessibility-reports workflow; monthly progress
+  updates; shared resources. Past reports are not reopened; the one still open
+  without a reply, #207, was answered and closed with an outcome on 28 October
+  2026. Public recognition waits on contributors' consent.
 
 The agents in this package can do the same for your project: ask your client
 to adopt the Open Source Accessibility Framework, or one of its phases.
