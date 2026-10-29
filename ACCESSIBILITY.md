@@ -239,7 +239,7 @@ be credited (your name, your handle, or not at all) and record the answer on
 the issue or pull request. Credit describes the work, never a person's
 disability or assistive technology.
 
-A workflow asks for you. When an accessibility pull request from outside the
+A workflow does the asking. When an accessibility pull request from outside the
 maintainers is merged, or your report closes as fixed, a bot asks you once how
 you would like to be credited, and you reply with one line: `credit: @handle`,
 `credit: name <Name>`, `credit: anonymous` or `credit: no`. Only your own reply
