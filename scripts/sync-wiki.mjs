@@ -13,6 +13,10 @@
  * Troubleshooting.md. Two sources that would get the same name are a build
  * error, not a silent overwrite; add one of them to PAGE_NAMES.
  *
+ * Headings: the wiki shows the page name as the page's H1, so every heading
+ * in the wiki copy is demoted one level (scripts/wiki-headings.mjs, issue
+ * #274). The repository copy keeps its own H1.
+ *
  * Usage:
  *   node scripts/sync-wiki.mjs <wiki-checkout>            sync, then list changes
  *   node scripts/sync-wiki.mjs <wiki-checkout> --dry-run  list changes only
@@ -22,6 +26,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { demoteHeadings } from './wiki-headings.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -126,7 +131,7 @@ let changes = 0;
 
 for (const [name, rel] of pages) {
   const dest = path.join(wiki, name);
-  const content = fs.readFileSync(path.join(ROOT, rel));
+  const content = Buffer.from(demoteHeadings(fs.readFileSync(path.join(ROOT, rel), 'utf8')), 'utf8');
   if (fs.existsSync(dest) && fs.readFileSync(dest).equals(content)) continue;
   console.log(`${fs.existsSync(dest) ? 'update' : 'add   '} ${name}  <- ${rel}`);
   if (!dryRun) fs.writeFileSync(dest, content);
