@@ -14,10 +14,21 @@ project is.
 
 ### Completed
 
-- **We took the Open Source Accessibility Framework to 20 of its 24
-  actions,** up from 11, as recorded action by action in
-  [the framework record](accessibility-framework.md). The twentieth is
-  responding constructively to reports: from 29 October 2026 the
+- **We completed all 24 actions of the Open Source Accessibility
+  Framework,** up from 11 at the start of the month, as recorded action by
+  action in [the framework record](accessibility-framework.md). Completing
+  the checklist is not the end of the work: the recurring actions go on every
+  month. The last four, on 29 October 2026:
+  - a keyboard-only smoke test and manual checks of the core flows, run by an
+    agent with real key presses and accepted by the accessibility owner as
+    results, which found and fixed three barriers (in
+    [the testing record](accessibility-testing.md#runs-so-far));
+  - a screen reader spot check by the accessibility owner with JAWS and NVDA
+    in Chrome and Edge on Windows 11;
+  - credit, by public handle, for the accessibility contributions made before
+    the credit rule took effect, under "Past accessibility contributions" in
+    ACCESSIBILITY.md.
+- **Responding to reports is enforced:** from 29 October 2026 the
   accessibility-reports workflow acknowledges every report, reminds the owner
   after 5 business days without a reply, reopens a report closed without a
   documented outcome, and invites the reporter to confirm a fix.
@@ -45,34 +56,23 @@ project is.
 
 ### In progress and open
 
-Nine issues are open with the `accessibility` label:
+Closed this month: #255, #256, #257 and #263 (fixed on `main`, in the next
+release), #259 (the testing coach's two new checks), and #258 and #260 (the
+keyboard and screen reader runs). Three issues are open with the
+`accessibility` label:
 
-- [#260](https://github.com/Community-Access/accessibility-agents/issues/260):
-  no screen reader test of the core flows has been recorded. Help wanted from
-  someone who uses a screen reader every day.
 - [#261](https://github.com/Community-Access/accessibility-agents/issues/261):
   does an explicit `aria-atomic="true"` silence a live region in JAWS with
-  Firefox? Help wanted from a JAWS user.
-- [#258](https://github.com/Community-Access/accessibility-agents/issues/258):
-  a person's keyboard-only pass of the flows. A good first issue; no code.
-- [#255](https://github.com/Community-Access/accessibility-agents/issues/255):
-  `npm run setup -- --help` installs instead of printing help. Workaround:
-  always run `npm run setup -- --dry-run` first.
-- [#256](https://github.com/Community-Access/accessibility-agents/issues/256):
-  a few MCP tool messages contain non-ASCII symbols.
-- [#257](https://github.com/Community-Access/accessibility-agents/issues/257):
-  reports say "1 findings".
-- [#263](https://github.com/Community-Access/accessibility-agents/issues/263):
-  `check_heading_structure` does not report an empty heading.
-- [#259](https://github.com/Community-Access/accessibility-agents/issues/259):
-  the testing-coach procedure does not yet listen for two verbosity problems.
+  Firefox? Help wanted from a JAWS user with Firefox.
 - [#262](https://github.com/Community-Access/accessibility-agents/issues/262):
   barriers in the clients themselves, tracked upstream.
+- [#274](https://github.com/Community-Access/accessibility-agents/issues/274):
+  wiki pages have two level-one headings.
 
 Report [#207](https://github.com/Community-Access/accessibility-agents/issues/207),
 which had waited a month without a reply on the issue, was answered and closed
-with an outcome on 28 October 2026; its remaining work continues in #259 and
-#261. Past reports are not reopened.
+with an outcome on 28 October 2026; its remaining work continued in #259,
+now closed, and #261. Past reports are not reopened.
 
 ### Known limitations
 

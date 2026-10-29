@@ -37087,6 +37087,13 @@ async function isPlaywrightAvailable() {
   return _playwrightAvailable;
 }
 var NOT_INSTALLED_MSG = "Playwright is not installed. Install with:\n  npm install -D playwright @axe-core/playwright && npx playwright install chromium";
+function playwrightFailure(err) {
+  const message = String(err?.message ?? err ?? "");
+  if (/Executable doesn't exist/i.test(message)) {
+    return "Playwright is installed, but the Chromium browser it needs is not. Install it with: npx playwright install chromium";
+  }
+  return message.split(/\r?\n/).map((line) => line.replace(/[^\x20-\x7E]/g, " ").replace(/ {2,}/g, " ").trim()).filter((line) => /[A-Za-z0-9]/.test(line)).join("\n");
+}
 function validateUrl(urlString) {
   let parsed;
   try {
@@ -37185,7 +37192,7 @@ Passes: ${(results.passes || []).length} | Incomplete: ${(results.incomplete || 
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`axe-core scan failed: ${err.message}`);
+        return errorResult(`axe-core scan failed: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -37221,7 +37228,7 @@ ${snapshot}`, [safeUrl], [], {
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Failed to capture a11y tree: ${err.message}`);
+        return errorResult(`Failed to capture a11y tree: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -37307,7 +37314,7 @@ ${snapshot}`, [safeUrl], [], {
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Keyboard scan failed: ${err.message}`);
+        return errorResult(`Keyboard scan failed: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -37403,7 +37410,7 @@ No contrast failures detected in sampled elements.`,
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Contrast scan failed: ${err.message}`);
+        return errorResult(`Contrast scan failed: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -37458,7 +37465,7 @@ No contrast failures detected in sampled elements.`,
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Viewport test failed: ${err.message}`);
+        return errorResult(`Viewport test failed: ${playwrightFailure(err)}`);
       }
     }
   );

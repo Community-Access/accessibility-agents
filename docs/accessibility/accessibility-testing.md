@@ -194,23 +194,135 @@ Result: pass, or each failure with what happened and its issue number.
 ## Runs so far
 
 The state of each check, per flow. "Agent run" means an AI agent ran the
-commands in a shell it could not see or hear: it can confirm that a flow needs
-no pointer and what text it prints, not that focus is visible or how a screen
-reader speaks it. No person has run any of these checks yet.
+commands itself. In a terminal it can confirm that a flow needs no pointer and
+what text it prints, not how the terminal shows focus; in a browser it pressed
+real keys and measured focus, zoom, reflow and contrast. The accessibility
+owner, Jeff Bishop, accepts the agent's keyboard and manual runs as results,
+and says so in each record. Screen reader checks are a person's: the owner ran
+them on his own test machine.
 
 | Flow | Keyboard-only | Screen reader | Manual |
 | --- | --- | --- | --- |
-| 1. Claude Code plugin | Agent run, shell commands only (below) | Not yet run | Not yet run |
-| 2. GitHub Copilot | Not yet run | Not yet run | Not yet run |
-| 3. Codex or Gemini CLI | Not yet run | Not yet run | Not yet run |
-| 4. From a checkout | Agent run (below) | Not yet run | Agent run, partial (below) |
-| 5. MCP server through npm | Agent run (below) | Not yet run | Not yet run |
-| 6. Review a file, read the report | Agent run, MCP tools only (below) | Not yet run | Agent run, partial (below) |
+| 1. Claude Code plugin | Pass, 2026-10-29 (agent run, accepted) | Owner's spot check (below) | Pass, 2026-10-29 (agent run, accepted) |
+| 2. GitHub Copilot | Pass for the Copilot CLI, 2026-10-29 (agent run, accepted); VS Code not run | Owner's spot check (below) | Pass for the Copilot CLI, 2026-10-29 (agent run, accepted) |
+| 3. Codex or Gemini CLI | Pass for Codex, 2026-10-29 (agent run, accepted); Gemini CLI not run | Owner's spot check (below) | Pass for Codex, 2026-10-29 (agent run, accepted) |
+| 4. From a checkout | Pass, 2026-10-29 (agent run, accepted) | Owner's spot check (below) | Pass, 2026-10-29 (agent run, accepted) |
+| 5. MCP server through npm | Pass, 2026-10-28 (agent run, accepted) | Owner's spot check (below) | Pass for the tool output after one fix, 2026-10-29 (agent run, accepted) |
+| 6. Review a file, read the report | Pass, 2026-10-29 (agent run, accepted) | Owner's spot check (below) | Pass after two fixes, 2026-10-29 (agent run, accepted) |
 
-Help is wanted: a person's keyboard pass in
-[#258](https://github.com/Community-Access/accessibility-agents/issues/258),
-and a screen reader spot check in
-[#260](https://github.com/Community-Access/accessibility-agents/issues/260).
+The owner's screen reader record says which readers and browsers were used,
+not which flow each check was made in, so the screen reader column points to
+it for every flow. More runs are always welcome, especially with a client or
+screen reader not listed here: copy the record template into a new issue or a
+pull request to this page.
+
+### Screen reader spot check, recorded 2026-10-29
+
+Run by Jeff Bishop, the accessibility owner, who uses a screen reader. He ran
+the screen reader checks above for the core flows named in
+[#260](https://github.com/Community-Access/accessibility-agents/issues/260):
+installing in a client, running a review and reading the report.
+
+Environment, the screen readers and browsers on his test machine:
+
+- Windows 11 Pro.
+- JAWS 2026 (2026.2608.25.400) and NVDA 2026.2.
+- Chrome 156 and Edge 156.
+
+Result: recorded as run by the owner. No new barrier was filed from it; the
+known barriers in the clients themselves stay tracked in
+[#262](https://github.com/Community-Access/accessibility-agents/issues/262).
+Firefox was not part of this run, so the JAWS and Firefox question in
+[#261](https://github.com/Community-Access/accessibility-agents/issues/261) is
+still open.
+
+### Agent run, 2026-10-29: keyboard-only and manual checks
+
+Run by an AI agent (Claude Code) and accepted as a result by the accessibility
+owner, Jeff Bishop, on 29 October 2026. The terminal flows ran as typed
+commands; the HTML checks used real key presses in a real browser.
+
+Environment: Accessibility Agents 7.1.0 plus `main` at commit `4264e27`;
+Windows 11 Pro (build 26300); Git Bash; Node.js 22.22.1; Claude Code 2.1.296;
+GitHub Copilot CLI 1.0.94; Codex CLI 0.146.0; Chromium in the Claude desktop
+app's browser pane, with axe-core 4.14.0. Every install went into a throwaway
+home or configuration directory (`USERPROFILE`, `CLAUDE_CONFIG_DIR`,
+`COPILOT_HOME`, `CODEX_HOME`), and was removed afterwards; the user's own
+configuration was not touched. Gemini CLI, Antigravity and VS Code's "Chat:
+Install Plugin From Source" were not run.
+
+Flow 4, from a checkout, keyboard-only and manual:
+
+- Pass: `npm run setup -- --help` now prints usage and exits 0; `--dry-run`,
+  a real install, a repeat install and `--uninstall` each ran from typed
+  commands, asked no question and exited 0. A mistyped option, `--clients`
+  with no value and an unknown client id are each refused with one line that
+  names the problem and the valid values, exit code 2, before anything is
+  written (the fixes for #255).
+- Manual: all output is plain ASCII and reads in the order things happen; the
+  longest line, 141 characters, is a file path, which wraps without losing
+  anything at 200 percent terminal font size.
+
+Flows 1, 2 and 3, installing in Claude Code, the Copilot CLI and Codex from
+the shell, keyboard-only and manual:
+
+- Pass: `marketplace add Community-Access/accessibility-agents`, the plugin
+  install, the plugin list, the uninstall and the marketplace removal, for
+  each of `claude plugin`, `copilot plugin` and `codex plugin`, from typed
+  commands, no prompts, exit 0. Every success and failure is said in words.
+- Observation, upstream: Claude Code still marks results with a check mark or
+  a cross, and writes cursor-movement codes even when its output is
+  redirected; the Copilot CLI lists plugins with a bullet character. The words
+  carry the meaning. Tracked with the other client barriers in #262.
+- Observation: on Windows, Claude Code could not clone the marketplace into a
+  configuration directory with a very long path ("Filename too long"); from
+  the default `~/.claude` it worked.
+
+Flow 6, a review of a small page and its report, keyboard-only and manual:
+
+- A sample sign-up page with nine known defects was reviewed through the MCP
+  server's tools (`run_axe_scan`, `check_heading_structure`, `check_link_text`,
+  `check_form_labels`, `check_contrast`), the findings were written in the
+  findings schema, and `render-report.mjs` wrote the report. A nested client
+  session with a model could not sign in from the agent's shell, so the model
+  half of the review was done by the agent itself.
+- Pass: the report has one H1, every required section in order, a sentence
+  before each table, and severity, criterion, location and fix in words for
+  all nine findings; counts agree with their nouns. It passes the Markdown
+  accessibility linter at `--fail-on warning`.
+- Fixed in this run: a fix that quoted markup, such as "Use a
+  `<button type="submit">` inside a form", reached the report as raw HTML, so
+  a Markdown viewer rendered a real button or dropped the words.
+  `render-report.mjs` now escapes markup outside code spans, and its self-test
+  checks it.
+- Fixed in this run: when Playwright's browser was missing, `run_axe_scan`
+  returned Playwright's box-drawn banner, which a screen reader reads symbol
+  by symbol. The five Playwright tools now say in one sentence what to install.
+- Keyboard, HTML: the shared HTML page standard the GitHub workflow skills
+  write their HTML reports to (in `kb-github-shared-instructions`) was built
+  into a sample briefing and driven with Tab, Shift+Tab, Enter, Space and the
+  arrow keys. Pass: the skip link is first and moves focus into `main`; every
+  link, checkbox and disclosure is reached in reading order, with a visible
+  2 pixel outline at 5.19 to 1 against the page; Space checks a checkbox,
+  Enter opens the disclosure; Tab leaves the page and Shift+Tab comes back, so
+  nothing traps focus.
+- Manual, HTML: axe-core found no violations in light or dark mode, with
+  contrast fully computed; every text color pair in the stylesheet is at least
+  4.5 to 1. At 200 percent zoom (640 CSS pixels) nothing is lost. At 320 CSS
+  pixels a six-column table made the whole page scroll sideways; fixed in this
+  run by a `table-scroll` wrapper, a focusable region that the arrow keys
+  scroll, in the standard and its copy in `kb-github-workflow-standards`.
+  Status is always a word, never color alone.
+
+Documentation as rendered on GitHub, manual:
+
+- ACCESSIBILITY.md, the README and the wiki home page: one H1 in the content,
+  no skipped levels, no vague link text, and the one image has alternative
+  text. At 320 CSS pixels the pages do not scroll sideways; a wide table
+  scrolls in its own box, as WCAG 2.2 success criterion 1.4.10 allows.
+- Fail, filed: every wiki page has two H1 headings, GitHub's page name and the
+  content's own. Tracked in
+  [#274](https://github.com/Community-Access/accessibility-agents/issues/274).
 
 ### Agent run, 2026-10-28
 

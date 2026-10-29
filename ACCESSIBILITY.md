@@ -247,6 +247,45 @@ counts, you can change it later, and nothing about you beyond the credit you
 choose is published. The answer is recorded as a `credit:` label, and each
 release's credits are listed from those labels.
 
+#### Past accessibility contributions
+
+The credit rule above applies from 29 October 2026. Contributions made before
+it, which have no credit question on record, are credited here by public
+GitHub handle, as the accessibility owner decided. If you are listed and want
+to be named differently or left out, say so on any issue or by email.
+
+Thank you to:
+
+- [@chrisnestrud](https://github.com/chrisnestrud): a report of four screen
+  reader verbosity gaps
+  ([#207](https://github.com/Community-Access/accessibility-agents/issues/207)),
+  and fixes for placeholder guidance, flex and grid text runs, streaming
+  transcripts in live regions, testing by ear and Qt Widgets naming (#208,
+  #209, #210, #211, #218).
+- [@Orinks](https://github.com/Orinks): the wxPython accessibility specialist
+  (#39), specific fix mechanisms in desktop findings (#49), the report and fix
+  showing that `SetName()` is not an accessible label (#84, #85), and the
+  Codex review gate (#168, #169).
+- [@kellylford](https://github.com/kellylford): a review rule for alternative
+  text and ARIA labels (#44), and a report of the accessibility lead breaking
+  a working menu (#32).
+- [@leshields](https://github.com/leshields): the normal and large text
+  thresholds for contrast (#198).
+- [@csm120](https://github.com/csm120): PDF/UA checkpoint numbers and the
+  Headers and IDs exception (#201, #202).
+- [@AdamMagued](https://github.com/AdamMagued): the current PDF/UA-1 source
+  and the Headers and IDs exception in the table rules (#212, #215).
+- [@ChrisDuffley](https://github.com/ChrisDuffley): NVDA 2026.1 compatibility
+  for the NVDA add-on agents (#58).
+- [@w9fyi](https://github.com/w9fyi): the accessibility review gate under a
+  Claude Code plugin install (#219, #220).
+- [@yaheltal](https://github.com/yaheltal): shell edits that bypassed the
+  review gate (#199).
+- [@tesles](https://github.com/tesles): the review gate's hooks and its UI
+  file checks (#45, #47, #56).
+- [@clifton79](https://github.com/clifton79): review gate prompts in projects
+  with no user interface (#165).
+
 ### Progress updates
 
 We publish an accessibility progress update each month, in
@@ -320,16 +359,20 @@ What we support and what we have evaluated:
   with any screen reader in an editor, a terminal pager or a browser rendering
   the Markdown.
 - **Assistive technology:** the project is designed for use with NVDA and JAWS
-  on Windows and VoiceOver on macOS, in a terminal or in VS Code. **No screen
-  reader test has been recorded yet** for any combination; see
-  [Known limitations](#known-limitations).
+  on Windows and VoiceOver on macOS, in a terminal or in VS Code. **Tested:**
+  JAWS 2026 (2026.2608.25.400) and NVDA 2026.2, with Chrome 156 and Edge 156,
+  on Windows 11 Pro: the screen readers and browsers on the accessibility
+  owner's test machine, where he ran the screen reader spot check of the core
+  flows, recorded in
+  [the testing document](docs/accessibility/accessibility-testing.md#runs-so-far).
+  Narrator, VoiceOver and Firefox have not been tested.
 - **Input methods:** keyboard alone. Every core flow is typed commands or a
-  command palette, and none needs a pointer. That was confirmed by an agent
-  run of the installer, the Claude Code plugin commands and the MCP server on
-  Linux on 2026-10-28, recorded in
-  [the testing document](docs/accessibility/accessibility-testing.md#runs-so-far);
-  no person has yet recorded a keyboard-only run, and voice control and switch
-  access have not been tested.
+  command palette, and none needs a pointer. Agent runs on Linux on 2026-10-28
+  and on Windows 11 on 2026-10-29 confirmed it for the installer, the Claude
+  Code, Copilot CLI and Codex plugin commands, the MCP server and a first
+  review, with real key presses in a browser for the HTML the agents write;
+  the accessibility owner accepted them as results. VS Code's install flow,
+  Gemini CLI, voice control and switch access have not been tested.
 
 What is checked automatically in continuous integration:
 
@@ -344,24 +387,24 @@ What is checked automatically in continuous integration:
 
 These are the barriers we know about. Please report any we have missed.
 
-- **No screen reader test has been recorded.** The checks for each core flow
-  are written down, but nobody has yet run them with a screen reader, so we
-  cannot say how installing in each client and reading a report work when
-  heard. Help is wanted in
-  [#260](https://github.com/Community-Access/accessibility-agents/issues/260).
-  If something does not work for you, the issue form and email reach a person.
-- **`--help` installs.** `npm run setup -- --help`, or a mistyped option, runs
-  a real install instead of printing help. Run `npm run setup -- --dry-run`
-  first to see what it will do; `node scripts/install.mjs --uninstall` removes
-  it. Tracked in
-  [#255](https://github.com/Community-Access/accessibility-agents/issues/255).
-- **A few MCP tool messages contain symbols** (an ellipsis, a less than or
-  equal sign, an em dash) that some screen readers skip or name. The words
-  around them carry the meaning. Tracked in
-  [#256](https://github.com/Community-Access/accessibility-agents/issues/256).
-- **Reports say "1 findings".** The count is right; the wording is not.
-  Tracked in
-  [#257](https://github.com/Community-Access/accessibility-agents/issues/257).
+- **Screen reader testing covers one machine.** The accessibility owner ran
+  the spot check with JAWS and NVDA, in Chrome and Edge, on Windows 11.
+  Narrator, VoiceOver, Firefox (see
+  [#261](https://github.com/Community-Access/accessibility-agents/issues/261))
+  and braille displays are not yet in any record. If something does not work
+  for you, the issue form and email reach a person.
+- **Fixed after 7.1.0, still in the 7.1.0 package:** `npm run setup -- --help`,
+  or a mistyped option, runs a real install instead of printing help
+  ([#255](https://github.com/Community-Access/accessibility-agents/issues/255));
+  a few MCP tool messages contain symbols that some screen readers skip or
+  name ([#256](https://github.com/Community-Access/accessibility-agents/issues/256));
+  and reports say "1 findings"
+  ([#257](https://github.com/Community-Access/accessibility-agents/issues/257)).
+  Until the next release, run `npm run setup -- --dry-run` first; the words
+  around the symbols carry the meaning.
+- **Wiki pages have two level-one headings,** GitHub's page name and the
+  page's own title. The repository copy has one. Tracked in
+  [#274](https://github.com/Community-Access/accessibility-agents/issues/274).
 - **Generated HTML is not checked in CI.** Some skills can write HTML versions
   of reports. Those files are written by the model. An HTML rendering of the
   Markdown report passed axe-core in an agent run (see the testing document),
@@ -389,7 +432,7 @@ in four phases, and track our progress in public in
 where each completed action is checked off against the framework's
 definition of done. The full record, action by action with evidence, is in
 [docs/accessibility/accessibility-framework.md](docs/accessibility/accessibility-framework.md).
-Progress as of October 2026, 20 of 24 actions:
+Progress as of October 2026, all 24 actions:
 
 - **Foundational:** this document; the `accessibility` label.
 - **Workflow:** all ten actions: priorities and contributor expectations,
@@ -400,10 +443,11 @@ Progress as of October 2026, 20 of 24 actions:
   enforced by the Markdown linter; interface requirements; and the dependency
   record above.
 - **Testing:** automated checks on every pull request; documentation checks;
-  supported environments and known limitations. The keyboard, screen reader
-  and manual checks for the core flows are documented, and an agent has run
-  the parts it can, but they are done only when people have run them (#258,
-  #260).
+  supported environments and known limitations; a keyboard-only smoke test
+  and manual checks of the core flows, run by an agent with real key presses
+  and accepted by the accessibility owner as results; and a screen reader
+  spot check run by the owner with JAWS and NVDA. What they found is fixed or
+  tracked.
 - **Community:** an open invitation to help with labelled issues and a
   monthly feedback issue; accessible, asynchronous ways to take part, a
   private accommodation route and a Code of Conduct; responding to reports,
@@ -411,7 +455,9 @@ Progress as of October 2026, 20 of 24 actions:
   October 2026 by the accessibility-reports workflow; monthly progress
   updates; shared resources. Past reports are not reopened; the one still open
   without a reply, #207, was answered and closed with an outcome on 28 October
-  2026. Public recognition waits on contributors' consent.
+  2026. Public recognition: past accessibility contributions are credited
+  under [Recognition](#recognition), and new ones through the credit
+  workflow.
 
 The agents in this package can do the same for your project: ask your client
 to adopt the Open Source Accessibility Framework, or one of its phases.

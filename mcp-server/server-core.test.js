@@ -856,3 +856,23 @@ describe("wcagFromAxeTags", async () => {
     assert.equal(wcagFromAxeTags(["wcag22aa", "wcag258"]).wcag, "2.5.8 AA");
   });
 });
+
+describe("playwrightFailure", async () => {
+  const { playwrightFailure } = await import("./tools/playwright-tools.js");
+  it("replaces the missing-browser banner with one plain sentence", () => {
+    const err = new Error(
+      "browserType.launch: Executable doesn't exist at C:\\chrome.exe\n" +
+        "\u2554\u2550\u2550\u2557\n" +
+        "\u2551 Please run the following command to download new browsers: \u2551\n" +
+        "\u2551     npx playwright install \u2551\n" +
+        "\u255a\u2550\u2550\u255d",
+    );
+    const text = playwrightFailure(err);
+    assert.match(text, /npx playwright install chromium/);
+    assert.match(text, /^[\x20-\x7E]+$/);
+  });
+  it("keeps the words of any other failure, in plain ASCII", () => {
+    const err = new Error("net::ERR_CONNECTION_REFUSED \u2014 retry\n\u2550\u2550\u2550");
+    assert.equal(playwrightFailure(err), "net::ERR_CONNECTION_REFUSED retry");
+  });
+});

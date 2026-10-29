@@ -50,6 +50,24 @@ const NOT_INSTALLED_MSG =
   "Playwright is not installed. Install with:\n  npm install -D playwright @axe-core/playwright && npx playwright install chromium";
 
 /**
+ * Turn a Playwright failure into text a person can act on. When the browser
+ * itself is missing, Playwright's message ends in a box-drawn banner, which a
+ * screen reader reads symbol by symbol; say what to run instead. Any other
+ * message keeps its words and loses its non-ASCII characters.
+ */
+export function playwrightFailure(err) {
+  const message = String(err?.message ?? err ?? "");
+  if (/Executable doesn't exist/i.test(message)) {
+    return "Playwright is installed, but the Chromium browser it needs is not. Install it with: npx playwright install chromium";
+  }
+  return message
+    .split(/\r?\n/)
+    .map((line) => line.replace(/[^\x20-\x7E]/g, " ").replace(/ {2,}/g, " ").trim())
+    .filter((line) => /[A-Za-z0-9]/.test(line))
+    .join("\n");
+}
+
+/**
  * Validate a URL. Only allows http: and https: schemes.
  * Does not restrict private/internal IPs -- the server should be
  * bound to localhost (default) to limit SSRF exposure.
@@ -172,7 +190,7 @@ export function registerPlaywrightTools(server) {
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`axe-core scan failed: ${err.message}`);
+        return errorResult(`axe-core scan failed: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -208,7 +226,7 @@ export function registerPlaywrightTools(server) {
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Failed to capture a11y tree: ${err.message}`);
+        return errorResult(`Failed to capture a11y tree: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -298,7 +316,7 @@ export function registerPlaywrightTools(server) {
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Keyboard scan failed: ${err.message}`);
+        return errorResult(`Keyboard scan failed: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -397,7 +415,7 @@ export function registerPlaywrightTools(server) {
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Contrast scan failed: ${err.message}`);
+        return errorResult(`Contrast scan failed: ${playwrightFailure(err)}`);
       }
     }
   );
@@ -458,7 +476,7 @@ export function registerPlaywrightTools(server) {
           await browser.close();
         }
       } catch (err) {
-        return errorResult(`Viewport test failed: ${err.message}`);
+        return errorResult(`Viewport test failed: ${playwrightFailure(err)}`);
       }
     }
   );

@@ -215,7 +215,7 @@ All HTML documents MUST follow these accessibility standards:
 2. **Landmarks** -- `<header>`, `<nav>`, `<main>`, `<footer>` (the elements carry the banner, navigation, main and contentinfo roles, so no `role` attribute), and `<section>` with `aria-labelledby` for each major section.
 3. **Heading hierarchy** -- Strict `h1` --> `h2` --> `h3` cascade. Never skip levels. One `h1` per document.
 4. **Descriptive link text** -- Never "click here" or bare URLs. Always `<a href="...">PR #123: Fix login bug</a>`.
-5. **Table accessibility** -- Every `<table>` gets `<caption>`, `<thead>` with `<th scope="col">`, and row headers with `<th scope="row">` where applicable.
+5. **Table accessibility** -- Every `<table>` gets `<caption>`, `<thead>` with `<th scope="col">`, and row headers with `<th scope="row">` where applicable. Wrap each table in `<div class="table-scroll" role="region" aria-labelledby="{caption id}" tabindex="0">`, so a wide table scrolls inside its own box at 320 CSS pixels instead of making the whole page scroll sideways, and a keyboard user can scroll it.
 6. **Status indicators** -- Don't rely on emoji/color alone. Use a visible text label, e.g. `<span class="status-action">Needs your action</span>`. Do not put `aria-label` on a plain `span`; ARIA 1.2 prohibits naming the generic role.
 7. **Action items** -- Use `<input type="checkbox" id="action-N"><label for="action-N">{description}</label>` for interactive checklists. The visible label names the checkbox; an extra `aria-label` would override it.
 8. **Live region** -- Dashboard summary section uses `aria-live="polite"` for dynamic updates.
@@ -259,6 +259,8 @@ h2 { font-size: 1.4rem; margin-top: 2rem; margin-bottom: 0.75rem; border-bottom:
 h3 { font-size: 1.15rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
 a { color: var(--accent); text-decoration: underline; }
 a:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+input:focus-visible, .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.table-scroll { overflow-x: auto; margin: 1rem 0; }
 table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
 caption { font-weight: 600; text-align: left; padding: 0.5rem 0; font-size: 1.05rem; }
 th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: left; }
