@@ -44,8 +44,20 @@ const VERDICT = {
   fail: 'Fail. Critical or serious findings must be fixed before this ships.',
 };
 
+/**
+ * Findings quote markup ("Use a <button> inside a form"). Outside a code span,
+ * Markdown takes that as HTML: a viewer renders a real button, or drops the
+ * words. Escape the angle bracket so the words are read as written.
+ */
+function prose(text) {
+  return String(text ?? '')
+    .split(/(`[^`]*`)/)
+    .map((part, i) => (i % 2 ? part : part.replace(/</g, '\\<')))
+    .join('');
+}
+
 function esc(text) {
-  return String(text ?? '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+  return prose(text).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 }
 
 /** "1 finding", "2 findings": a report is read aloud, so the noun follows the count. */
@@ -158,7 +170,7 @@ function prioritiesSection(merged) {
       : blocking.length === 1 ? 'The 1 blocking finding' : `The ${noun}`;
     out.push(blocking.length === 1 ? `${lead}:` : `${lead}, in this order:`, '');
     blocking.slice(0, 20).forEach((f, i) => {
-      out.push(`${i + 1}. \`${f.rule}\` at ${f.location}. ${f.fix}`);
+      out.push(`${i + 1}. \`${f.rule}\` at ${prose(f.location)}. ${prose(f.fix)}`);
     });
     if (blocking.length > 20) {
       const more = blocking.length - 20;
@@ -417,8 +429,8 @@ function selfTest() {
           wcag: '1.3.1 A',
           severity: 'serious',
           location: 'src/Login.tsx:9',
-          summary: 'Password field has no label.',
-          fix: 'Add a label element associated with the field.',
+          summary: 'Password field has no `<label>`.',
+          fix: 'Add a <label for="password"> associated with the field.',
         },
       ],
       passed: ['Error messages are announced'],
@@ -437,6 +449,14 @@ function selfTest() {
   }
   for (const right of ['1 finding.', '1 check ran and found nothing.', 'The 1 blocking finding:', 'Fix the blocking finding above.']) {
     if (!single.includes(right)) failures.push(`one-finding report is missing "${right}"`);
+  }
+  // Markup quoted in prose is escaped, so a viewer shows the words rather
+  // than rendering a control; markup in a code span is left alone.
+  if (single.includes('| Add a <label') || single.includes('. Add a <label')) {
+    failures.push('markup in a fix was left for a Markdown viewer to render as HTML');
+  }
+  if (!single.includes('Add a \\<label for="password">') || !single.includes('no `<label>`.')) {
+    failures.push('escaping changed the words of a finding or touched a code span');
   }
   if (!report.includes('Then the 2 remaining blocking findings, in this order:')) {
     failures.push('report with a component list lost its "Then the remaining" lead-in');
