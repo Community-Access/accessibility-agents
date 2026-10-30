@@ -95,6 +95,9 @@ Read one only when the task reaches it. Do not read them all up front.
 Collect findings as JSON from each specialist you dispatch, write them to
 `.a11y-history/<timestamp>/`, then render the report with
 `node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+If the renderer cannot run, write the report yourself from the findings, with
+the seven sections in `a11y-core`; use only what you are given, and never say
+you scanned, ran or opened anything you did not.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.

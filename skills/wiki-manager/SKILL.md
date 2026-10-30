@@ -54,7 +54,7 @@ GitHub wikis are backed by a git repository at `{repo}.wiki.git`. This agent clo
 
 ## Workflow
 
-1. **Authenticate** - Identify the current user via `gh api user`.
+1. **Authenticate** - Identify the current user via `gh api user`. If the GitHub CLI is not available, ask the person to paste what you need, use only what you are given, and never say you scanned, ran or opened anything you did not.
 2. **Detect context** - Infer the repo. Check if wiki is enabled.
 3. **Clone** - Clone the wiki git repo to a temp directory.
 4. **Execute** - Read, create, or edit pages as local files. Git push to publish.

@@ -13,16 +13,21 @@ it in this package's manifests. A dash means the package wires no event for
 that behaviour on that client; the note under the table says whether the
 client has one.
 
-| Behaviour | Claude Code | Codex | Copilot | Gemini CLI | Antigravity |
-|---|---|---|---|---|---|
-| detect: inject the contract once | `UserPromptSubmit` | `UserPromptSubmit` | `userPromptSubmitted` | `BeforeAgent` | `PreInvocation` |
-| gate: refuse a UI edit before review | `PreToolUse` on Edit, Write, NotebookEdit, MultiEdit, Bash | `PreToolUse` on apply_patch, Edit, Write, Bash | `preToolUse` | `BeforeTool` on write_file, replace, edit, run_shell_command | `PreToolUse` on write_to_file, replace_file_content, multi_replace_file_content |
-| mark: lead completed, open the gate | `PostToolUse` on Skill, and `SubagentStop` | `PostToolUse` on Bash, when the command reads the lead's SKILL.md; `UserPromptSubmit`, when the prompt names it with `$`; and `SubagentStop` | `postToolUse` on a skill call, or a `view` or shell read of the lead's SKILL.md; `userPromptSubmitted`, when the prompt names it with `/`; and `subagentStop` | `AfterTool` on activate_skill | `PostToolUse` on view_file, when the file read is the lead's SKILL.md |
-| persist: save and restore across compaction | `PreCompact`, `SessionStart` | `PreCompact`, `SessionStart` | - | `PreCompress`, `SessionStart` | - |
-| finalize: refuse to end an unreviewed turn | `Stop` | `Stop` | - | - | - |
+| Behaviour | Claude Code | Codex | Copilot | Gemini CLI | Antigravity | ChatGPT |
+|---|---|---|---|---|---|---|
+| detect: inject the contract once | `UserPromptSubmit` | `UserPromptSubmit` | `userPromptSubmitted` | `BeforeAgent` | `PreInvocation` | - |
+| gate: refuse a UI edit before review | `PreToolUse` on Edit, Write, NotebookEdit, MultiEdit, Bash | `PreToolUse` on apply_patch, Edit, Write, Bash | `preToolUse` | `BeforeTool` on write_file, replace, edit, run_shell_command | `PreToolUse` on write_to_file, replace_file_content, multi_replace_file_content | - |
+| mark: lead completed, open the gate | `PostToolUse` on Skill, and `SubagentStop` | `PostToolUse` on Bash, when the command reads the lead's SKILL.md; `UserPromptSubmit`, when the prompt names it with `$`; and `SubagentStop` | `postToolUse` on a skill call, or a `view` or shell read of the lead's SKILL.md; `userPromptSubmitted`, when the prompt names it with `/`; and `subagentStop` | `AfterTool` on activate_skill | `PostToolUse` on view_file, when the file read is the lead's SKILL.md | - |
+| persist: save and restore across compaction | `PreCompact`, `SessionStart` | `PreCompact`, `SessionStart` | - | `PreCompress`, `SessionStart` | - | - |
+| finalize: refuse to end an unreviewed turn | `Stop` | `Stop` | - | - | - | - |
 
 Copilot also has `agentStop`, `preCompact` and `sessionStart` events; the
 package does not wire them yet.
+
+ChatGPT gets the skills-only plugin from OpenAI's plugin directory, which
+carries no hooks: OpenAI's guide for submitting a Claude Code plugin says to
+remove them before public submission. The ChatGPT column is empty for that
+reason, not because events are unwired.
 
 Copilot's camelCase events send the tool as `toolName` and its arguments as
 `toolArgs`, sometimes as a JSON string. Before #254 the guard read neither, so
@@ -96,6 +101,11 @@ but a turn that somehow edited UI without one is not caught at its end, and
 review state is not persisted across compaction. Copilot has the events to do
 both; wiring them is open work. The edit gate is the floor every gated client
 meets, and it is stated here rather than papered over.
+
+**ChatGPT** gets no hooks and no edit gate. Nothing refuses an edit or holds
+a turn open, so the accessibility lead has to be asked for, by name or through
+an entry point; it is not enforced. The same is true of Codex on the plugin
+route.
 
 **Antigravity** gets the edit gate, opened when the lead's skill file is read, but no finalize step and no compaction persistence. This is tested against the payloads Antigravity documents, not yet in a live Antigravity session.
 

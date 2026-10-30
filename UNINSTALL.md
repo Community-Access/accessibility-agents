@@ -13,6 +13,7 @@ Claude Code   /plugin uninstall accessibility-agents@community-access
               (or, in your shell: claude plugin uninstall accessibility-agents@community-access)
 Copilot CLI   copilot plugin uninstall accessibility-agents
 VS Code       Extensions view, filter @agentPlugins, then uninstall the plugin
+ChatGPT       Plugins in the sidebar, Installed, then remove Accessibility Agents
 ```
 
 If you installed directly from a checkout with `npm run setup`, run this from

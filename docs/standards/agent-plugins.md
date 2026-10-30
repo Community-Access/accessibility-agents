@@ -144,6 +144,63 @@ Gemini session. Listing in the Gemini extensions gallery needs the
 `gemini-cli-extension` repository topic; Gemini's documentation does not say
 outright whether the gallery lists a manifest found only in a release archive.
 
+## OpenAI plugin directory (ChatGPT and Codex)
+
+ChatGPT and Codex share one plugin directory. Plugins are submitted through the
+OpenAI Platform at <https://platform.openai.com/plugins>, and every submission
+is reviewed by OpenAI. This package goes there as a skills-only plugin: OpenAI
+limits local MCP servers to approved partners and to a desktop-only listing,
+and its guide for submitting a Claude Code plugin says to remove hooks before
+public submission and to leave MCP configuration out of a skills-only upload.
+
+`npm run package:openai` builds `dist/accessibility-agents-openai-<version>.zip`
+with one plugin root:
+
+- `plugin.json`, generated from the repository's `plugin.json` with the author
+  set to Jeff Bishop, a description that claims no hooks and no scanners, and
+  the listing fields under `extensions.com.openai.interface` (display name,
+  short and long description, developer name, category, capabilities, starter
+  prompts, brand colour, logo, composer icon, and the website, support and
+  privacy policy URLs). The repository's own `plugin.json` is not changed,
+  because the other clients read it;
+- `skills/`, every skill unchanged, each with the `agents/openai.yaml` that
+  holds its display name, short description and implicit-invocation policy;
+- `assets/logo.png` and `assets/icon.png`, both copies of
+  `.claude-plugin/icon.png`;
+- `LICENSE`, `PRIVACY.md` and `README.md`, with relative links pointed at the
+  repository.
+
+It leaves out `hooks/`, `mcp.json`, `.mcp.json`, `mcp-server/`,
+`.claude-plugin/`, `.codex-plugin/`, `com.github.copilot/`, `scripts/`,
+`docs/`, the CI and editor folders, `templates/`, `example/`, `action/`,
+`manifest.json`, `server.json`, `budgets.json`, `AGENTS.md` and `CLAUDE.md`.
+The portal generates the plugin's `.codex-plugin/plugin.json` from the upload;
+the one in this repository is for the marketplace route and is not shipped.
+
+Before it writes anything, the script checks OpenAI's limits and names the
+file that breaks one: skill names present and unique, `accessibility-agents:<skill>`
+at most 64 characters, skill descriptions at most 1,024, no skill folder
+starting with a dot and no loose files under `skills/`; `agents/openai.yaml`
+with `interface.display_name`, `interface.short_description`, and a `policy`
+holding only `products` and `allow_implicit_invocation`; no hooks, MCP or app
+configuration and no screenshots; square PNG images of 48 to 4,096 pixels
+under 5 MiB; a display name and short description of at most 30 characters, a
+long description of at most 4,000, a developer name of at most 80, at most
+three starter prompts of at most 128 characters with no `@`; a category from
+OpenAI's list; a six-digit hex brand colour with at least 2:1 contrast against
+`#FFFFFF` and against `#212121` (`#4D8FE0`, the icon's blue, has 3.3:1 and 4.9:1); HTTPS for every
+URL; and an archive under 100 MB and 5,000 entries whose paths are relative,
+use `/` and contain no `..`. `scripts/package-openai-plugin.test.mjs` has a
+fixture that breaks each limit, and runs as the `package:openai` gate.
+
+For ChatGPT users the directory listing replaces the marketplace route: open
+Plugins, search for Accessibility Agents and install it. Codex users keep
+`codex plugin marketplace add`, which also brings the MCP server. In ChatGPT
+there are no hooks and no MCP server, so the edit gate does not exist there
+and a skill that would need a scanner asks for the checker's results.
+Whether an entry point in ChatGPT can reach a specialist whose
+`allow_implicit_invocation` is false has not yet been tested.
+
 ## What is checked
 
 Every claim above is checked by a tool.
@@ -154,6 +211,7 @@ Every claim above is checked by a tool.
 | All manifests and the MCP server agree on one version | `scripts/check-release-consistency.js` |
 | Nothing hard-codes the version | `scripts/check-release-consistency.js` |
 | The plugin loads and exposes exactly the six routers | `scripts/verify-live.mjs` |
+| The OpenAI directory package meets every published limit and leaves out hooks and MCP | `scripts/package-openai-plugin.mjs`, tested by `scripts/package-openai-plugin.test.mjs` |
 
 ## Sources
 
@@ -161,6 +219,11 @@ Every claim above is checked by a tool.
 - Announcement, 2026-08-12: <https://github.blog/changelog/2026-08-12-agent-plugins-1-0-in-vs-code-copilot-cli-and-the-copilot-app/>
 - Claude Code plugins: <https://code.claude.com/docs/en/plugins>
 - Codex plugins: <https://learn.chatgpt.com/docs/plugins>
+- Skills in ChatGPT and Codex: <https://learn.chatgpt.com/docs/build-skills>
+- OpenAI plugin guidelines: <https://developers.openai.com/plugins/plugin-guidelines>
+- Submitting to the OpenAI plugin directory: <https://developers.openai.com/plugins/deploy/submission>
+- Submit your Claude Code plugin to OpenAI: <https://developers.openai.com/plugins/guides/submit-claude-plugin>
+- Desktop-only plugins (local MCP): <https://developers.openai.com/plugins/deploy/desktop-only>
 - Agent Plugins 1.0 specification and schemas: <https://github.com/agentplugins/agent-plugins-spec>
 - VS Code agent plugin reference: <https://code.visualstudio.com/docs/agents/reference/agent-plugin-reference>
 - Copilot CLI finding and installing plugins: <https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing>
