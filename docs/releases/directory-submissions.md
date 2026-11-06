@@ -20,7 +20,29 @@ Status: LISTED.
 
 ## Claude plugin directory (Anthropic)
 
-Status: NOT LISTED as of 2026-11-06.
+Status: IN REVIEW, HELD (developer portal), as of 2026-11-06.
+
+- 2026-11-06: Found in the developer portal
+  (<https://claude.ai/directory/manage>), submitted 2026-10-28, contact
+  `jeff@jeffbishop.com`. Latest version v7.1.0 at `90021f6` (the `plugin`
+  branch head), scanned 2026-10-29: 424 files, 3.4 MB, 113 skills, 7 hooks,
+  1 connector. Stage: In review, "Held for: Content policy review". No email
+  is sent for this; status only shows in the portal. No resubmission needed.
+  Holds and blockers:
+  - Security scan: "Ships code the scan can't read" for
+    `mcp-server/dist/stdio.mjs` (bundled, about 1.5 MB). Fix: ship the MCP
+    server as readable source under the size limit instead of one packed
+    bundle, push to `plugin`, then "Check for new commits".
+  - Policy hold: "Uses a credential from the user's machine"
+    (`.claude-plugin/plugin.json`). Either pass a `${user_config.KEY}` the
+    user chooses to share, remove the credential read, or leave it for the
+    reviewer to confirm.
+  - Directory policy blocking: "Plugin not fully checked". Portal says a new
+    check may clear it: "Check for new commits".
+  - Informational only: local stdio MCP server (not on claude.ai), hooks,
+    uninspected PreToolUse hook output, `privacyPolicyUrl` read by the
+    directory only.
+- The earlier Claude Console form is retired; the portal is the only route.
 
 - 2026-11-06: No entry in anthropics/claude-plugins-official
   `.claude-plugin/marketplace.json`. No PRs from our accounts to that repo;
