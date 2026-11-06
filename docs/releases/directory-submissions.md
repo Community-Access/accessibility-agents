@@ -43,6 +43,23 @@ Status: IN REVIEW, HELD (developer portal), as of 2026-11-06.
     uninspected PreToolUse hook output, `privacyPolicyUrl` read by the
     directory only.
 - The earlier Claude Console form is retired; the portal is the only route.
+- 2026-11-06: Requested "Check for new commits" in the portal (clears the
+  "Plugin not fully checked" blocker if the re-check completes).
+- 2026-11-06: Bundle breakdown (esbuild metafile): zod 850 KiB, ajv
+  207 KiB, MCP SDK 164 KiB, our own code about 200 KiB (largest file
+  `server-core.js`, 86 KiB). Directory limits: every non-image file under
+  256 KiB, 512 files maximum. Our own sources fit; zod cannot be shipped as
+  one readable file under the limit. Options: drop the SDK, zod and ajv for
+  a small hand-written stdio JSON-RPC layer (clears the size hold), or leave
+  the bundle and let the reviewer clear it.
+- Unavoidable reviewer checks for any Node MCP server: "Scripts the validator
+  couldn't follow" (it only follows shell scripts). A first listing is
+  always human-reviewed anyway; holds are not rejections.
+- Credential hold: no `$GITHUB_TOKEN`-style read found in skills or the
+  manifest. Likely sources inside the bundle: SDK auth code, and
+  `GLOW_API_BASE_URL` in `tools/glow-tools.js` letting an environment
+  variable redirect uploads. Removing that override and unbundling should
+  make the source of the flag visible on the next scan.
 
 - 2026-11-06: No entry in anthropics/claude-plugins-official
   `.claude-plugin/marketplace.json`. No PRs from our accounts to that repo;
