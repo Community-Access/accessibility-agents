@@ -91,15 +91,16 @@ export function registerHostedDocumentTools(server, handlers) {
     {
       title: "Scan an uploaded document",
       description:
-        "Scan a document for accessibility problems by sending its contents, base64 encoded. " +
-        "Accepts Word (.docx), Excel (.xlsx), PowerPoint (.pptx), PDF, ePub, Markdown and HTML, " +
-        `up to ${MAX_UPLOAD_BYTES / 1024 / 1024} MB. Runs the same structural checks as a local install ` +
-        "(title, language, headings, alt text, table headers, tags and more) and returns WCAG-mapped findings. " +
-        "The file is deleted as soon as the scan finishes. Use get_specialist with the returned specialist " +
-        "name for the review instructions that fit this kind of file.",
+        "Scan a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file, sent as base64, for accessibility " +
+        "problems; the file is deleted after the scan.",
       inputSchema: z.object({
         filename: z.string().describe("The file's name, with its extension, for example syllabus.docx"),
-        content_base64: z.string().describe("The file's bytes, base64 encoded"),
+        content_base64: z
+          .string()
+          .describe(
+            `The file's bytes, base64 encoded, up to ${MAX_UPLOAD_BYTES / 1024 / 1024} MB. The result names ` +
+              "the specialist to load with get_specialist for this kind of file.",
+          ),
       }),
     },
     async ({ filename, content_base64 }, extra) => {
@@ -163,12 +164,17 @@ export function registerHostedDocumentTools(server, handlers) {
     {
       title: "Get a specialist's instructions",
       description:
-        "Return the full instructions of one Accessibility Agents specialist, so you can review the way it does. " +
-        "For documents: word-accessibility, excel-accessibility, powerpoint-accessibility, pdf-accessibility, " +
-        "epub-accessibility, markdown-a11y-assistant. For web work: accessibility-lead. " +
-        "Call with no name to list every specialist.",
+        "Return one Accessibility Agents specialist's full instructions, such as word-accessibility, so you " +
+        "can review the way it does; with no name, list them all.",
       inputSchema: z.object({
-        name: z.string().optional().describe("The specialist's name, for example word-accessibility"),
+        name: z
+          .string()
+          .optional()
+          .describe(
+            "The specialist's name. For documents: word-accessibility, excel-accessibility, " +
+              "powerpoint-accessibility, pdf-accessibility, epub-accessibility, markdown-a11y-assistant. " +
+              "For web work: accessibility-lead.",
+          ),
       }),
     },
     async ({ name }) => {

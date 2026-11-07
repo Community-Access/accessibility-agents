@@ -57,7 +57,7 @@ Each tool, with the hints it declares and its one-sentence purpose.
 | `check_reading_level` | yes | no | no | Estimate the reading level of a passage and report whether it meets the requested grade. |
 | `validate_caption_file` | yes | no | no | Validate a WebVTT or SRT caption file for syntax errors, timing overlaps, excessive caption rate, and missing speaker identification. Helps ensure media accessibility compliance (WCAG 1.2.2, 1.2.4). |
 | `generate_accessibility_statement` | no | no | no | Generate a W3C or EU model accessibility statement from provided information. Outputs a Markdown document ready for publishing. |
-| `scan_uploaded_document` | yes | no | no | Scan a document for accessibility problems by sending its contents, base64 encoded. Accepts Word (.docx), Excel (.xlsx), PowerPoint (.pptx), PDF, ePub, Markdown and HTML, up to 20 MB. Runs the same structural checks as a local install (title, language, headings, alt text, table headers, tags and more) and returns WCAG-mapped findings. The file is deleted as soon as the scan finishes. Use get_specialist with the returned specialist name for the review instructions that fit this kind of file. |
-| `get_specialist` | yes | no | no | Return the full instructions of one Accessibility Agents specialist, so you can review the way it does. For documents: word-accessibility, excel-accessibility, powerpoint-accessibility, pdf-accessibility, epub-accessibility, markdown-a11y-assistant. For web work: accessibility-lead. Call with no name to list every specialist. |
+| `scan_uploaded_document` | yes | no | no | Scan a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file, sent as base64, for accessibility problems; the file is deleted after the scan. |
+| `get_specialist` | yes | no | no | Return one Accessibility Agents specialist's full instructions, such as word-accessibility, so you can review the way it does; with no name, list them all. |
 
 Reproduce the listing: `npm run probe:mcp`.
