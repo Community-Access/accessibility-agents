@@ -157,6 +157,37 @@ Plan: list the directory edition now; full plugin once Verified.
 - Category: accessibility / developer tools.
 - Contact email: the submitter's own address, entered by the submitter.
 
+- 2026-11-07: The skills-only directory edition (commit 6166b7e on the
+  `plugin` branch) passed validation, directory policy and the security
+  scan, and is in review, waiting for a reviewer. Nothing is needed from us.
+  Its manifest points at the hosted server below instead of a local one.
+
+## Hosted MCP server and GLOW (letitglow.app)
+
+Status: LIVE.
+
+- Address: <https://letitglow.app/a11y/mcp> (Streamable HTTP, stateless, no
+  authentication). Source on the server: `~/app/a11y-mcp/src`, on `main`;
+  update with `git -C src pull && docker compose up -d --build` in
+  `~/app/a11y-mcp`. The container is read-only, with a 64 MB tmpfs at
+  `/home/node/.a11y-uploads` for uploads.
+- 2026-11-07: Ten hosted tools. Eight work on their arguments (contrast,
+  APCA, color blindness, reading level, guidelines, three HTML checks);
+  `scan_uploaded_document` scans a Word, Excel, PowerPoint, PDF, ePub,
+  Markdown or HTML file sent as base64 and deletes it before answering;
+  `get_specialist` returns any of the 113 specialists' instructions. Checked
+  live: every format scans and names its specialist, a 5 MB file works, no
+  temporary path appears in a result.
+- GLOW page: <https://letitglow.app/accessibility-agents>. Checks without AI,
+  connector steps for ChatGPT, Claude, Claude Code and VS Code, and Ask with
+  the visitor's own key (OpenAI, Gemini, Claude, OpenRouter with sign-in).
+  Keys stay in the tab's sessionStorage. Show my models lists each key's
+  models. A document is scanned in the original and reviewed as its
+  specialist; an image gets alt text and a long description from the
+  alt-text-headings specialist. Tested live with OpenRouter; the OpenAI,
+  Gemini and Anthropic test keys were out of credit on 2026-11-07, which the
+  page now reports plainly.
+
 ## Gemini CLI extensions gallery (Google)
 
 Status: TO VERIFY.
@@ -168,7 +199,9 @@ Status: TO VERIFY.
 
 ## Follow-up checklist
 
-- [ ] Claude: resubmit from the plugin branch; note confirmation.
+- [x] Claude: resubmit from the plugin branch; note confirmation.
+- [ ] Claude: when the edition is listed, record the date; when the org is
+  verified, switch `plugin-branch.yml` back to the full plugin.
 - [ ] Claude: re-check marketplace.json two weeks after resubmitting.
 - [ ] Gemini: confirm gallery listing or record the missing requirement.
 - [ ] Awesome Copilot: update the pinned ref on the next release.
