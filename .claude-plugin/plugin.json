@@ -1,7 +1,7 @@
 {
   "name": "accessibility-agents",
   "version": "7.1.0",
-  "description": "WCAG 2.2 AA enforcement. Six router skills dispatch the specialist team; hooks block UI edits until the accessibility lead has reviewed.",
+  "description": "WCAG 2.2 AA review for web, document, Markdown, desktop and GitHub work: router skills dispatch the accessibility specialist team, with hosted contrast, reading-level and HTML checks.",
   "author": {
     "name": "Community Access",
     "url": "https://community-access.org"
@@ -12,10 +12,8 @@
   "privacyPolicyUrl": "https://github.com/Community-Access/accessibility-agents/blob/main/PRIVACY.md",
   "mcpServers": {
     "accessibility-agents": {
-      "command": "node",
-      "args": [
-        "${CLAUDE_PLUGIN_ROOT}/mcp-server/dist/stdio.mjs"
-      ]
+      "type": "http",
+      "url": "https://letitglow.app/a11y/mcp"
     }
   }
 }

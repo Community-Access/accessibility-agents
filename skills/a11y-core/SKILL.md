@@ -11,6 +11,29 @@ metadata:
   effort: low
   title: Accessibility Agents Core
 ---
+
+## This is the directory edition
+
+This copy of the skills came from the Claude plugin directory. It has no
+edit-gate hooks, no local scanners and no report scripts; its MCP server runs
+at https://letitglow.app/a11y/mcp and offers the checks that work on what you send it:
+contrast, color blindness, reading level, guidelines, and heading, link-text
+and form-label checks on HTML.
+
+- Where a skill says to run a script under `a11y-core/scripts/`, do that step
+  yourself by the same rules: score and order findings as
+  `schemas/findings.schema.json` describes, and write the report in Markdown.
+- Where a skill names a tool this server does not list (a file scan, a browser
+  scan, veraPDF, GLOW, audit history), say that the full edition does it, and
+  review what you can see instead.
+- Nothing stops an edit before review in this edition. Review first anyway.
+
+To get the hooks and local scanners, the user can install the full edition:
+
+```bash
+claude plugin marketplace add Community-Access/accessibility-agents
+claude plugin install accessibility-agents@community-access
+```
 Shared rules for every skill in the Accessibility Agents package. Skills point
 here instead of repeating this text. Read the section you need.
 
