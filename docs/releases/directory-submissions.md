@@ -21,6 +21,28 @@ Status: LISTED.
 ## Claude plugin directory (Anthropic)
 
 Status: NEEDS CHANGES (refused by directory policy), as of 2026-11-06.
+Plan: list the directory edition now; full plugin once Verified.
+
+- 2026-11-06: Hosted MCP server deployed at <https://letitglow.app/a11y/mcp>
+  (health: `/a11y/health`). Server: the letitglow.app / lp.csedesigns.com
+  host. Container `a11y-mcp` from `~/app/a11y-mcp` (compose file there;
+  source clone in `~/app/a11y-mcp/src`), on the `web_default` network,
+  read-only, no capabilities, 512 MB. Mode `A11Y_MCP_TOOLSET=hosted`: eight
+  tools, none reading files or fetching addresses. Caddy route added to
+  `~/app/web/caddy/Caddyfile` inside `letitglow.app {}` as
+  `handle_path /a11y/*`; backup `Caddyfile.bak-<date>-a11y-mcp` beside it.
+  GLOW routes checked after reload (GLOW `/mcp/health` 200).
+  To update: `cd ~/app/a11y-mcp && git -C src pull && docker compose up -d --build`.
+- 2026-11-06: Directory edition: `scripts/build-claude-directory.mjs`,
+  published to the `claude-directory` branch by `plugin-branch.yml`. Skills
+  only (413 files), manifest points at the hosted server, a note in
+  `skills/a11y-core/SKILL.md` tells Claude what the edition lacks and how to
+  install the full one. `claude plugin validate` passes.
+- Portal steps after the branch exists: change "Tracked branch or tag" from
+  `plugin` to `claude-directory`, set "This plugin collects or transmits
+  user data" to yes (it calls a remote MCP server), then "Check for new
+  commits". Anthropic's docs also ask for the hosted server to be submitted
+  as its own MCP connector.
 
 - 2026-11-06, after PR 281: `plugin` at `1a2d177` (440 files, 2.1 MB) was
   scanned. The security scan PASSED ("1 fixed": the unreadable bundle).
