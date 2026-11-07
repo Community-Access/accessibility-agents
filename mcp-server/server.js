@@ -29,7 +29,8 @@ const HOST = process.env.A11Y_MCP_HOST || "127.0.0.1";
 const STATELESS = process.env.A11Y_MCP_STATELESS === "1";
 
 const app = express();
-app.use(express.json());
+// Room for scan_uploaded_document: a 20 MB file is about 27 MB as base64.
+app.use(express.json({ limit: process.env.A11Y_MCP_BODY_LIMIT || "30mb" }));
 
 // Deny cross-origin requests (CWE-942)
 app.use((_req, res, next) => {

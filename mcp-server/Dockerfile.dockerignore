@@ -1,0 +1,7 @@
+**
+!mcp-server/**
+!skills/a11y-core/schemas/**
+!skills/*/SKILL.md
+mcp-server/node_modules
+mcp-server/**/*.test.js
+mcp-server/scripts

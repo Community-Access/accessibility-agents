@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The hosted server scans documents you send it**: `scan_uploaded_document`
+  takes a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file as
+  base64, runs the same scanner a local install runs, and deletes the file
+  before answering; `get_specialist` returns any specialist's instructions,
+  such as `word-accessibility`, so ChatGPT, Claude and GLOW can review the
+  way the installed specialist does.
 - **Two more checks in the testing coach's screen reader workflow**: a
   placeholder that repeats its label, and flex or grid children that
   VoiceOver splits into separate stops or runs together
@@ -148,6 +154,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Phase 0 checks the workspace for CI scanners only when the assistant can
   read the project's files; otherwise it skips the check without saying it ran
   and asks for the checker's results.
+- **The MCP server ships as readable source, not a bundle.** The Claude plugin
+  directory held 7.1.0 for review because `mcp-server/dist/stdio.mjs`, a
+  1.5 MB esbuild bundle, was code its scan could not read: it holds any file
+  of 256 KiB or more. Most of that was the schema library (850 KiB) and its
+  validator. The stdio server now uses `mcp-server/lib/mcp-lite.js`, the
+  server half of the protocol it needs, and `mcp-server/lib/schema.js`, the
+  schema calls its tools make, so it has no dependencies outside Node: 17
+  files, 243 KiB, the largest 86 KiB. `dist/stdio.mjs` stays as the launch
+  path and only starts `stdio.js`, so no manifest or configuration changes.
+  The SDK is still what tests it: the conformance suite drives the server
+  with the SDK's client, and the HTTP server keeps the SDK's transport. The
+  `bundle` gate now fails on a shipped file that imports a package, imports
+  a file the plugin does not ship, or reaches 256 KiB;
+  `scripts/mcp-runtime-files.mjs` lists what ships.
 - **The Claude plugin directory lists a plugin-only tree.** Submitted from the
   repository root, the plugin carried the development tooling: the root
   `package.json` and lockfile, which make Claude Code run `npm ci` on install,

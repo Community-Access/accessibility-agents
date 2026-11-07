@@ -1,0 +1,14 @@
+{
+  "name": "accessibility-agents",
+  "version": "7.1.0",
+  "description": "WCAG 2.2 AA enforcement: router skills, an edit gate for user-facing files, and accessibility scanners.",
+  "contextFileName": "AGENTS.md",
+  "mcpServers": {
+    "accessibility-agents": {
+      "command": "node",
+      "args": [
+        "${extensionPath}/mcp-server/dist/stdio.mjs"
+      ]
+    }
+  }
+}

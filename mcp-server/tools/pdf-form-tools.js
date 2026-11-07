@@ -5,7 +5,7 @@
  * Requires pdf-lib (optional dependency).
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { readFile as fsReadFile } from "node:fs/promises";
 import { basename } from "node:path";
 import { validateFilePath } from "../server-core.js";

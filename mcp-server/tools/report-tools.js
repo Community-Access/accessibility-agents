@@ -10,7 +10,7 @@
  * required sections and one that carries whatever the model remembered.
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve, dirname } from "node:path";

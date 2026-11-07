@@ -14,9 +14,9 @@ The MCP server is the executable part of document scanning. The skills (for PDF,
 | Skills + MCP server | Working `scan_pdf_document` tool | Yes |
 | Skills + MCP server + veraPDF | Baseline scan + deep PDF/UA validation | Yes |
 
-A plugin install launches `dist/stdio.mjs`, a single esbuild bundle of the stdio server and its dependencies, so it starts with no `npm install` (`mcp.json`, and `mcpServers` in `.claude-plugin/plugin.json`). Playwright, `@axe-core/playwright` and `pdf-lib` are left out of the bundle and stay optional; the tools that need them say how to install them. Run `npm install` in this folder only for the HTTP server (`server.js`) or to work on the source.
+A plugin install launches `dist/stdio.mjs` (`mcp.json`, and `mcpServers` in `.claude-plugin/plugin.json`), which starts `stdio.js`. The stdio server is readable source with no dependencies outside Node: the protocol layer is `lib/mcp-lite.js` and argument checking is `lib/schema.js`, so it starts with no `npm install`, and the Claude plugin directory can read every file it ships. Playwright, `@axe-core/playwright` and `pdf-lib` stay optional; the tools that need them say how to install them. Run `npm install` in this folder only for the HTTP server (`server.js`) or to work on the source.
 
-If you change the server's source, run `npm run build` here and commit the rebuilt `dist/stdio.mjs`: the `bundle` gate in `npm run verify` fails when the committed bundle differs from a fresh build.
+There is no build step. The `bundle` gate in `npm run verify` fails if a shipped file imports a package, imports a file the plugin does not ship, or reaches 256 KiB. `scripts/mcp-runtime-files.mjs` lists what ships.
 
 ## Architecture
 
@@ -25,7 +25,7 @@ The server supports two transport modes:
 | Mode | Entry Point | Transport | Use Case |
 |------|-------------|-----------|----------|
 | **HTTP** | `server.js` | Streamable HTTP (stateful with a GET event stream by default; stateless with `A11Y_MCP_STATELESS=1`). The legacy HTTP+SSE transport is not offered | Remote clients, shared servers, CI/CD |
-| **stdio** | `stdio.js` (bundled as `dist/stdio.mjs`) | stdin/stdout | Claude Desktop, plugin installs, local use |
+| **stdio** | `stdio.js` (started by `dist/stdio.mjs`) | stdin/stdout | Claude Desktop, plugin installs, local use |
 
 Both modes share the same tool implementations via `server-core.js`.
 
@@ -68,8 +68,8 @@ Each class, with requirement, needed for and required.
 | Class | Requirement | Needed For | Required? |
 |------|-------------|------------|-----------|
 | Runtime | Node.js LTS (26, 24 or 22) | Running the MCP server | Yes |
-| Runtime | none for the stdio bundle | `dist/stdio.mjs` carries `@modelcontextprotocol/sdk` and `zod` inside it | No |
-| HTTP or development | npm, then `npm install` in this folder (`@modelcontextprotocol/sdk`, `zod`, `express`) | The HTTP server (`server.js`), running the unbundled source and the tests | Only for those |
+| Runtime | none for the stdio server | `stdio.js` uses only Node and `lib/` | No |
+| HTTP or development | npm, then `npm install` in this folder (`@modelcontextprotocol/sdk`, `zod`, `express`) | The HTTP server (`server.js`) and the tests | Only for those |
 | Client | MCP-compatible client | Calling the server tools | Yes |
 | Optional feature | Java 11+ + `verapdf` | Deep PDF validation with `run_verapdf_scan` | No |
 | Optional feature | `playwright`, `@axe-core/playwright`, Chromium | Browser-based scanning tools | No |

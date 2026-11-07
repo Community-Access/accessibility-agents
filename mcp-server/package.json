@@ -32,6 +32,13 @@
   },
   "files": [
     "dist/",
+    "lib/",
+    "tools/",
+    "stdio.js",
+    "server-core.js",
+    "results.js",
+    "version.js",
+    "tool-metadata.js",
     "README.md",
     "LICENSE"
   ],
@@ -39,7 +46,6 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "start:stdio": "node stdio.js",
-    "build": "esbuild stdio.js --bundle --platform=node --format=esm --target=node22 --legal-comments=eof --external:playwright --external:playwright-core --external:@axe-core/playwright --external:pdf-lib \"--banner:js=import { createRequire as __a11yRequire } from 'node:module'; const require = __a11yRequire(import.meta.url);\" --outfile=dist/stdio.mjs",
     "test": "node --test server-core.test.js mcp-conformance.test.js",
     "prepublishOnly": "npm test"
   },

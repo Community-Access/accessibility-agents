@@ -19,7 +19,7 @@
  *   }
  */
 
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StdioServerTransport } from "./lib/mcp-lite.js";
 import { createServer } from "./server-core.js";
 
 const server = createServer();
