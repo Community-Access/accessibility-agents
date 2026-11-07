@@ -1,11 +1,15 @@
 # Privacy Policy
 
-**Last updated:** October 28, 2026
-**Applies to:** A11y Agent Team MCP Server, in this repository's `mcp-server/` directory, launched by the Accessibility Agents plugin, and published on npm as `@community-access/accessibility-agents-mcp`.
+**Last updated:** October 29, 2026
+**Applies to:** A11y Agent Team MCP Server, in this repository's `mcp-server/` directory, launched by the Accessibility Agents plugin, and published on npm as `@community-access/accessibility-agents-mcp`; and the skills-only Accessibility Agents plugin in OpenAI's plugin directory, described under "In ChatGPT and Codex plugins".
 
 ## Summary
 
 The A11y Agent Team MCP Server is a local, self-hosted accessibility scanning tool. It does not collect, transmit, or store personal information on any server operated by the project maintainers. All scanning happens on the user's own machine. Files, URLs, and scan results never leave the user's device unless the user explicitly directs them elsewhere (for example, by invoking a GLOW tool, which sends the named file to the GLOW service, or by sharing exported reports themselves).
+
+## In ChatGPT and Codex plugins
+
+The Accessibility Agents plugin in OpenAI's plugin directory, used in ChatGPT and Codex, contains only skills: text instructions the assistant reads. It has no MCP server, no hooks and no code that runs on its own. The plugin collects nothing, stores nothing and sends nothing anywhere, and the project receives nothing from it. What you type or upload in a chat, including documents and checker results, stays with your assistant and is handled under that assistant's own privacy terms (for ChatGPT and Codex, OpenAI's). The rest of this policy describes the MCP server, which is not part of that plugin.
 
 ## Information the server processes
 

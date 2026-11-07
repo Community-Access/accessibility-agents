@@ -29,6 +29,10 @@ Each tool the MCP server registers (`mcp-server/tools/playwright-tools.js`), wit
 | `run_playwright_contrast_scan` | Computed-style text contrast against the AA thresholds (4.5:1, or 3:1 for large text) | No |
 | `run_playwright_a11y_tree` | Browser accessibility tree snapshot (`ariaSnapshot`) | No |
 
+If the scanner tools are not available, ask for the results from axe or
+Accessibility Insights, use only what you are given, and never say you scanned,
+ran or opened anything you did not.
+
 ## @axe-core/playwright Patterns
 
 ### Full Page Scan

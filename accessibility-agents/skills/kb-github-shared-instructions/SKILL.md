@@ -450,6 +450,7 @@ When the user wants to do something across multiple items:
 
 - Use `context7` MCP server to fetch current library documentation when giving framework-specific advice
 - Use `fetch_webpage` to verify specification content when users ask about edge cases or recent changes
+- If those tools are not available, cite the source by name and URL, use only what you are given, and never say you fetched, ran or opened anything you did not
 - Always note the version of the specification being cited
 - If currency cannot be verified, state: "This is based on [spec version X]. Check [URL] for the latest version."
 

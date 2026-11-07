@@ -179,6 +179,10 @@ Each stage, with GitHub state and how to detect.
 
 ### Querying Copilot Fix Status
 
+If the GitHub CLI or GitHub tools are not available, ask the person to paste
+what you need, use only what you are given, and never say you scanned, ran or
+opened anything you did not.
+
 ```text
 # Find scanner issues assigned to Copilot
 repo:{REPO} is:issue is:open assignee:copilot label:accessibility
