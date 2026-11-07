@@ -2375,5 +2375,29 @@ export function createServer() {
 
   registerTrendResource(server);
 
+  if (process.env.A11Y_MCP_TOOLSET === "hosted") {
+    for (const name of Object.keys(server._registeredTools)) {
+      if (!HOSTED_TOOLS.has(name)) delete server._registeredTools[name];
+    }
+  }
+
   return server;
 }
+
+/**
+ * The tools a public, hosted server offers (A11Y_MCP_TOOLSET=hosted). Each one
+ * works only on the arguments it is given: no file on the server is read or
+ * written, and no address is fetched. The others read paths, write reports or
+ * fetch URLs, which on a shared server would reach its files and its private
+ * network rather than the user's, so they are only offered locally.
+ */
+export const HOSTED_TOOLS = new Set([
+  "check_contrast",
+  "check_apca_contrast",
+  "check_color_blindness",
+  "check_reading_level",
+  "get_accessibility_guidelines",
+  "check_heading_structure",
+  "check_link_text",
+  "check_form_labels",
+]);
