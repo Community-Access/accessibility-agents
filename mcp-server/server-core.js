@@ -64,6 +64,7 @@ import { withToolMetadata } from "./tool-metadata.js";
 import { okResult, errorResult, findingsResult, scannerFinding } from "./results.js";
 import { SERVER_VERSION } from "./version.js";
 import { registerGlowTools } from "./tools/glow-tools.js";
+import { registerHostedDocumentTools } from "./tools/hosted-document-tools.js";
 
 /** Maximum file size accepted for document scanning (100 MB). */
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -2375,6 +2376,17 @@ export function createServer() {
 
   registerTrendResource(server);
 
+  // Upload scanning and the specialists' instructions. They take the
+  // handlers now, because the hosted filter below removes the path-based
+  // scanners from the list a client sees.
+  const scanHandlers = {};
+  for (const name of ["scan_office_document", "scan_pdf_document", "scan_epub_document",
+    "scan_markdown_document", "check_heading_structure", "check_link_text",
+    "check_form_labels", "check_reading_level"]) {
+    scanHandlers[name] = server._registeredTools[name].handler;
+  }
+  registerHostedDocumentTools(server, scanHandlers);
+
   if (process.env.A11Y_MCP_TOOLSET === "hosted") {
     for (const name of Object.keys(server._registeredTools)) {
       if (!HOSTED_TOOLS.has(name)) delete server._registeredTools[name];
@@ -2400,4 +2412,9 @@ export const HOSTED_TOOLS = new Set([
   "check_heading_structure",
   "check_link_text",
   "check_form_labels",
+  // These two read only what the client sends: the upload goes to a private
+  // folder that is deleted before the answer, and the specialists are the
+  // skills shipped with the server.
+  "scan_uploaded_document",
+  "get_specialist",
 ]);

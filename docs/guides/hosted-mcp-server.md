@@ -13,7 +13,7 @@ to install.
 
 ## What the hosted server can do
 
-It offers the eight tools that work on what you send them:
+It offers ten tools that work on what you send them:
 
 | Tool | What you give it |
 | --- | --- |
@@ -25,10 +25,17 @@ It offers the eight tools that work on what you send them:
 | `check_heading_structure` | an HTML snippet |
 | `check_link_text` | an HTML snippet |
 | `check_form_labels` | an HTML snippet |
+| `scan_uploaded_document` | a Word, Excel, PowerPoint, PDF, ePub, Markdown, HTML or text file, up to 20 MB, sent as base64 |
+| `get_specialist` | a specialist's name, such as `word-accessibility`, for its full review instructions |
 
-It reads no files, fetches no web addresses and keeps no history. To scan
-Office, PDF, ePub or Markdown files, or to run axe against a page, install the
-full plugin, which runs the server on your own computer; see
+It reads none of its own files except the specialists' instructions, fetches
+no web addresses and keeps no history. A file you send to
+`scan_uploaded_document` is written to a private folder, scanned with the same
+checks a local install runs, and deleted before the answer comes back. Ask
+your assistant to "scan this document with Accessibility Agents" after you
+attach it; it sends the file for you. To scan a whole folder, fix a document
+in place, or run axe against a page, install the full plugin, which runs the
+server on your own computer; see
 [Getting started](../getting-started/README.md).
 
 ## ChatGPT
