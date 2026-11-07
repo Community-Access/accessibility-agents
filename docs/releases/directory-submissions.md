@@ -20,7 +20,56 @@ Status: LISTED.
 
 ## Claude plugin directory (Anthropic)
 
-Status: IN REVIEW, HELD (developer portal), as of 2026-11-06.
+Status: NEEDS CHANGES (refused by directory policy), as of 2026-11-06.
+Plan: list the directory edition now; full plugin once Verified.
+
+- 2026-11-06: Hosted MCP server deployed at <https://letitglow.app/a11y/mcp>
+  (health: `/a11y/health`). Server: the letitglow.app / lp.csedesigns.com
+  host. Container `a11y-mcp` from `~/app/a11y-mcp` (compose file there;
+  source clone in `~/app/a11y-mcp/src`), on the `web_default` network,
+  read-only, no capabilities, 512 MB. Mode `A11Y_MCP_TOOLSET=hosted`: eight
+  tools, none reading files or fetching addresses. Caddy route added to
+  `~/app/web/caddy/Caddyfile` inside `letitglow.app {}` as
+  `handle_path /a11y/*`; backup `Caddyfile.bak-<date>-a11y-mcp` beside it.
+  GLOW routes checked after reload (GLOW `/mcp/health` 200).
+  To update: `cd ~/app/a11y-mcp && git -C src pull && docker compose up -d --build`.
+- 2026-11-06: Directory edition: `scripts/build-claude-directory.mjs`,
+  published to the `claude-directory` branch by `plugin-branch.yml`. Skills
+  only (413 files), manifest points at the hosted server, a note in
+  `skills/a11y-core/SKILL.md` tells Claude what the edition lacks and how to
+  install the full one. `claude plugin validate` passes.
+- Portal steps after the branch exists: change "Tracked branch or tag" from
+  `plugin` to `claude-directory`, set "This plugin collects or transmits
+  user data" to yes (it calls a remote MCP server), then "Check for new
+  commits". Anthropic's docs also ask for the hosted server to be submitted
+  as its own MCP connector.
+
+- 2026-11-06, after PR 281: `plugin` at `1a2d177` (440 files, 2.1 MB) was
+  scanned. The security scan PASSED ("1 fixed": the unreadable bundle).
+  Directory policy then REFUSED the version with three blocking rules that
+  apply because Community Access is not a Verified organization:
+  - "Hooks of type command accepted only from Verified organizations".
+    Every hook type is covered, so the edit gate cannot ship.
+  - "Local MCP servers accepted only from Verified organizations". MCP
+    servers at a public URL may stay.
+  - "Files outside the allowed types accepted only from Verified
+    organizations". Allowed: Markdown, text, JSON, YAML, PNG/JPEG/GIF/WebP/ICO
+    images. Refused: any script or program (all `.js`/`.mjs`, including
+    skill scripts and `hooks/guard.mjs`), any file starting with `#!`, and
+    package-manager configuration files.
+  - Still a policy hold: "Uses a credential from the user's machine".
+  - Warning: `hooks/guard.mjs` has a line that writes a package manager's
+    configuration ("File registry redirect").
+  - The earlier versions were held rather than refused because they were
+    never fully checked; these rules were always there.
+- Two routes: ask Anthropic (`directory@anthropic.com`) how Community Access
+  becomes a Verified organization, so the full plugin can be listed; and/or
+  list a directory edition with only Markdown/JSON skills plus the MCP server
+  at a public HTTPS URL (the letitglow.app hosting), keeping the full plugin
+  with hooks in our own marketplace.
+- Push webhook: the portal's "Set up push updates" dialog generates a
+  secret that must be added to a GitHub webhook on the repository. The
+  secret step is done by Jeff, not by an agent.
 
 - 2026-11-06: Found in the developer portal
   (<https://claude.ai/directory/manage>), submitted 2026-10-28, contact

@@ -876,3 +876,18 @@ describe("playwrightFailure", async () => {
     assert.equal(playwrightFailure(err), "net::ERR_CONNECTION_REFUSED retry");
   });
 });
+
+describe("hosted tool set", () => {
+  it("offers only tools that touch no file and fetch no address", async () => {
+    const { HOSTED_TOOLS } = await import("./server-core.js");
+    const before = process.env.A11Y_MCP_TOOLSET;
+    process.env.A11Y_MCP_TOOLSET = "hosted";
+    try {
+      const names = Object.keys(createServer()._registeredTools).sort();
+      assert.deepEqual(names, [...HOSTED_TOOLS].sort());
+    } finally {
+      if (before === undefined) delete process.env.A11Y_MCP_TOOLSET;
+      else process.env.A11Y_MCP_TOOLSET = before;
+    }
+  });
+});

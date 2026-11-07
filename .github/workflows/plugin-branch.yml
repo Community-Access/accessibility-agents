@@ -7,6 +7,11 @@ name: Plugin branch
 #                   tagged plugin-v<version> on the first build of a version.
 #   copilot-plugin  the same tree in accessibility-agents/, for Awesome
 #                   Copilot; tagged copilot-plugin-v<version>-<main sha>.
+#   claude-directory  the directory edition, built by
+#                   scripts/build-claude-directory.mjs: skills only, with the
+#                   hosted MCP server. The Claude plugin directory accepts
+#                   hooks, local servers and scripts only from Verified
+#                   organizations; tagged claude-directory-v<version>.
 
 on:
   push:
@@ -19,12 +24,14 @@ on:
       - 'skills/**'
       - 'hooks/hooks.json'
       - 'hooks/guard.mjs'
-      - 'mcp-server/dist/**'
+      - 'mcp-server/**'
       - 'mcp-server/package.json'
       - 'README.md'
       - 'PRIVACY.md'
       - 'LICENSE'
       - 'scripts/build-claude-plugin.mjs'
+      - 'scripts/build-claude-directory.mjs'
+      - 'scripts/mcp-runtime-files.mjs'
       - '.github/workflows/plugin-branch.yml'
   workflow_dispatch:
 
@@ -56,6 +63,7 @@ jobs:
           # tree goes in an accessibility-agents/ folder on copilot-plugin.
           mkdir -p "$RUNNER_TEMP/copilot"
           cp -a "$RUNNER_TEMP/plugin" "$RUNNER_TEMP/copilot/accessibility-agents"
+          node scripts/build-claude-directory.mjs "$RUNNER_TEMP/directory"
 
       - name: Commit the trees to their branches and tag them
         run: |
@@ -96,3 +104,6 @@ jobs:
           # Awesome Copilot pins a tag and its commit: one tag per build, so a
           # fix within a version still gets an immutable ref to submit.
           publish copilot-plugin "$RUNNER_TEMP/copilot" "copilot-plugin-v${version}-${GITHUB_SHA::7}"
+          # The Claude plugin directory lists this edition until Community
+          # Access is a Verified organization.
+          publish claude-directory "$RUNNER_TEMP/directory" "claude-directory-v${version}"
