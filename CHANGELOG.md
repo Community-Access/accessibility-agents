@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Alt text for every picture in a document, from any connected assistant**:
+  the hosted server's `extract_document_images` returns each picture in a
+  Word, PowerPoint, Excel, ePub or PDF file as an image the assistant can see,
+  with its place, its current alt text and the text around it;
+  `write_document_alt_text` writes the alt text back into Word, PowerPoint,
+  Excel and ePub files and returns a one-hour download link. Both, and
+  `scan_uploaded_document`, now take a public link (OneDrive, Google Drive,
+  Dropbox) instead of the file, because chat assistants often cannot pass an
+  attachment's bytes; the server fetches public addresses only, checked when
+  each connection is made. Written with no new dependencies
+  (`mcp-server/lib/zip.js`, `lib/public-fetch.js`).
 - **The hosted server scans documents you send it**: `scan_uploaded_document`
   takes a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file as
   base64, runs the same scanner a local install runs, and deletes the file

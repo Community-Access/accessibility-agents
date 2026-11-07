@@ -226,6 +226,8 @@ describe("MCP tool surface", () => {
     render_accessibility_report: null, // writes a report file
     scan_uploaded_document: { filename: "notes.md", content_base64: Buffer.from("# Notes\n").toString("base64") },
     get_specialist: { name: "word-accessibility" },
+    extract_document_images: { filename: "a.pdf", content_base64: "JVBERi0xLjQK" },
+    write_document_alt_text: { filename: "a.docx", content_base64: "UEs=", alts: { "docx:1": "x" } },
   };
 
   test("every tool returns a result the SDK accepts", async (t) => {

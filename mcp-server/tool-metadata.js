@@ -139,7 +139,11 @@ export const TOOL_METADATA = {
   scan_markdown_document: T("Scan a markdown file", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 60000),
   extract_document_metadata: T("Extract document metadata", READ_LOCAL, STATUS_OUTPUT_SCHEMA),
   batch_scan_documents: T("Scan many documents", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 120000),
-  scan_uploaded_document: T("Scan an uploaded document", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 60000),
+  // These fetch a public link when given one instead of the file, so the world is open.
+  scan_uploaded_document: T("Scan an uploaded document", READ_NETWORK, FINDINGS_OUTPUT_SCHEMA, 60000),
+  extract_document_images: T("Extract a document's pictures", READ_NETWORK, LISTING_OUTPUT_SCHEMA, 200000),
+  // It never changes the person's file: it returns a new one.
+  write_document_alt_text: T("Write alt text into a document", READ_NETWORK, DOCUMENT_OUTPUT_SCHEMA, 60000),
   get_specialist: T("Get a specialist's instructions", READ_LOCAL, STATUS_OUTPUT_SCHEMA, 60000),
 
   // ---- runtime scanners: they load a page, so the world is open ----
