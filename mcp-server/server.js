@@ -21,7 +21,9 @@
 import express from "express";
 import { randomUUID } from "node:crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { basename } from "node:path";
 import { createServer } from "./server-core.js";
+import { findDownload, pruneDownloads } from "./tools/document-images.js";
 import { SERVER_NAME, SERVER_VERSION } from "./version.js";
 
 const PORT = parseInt(process.env.PORT || "3100", 10);
@@ -134,6 +136,17 @@ if (STATELESS) {
 }
 
 // ---- Health check ----
+// A file write_document_alt_text wrote, for one hour, behind an unguessable
+// link (tools/document-images.js). Nothing else on the server is served.
+app.get("/download/:token/:name", async (req, res) => {
+  const file = await findDownload(req.params.token, req.params.name);
+  res.set("Cache-Control", "no-store");
+  if (!file) return res.status(404).type("text/plain").send("This download has expired or never existed.");
+  res.set("X-Content-Type-Options", "nosniff");
+  return res.download(file, basename(file));
+});
+setInterval(() => { pruneDownloads().catch(() => {}); }, 10 * 60 * 1000).unref();
+
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", name: SERVER_NAME, version: SERVER_VERSION, mode: STATELESS ? "stateless" : "stateful" });
 });

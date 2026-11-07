@@ -15,21 +15,13 @@
  */
 
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { basename, extname, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { MAX_UPLOAD_BYTES, UPLOAD_ROOT, resolveInput } from "../lib/document-input.js";
 import { z } from "../lib/schema.js";
 import { errorResult, okResult } from "../results.js";
 
-/** Largest upload accepted, after base64 decoding. */
-export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
-
-/**
- * Where uploads are written while they are scanned. It sits under the home
- * directory because the scanners only read paths under home or the working
- * directory. The hosted container mounts a tmpfs here.
- */
-export const UPLOAD_ROOT = process.env.A11Y_MCP_UPLOAD_DIR || join(homedir(), ".a11y-uploads");
+export { MAX_UPLOAD_BYTES, UPLOAD_ROOT };
 
 const SKILLS_DIR = fileURLToPath(new URL("../../skills/", import.meta.url));
 
@@ -61,11 +53,6 @@ export const SPECIALIST_FOR = {
   ".xhtml": "accessibility-lead",
 };
 
-function safeName(filename) {
-  const name = basename(String(filename || "")).replace(/[^\w.\- ]/g, "_").slice(-120);
-  return name && !name.startsWith(".") ? name : `upload${extname(name)}`;
-}
-
 /** Replace the private temp path with the file's own name in a result. */
 function hidePath(result, path, name) {
   const text = JSON.stringify(result).split(path.replaceAll("\\", "\\\\")).join(name).split(path).join(name);
@@ -94,27 +81,28 @@ export function registerHostedDocumentTools(server, handlers) {
         "Scan a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file, sent as base64, for accessibility " +
         "problems; the file is deleted after the scan.",
       inputSchema: z.object({
-        filename: z.string().describe("The file's name, with its extension, for example syllabus.docx"),
+        filename: z.string().optional().describe("The file's name, with its extension, for example syllabus.docx"),
         content_base64: z
           .string()
+          .optional()
           .describe(
-            `The file's bytes, base64 encoded, up to ${MAX_UPLOAD_BYTES / 1024 / 1024} MB. The result names ` +
-              "the specialist to load with get_specialist for this kind of file.",
+            `The file's bytes, base64 encoded, up to ${MAX_UPLOAD_BYTES / 1024 / 1024} MB. Send this or url. ` +
+              "The result names the specialist to load with get_specialist for this kind of file.",
           ),
+        url: z
+          .string()
+          .optional()
+          .describe("A public link to the file instead, such as a OneDrive, Google Drive or Dropbox share link."),
       }),
     },
-    async ({ filename, content_base64 }, extra) => {
-      const name = safeName(filename);
-      const ext = extname(name).toLowerCase();
-      if (!UPLOAD_EXTENSIONS.includes(ext)) {
-        return errorResult(`Unsupported file type "${ext || "none"}". Accepted: ${UPLOAD_EXTENSIONS.join(", ")}.`);
+    async ({ filename, content_base64, url }, extra) => {
+      let file;
+      try {
+        file = await resolveInput({ filename, content_base64, url }, UPLOAD_EXTENSIONS);
+      } catch (err) {
+        return errorResult(err.message);
       }
-      const b64 = String(content_base64 || "").replace(/^data:[^,]*,/, "").replace(/\s+/g, "");
-      if (b64.length > Math.ceil((MAX_UPLOAD_BYTES * 4) / 3) + 8) {
-        return errorResult(`The file is larger than ${MAX_UPLOAD_BYTES / 1024 / 1024} MB.`);
-      }
-      const buf = Buffer.from(b64, "base64");
-      if (!buf.length) return errorResult("The file is empty, or its contents are not base64.");
+      const { name, ext, buf } = file;
       const specialist = SPECIALIST_FOR[ext] || "accessibility-lead";
       const note = `\n\nSpecialist for this file: ${specialist} (load it with get_specialist).`;
 

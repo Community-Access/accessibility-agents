@@ -918,7 +918,9 @@ describe("scan_uploaded_document and get_specialist", () => {
     assert.match(text, /pdf-accessibility/);
     assert.ok(!JSON.stringify(result).includes(uploadRoot), "the temp path leaked into the result");
     const { readdirSync, existsSync } = await import("node:fs");
-    assert.ok(!existsSync(uploadRoot) || readdirSync(uploadRoot).length === 0, "the upload was kept");
+    // downloads/ holds write_document_alt_text's one-hour files, not uploads.
+    const scans = existsSync(uploadRoot) ? readdirSync(uploadRoot).filter((n) => n.startsWith("scan-")) : [];
+    assert.equal(scans.length, 0, "the upload was kept");
   });
 
   it("scans Markdown and HTML uploads", async () => {
@@ -949,5 +951,87 @@ describe("scan_uploaded_document and get_specialist", () => {
     assert.match(list.content[0].text, /word-accessibility/);
     const missing = await call("get_specialist", { name: "../package.json" });
     assert.ok(missing.isError);
+  });
+});
+
+describe("extract_document_images and write_document_alt_text", () => {
+  let call;
+  const PNG = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC",
+    "base64",
+  );
+
+  before(async () => {
+    const before = process.env.A11Y_MCP_TOOLSET;
+    process.env.A11Y_MCP_TOOLSET = "hosted";
+    const server = createServer();
+    if (before === undefined) delete process.env.A11Y_MCP_TOOLSET;
+    else process.env.A11Y_MCP_TOOLSET = before;
+    call = (name, args) => server._callTool({ name, arguments: args }, {});
+  });
+
+  async function wordFile() {
+    const { writeZip } = await import("./lib/zip.js");
+    const drawing = (id, descr) =>
+      `<w:p><w:r><w:drawing><wp:inline><wp:docPr id="${id}" name="Picture ${id}"${descr ? ` descr="${descr}"` : ""}/>` +
+      `<a:graphic><a:graphicData><pic:pic><pic:blipFill><a:blip r:embed="rId9"/></pic:blipFill></pic:pic>` +
+      `</a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
+    const doc = `<?xml version="1.0"?><w:document xmlns:w="w" xmlns:wp="wp" xmlns:a="a" xmlns:pic="pic" xmlns:r="r"><w:body>` +
+      `<w:p><w:r><w:t>Enrollment by term</w:t></w:r></w:p>${drawing(1, "old")}${drawing(2, "")}</w:body></w:document>`;
+    const rels = `<?xml version="1.0"?><Relationships><Relationship Id="rId9" Target="media/image1.png"/></Relationships>`;
+    const entry = (name, data) => ({ name, method: 0, raw: Buffer.from(data), crc: 0, cSize: 0, uSize: 0 });
+    const parts = [entry("[Content_Types].xml", "<Types/>"), entry("word/document.xml", doc),
+      entry("word/_rels/document.xml.rels", rels), entry("word/media/image1.png", PNG)];
+    // writeZip computes CRCs and sizes for replaced parts, so mark them all replaced.
+    return writeZip(parts, new Map(parts.map((p) => [p.name, p.raw])));
+  }
+
+  it("returns each picture as an image with its key, place and alt text", async () => {
+    const file = await wordFile();
+    const result = await call("extract_document_images", { filename: "s.docx", content_base64: file.toString("base64") });
+    assert.ok(!result.isError, JSON.stringify(result).slice(0, 300));
+    assert.deepEqual(result.structuredContent.items.map((i) => [i.key, i.current_alt]), [["docx:1", "old"], ["docx:2", ""]]);
+    const images = result.content.filter((c) => c.type === "image");
+    assert.equal(images.length, 2);
+    assert.equal(images[0].mimeType, "image/png");
+    assert.match(result.content.map((c) => c.text || "").join("\n"), /Enrollment by term/);
+  });
+
+  it("writes alt text back by key and escapes it", async () => {
+    const file = await wordFile();
+    const result = await call("write_document_alt_text", {
+      filename: "s.docx", content_base64: file.toString("base64"),
+      alts: { "docx:2": "Chart: A & B <compared>", "docx:9": "no such picture", "../x": "bad key" },
+    });
+    assert.ok(!result.isError, JSON.stringify(result).slice(0, 300));
+    const blob = result.content.find((c) => c.type === "resource").resource.blob;
+    const { readZip, entryText } = await import("./lib/zip.js");
+    const xml = entryText(readZip(Buffer.from(blob, "base64")).find((e) => e.name === "word/document.xml"));
+    assert.match(xml, /descr="old"/);
+    assert.match(xml, /descr="Chart: A &amp; B &lt;compared&gt;"/);
+    assert.match(result.content[0].text, /1 picture/);
+  });
+
+  it("refuses PDFs for writing, unknown keys, and private links", async () => {
+    const pdf = await call("write_document_alt_text", { filename: "a.pdf", content_base64: Buffer.from("%PDF-1.4").toString("base64"), alts: { "pdf:1": "x" } });
+    assert.ok(pdf.isError);
+    const file = await wordFile();
+    const none = await call("write_document_alt_text", { filename: "s.docx", content_base64: file.toString("base64"), alts: { "docx:7": "x" } });
+    assert.ok(none.isError && /matched/.test(none.content[0].text));
+    for (const url of ["http://127.0.0.1/a.docx", "http://169.254.169.254/latest", "http://localhost/a.docx",
+      "http://[::1]/a.docx", "http://10.0.0.5/a.docx", "file:///etc/passwd", "https://example.com:8443/a.docx"]) {
+      const r = await call("extract_document_images", { url });
+      assert.ok(r.isError, `${url} was fetched`);
+    }
+  });
+
+  it("knows which addresses are private", async () => {
+    const { isBlockedAddress, directDownloadUrl } = await import("./lib/public-fetch.js");
+    for (const ip of ["127.0.0.1", "10.1.2.3", "172.20.0.1", "192.168.1.1", "169.254.169.254", "100.64.0.1", "0.0.0.0", "::1", "fd00::1", "fe80::1", "::ffff:10.0.0.1"]) {
+      assert.ok(isBlockedAddress(ip), ip);
+    }
+    for (const ip of ["8.8.8.8", "107.175.91.158", "2606:4700::1111"]) assert.ok(!isBlockedAddress(ip), ip);
+    assert.equal(directDownloadUrl("https://drive.google.com/file/d/AbC_1/view?usp=sharing"), "https://drive.google.com/uc?export=download&id=AbC_1");
+    assert.match(directDownloadUrl("https://1drv.ms/w/s!abc"), /download=1/);
   });
 });

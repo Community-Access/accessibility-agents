@@ -27,10 +27,13 @@ ENV NODE_ENV=production \
     A11Y_MCP_STATELESS=1 \
     A11Y_MCP_TOOLSET=hosted
 
-# scan_uploaded_document writes each upload here while it is scanned and
-# deletes it before answering. Run the container read-only with a tmpfs on
+# The document tools write each upload here while they work and delete it
+# before answering; write_document_alt_text keeps its result in downloads/
+# for one hour (120 MB at most). Run the container read-only with a tmpfs on
 # this path, for example in compose:
-#   tmpfs: ["/home/node/.a11y-uploads:size=64m,mode=0700,uid=1000,gid=1000"]
+#   tmpfs: ["/home/node/.a11y-uploads:size=192m,mode=0700,uid=1000,gid=1000"]
+# and set A11Y_MCP_PUBLIC_URL to the server's public address (for example
+# https://letitglow.app/a11y) so download links point at /download/.
 
 USER node
 EXPOSE 3100

@@ -13,7 +13,7 @@ to install.
 
 ## What the hosted server can do
 
-It offers ten tools that work on what you send them:
+It offers twelve tools that work on what you send them:
 
 | Tool | What you give it |
 | --- | --- |
@@ -25,17 +25,41 @@ It offers ten tools that work on what you send them:
 | `check_heading_structure` | an HTML snippet |
 | `check_link_text` | an HTML snippet |
 | `check_form_labels` | an HTML snippet |
-| `scan_uploaded_document` | a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file, up to 20 MB, sent as base64 |
+| `scan_uploaded_document` | a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file, up to 20 MB, sent as base64 or as a public link |
+| `extract_document_images` | a Word, PowerPoint, Excel, ePub or PDF file; returns each picture as an image your assistant can see, with where it is and its alt text now |
+| `write_document_alt_text` | the same file and the alt text for each picture; returns the file with the alt text written in |
 | `get_specialist` | a specialist's name, such as `word-accessibility`, for its full review instructions |
 
-It reads none of its own files except the specialists' instructions, fetches
-no web addresses and keeps no history. A file you send to
-`scan_uploaded_document` is written to a private folder, scanned with the same
-checks a local install runs, and deleted before the answer comes back. Ask
-your assistant to "scan this document with Accessibility Agents" after you
-attach it; it sends the file for you. To scan a whole folder, fix a document
-in place, or run axe against a page, install the full plugin, which runs the
-server on your own computer; see
+It reads none of its own files except the specialists' instructions and
+keeps no history. A file you send is written to a private folder, worked on,
+and deleted before the answer comes back. The one exception is the file
+`write_document_alt_text` returns: it waits for one hour behind a download
+link nobody can guess, then it is deleted, because a chat assistant cannot
+hand you a file any other way.
+
+### Sending a file
+
+Desktop and editor assistants (Claude Code, VS Code, Copilot CLI) can read the
+file on your computer and send it. Chat assistants in a browser often cannot
+pass an attachment's contents to a tool, so give them a link instead: share
+the file from OneDrive, Google Drive or Dropbox so that anyone with the link
+can view it, and paste the link. The server fetches only public web
+addresses, on the standard ports, up to 20 MB.
+
+### Alt text for every picture in a document
+
+Ask your assistant: "Use Accessibility Agents to write alt text for every
+picture in this document", with the file or its link. It calls
+`extract_document_images`, looks at each picture, and writes alt text the way
+the `alt-text-headings` specialist does: what the picture means in that
+place, at most 150 characters, with a long description in the text for a
+chart or diagram. Check them, ask for changes, then say "put them in the
+file". It calls `write_document_alt_text` and gives you a link to the file
+with the alt text in place. That works for Word, PowerPoint, Excel and ePub;
+for a PDF you get the alt text to add in the program it came from.
+
+To scan a whole folder, fix a document in place, or run axe against a page,
+install the full plugin, which runs the server on your own computer; see
 [Getting started](../getting-started/README.md).
 
 ## ChatGPT
