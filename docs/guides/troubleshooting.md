@@ -76,11 +76,11 @@ To test the guard by hand, see "Testing a manifest by hand" in
 
 ### Symptom: the server does not start
 
-The plugins and `.vscode/mcp.json` launch the bundle, `mcp-server/dist/stdio.mjs`,
+The plugins and `.vscode/mcp.json` launch `mcp-server/dist/stdio.mjs`,
 which needs no `npm install`. Run it directly to see any error:
 
 ```bash
-node mcp-server/dist/stdio.mjs    # the stdio bundle the plugins launch
+node mcp-server/dist/stdio.mjs    # the stdio server the plugins launch
 npm install --prefix mcp-server   # only for the HTTP server or the unbundled source
 node mcp-server/server.js         # Streamable HTTP on 127.0.0.1:3100
 ```

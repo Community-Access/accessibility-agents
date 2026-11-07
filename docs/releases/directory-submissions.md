@@ -52,6 +52,17 @@ Status: IN REVIEW, HELD (developer portal), as of 2026-11-06.
   one readable file under the limit. Options: drop the SDK, zod and ajv for
   a small hand-written stdio JSON-RPC layer (clears the size hold), or leave
   the bundle and let the reviewer clear it.
+- 2026-11-06: Branch `fix/directory-readable-mcp`: the stdio server now runs
+  from readable source with no dependencies (`mcp-server/lib/mcp-lite.js`,
+  `mcp-server/lib/schema.js`); `dist/stdio.mjs` is a one-line launcher.
+  Built plugin tree: 440 files, none 256 KiB or over, `claude plugin
+  validate` passes, starts with no node_modules and lists 39 tools. All 121
+  MCP server tests pass. After it merges and `plugin-branch.yml` updates the
+  `plugin` branch, run "Check for new commits" in the portal and record the
+  new scan result here.
+- Hosting for ChatGPT (remote MCP) is a separate follow-up: under the
+  letitglow.app domain, on the server behind lp.csedesigns.com, via
+  `mcp-server/server.js`. Local-file tools cannot work remotely.
 - Unavoidable reviewer checks for any Node MCP server: "Scripts the validator
   couldn't follow" (it only follows shell scripts). A first listing is
   always human-reviewed anyway; holds are not rejections.

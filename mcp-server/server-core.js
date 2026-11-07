@@ -43,8 +43,8 @@
  *   - Input size limits on all file operations
  */
 
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { McpServer, ResourceTemplate } from "./lib/mcp-lite.js";
+import { z } from "./lib/schema.js";
 import { readFile as fsReadFile, writeFile as fsWriteFile, stat } from "node:fs/promises";
 import { realpathSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";

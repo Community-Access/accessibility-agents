@@ -7,7 +7,7 @@
  * Degrades gracefully — returns a clear message if veraPDF is not found.
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { basename } from "node:path";

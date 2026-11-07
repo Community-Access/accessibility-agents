@@ -17,9 +17,11 @@
  *   com.github.copilot/hooks/hooks.json       Copilot's edit gate
  *   skills/                                   every skill
  *   hooks/hooks.json, hooks/guard.mjs         the edit gate
- *   mcp-server/dist/stdio.mjs                 the bundled MCP server
+ *   mcp-server/ runtime files                 the MCP server as readable
+ *                                             source, no dependencies (see
+ *                                             scripts/mcp-runtime-files.mjs)
  *   mcp-server/package.json                   name and version only, which
- *                                             the bundle reads at start-up
+ *                                             the server reads at start-up
  *   README.md, PRIVACY.md, LICENSE            with links made absolute
  *
  * Usage:
@@ -29,6 +31,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { MCP_RUNTIME_FILES } from './mcp-runtime-files.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.resolve(process.argv[2] || path.join(ROOT, 'dist', 'claude-plugin'));
@@ -51,13 +54,13 @@ copy('com.github.copilot/hooks/hooks.json');
 copy('skills');
 copy('hooks/hooks.json');
 copy('hooks/guard.mjs');
-copy('mcp-server/dist/stdio.mjs');
+for (const rel of MCP_RUNTIME_FILES) copy(`mcp-server/${rel}`);
 copy('LICENSE');
 
 const server = JSON.parse(fs.readFileSync(path.join(ROOT, 'mcp-server', 'package.json'), 'utf8'));
 fs.writeFileSync(
   path.join(OUT, 'mcp-server', 'package.json'),
-  JSON.stringify({ name: server.name, version: server.version, private: true }, null, 2) + '\n',
+  JSON.stringify({ name: server.name, version: server.version, private: true, type: 'module' }, null, 2) + '\n',
 );
 
 // Relative links point into folders this tree leaves out; send them to the

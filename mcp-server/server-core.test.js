@@ -14,7 +14,7 @@ import { join, resolve, sep } from "node:path";
 import { homedir } from "node:os";
 import { writeFile, mkdir, rm } from "node:fs/promises";
 import { readFileSync } from "node:fs";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "./lib/mcp-lite.js";
 
 // Import the public export for path validation
 import { validateFilePath, createServer } from "./server-core.js";
