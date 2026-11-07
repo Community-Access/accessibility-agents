@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **The hosted server scans documents you send it**: `scan_uploaded_document`
-  takes a Word, Excel, PowerPoint, PDF, ePub, Markdown, HTML or text file as
+  takes a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file as
   base64, runs the same scanner a local install runs, and deletes the file
   before answering; `get_specialist` returns any specialist's instructions,
   such as `word-accessibility`, so ChatGPT, Claude and GLOW can review the

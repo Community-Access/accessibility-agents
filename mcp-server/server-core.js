@@ -2382,7 +2382,7 @@ export function createServer() {
   const scanHandlers = {};
   for (const name of ["scan_office_document", "scan_pdf_document", "scan_epub_document",
     "scan_markdown_document", "check_heading_structure", "check_link_text",
-    "check_form_labels", "check_reading_level"]) {
+    "check_form_labels"]) {
     scanHandlers[name] = server._registeredTools[name].handler;
   }
   registerHostedDocumentTools(server, scanHandlers);

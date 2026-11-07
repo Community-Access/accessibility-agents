@@ -44,12 +44,8 @@ export const UPLOAD_SCANNERS = {
   ".markdown": "scan_markdown_document",
 };
 const HTML_EXTENSIONS = [".html", ".htm", ".xhtml"];
-const TEXT_EXTENSIONS = [".txt", ".text"];
-export const UPLOAD_EXTENSIONS = [
-  ...Object.keys(UPLOAD_SCANNERS),
-  ...HTML_EXTENSIONS,
-  ...TEXT_EXTENSIONS,
-];
+/** Only the formats a scanner here reads; anything else is refused. */
+export const UPLOAD_EXTENSIONS = [...Object.keys(UPLOAD_SCANNERS), ...HTML_EXTENSIONS];
 
 /** Extension -> the specialist whose instructions fit that file. */
 export const SPECIALIST_FOR = {
@@ -96,7 +92,7 @@ export function registerHostedDocumentTools(server, handlers) {
       title: "Scan an uploaded document",
       description:
         "Scan a document for accessibility problems by sending its contents, base64 encoded. " +
-        "Accepts Word (.docx), Excel (.xlsx), PowerPoint (.pptx), PDF, ePub, Markdown, HTML and plain text, " +
+        "Accepts Word (.docx), Excel (.xlsx), PowerPoint (.pptx), PDF, ePub, Markdown and HTML, " +
         `up to ${MAX_UPLOAD_BYTES / 1024 / 1024} MB. Runs the same structural checks as a local install ` +
         "(title, language, headings, alt text, table headers, tags and more) and returns WCAG-mapped findings. " +
         "The file is deleted as soon as the scan finishes. Use get_specialist with the returned specialist " +
@@ -121,12 +117,10 @@ export function registerHostedDocumentTools(server, handlers) {
       const specialist = SPECIALIST_FOR[ext] || "accessibility-lead";
       const note = `\n\nSpecialist for this file: ${specialist} (load it with get_specialist).`;
 
-      if (HTML_EXTENSIONS.includes(ext) || TEXT_EXTENSIONS.includes(ext)) {
+      if (HTML_EXTENSIONS.includes(ext)) {
         const text = buf.toString("utf8");
-        const names = HTML_EXTENSIONS.includes(ext)
-          ? ["check_heading_structure", "check_link_text", "check_form_labels"]
-          : ["check_reading_level"];
-        const arg = HTML_EXTENSIONS.includes(ext) ? { html: text } : { text };
+        const names = ["check_heading_structure", "check_link_text", "check_form_labels"];
+        const arg = { html: text };
         const parts = [];
         const findings = [];
         const passed = [];

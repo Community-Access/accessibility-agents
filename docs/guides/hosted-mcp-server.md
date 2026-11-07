@@ -25,7 +25,7 @@ It offers ten tools that work on what you send them:
 | `check_heading_structure` | an HTML snippet |
 | `check_link_text` | an HTML snippet |
 | `check_form_labels` | an HTML snippet |
-| `scan_uploaded_document` | a Word, Excel, PowerPoint, PDF, ePub, Markdown, HTML or text file, up to 20 MB, sent as base64 |
+| `scan_uploaded_document` | a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file, up to 20 MB, sent as base64 |
 | `get_specialist` | a specialist's name, such as `word-accessibility`, for its full review instructions |
 
 It reads none of its own files except the specialists' instructions, fetches
