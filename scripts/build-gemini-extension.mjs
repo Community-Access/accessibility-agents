@@ -17,6 +17,7 @@
  * Usage:
  *   node scripts/build-gemini-extension.mjs            builds dist/gemini/ and the archive
  *   node scripts/build-gemini-extension.mjs --no-archive
+ *   node scripts/build-gemini-extension.mjs --write-root   also refresh ./gemini-extension.json
  */
 
 import fs from 'node:fs';
@@ -67,6 +68,25 @@ const manifest = {
   },
 };
 fs.writeFileSync(path.join(OUT, 'gemini-extension.json'), JSON.stringify(manifest, null, 2) + '\n');
+
+// The extensions gallery (geminicli.com/extensions) crawls the repository and
+// reads gemini-extension.json from its root, so the root carries the same
+// manifest. Without it the gallery kept its listing from before 7.0.0. Run
+// with --write-root after changing the manifest; a plain build fails if the
+// two differ.
+const ROOT_MANIFEST = path.join(ROOT, 'gemini-extension.json');
+const manifestText = JSON.stringify(manifest, null, 2) + '\n';
+if (process.argv.includes('--write-root')) {
+  fs.writeFileSync(ROOT_MANIFEST, manifestText);
+  console.log('Wrote gemini-extension.json at the repository root.');
+} else if (
+  !fs.existsSync(ROOT_MANIFEST) ||
+  fs.readFileSync(ROOT_MANIFEST, 'utf8').replace(/\r\n/g, '\n') !== manifestText
+) {
+  console.error('gemini-extension.json at the repository root differs from the built manifest.');
+  console.error('Run: node scripts/build-gemini-extension.mjs --write-root --no-archive, then commit it.');
+  process.exit(1);
+}
 
 if (!process.argv.includes('--no-archive')) {
   fs.rmSync(ARCHIVE, { force: true });
