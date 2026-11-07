@@ -3,8 +3,10 @@ name: Plugin branch
 # Keeps two branches equal to the plugin alone, built by
 # scripts/build-claude-plugin.mjs from main, so the stores review and install
 # the skills, hooks and MCP server without the repository's tooling:
-#   plugin          the tree at the root, for the Claude plugin directory;
-#                   tagged plugin-v<version> on the first build of a version.
+#   plugin          what the Claude plugin directory tracks. Until Community
+#                   Access is a Verified organization this is the directory
+#                   edition (same tree as claude-directory); then it goes
+#                   back to the full tree, by changing one line below.
 #   copilot-plugin  the same tree in accessibility-agents/, for Awesome
 #                   Copilot; tagged copilot-plugin-v<version>-<main sha>.
 #   claude-directory  the directory edition, built by
@@ -98,9 +100,12 @@ jobs:
             fi
           }
 
-          # The Claude plugin directory follows the plugin branch. One tag per
-          # version, on the first build of that version.
-          publish plugin "$RUNNER_TEMP/plugin" "plugin-v${version}"
+          # The Claude plugin directory follows the plugin branch, and its
+          # portal cannot change the branch while a listing is in review. It
+          # accepts hooks, local servers and scripts only from Verified
+          # organizations, so plugin carries the directory edition for now.
+          # Once Verified: publish plugin "$RUNNER_TEMP/plugin" "plugin-v${version}"
+          publish plugin "$RUNNER_TEMP/directory" "claude-directory-v${version}"
           # Awesome Copilot pins a tag and its commit: one tag per build, so a
           # fix within a version still gets an immutable ref to submit.
           publish copilot-plugin "$RUNNER_TEMP/copilot" "copilot-plugin-v${version}-${GITHUB_SHA::7}"
