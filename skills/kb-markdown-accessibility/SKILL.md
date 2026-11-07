@@ -53,7 +53,7 @@ Each issue, with its severity, WCAG and auto-fix.
 
 ### Scoring Formula
 
-Scores and grades come from `skills/a11y-core/scripts/merge-findings.mjs`; do not compute them by hand. In summary:
+Scores and grades come from `skills/a11y-core/scripts/merge-findings.mjs`; do not compute them by hand. If the script cannot run, apply the formula below yourself; use only what you are given, and never say you scanned, ran or opened anything you did not. In summary:
 
 ```text
 penalty = sum over findings of weight x confidence factor
