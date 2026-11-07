@@ -45,7 +45,7 @@ GitHub's release management UI presents accessibility barriers:
 
 ## Workflow
 
-1. **Authenticate** - Identify the current user via `gh api user`.
+1. **Authenticate** - Identify the current user via `gh api user`. If the GitHub CLI is not available, ask the person to paste what you need, use only what you are given, and never say you scanned, ran or opened anything you did not.
 2. **Detect context** - Infer the repo from the workspace.
 3. **Execute** - Use REST API and `gh release` CLI. Never instruct the user to use the web upload UI.
 4. **Report** - Structured tables. Confirm what changed.

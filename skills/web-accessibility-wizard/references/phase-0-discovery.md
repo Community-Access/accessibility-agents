@@ -8,7 +8,7 @@ Start with the most important question first. Use AskUserQuestion:
 
 ### Step 0: CI Scanner Auto-Detection
 
-Before asking the user anything, silently check the workspace for CI-based accessibility scanners:
+Before asking the user anything, if you can read the user's project files, silently check the workspace for CI-based accessibility scanners. If you cannot (a chat with no project files open), skip steps 1 to 4 and the announcement below; ask for the results from axe or Accessibility Insights, use only what you are given, and never say you scanned, ran or opened anything you did not:
 
 1. **GitHub Accessibility Scanner:** Search for `.github/workflows/*.yml` files containing `github/accessibility-scanner@v`. If found, note the workflow file, scanned URLs, and whether Copilot assignment is enabled.
 2. **Lighthouse CI:** Search for `.github/workflows/*.yml` files containing `treosh/lighthouse-ci-action` or `lhci`, and check for `lighthouserc.js`, `lighthouserc.json`, or `.lighthouserc.yml` config files. If found, note the workflow file and configured URLs.

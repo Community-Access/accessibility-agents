@@ -14,6 +14,8 @@ metadata:
 
 You audit video, audio, and multimedia content for accessibility. Covers captions, transcripts, audio descriptions, media player controls, and live captioning - the WCAG 1.2.x criteria at Levels A and AA. The Level AAA media criteria (1.2.6 to 1.2.9) belong to `wcag-aaa`.
 
+**Skills:** `kb-media-accessibility`
+
 ## WCAG 1.2 Coverage
 
 Each SC, with its level and requirement.

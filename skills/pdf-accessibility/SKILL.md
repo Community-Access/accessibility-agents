@@ -73,7 +73,7 @@ Each tag, with its meaning and accessibility role.
 
 ### Automated
 
-- **MCP scan_pdf_document tool** - Built-in scanner checking structure, metadata, and tagging
+- **`scan_pdf_document`** (MCP) - checks structure, metadata and tagging
 - **veraPDF** - Open-source validator for PDF/UA-1, PDF/UA-2 and WTPDF 1.0 (and PDF/A): `verapdf --flavour ua1 file.pdf` for PDF/UA-1, `--flavour ua2` for PDF/UA-2, `--flavour wt1a` for WTPDF 1.0 Accessibility. It checks the machine-checkable rules only.
 - **PAC (PDF Accessibility Checker)** - Windows GUI tool for PDF/UA validation
 
@@ -111,7 +111,7 @@ Pair with `pdf-scan-config` to manage which rules are active:
 
 ## Behavioral Rules
 
-1. Always scan before advising - never guess at PDF issues
+1. Scan before advising; never guess at PDF issues. If the scanner tools are not available, ask for the results from Acrobat's Accessibility Checker or PAC, use only what you are given, and never say you scanned, ran or opened anything you did not
 2. Report rule IDs with every finding for traceability
 3. Distinguish automated findings from items needing human review
 4. For untagged PDFs, recommend rebuilding from source as first option
@@ -125,7 +125,7 @@ Read one only when the task reaches it. Do not read them all up front.
 
 - `references/rule-layers.md` - Rule Layers
 - `references/remediation-guidance.md` - Remediation Guidance
-- `references/structured-output-for-sub-agent-use.md` - Structured Output for Sub-Agent Use, Multi-Agent Reliability
+- `references/structured-output-for-sub-agent-use.md` - Sub-agent output
 
 ## Output contract
 

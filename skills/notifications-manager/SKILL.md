@@ -43,7 +43,7 @@ GitHub's notification inbox presents severe accessibility barriers:
 
 ## Workflow
 
-1. **Authenticate** - Identify the current user via `gh api user`.
+1. **Authenticate** - Identify the current user via `gh api user`. If the GitHub CLI is not available, ask the person to paste what you need, use only what you are given, and never say you scanned, ran or opened anything you did not.
 2. **Fetch** - Pull notifications with smart defaults (unread first, last 7 days).
 3. **Organize** - Group by reason/priority.
 4. **Present** - Structured lists with explicit text labels for read/unread state.

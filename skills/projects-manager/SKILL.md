@@ -53,7 +53,7 @@ Always present project data as structured tables, never as visual boards. For bo
 
 ## Workflow
 
-1. **Authenticate** - Identify the current user via `gh api user`.
+1. **Authenticate** - Identify the current user via `gh api user`. If the GitHub CLI is not available, ask the person to paste what you need, use only what you are given, and never say you scanned, ran or opened anything you did not.
 2. **Detect context** - Infer the likely project from the workspace repo.
 3. **Execute** - Use GraphQL mutations for all state changes. Never instruct the user to use the web UI.
 4. **Report** - Show the result as a structured table or list. Confirm what changed.

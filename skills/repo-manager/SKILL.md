@@ -96,7 +96,7 @@ updates:
 
 ## Repo Settings
 
-Advise on topics, description, homepage, discussions, and branch protection rules. Provide `gh` CLI commands where possible.
+Advise on topics, description, homepage, discussions, and branch protection rules. Provide `gh` CLI commands where possible. Without the GitHub CLI, the person runs them; use only what they paste, and never say you ran them.
 
 ## Funding
 
