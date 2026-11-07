@@ -65,6 +65,7 @@ import { okResult, errorResult, findingsResult, scannerFinding } from "./results
 import { SERVER_VERSION } from "./version.js";
 import { registerGlowTools } from "./tools/glow-tools.js";
 import { registerHostedDocumentTools } from "./tools/hosted-document-tools.js";
+import { registerDocumentImageTools } from "./tools/document-images.js";
 
 /** Maximum file size accepted for document scanning (100 MB). */
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -2386,6 +2387,7 @@ export function createServer() {
     scanHandlers[name] = server._registeredTools[name].handler;
   }
   registerHostedDocumentTools(server, scanHandlers);
+  registerDocumentImageTools(server);
 
   if (process.env.A11Y_MCP_TOOLSET === "hosted") {
     for (const name of Object.keys(server._registeredTools)) {
@@ -2417,4 +2419,8 @@ export const HOSTED_TOOLS = new Set([
   // skills shipped with the server.
   "scan_uploaded_document",
   "get_specialist",
+  // The pictures of a file the client sends (or links), and that file back
+  // with alt text written in; a written file waits one hour for download.
+  "extract_document_images",
+  "write_document_alt_text",
 ]);
