@@ -224,6 +224,8 @@ describe("MCP tool surface", () => {
     fix_document_metadata: { filePath: "no-such-file.docx", title: "T" },
     fix_document_headings: { filePath: "no-such-file.docx" },
     render_accessibility_report: null, // writes a report file
+    scan_uploaded_document: { filename: "notes.md", content_base64: Buffer.from("# Notes\n").toString("base64") },
+    get_specialist: { name: "word-accessibility" },
   };
 
   test("every tool returns a result the SDK accepts", async (t) => {

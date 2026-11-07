@@ -891,3 +891,63 @@ describe("hosted tool set", () => {
     }
   });
 });
+
+describe("scan_uploaded_document and get_specialist", () => {
+  let call;
+  let uploadRoot;
+
+  before(async () => {
+    const tools = await import("./tools/hosted-document-tools.js");
+    uploadRoot = tools.UPLOAD_ROOT;
+    const before = process.env.A11Y_MCP_TOOLSET;
+    process.env.A11Y_MCP_TOOLSET = "hosted";
+    const server = createServer();
+    if (before === undefined) delete process.env.A11Y_MCP_TOOLSET;
+    else process.env.A11Y_MCP_TOOLSET = before;
+    call = (name, args) => server._callTool({ name, arguments: args }, {});
+  });
+
+  const b64 = (s) => Buffer.from(s).toString("base64");
+
+  it("scans an uploaded PDF with the PDF scanner and leaves nothing behind", async () => {
+    const pdf = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[]/Count 0>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n";
+    const result = await call("scan_uploaded_document", { filename: "handout.pdf", content_base64: b64(pdf) });
+    assert.ok(!result.isError, JSON.stringify(result));
+    const text = result.content.map((c) => c.text).join("\n");
+    assert.match(text, /not tagged/i);
+    assert.match(text, /pdf-accessibility/);
+    assert.ok(!JSON.stringify(result).includes(uploadRoot), "the temp path leaked into the result");
+    const { readdirSync, existsSync } = await import("node:fs");
+    assert.ok(!existsSync(uploadRoot) || readdirSync(uploadRoot).length === 0, "the upload was kept");
+  });
+
+  it("scans Markdown and HTML uploads", async () => {
+    const md = await call("scan_uploaded_document", {
+      filename: "notes.md", content_base64: b64("# Notes\n\n![](chart.png)\n") });
+    assert.ok(md.structuredContent.findings.some((f) => /alt/i.test(f.rule)));
+    const html = await call("scan_uploaded_document", {
+      filename: "page.html", content_base64: b64('<h1>T</h1><h3>S</h3><a href="/x">click here</a>') });
+    assert.deepEqual(html.structuredContent.scope, ["page.html"]);
+    assert.ok(html.structuredContent.findings.length >= 2);
+  });
+
+  it("refuses other types, empty files and paths in the name", async () => {
+    const exe = await call("scan_uploaded_document", { filename: "x.exe", content_base64: "TVo=" });
+    assert.ok(exe.isError && /Unsupported/.test(exe.content[0].text));
+    const empty = await call("scan_uploaded_document", { filename: "a.pdf", content_base64: "" });
+    assert.ok(empty.isError);
+    const sneaky = await call("scan_uploaded_document", {
+      filename: "../../etc/passwd.md", content_base64: b64("# Hi\n") });
+    assert.ok(!sneaky.isError);
+    assert.ok(!JSON.stringify(sneaky).includes("etc/"), "the name kept its path");
+  });
+
+  it("returns a specialist's instructions, and the list", async () => {
+    const word = await call("get_specialist", { name: "word-accessibility" });
+    assert.ok(!word.isError && word.content[0].text.length > 1000);
+    const list = await call("get_specialist", {});
+    assert.match(list.content[0].text, /word-accessibility/);
+    const missing = await call("get_specialist", { name: "../package.json" });
+    assert.ok(missing.isError);
+  });
+});

@@ -16,7 +16,9 @@ COPY mcp-server/package.json mcp-server/package-lock.json ./
 # the browser scanners are not part of the hosted tool set.
 RUN npm ci --ignore-scripts --no-audit --no-fund && npm cache clean --force
 
-COPY skills/a11y-core/schemas /app/skills/a11y-core/schemas
+# The schemas, and every specialist's SKILL.md for get_specialist (the
+# .dockerignore lets nothing else from skills/ in).
+COPY skills /app/skills
 COPY mcp-server/ ./
 
 ENV NODE_ENV=production \
@@ -24,6 +26,11 @@ ENV NODE_ENV=production \
     A11Y_MCP_HOST=0.0.0.0 \
     A11Y_MCP_STATELESS=1 \
     A11Y_MCP_TOOLSET=hosted
+
+# scan_uploaded_document writes each upload here while it is scanned and
+# deletes it before answering. Run the container read-only with a tmpfs on
+# this path, for example in compose:
+#   tmpfs: ["/home/node/.a11y-uploads:size=64m,mode=0700,uid=1000,gid=1000"]
 
 USER node
 EXPOSE 3100

@@ -139,6 +139,8 @@ export const TOOL_METADATA = {
   scan_markdown_document: T("Scan a markdown file", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 60000),
   extract_document_metadata: T("Extract document metadata", READ_LOCAL, STATUS_OUTPUT_SCHEMA),
   batch_scan_documents: T("Scan many documents", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 120000),
+  scan_uploaded_document: T("Scan an uploaded document", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 60000),
+  get_specialist: T("Get a specialist's instructions", READ_LOCAL, STATUS_OUTPUT_SCHEMA, 60000),
 
   // ---- runtime scanners: they load a page, so the world is open ----
   run_axe_scan: T("Run an axe-core scan", READ_NETWORK, FINDINGS_OUTPUT_SCHEMA, 80000),
