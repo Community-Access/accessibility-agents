@@ -12,7 +12,7 @@
  *   npm install -D playwright @axe-core/playwright && npx playwright install chromium
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { errorResult, findingsResult, mapSeverity } from "../results.js";
 import WCAG22 from "../../skills/a11y-core/schemas/wcag22-criteria.json" with { type: "json" };
 

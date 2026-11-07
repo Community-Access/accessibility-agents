@@ -11,7 +11,7 @@
  *   a11y://dashboard/summary - Aggregate dashboard across all stored audits
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { readFile as fsReadFile, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";

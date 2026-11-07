@@ -21,7 +21,7 @@
  * "Structured content".
  */
 
-import { z } from "zod";
+import { z } from "./lib/schema.js";
 
 /**
  * Output schemas are Zod, because that is what this server already uses for

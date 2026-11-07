@@ -29,8 +29,8 @@ Gemini CLI    gemini extensions install https://github.com/Community-Access/acce
               (uses the extension archive attached to each release, from 7.1.0)
 ```
 
-The MCP server ships as a single bundle (`mcp-server/dist/stdio.mjs`), so the
-plugin starts it with no `npm install`. Only the optional scanners need
+The MCP server ships as readable source with no dependencies
+(`mcp-server/dist/stdio.mjs` starts it), so the plugin needs no `npm install`. Only the optional scanners need
 installing: Playwright and `@axe-core/playwright` for the browser scans,
 `pdf-lib` for PDF form conversion, and the veraPDF CLI. The tools that need
 them say how when they are missing.

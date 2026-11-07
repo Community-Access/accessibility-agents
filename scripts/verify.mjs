@@ -149,10 +149,10 @@ const GATES = [
   },
   {
     id: 'bundle',
-    name: 'MCP server bundle',
-    standard: 'mcp-server/dist/stdio.mjs is a fresh build of the source',
+    name: 'MCP server runtime',
+    standard: 'the MCP server ships as readable source under 256 KiB a file, with no package dependencies',
     command: [NODE, ['scripts/check-mcp-bundle.mjs']],
-    proves: 'A plugin install, which has no node_modules, starts the same server the tests ran, because the committed bundle matches a fresh build byte for byte.',
+    proves: 'A plugin install, which has no node_modules, starts the same server the tests ran, and the plugin directory can read every file of it.',
   },
   {
     id: 'dependencies',

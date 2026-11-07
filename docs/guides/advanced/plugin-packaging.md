@@ -17,7 +17,7 @@ One repository, one copy of each skill. Every client reads the same files.
 | `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` | Claude Code manifest and the `community-access` marketplace |
 | `.codex-plugin/plugin.json` | Codex compatibility manifest |
 | `hooks/` | the hook guard and the per-client hook manifests |
-| `mcp-server/` | the MCP server (39 tools); `mcp-server/dist/stdio.mjs` is the committed stdio bundle the plugins launch |
+| `mcp-server/` | the MCP server (39 tools); `mcp-server/dist/stdio.mjs` is the launch path the plugins name; it starts the readable `stdio.js` |
 | `templates/` | scan configuration profiles |
 
 ## Distribution formats
@@ -38,8 +38,8 @@ Gemini CLI    gemini extensions install https://github.com/Community-Access/acce
               (uses the extension archive attached to each release, from 7.1.0)
 ```
 
-The plugin loads the skills and the hooks and starts the MCP server from its
-bundle, `mcp-server/dist/stdio.mjs`, with no `npm install`. Only the optional
+The plugin loads the skills and the hooks and starts the MCP server from
+`mcp-server/dist/stdio.mjs`, with no `npm install`. Only the optional
 scanners (Playwright, `@axe-core/playwright`, `pdf-lib`, veraPDF) need
 installing; the tools that need them say how.
 
@@ -74,7 +74,7 @@ the checkout. See [Getting started](../../getting-started/README.md).
 ### 3. MCP server only
 
 ```bash
-node mcp-server/dist/stdio.mjs   # stdio bundle, no install needed
+node mcp-server/dist/stdio.mjs   # stdio server, no install needed
 cd mcp-server
 npm install                      # needed for the HTTP server and for development
 npm start                        # Streamable HTTP on 127.0.0.1:3100

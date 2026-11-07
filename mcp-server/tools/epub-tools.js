@@ -12,7 +12,7 @@
  * from server-core.js.
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { basename, dirname, join } from "node:path";
 import { readFile as fsReadFile, writeFile as fsWriteFile } from "node:fs/promises";
 import { inflateRawSync } from "node:zlib";

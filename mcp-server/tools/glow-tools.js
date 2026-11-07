@@ -5,7 +5,7 @@
  * allowing MCP clients to use GLOW features without speaking REST directly.
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { basename } from "node:path";
 import { readFile as fsReadFile } from "node:fs/promises";
 import { validateFilePath } from "../server-core.js";

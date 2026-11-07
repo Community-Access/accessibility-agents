@@ -23,6 +23,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { MCP_RUNTIME_FILES } from './mcp-runtime-files.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'dist', 'gemini');
@@ -43,8 +44,8 @@ copy('LICENSE');
 copy('README.md');
 copy('skills');
 copy('hooks/guard.mjs');
-copy('mcp-server/dist/stdio.mjs');
-// The bundled server reads its version from the package.json beside it.
+for (const rel of MCP_RUNTIME_FILES) copy(`mcp-server/${rel}`);
+// The server reads its version from mcp-server/package.json.
 copy('mcp-server/package.json');
 
 // Gemini's hook manifest, without the comment key: in an extension's

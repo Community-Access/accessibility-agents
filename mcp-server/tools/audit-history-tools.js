@@ -11,7 +11,7 @@
  *   prune_audit_history - Remove old audits beyond retention limit
  */
 
-import { z } from "zod";
+import { z } from "../lib/schema.js";
 import { readFile as fsReadFile, writeFile as fsWriteFile, readdir, mkdir, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join, basename, resolve } from "node:path";
