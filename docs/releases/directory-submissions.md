@@ -20,7 +20,34 @@ Status: LISTED.
 
 ## Claude plugin directory (Anthropic)
 
-Status: IN REVIEW, HELD (developer portal), as of 2026-11-06.
+Status: NEEDS CHANGES (refused by directory policy), as of 2026-11-06.
+
+- 2026-11-06, after PR 281: `plugin` at `1a2d177` (440 files, 2.1 MB) was
+  scanned. The security scan PASSED ("1 fixed": the unreadable bundle).
+  Directory policy then REFUSED the version with three blocking rules that
+  apply because Community Access is not a Verified organization:
+  - "Hooks of type command accepted only from Verified organizations".
+    Every hook type is covered, so the edit gate cannot ship.
+  - "Local MCP servers accepted only from Verified organizations". MCP
+    servers at a public URL may stay.
+  - "Files outside the allowed types accepted only from Verified
+    organizations". Allowed: Markdown, text, JSON, YAML, PNG/JPEG/GIF/WebP/ICO
+    images. Refused: any script or program (all `.js`/`.mjs`, including
+    skill scripts and `hooks/guard.mjs`), any file starting with `#!`, and
+    package-manager configuration files.
+  - Still a policy hold: "Uses a credential from the user's machine".
+  - Warning: `hooks/guard.mjs` has a line that writes a package manager's
+    configuration ("File registry redirect").
+  - The earlier versions were held rather than refused because they were
+    never fully checked; these rules were always there.
+- Two routes: ask Anthropic (`directory@anthropic.com`) how Community Access
+  becomes a Verified organization, so the full plugin can be listed; and/or
+  list a directory edition with only Markdown/JSON skills plus the MCP server
+  at a public HTTPS URL (the letitglow.app hosting), keeping the full plugin
+  with hooks in our own marketplace.
+- Push webhook: the portal's "Set up push updates" dialog generates a
+  secret that must be added to a GitHub webhook on the repository. The
+  secret step is done by Jeff, not by an agent.
 
 - 2026-11-06: Found in the developer portal
   (<https://claude.ai/directory/manage>), submitted 2026-10-28, contact
