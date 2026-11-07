@@ -143,7 +143,9 @@ app.get("/download/:token/:name", async (req, res) => {
   res.set("Cache-Control", "no-store");
   if (!file) return res.status(404).type("text/plain").send("This download has expired or never existed.");
   res.set("X-Content-Type-Options", "nosniff");
-  return res.download(file, basename(file));
+  // The uploads folder is .a11y-uploads, and send() refuses any path with a
+  // dot-folder in it unless told otherwise; findDownload has vetted the path.
+  return res.download(file, basename(file), { dotfiles: "allow" });
 });
 setInterval(() => { pruneDownloads().catch(() => {}); }, 10 * 60 * 1000).unref();
 
