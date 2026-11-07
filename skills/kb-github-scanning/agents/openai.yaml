@@ -1,0 +1,9 @@
+# Codex interface for this skill.
+# Reference skills are lookup data cited by other skills, never chosen by the
+# model on its own. Without this file Codex lists them in its catalog, which a
+# live probe showed put all 29 into the model prompt.
+interface:
+  display_name: "Github Scanning"
+  short_description: "Reference data, not a reviewer. Search GitHub for issues, PRs, discussions, releases, and alerts. Includes query construction, date range handling, repo scoping, and cross-repo intelligence."
+policy:
+  allow_implicit_invocation: false

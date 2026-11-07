@@ -1,0 +1,21 @@
+{
+  "skill": "live-region-controller",
+  "scope": [
+    "src/components/Toast.tsx"
+  ],
+  "findings": [
+    {
+      "rule": "LIVE-002",
+      "wcag": "4.1.3 AA",
+      "severity": "serious",
+      "confidence": "medium",
+      "location": "src/components/Toast.tsx:34",
+      "summary": "Toast is inserted into the DOM with its live region, so nothing is announced.",
+      "fix": "Render an empty aria-live=\"polite\" container on mount and write the message into it.",
+      "component": "Toast"
+    }
+  ],
+  "passed": [
+    "No aria-live=\"assertive\" on non-urgent messages"
+  ]
+}

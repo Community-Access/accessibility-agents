@@ -1,0 +1,9 @@
+# Codex interface for this skill.
+# Reference skills are lookup data cited by other skills, never chosen by the
+# model on its own. Without this file Codex lists them in its catalog, which a
+# live probe showed put all 29 into the model prompt.
+interface:
+  display_name: "Office Remediation"
+  short_description: "Reference data, not a reviewer. Remediate Office documents (Word/Excel/PowerPoint) for accessibility. Generates Python scripts via python-docx, openpyxl, python-pptx API references."
+policy:
+  allow_implicit_invocation: false

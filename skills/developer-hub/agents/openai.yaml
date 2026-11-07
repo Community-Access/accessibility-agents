@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Developer Hub"
+  short_description: "Start here for Python, wxPython, desktop app, NVDA add-on and accessibility tooling work. Routes to the right specialist."
+policy:
+  allow_implicit_invocation: true

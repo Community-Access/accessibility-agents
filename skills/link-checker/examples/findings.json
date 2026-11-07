@@ -1,0 +1,21 @@
+{
+  "skill": "link-checker",
+  "scope": [
+    "src/pages/blog.tsx"
+  ],
+  "findings": [
+    {
+      "rule": "LINK-001",
+      "wcag": "2.4.4 A",
+      "severity": "moderate",
+      "confidence": "high",
+      "location": "src/pages/blog.tsx:48",
+      "summary": "Nine cards each link with the text \"Read more\".",
+      "fix": "Give each link an aria-label naming its article, or make the article title the link.",
+      "component": "ArticleCard"
+    }
+  ],
+  "passed": [
+    "No bare URLs used as link text"
+  ]
+}

@@ -1,0 +1,7 @@
+# Codex interface for this skill. Non-routers are dispatched by a router,
+# never picked implicitly, so they stay out of the model-facing catalog.
+interface:
+  display_name: "OSAF Foundational Phase"
+  short_description: "Open Source Accessibility Framework Foundational phase: ACCESSIBILITY.md and an accessibility label."
+policy:
+  allow_implicit_invocation: false

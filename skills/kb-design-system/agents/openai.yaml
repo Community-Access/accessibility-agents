@@ -1,0 +1,9 @@
+# Codex interface for this skill.
+# Reference skills are lookup data cited by other skills, never chosen by the
+# model on its own. Without this file Codex lists them in its catalog, which a
+# live probe showed put all 29 into the model prompt.
+interface:
+  display_name: "Design System"
+  short_description: "Reference data, not a reviewer. Validate design system tokens for WCAG AA/AAA contrast. Compute color token contrast, focus ring validation (WCAG 2.4.13), motion tokens, and spacing for touch targets across frameworks."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,35 @@
+{
+  "skill": "aria-specialist",
+  "scope": [
+    "src/components/Tabs.tsx"
+  ],
+  "findings": [
+    {
+      "rule": "ARIA-011",
+      "wcag": "4.1.2 A",
+      "severity": "serious",
+      "confidence": "high",
+      "location": "src/components/Tabs.tsx:31",
+      "summary": "Tab list is built from div elements with no roles.",
+      "fix": "Add role=\"tablist\" to the container, role=\"tab\" to each control, role=\"tabpanel\" to each panel, and wire aria-controls and aria-selected.",
+      "evidence": "<div class=\"tabs\"><div class=\"tab is-active\">Overview</div></div>",
+      "component": "Tabs"
+    },
+    {
+      "rule": "ARIA-003",
+      "wcag": "1.3.1 A",
+      "severity": "minor",
+      "confidence": "medium",
+      "location": "src/components/Card.tsx:12",
+      "summary": "Redundant role on a semantic element.",
+      "fix": "Remove role=\"article\" from the article element; the element already carries that role."
+    }
+  ],
+  "passed": [
+    "No aria-hidden on a focusable element",
+    "No abstract roles used"
+  ],
+  "notes": [
+    "Whether the tab panel updates on arrow keys needs a runtime check."
+  ]
+}

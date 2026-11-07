@@ -1,0 +1,22 @@
+{
+  "skill": "modal-specialist",
+  "scope": [
+    "src/components/Drawer.tsx"
+  ],
+  "findings": [
+    {
+      "rule": "MODAL-004",
+      "wcag": "2.4.3 A",
+      "severity": "serious",
+      "confidence": "high",
+      "location": "src/components/Drawer.tsx:90",
+      "summary": "Background content stays reachable while the drawer is open.",
+      "fix": "Apply inert to the background container while the drawer is open, and remove it on close.",
+      "component": "Drawer"
+    }
+  ],
+  "passed": [
+    "Escape closes the drawer",
+    "Drawer has an accessible name"
+  ]
+}

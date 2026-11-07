@@ -1,0 +1,19 @@
+{
+  "name": "accessibility-agents",
+  "version": "7.1.0",
+  "description": "WCAG 2.2 AA review for web, document, Markdown, desktop and GitHub work: router skills dispatch the accessibility specialist team, with hosted contrast, reading-level and HTML checks.",
+  "author": {
+    "name": "Community Access",
+    "url": "https://community-access.org"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Community-Access/accessibility-agents",
+  "repository": "https://github.com/Community-Access/accessibility-agents",
+  "privacyPolicyUrl": "https://github.com/Community-Access/accessibility-agents/blob/main/PRIVACY.md",
+  "mcpServers": {
+    "accessibility-agents": {
+      "type": "http",
+      "url": "https://letitglow.app/a11y/mcp"
+    }
+  }
+}

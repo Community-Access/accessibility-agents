@@ -1,0 +1,8 @@
+# Codex interface for this skill.
+# Specialists and helpers are dispatched by a router, never picked implicitly,
+# so they stay out of the model-facing catalog and its two percent cap.
+interface:
+  display_name: "Tables and Data Specialist"
+  short_description: "Data tables and grids: headers, scope, captions, sorting and complex tables."
+policy:
+  allow_implicit_invocation: false
