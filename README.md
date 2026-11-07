@@ -1,8 +1,8 @@
 # Accessibility Agents
 
 WCAG 2.2 AA enforcement for agentic coding, as a set of Agent Skills. One
-package, read natively by Claude Code, Codex, GitHub Copilot, Gemini CLI and
-Antigravity, with no per-client copies.
+package, read natively by Claude Code, Codex, GitHub Copilot, Gemini CLI,
+Antigravity and ChatGPT, with no per-client copies.
 
 Models forget accessibility while generating code. This package makes that
 harder: it routes the work to the right specialist, blocks edits to user-facing
@@ -27,7 +27,16 @@ VS Code       Chat: Install Plugin From Source, with the repository URL
               (requires the chat.plugins.enabled setting)
 Gemini CLI    gemini extensions install https://github.com/Community-Access/accessibility-agents
               (uses the extension archive attached to each release, from 7.1.0)
+ChatGPT       (once published) open Plugins in the sidebar, search for
+              Accessibility Agents, select Install plugin; then type
+              @accessibility-agents in a chat (skills only, see below)
 ```
+
+What it does not do in ChatGPT: the plugin there is the skills alone, from
+OpenAI's plugin directory. It does not run the scanners and has no edit gate.
+It works from the checker results and document text you paste, and a skill
+that would need a scanner asks for your checker's results. See
+[the OpenAI section of the plugin standard](docs/standards/agent-plugins.md#openai-plugin-directory-chatgpt-and-codex).
 
 The MCP server ships as a single bundle, `mcp-server/dist/stdio.mjs`, so a
 plugin install starts it with no `npm install`. Only the optional scanners

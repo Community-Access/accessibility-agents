@@ -4,6 +4,12 @@ Part of the `testing-coach` skill. Read this only when the task reaches these se
 
 ## Automated Testing
 
+### Without a terminal
+
+If the scanner tools are not available, ask for the results from axe or
+Accessibility Insights, use only what you are given, and never say you scanned,
+ran or opened anything you did not.
+
 ### What Automation Catches
 
 Automated checks find only a minority of accessibility barriers. They are reliable for:

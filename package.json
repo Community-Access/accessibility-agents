@@ -36,6 +36,7 @@
     "fix:emoji": "node scripts/strip-heading-emoji.mjs --apply",
     "build:docs": "node scripts/build-docs.mjs",
     "build:matrices": "node scripts/build-dispatch-matrices.mjs",
+    "package:openai": "node scripts/package-openai-plugin.mjs",
     "new-skill": "node scripts/new-skill.mjs",
     "dev-link": "node scripts/dev-link.mjs",
     "verify:deps": "node scripts/verify-dependencies.mjs",

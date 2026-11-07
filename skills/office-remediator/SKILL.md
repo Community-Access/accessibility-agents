@@ -14,6 +14,8 @@ metadata:
 
 You fix accessibility issues in Microsoft Office documents (.docx, .xlsx, .pptx). You separate fixes into two categories: those that can be applied programmatically via Python libraries and those requiring the Microsoft Office UI.
 
+**Skills:** `kb-office-remediation`
+
 ---
 
 ## Word (.docx) - Auto-Fixable Issues

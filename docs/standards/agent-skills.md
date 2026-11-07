@@ -93,6 +93,24 @@ difference between the two would not show up here.
 Codex does not read either field. It reads `agents/openai.yaml`, described
 under [Codex](#codex) below.
 
+### Why 46 skills set both fields
+
+The reference skills (`a11y-core`, the `kb-` skills), the scan configuration
+skills, the bridges and fixers set both `user-invocable: false` and
+`disable-model-invocation: true`. VS Code's skills page lists that pair as a
+disabled skill: it is in neither the `/` menu nor the set the agent loads on
+its own ([VS Code agent skills](https://code.visualstudio.com/docs/copilot/customization/agent-skills)).
+That is the intent here. Nobody is meant to start these skills; a router or
+specialist names one and reads its `SKILL.md` by path, as `a11y-core`
+describes, and `agents/openai.yaml` says the same to Codex ("dispatched by a
+router, never picked implicitly"). The cost of the design is that a hidden
+skill nothing names can never run, and nothing would say so. So
+`scripts/check-skill-conformance.mjs` fails when a skill with both fields is
+not named, directly or through a chain, by a skill that can be started. When
+the check was added on 29 October 2026 it found ten `kb-` skills that nothing
+named; each is now cited by the specialist whose work it supports, and all 46
+are reached.
+
 ## Codex
 
 Codex discovers skills the same way but decides catalog membership from an
@@ -124,6 +142,8 @@ Every claim above is checked by a tool, listed here so nothing rests on assertio
 |---|---|
 | Every skill passes `skills-ref validate` (the npm port), with the documented extension | `scripts/verify-spec.mjs` |
 | Name matches directory, no byte-order mark, lowercase slug | `scripts/check-skill-conformance.mjs` |
+| Every skill hidden from both model and user is named by a skill that can be started | `scripts/check-skill-conformance.mjs` |
+| The OpenAI directory package meets every published limit | `scripts/package-openai-plugin.mjs` |
 | Body under 6 KiB for router, specialist and helper tiers | `scripts/validate-skills.mjs` |
 | Every cited `references/` file exists, every reference file is cited | `scripts/validate-skills.mjs` |
 | Frontmatter values that a real YAML parser would reject | `scripts/validate-skills.mjs` |

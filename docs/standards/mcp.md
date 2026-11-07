@@ -11,6 +11,7 @@ depends on.
 | Transports | stdio (`mcp-server/stdio.js`, shipped bundled as `mcp-server/dist/stdio.mjs`) and Streamable HTTP (`mcp-server/server.js`). The legacy HTTP+SSE transport is not offered |
 | Governs here | the 39 tools in `mcp-server/` |
 | Distribution | the bundle inside the plugins, the Gemini extension archive, and, from 7.1.0 once published, npm (`@community-access/accessibility-agents-mcp`, bin `accessibility-agents-mcp`, the bundle only) and the MCP Registry (`io.github.Community-Access/accessibility-agents`, described by `server.json`, schema 2025-12-11) |
+| ChatGPT | no MCP server. The plugin in OpenAI's directory is skills only, because OpenAI limits local MCP servers to approved partners and a desktop-only listing; the scanner-backed skills ask for the checker's results instead (see [Agent Plugins](agent-plugins.md#openai-plugin-directory-chatgpt-and-codex)) |
 | Checked by | `mcp-server/mcp-conformance.test.js`, which connects a real client over stdio |
 
 ## The clauses this package depends on
