@@ -292,6 +292,21 @@ describe('finalize', () => {
     assert.equal(r.json.hookSpecificOutput, undefined);
   });
 
+  test('reports a refused edit once, not at the end of every later turn', () => {
+    // One refused edit, redone another way, then every later turn in the
+    // session ended with the same block, because nothing cleared the marker.
+    run('gate', edit('src/Modal.tsx'));
+    assert.equal(run('finalize', SESSION).code, 2, 'the first stop reports it');
+    assert.equal(run('finalize', SESSION).code, 0, 'a later turn is not blocked by the same refusal');
+  });
+
+  test('a new refusal after the report is reported again', () => {
+    run('gate', edit('src/Modal.tsx'));
+    run('finalize', SESSION);
+    run('gate', edit('src/Other.tsx'));
+    assert.equal(run('finalize', SESSION).code, 2);
+  });
+
   test('does not refuse again while the client is continuing from a refusal', () => {
     run('gate', edit('src/Modal.tsx'));
     assert.equal(run('finalize', { ...SESSION, stop_hook_active: true }).code, 0);

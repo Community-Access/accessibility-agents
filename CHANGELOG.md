@@ -76,6 +76,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **One refused edit blocked the end of every later turn.** After the gate
+  refused a user-facing edit, the Stop hook kept blocking with the same
+  message on every turn for the rest of the session, because nothing cleared
+  its marker once the refusal had been reported. `finalize` in
+  `hooks/guard.mjs` now reports each refusal once and clears the marker; a new
+  refusal is reported again.
 - **A fix that quoted markup could render as a control in the report.** A
   finding such as "Use a `<button type="submit">` inside a form" reached the
   Markdown report as raw HTML, so a viewer drew a real button or dropped the
