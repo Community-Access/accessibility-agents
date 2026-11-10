@@ -184,6 +184,16 @@ function setMarker(ids, name, contents = '') {
   }
 }
 
+function clearMarker(ids, name) {
+  for (const id of ids) {
+    try {
+      fs.unlinkSync(markerPath(id, name));
+    } catch {
+      /* already gone */
+    }
+  }
+}
+
 function readMarker(ids, name) {
   for (const id of ids) {
     try {
@@ -625,6 +635,10 @@ function finalize(payload, ids) {
   if (payload.stop_hook_active || payload.stopHookActive) return 0;
   if (!hasMarker(ids, 'ui-edit-attempted')) return 0;
   if (hasMarker(ids, 'reviewed')) return 0;
+  // Report each refusal once. Left in place, the marker blocked the end of
+  // every later turn for the rest of the session, long after the refused edit
+  // was dealt with. A new refusal sets it again.
+  clearMarker(ids, 'ui-edit-attempted');
   emitBlock(
     'An edit to a user-facing file was refused because no accessibility review has run, so the edit was not ' +
       'made. Dispatch accessibility-lead and retry it, or tell the user the edit is still outstanding.',
