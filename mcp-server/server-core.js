@@ -50,7 +50,7 @@ import { realpathSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 import { join, dirname, extname, basename, resolve, sep } from "node:path";
-import { inflateRawSync } from "node:zlib";
+import { inflateRawSync, inflateSync } from "node:zlib";
 
 import { registerPlaywrightTools } from "./tools/playwright-tools.js";
 import { registerVeraPdfTools, registerVeraPdfInstallerTools } from "./tools/verapdf-tools.js";
@@ -406,8 +406,46 @@ function xmlHas(xml, tag) {
 // PDF parsing helpers
 // ---------------------------------------------------------------------------
 
+// Most PDF writers compress their objects: the catalog, the structure tree
+// and the Info dictionary can sit inside a compressed object stream
+// (/Type /ObjStm), and page content streams are FlateDecode-compressed too.
+// The checks below search for plain markers, so inflate those streams and
+// search their contents along with the raw bytes. Images, embedded fonts,
+// cross-reference streams and other binary streams are left alone: they
+// never hold these markers, and their bytes could match by accident.
+const MAX_PDF_INFLATED_BYTES = 50 * 1024 * 1024;
+
+function pdfSearchText(buf) {
+  const raw = buf.toString("latin1");
+  const parts = [raw];
+  let budget = MAX_PDF_INFLATED_BYTES;
+  const streamRe = />>\s*stream(?:\r\n|\n|\r)/g;
+  let m;
+  while ((m = streamRe.exec(raw)) !== null && budget > 0) {
+    const dataStart = m.index + m[0].length;
+    const end = raw.indexOf("endstream", dataStart);
+    if (end === -1) break;
+    streamRe.lastIndex = end;
+    const objStart = raw.lastIndexOf(" obj", m.index);
+    const dict = raw.slice(Math.max(objStart, m.index - 4096, 0), m.index + 2);
+    if (!/\/FlateDecode\b/.test(dict)) continue;
+    const isObjStm = /\/Type\s*\/ObjStm\b/.test(dict);
+    const isForm = /\/Subtype\s*\/Form\b/.test(dict);
+    const isOther = /\/(?:Type|Subtype)\s*\//.test(dict) || /\/Length[123]\b/.test(dict);
+    if (!isObjStm && !isForm && isOther) continue;
+    try {
+      const out = inflateSync(buf.subarray(dataStart, end), { maxOutputLength: budget });
+      budget -= out.length;
+      parts.push(out.toString("latin1"));
+    } catch {
+      // Not valid Flate data (encrypted, damaged, or another filter first).
+    }
+  }
+  return parts.join("\n");
+}
+
 function parsePdfBasics(buf) {
-  const text = buf.toString("latin1");
+  const text = pdfSearchText(buf);
   const info = {
     isTagged: false,
     hasStructureTree: false,
