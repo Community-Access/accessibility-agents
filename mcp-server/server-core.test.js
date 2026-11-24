@@ -14,6 +14,7 @@ import { join, resolve, sep } from "node:path";
 import { homedir } from "node:os";
 import { writeFile, mkdir, rm } from "node:fs/promises";
 import { readFileSync } from "node:fs";
+import { deflateSync } from "node:zlib";
 import { McpServer } from "./lib/mcp-lite.js";
 
 // Import the public export for path validation
@@ -647,6 +648,75 @@ describe("scan_pdf_document tool", () => {
       text.includes("Cannot read") || text.includes("ENOENT"),
       `Expected read error, got: ${text}`
     );
+  });
+
+  // A tagged PDF laid out the way WeasyPrint and most current writers save
+  // one: the catalog, page, structure tree, Info and font objects sit in a
+  // compressed object stream, and the page content is compressed (issue #297).
+  function compressedTaggedPdf() {
+    const objects = [
+      [1, "<< /Type /Catalog /Pages 2 0 R /MarkInfo << /Marked true >> /StructTreeRoot 5 0 R /Lang (en) >>"],
+      [2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>"],
+      [3, "<< /Type /Page /Parent 2 0 R /Contents 8 0 R /Resources << /Font << /F1 6 0 R >> >> /StructParents 0 >>"],
+      [4, "<< /Title (Repro) >>"],
+      [5, "<< /Type /StructTreeRoot /K [] >>"],
+      [6, "<< /Type /Font /Subtype /TrueType /BaseFont /Repro /FontDescriptor 7 0 R /ToUnicode 10 0 R >>"],
+      [7, "<< /Type /FontDescriptor /FontName /Repro /FontFile2 11 0 R >>"],
+    ];
+    let header = "";
+    let body = "";
+    for (const [num, obj] of objects) {
+      header += `${num} ${body.length} `;
+      body += `${obj}\n`;
+    }
+    const objStm = deflateSync(Buffer.from(header + body, "latin1"));
+    const content = deflateSync(Buffer.from("/P << /MCID 0 >> BDC BT /F1 12 Tf 72 720 Td (Hello) Tj ET EMC", "latin1"));
+    const stream = (num, dict, data) => Buffer.concat([
+      Buffer.from(`${num} 0 obj\n<< ${dict} /Length ${data.length} >>\nstream\n`, "latin1"),
+      data,
+      Buffer.from("\nendstream\nendobj\n", "latin1"),
+    ]);
+    return Buffer.concat([
+      Buffer.from("%PDF-1.7\n", "latin1"),
+      stream(9, `/Type /ObjStm /N ${objects.length} /First ${header.length} /Filter /FlateDecode`, objStm),
+      stream(8, "/Filter /FlateDecode", content),
+      Buffer.from("trailer\n<< /Root 1 0 R /Info 4 0 R >>\n%%EOF\n", "latin1"),
+    ]);
+  }
+
+  it("reads tags, title, language, text and fonts from compressed object streams", async () => {
+    const file = join(process.cwd(), ".tmp-compressed-tagged.pdf");
+    await writeFile(file, compressedTaggedPdf());
+    try {
+      const result = await callTool("scan_pdf_document", { filePath: file });
+      const text = result.content[0].text;
+      for (const rule of ["pdf-tagged", "pdf-structure-tree", "pdf-title", "pdf-language", "pdf-text-content", "pdf-fonts", "pdf-unicode"]) {
+        assert.ok(!text.includes(`${rule}:`), `Unexpected ${rule} finding: ${text}`);
+      }
+      assert.match(text, /Tagged: Yes \| Language: en/);
+    } finally {
+      await rm(file, { force: true });
+    }
+  });
+
+  it("still reports an untagged PDF whose Flate stream cannot be inflated", async () => {
+    const file = join(process.cwd(), ".tmp-damaged-stream.pdf");
+    const pdf = Buffer.from(
+      "%PDF-1.7\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n" +
+      "2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj\n" +
+      "3 0 obj\n<< /Filter /FlateDecode /Length 8 >>\nstream\nnot zlib\nendstream\nendobj\n" +
+      "trailer\n<< /Root 1 0 R >>\n%%EOF\n",
+      "latin1"
+    );
+    await writeFile(file, pdf);
+    try {
+      const result = await callTool("scan_pdf_document", { filePath: file });
+      const text = result.content[0].text;
+      assert.ok(text.includes("pdf-tagged:"), `Expected pdf-tagged finding: ${text}`);
+      assert.ok(text.includes("pdf-text-content:"), `Expected pdf-text-content finding: ${text}`);
+    } finally {
+      await rm(file, { force: true });
+    }
   });
 });
 

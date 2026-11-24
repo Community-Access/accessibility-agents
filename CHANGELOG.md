@@ -76,6 +76,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`scan_pdf_document` called tagged PDFs untagged when their objects were
+  compressed** (issue #297). WeasyPrint and most current writers put the
+  catalog, structure tree and Info dictionary in a compressed object stream
+  and compress the page content, so the scanner found no tags, title,
+  language, text or fonts and told the user to OCR a document that already
+  had real text. The scanner, and the CI script
+  `.github/scripts/pdf-a11y-scan.mjs`, now inflate object streams and content
+  streams before checking, with no new dependencies.
 - **A fix that quoted markup could render as a control in the report.** A
   finding such as "Use a `<button type="submit">` inside a form" reached the
   Markdown report as raw HTML, so a viewer drew a real button or dropped the
